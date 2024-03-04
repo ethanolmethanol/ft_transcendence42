@@ -30,7 +30,7 @@ ${NAME}: up
 
 # ${ENV_FILE}
 
-up: | ${DATADIRS}
+up: | ${DATADIRS} ${ENV_FILE}
 	@echo "Up-ing containers:"
 	${COMPOSE} up -d --build
 
@@ -42,6 +42,11 @@ down:
 	${COMPOSE} down
 
 all: ${NAME}
+
+${ENV_FILE}:
+	@if test -f ${ENV_SRC} && cp ${ENV_SRC} $@; then echo -e "$GFetched environment file [$C.env$G] from ..$N"; \
+	else echo -e "$RPlease make an environment file [$C.env$R] using .env_template file$N"; \
+	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
@@ -64,7 +69,7 @@ logsize:
 	sudo sh -c "du -ch /var/lib/docker/containers/*/*-json.log"
 
 rmlogs:
-	sudo sh -c "truncate -s 0 /var/lib/docker/containers/**/*-json.log"
+	sh -c "truncate -s 0 /var/lib/docker/containers/**/*-json.log"
 
 restart:
 	sudo service docker restart
