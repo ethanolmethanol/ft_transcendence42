@@ -78,7 +78,7 @@ nginxlogs:
 	@docker exec -it nginx cat /var/log/nginx/error.log
 
 dbip:
-	@docker exec -it mariadb hostname -i
+	@docker exec -it db hostname -i
 
 fix:
 	sudo chmod 666 /var/run/docker.sock
