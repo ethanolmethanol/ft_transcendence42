@@ -15,7 +15,7 @@ services:
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: pg_isready
+            test: pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
             interval: 5s
             timeout: 1s
             retries: 20
@@ -26,7 +26,7 @@ services:
         container_name: back
         build:
             context: back
-        command: ["./wait-for-it.sh", "db", "5432", "--", "python3", "transcendence_django/manage.py", "runserver"]
+        command: ["./wait-for-it.sh", "db", "5432", "python3", "transcendence_django/manage.py", "runserver"]
         depends_on:
             - db
         ports:
