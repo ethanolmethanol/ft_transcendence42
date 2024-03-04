@@ -58,7 +58,85 @@ services:
             # db:
             #     condition: service_healthy
 
+# yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
+    prometheus:
+        image: prom/prometheus:v2.35.0
+        container_name: prometheus
+        user: root
+        deploy:
+            replicas: 1
+        volumes:
+            - prometheus-data:/prometheus
+            - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            # - ./alertmanager/alert.rules/alerts.rules.yml:/alertmanager/alert.rules/alerts.rules.yml
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--storage.tsdb.retention.time=365d'
+        ports:
+            - "9090:9090"
+        networks:
+            - transcendence
+
+    # alertmanager:
+    #     image: prom/alertmanager:v0.18.0
+    #     container_name: alertmanager
+    #     deploy:
+    #         replicas: 1
+    #     volumes:
+    #         - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    #         - ./alertmanager/templates/default.tmpl:/etc/alertmanager/templates/default.tmpl
+    #     command:
+    #         - '--config.file=/etc/alertmanager/alertmanager.yml'
+    #     ports:
+        #     - "8000:8000"
+        # networks:
+        #     - transcendence
+
+    grafana:
+        image: grafana/grafana:9.3.6
+        container_name: grafana
+        environment:
+            - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+        user: root
+        deploy:
+            replicas: 1
+        depends_on:
+            - prometheus
+        volumes:
+            - grafana-data:/var/lib/grafana
+            - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+            - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+            - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
+            - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+        ports:
+            - "3000:3000"
+        networks:
+            - transcendence
+
+    blackbox:
+        image: prom/blackbox-exporter:v0.14.0
+        container_name: blackbox_exporter
+        deploy:
+            replicas: 1
+        volumes:
+            - ./monitoring/blackbox:/config
+        networks:
+            - transcendence
+
+    node_exporter:
+        image: prom/node-exporter:v0.18.1
+        container_name: node_exporter
+        deploy:
+            replicas: 1
+        ports:
+            - "9101:9100"
+        networks:
+            - transcendence
+
 volumes:
+    prometheus-data:
+    grafana-data:
     db:
         driver: local
         driver_opts:

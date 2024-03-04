@@ -12,7 +12,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back front db
+CONTAINERS		= back front db prometheus grafana node_exporter blackbox_exporter
 
 COMPOSE_PATH	= docker-compose.yml
 
