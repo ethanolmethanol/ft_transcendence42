@@ -26,7 +26,6 @@ services:
         container_name: back
         build:
             context: back
-        command: ["./wait-for-it.sh", "db", "5432", "python3", "transcendence_django/manage.py", "runserver"]
         depends_on:
             - db
         ports:
@@ -36,7 +35,7 @@ services:
         restart: unless-stopped
         env_file: .env
         # healthcheck:
-        #     test: 'curl -kfsSL https://localhost:443/back_status'
+        #     test: 'curl -kfsSL https://localhost:8000/'
         #     interval: 5s
         #     timeout: 1s
         #     retries: 10
