@@ -46,7 +46,7 @@ services:
         container_name: front
         build:
             context: front
-        expose:
+        ports:
             - "4200:4200"
         networks:
             - transcendence
