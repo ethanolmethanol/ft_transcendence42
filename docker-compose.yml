@@ -8,7 +8,7 @@ services:
             context: db
         volumes:
             - db:/var/lib/pgsql/data
-        expose:
+        ports:
             - "5432:5432"
         networks:
             - transcendence
@@ -29,7 +29,7 @@ services:
         depends_on:
             - db
         ports:
-            - "8000:8000"
+            - "make fce:8000"
         networks:
             - transcendence
         restart: unless-stopped
@@ -46,7 +46,7 @@ services:
         container_name: front
         build:
             context: front
-        expose:
+        ports:
             - "4200:4200"
         networks:
             - transcendence
