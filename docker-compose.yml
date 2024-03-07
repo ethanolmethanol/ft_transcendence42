@@ -29,7 +29,7 @@ services:
         depends_on:
             - db
         ports:
-            - "make fce:8000"
+            - "8000:8000"
         networks:
             - transcendence
         restart: unless-stopped

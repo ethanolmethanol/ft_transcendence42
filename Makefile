@@ -18,12 +18,12 @@ COMPOSE_PATH	= docker-compose.yml
 
 COMPOSE			= docker compose -f ${COMPOSE_PATH}
 
-R				= \e[31m# RED
-G				= \e[32m# GREEN
-Y				= \e[33m# YELLOW
-C				= \e[34m# CYAN
-M				= \e[35m# MAGENTA
-N				= \e[0m#  RESET
+R				= \033[1;31m # RED
+G				= \033[1;32m # GREEN
+Y				= \033[1;33m # YELLOW
+C				= \033[1;34m # CYAN
+M				= \033[1;35m # MAGENTA
+N				= \033[0m    # RESET
 
 ${NAME}: up
 	$(call printname)
@@ -49,6 +49,15 @@ ${ENV_FILE}:
 	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
+
+all_good: #all
+	@if [ $$(docker ps | grep -c "Up") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
+		echo -e "$(G)All is good :)$(N)"; \
+		exit 0; \
+	else \
+		echo -e "$(R)Something's wrong... :/$(N)"; \
+		exit 1; \
+	fi
 
 info:
 	@docker ps -a

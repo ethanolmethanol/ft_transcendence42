@@ -1,0 +1,24 @@
+name: Docker Containers Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-containers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and run containers
+        run: |
+          docker-compose up -d
+
+      - name: Check containers status
+        run: |
+          # Your script to check container status goes here
