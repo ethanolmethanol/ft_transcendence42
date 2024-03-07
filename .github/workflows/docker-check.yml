@@ -15,10 +15,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build and run containers
+      - name: Build containers
         run: |
-          docker-compose up -d
-
+          make
       - name: Check containers status
         run: |
-          # Your script to check container status goes here
+          make all_good
