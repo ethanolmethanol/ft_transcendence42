@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Define certificate details
-COUNTRY="US"
-STATE="New York"
-LOCALITY="New York"
-ORGANIZATION="Your Organization"
+COUNTRY="FR"
+STATE="Parid"
+LOCALITY="Paris"
+ORGANIZATION="42"
 ORGANIZATIONAL_UNIT="Your Unit"
 COMMON_NAME="localhost"
 EMAIL="your.email@example.com"
