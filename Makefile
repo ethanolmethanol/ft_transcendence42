@@ -111,8 +111,4 @@ re: fclean all
 
 ######## FUNKY STUFF ########
 
-define printname
-	@if test 1 -eq "$$(tput cols | xargs printf '%s>100\n' | bc)"; then echo hello; fi
-endef
-
-.phony: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up
+.phony: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health

@@ -23,8 +23,6 @@ jobs:
           echo PGDATA="$PWD/db/data" >> .env
       - name: Build containers
         run: |
-          ls
-          cat .env
           make
       - name: Check containers status
         run: |
