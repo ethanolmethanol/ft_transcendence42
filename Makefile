@@ -51,7 +51,8 @@ ${ENV_FILE}:
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
 health:
-	@if [ $$(docker ps | grep -c "Up") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
+	while docker ps | grep "health: starting" > /dev/null; do true; done
+	if [ $$(docker ps | grep -c "healthy") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
 		echo -e "$(G)All is good :)$(N)"; \
 		exit 0; \
 	else \
@@ -111,4 +112,5 @@ re: fclean all
 
 ######## FUNKY STUFF ########
 
-.phony: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health
+.PHONY: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health
+.SILENT: health

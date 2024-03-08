@@ -2,9 +2,12 @@ FROM node:alpine
 
 WORKDIR /usr/src/app
 
-COPY . /usr/src/app
-
+RUN apk update
+RUN apk upgrade
+RUN apk add curl
 RUN npm install -g @angular/cli
+
+COPY . /usr/src/app
 
 RUN npm install
 

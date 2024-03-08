@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - MVE[0-9]
 
 jobs:
   check-containers:
