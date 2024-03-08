@@ -20,7 +20,7 @@ RUN rm -rf /usr/share/nginx/html/*
 
 COPY ./nginx/gen_certificate.sh ./gen_certificate.sh
 
-RUN apk update && apk upgrade && apk add openssl
+RUN apk update && apk upgrade && apk add openssl curl
 
 RUN chmod +x gen_certificate.sh
 RUN sh gen_certificate.sh
