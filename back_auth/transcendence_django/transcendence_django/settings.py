@@ -39,6 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'rest_framework',
 	'tr_dj_app',
+	'health_check',                             # required
+    'health_check.db',                          # stock Django health checkers
+    'health_check.cache',                       # https://pypi.org/project/django-health-check/
+    'health_check.storage',
+    'health_check.contrib.migrations',
 ]
 
 MIDDLEWARE = [
