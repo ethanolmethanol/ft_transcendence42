@@ -52,7 +52,7 @@ ${ENV_FILE}:
 
 health:
 	while docker ps | grep "health: starting" > /dev/null; do true; done
-	if [ $$(docker ps | grep -c "healthy") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
+	if [ $$(docker ps | grep -c "(healthy)") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
 		echo -e "$(G)All is good :)$(N)"; \
 		exit 0; \
 	else \
@@ -88,6 +88,11 @@ talk:
 	@PS3="Select for which container you want to access a shell: "; \
 	select c in ${CONTAINERS}; \
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
+
+rmi:
+	@PS3="Select for which image you want to remove: "; \
+	select c in ${CONTAINERS}; \
+	do echo "Downing and deleting image $$c:"; docker-compose down $$c && docker rmi $$c; exit $?; done
 
 nginxlogs:
 	@docker exec -it nginx cat /var/log/nginx/error.log

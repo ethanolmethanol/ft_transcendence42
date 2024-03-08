@@ -47,6 +47,9 @@ services:
         container_name: front
         build:
             context: front
+        volumes:
+            - ./front/:/usr/src/app
+            - ./front/dist/transcendence/browser:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -56,7 +59,7 @@ services:
             back:
                 condition: service_healthy
         healthcheck:
-            test: 'curl -kfsSL http://localhost:4200/'
+            test: 'curl -kfsSL https://localhost:443/'
             interval: 5s
             timeout: 1s
             retries: 10
