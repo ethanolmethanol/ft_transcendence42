@@ -48,7 +48,7 @@ services:
         build:
             context: front
         ports:
-            - "4200:4200"
+            - "4200:443"
         networks:
             - transcendence
         restart: unless-stopped
