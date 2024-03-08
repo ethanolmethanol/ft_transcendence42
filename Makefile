@@ -50,7 +50,7 @@ ${ENV_FILE}:
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
-all_good: #all
+health:
 	@if [ $$(docker ps | grep -c "Up") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
 		echo -e "$(G)All is good :)$(N)"; \
 		exit 0; \
