@@ -2,13 +2,11 @@ version: '3'
 
 services:
     db:
-        image: db
+        image: postgres:latest
         container_name: db
-        build:
-            context: db
         volumes:
-            - db:/var/lib/pgsql/data
-        expose:
+            - ./db/data:/var/lib/postgresql/data
+        ports:
             - "5432:5432"
         networks:
             - transcendence
@@ -21,11 +19,11 @@ services:
             retries: 20
             start_period: 5s
 
-    back:
-        image: back
-        container_name: back
+    back_auth:
+        image: back_auth
+        container_name: back_auth
         build:
-            context: back
+            context: back_auth
         depends_on:
             - db
         ports:
@@ -46,14 +44,14 @@ services:
         container_name: front
         build:
             context: front
-        expose:
+        ports:
             - "4200:4200"
         networks:
             - transcendence
         restart: unless-stopped
         # env_file: .env
         depends_on:
-            - back
+            - back_auth
             # db:
             #     condition: service_healthy
 
@@ -136,12 +134,12 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    db:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: '${PWD}/db/data'
+    # db:
+    #     driver: local
+    #     driver_opts:
+    #         type: 'none'
+    #         o: 'bind'
+    #         device: './db/data'
 
 networks:
     transcendence:

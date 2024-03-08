@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'rest_framework',
+	'tr_dj_app',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +87,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+# AUTH_USER_MODEL = 'tr_dj_app.User'
 
 print("Database settings:")
 print("Name:", DATABASES['default']['NAME'])
