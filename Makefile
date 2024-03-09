@@ -103,6 +103,9 @@ dbip:
 fix:
 	sudo chmod 666 /var/run/docker.sock
 
+dev: all
+	cd front/; npm run watch
+
 clean:
 	@${COMPOSE} down -v
 

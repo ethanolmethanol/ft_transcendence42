@@ -47,8 +47,9 @@ services:
         container_name: front
         build:
             context: front
+            dockerfile: Dockerfile
         volumes:
-            - ./front/:/usr/src/app
+            - ./front/:/app
             - ./front/dist/transcendence/browser:/usr/share/nginx/html
         ports:
             - "4200:443"
@@ -65,7 +66,7 @@ services:
             retries: 10
             start_period: 5s
 
-# yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
+    # yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
     prometheus:
         image: prom/prometheus:v2.35.0
         container_name: prometheus
