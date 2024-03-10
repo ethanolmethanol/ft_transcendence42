@@ -53,6 +53,10 @@ input {
 
 button {
   margin-top: 10px;
+  margin-bottom: 10px;
   font-size: 1.2em;
+}
 
+.sign-up-message {
+  font-size: 0.5em;
 }
