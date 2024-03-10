@@ -13,5 +13,6 @@
       <div class="error-message" *ngIf="signInForm.controls['password'].touched && signInForm.controls['password'].errors?.['minlength']">Password must be at least 8 characters long.</div>
     </div>
     <button type="submit" [disabled]="!signInForm.valid">Sign In</button>
+<!--    <a routerLink="/signup">Don't have an account? Sign up here.</a>-->
   </form>
 </div>

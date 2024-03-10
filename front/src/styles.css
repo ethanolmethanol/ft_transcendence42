@@ -3,6 +3,4 @@ body {
   height: 100vh; /* Full viewport height */
   width: 100vw; /* Full viewport width */
   margin: 0;
-  background-image: url("./assets/favicon.png");
-  background-size: 5%;
 }

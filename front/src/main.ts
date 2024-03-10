@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-import { LoginPageComponent } from './app/Pages/login-page/login-page.component';
+import {SignInPageComponent} from "./app/Pages/sign-in-page/sign-in-page.component"
 
-bootstrapApplication(LoginPageComponent, appConfig)
+bootstrapApplication(SignInPageComponent, appConfig)
   .catch((err) => console.error(err));
