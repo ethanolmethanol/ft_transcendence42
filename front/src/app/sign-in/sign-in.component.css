@@ -1,0 +1,34 @@
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 0 auto;
+  color:white;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  margin-bottom: 10px;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.8em;
+}
+
+input {
+  margin-bottom: 10px;
+}
+
+button {
+  margin-top: 10px;
+}
