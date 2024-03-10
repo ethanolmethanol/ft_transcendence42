@@ -9,11 +9,12 @@ form {
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .form-group label {
-  margin-bottom: 5px;
+  margin-bottom: 20px;
+  font-size: 1.2em;
 }
 
 .form-group input {
@@ -31,4 +32,6 @@ input {
 
 button {
   margin-top: 10px;
+  font-size: 1.2em;
+
 }
