@@ -19,7 +19,6 @@ export class SignInComponent implements OnInit {
   constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
-
     this.signInForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
@@ -28,7 +27,7 @@ export class SignInComponent implements OnInit {
 
   onSubmit(): void {
     if (this.signInForm.valid) {
-      console.log("Valid authentication : " + this.signInForm.value);
+      console.log("Valid authentication : " + JSON.stringify(this.signInForm.value));
     }
   }
 }

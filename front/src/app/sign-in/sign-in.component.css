@@ -1,24 +1,45 @@
+.login-background {
+  background-color: rgba(150, 150, 150, 0.9);
+  /* Make the .login element cover the entire viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* 100% of the viewport width */
+  height: 100vh; /* 100% of the viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 form {
   display: flex;
   flex-direction: column;
   width: 300px;
-  margin: 0 auto;
   color:white;
+  font-size: 1.5em;
+  margin-bottom: 20px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
 }
 
 .form-group label {
   margin-bottom: 20px;
   font-size: 1.2em;
+  text-shadow: 1px 1px 1px black;
 }
 
 .form-group input {
+  /* Example: Set a 2px solid border with a light gray color */
+  border: 2px solid #ccc;
+  /* Example: Add a border-radius to make the corners rounded */
+  border-radius: 5px;
+  padding: 1px;
+  width: 100%;
   margin-bottom: 10px;
+  font-size: 1em;
 }
 
 .error-message {
