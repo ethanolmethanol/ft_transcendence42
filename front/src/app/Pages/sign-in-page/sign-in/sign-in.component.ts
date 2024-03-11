@@ -4,6 +4,7 @@ import {NgIf} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import { AuthService } from '../../../services/auth.service';
 import {routes} from "../../../app.routes";
+import {ErrorMessageComponent} from "../../../components/error-message/error-message.component";
 
 @Component({
   selector: 'app-sign-in',
@@ -12,6 +13,7 @@ import {routes} from "../../../app.routes";
     ReactiveFormsModule,
     NgIf,
     RouterLink,
+    ErrorMessageComponent,
   ],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css'
@@ -19,7 +21,7 @@ import {routes} from "../../../app.routes";
 
 export class SignInComponent implements OnInit {
   signInForm!: FormGroup;
-  errorMessage: string | null = null;
+  errorMessage: string = "";
   constructor(private formBuilder: FormBuilder, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -50,7 +52,7 @@ export class SignInComponent implements OnInit {
     }
   }
 
-  isAuthenticationFailed(): boolean {
+  hasAuthenticationFailed(): boolean {
     return this.errorMessage !== "";
   }
 }
