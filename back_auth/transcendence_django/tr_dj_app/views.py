@@ -28,7 +28,7 @@ def signin(request):
     user_login = request.data.get('login')
     password = request.data.get('password')
     logger.error("username/email: %s\npassword: %s" % (user_login.__str__(), password.__str__()))
-    user = authenticate(request, username=user_login, password=password)
+    user = authenticate(request, login=user_login, password=password)
     if user is not None:
         login(request, user)
         return Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
