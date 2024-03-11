@@ -3,14 +3,15 @@
 <head>
     <title>Login Form</title>
     <link rel="stylesheet" href="style.css">
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body>
     <div class="main">
         <h1>Signin</h1>
         <h3>Enter your login credentials</h3>
         <form action="http://localhost:8000/api/signin/" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your Username" required>
+            <label for="username/email">Username/email:</label>
+            <input type="text" id="login" name="login" placeholder="Enter your Username or Email" required>
             
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Enter your Password" required>
@@ -27,6 +28,9 @@
         <form action="http://localhost:8000/api/signup/" method="POST">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" placeholder="Enter your Username" required>
+
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" placeholder="Enter your Email" required>
             
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Enter your Password" required>
