@@ -98,7 +98,7 @@ DATABASES = {
 
 # AUTH_USER_MODEL = 'tr_dj_app.User'
 
-# CSRF_TRUSTED_ORIGINS = ["https://localhost:4200"]  # 'http://localhost:1234'
+CSRF_TRUSTED_ORIGINS = ["https://localhost:4200", "http://localhost:1234"]
 CORS_ALLOWED_ORIGINS = ["https://localhost:4200"]
 
 AUTHENTICATION_BACKENDS = ['tr_dj_app.backends.EmailOrUsernameModelBackend']

@@ -14,7 +14,6 @@ import { routes } from './app.routes';
   ],
   providers: [
     AuthService,
-    // { provide: HTTP_INTERCEPTORS, useClass: CrsfInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })
