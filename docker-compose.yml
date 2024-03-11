@@ -2,12 +2,10 @@ version: '3'
 
 services:
     db:
-        image: db
+        image: postgres:latest
         container_name: db
-        build:
-            context: db
         volumes:
-            - db:/var/lib/pgsql/data
+            - ./db/data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
         networks:
@@ -21,11 +19,11 @@ services:
             retries: 20
             start_period: 5s
 
-    back:
-        image: back
-        container_name: back
+    back_auth:
+        image: back_auth
+        container_name: back_auth
         build:
-            context: back
+            context: back_auth
         depends_on:
             db:
                 condition: service_healthy
@@ -36,7 +34,7 @@ services:
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: 'curl -kfsSL http://localhost:8000/'
+            test: 'python3 transcendence_django/manage.py health_check'
             interval: 5s
             timeout: 1s
             retries: 10
@@ -53,10 +51,10 @@ services:
             - transcendence
         restart: unless-stopped
         depends_on:
-            back:
+            back_auth:
                 condition: service_healthy
         healthcheck:
-            test: 'curl -kfsSL http://localhost:4200/'
+            test: 'curl -kfsSL https://localhost:443/'
             interval: 5s
             timeout: 1s
             retries: 10
@@ -171,12 +169,6 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    db:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: '${PWD}/db/data'
 
 networks:
     transcendence:

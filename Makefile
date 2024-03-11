@@ -12,7 +12,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back front db prometheus grafana node_exporter blackbox_exporter
+CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -49,6 +49,9 @@ ${ENV_FILE}:
 	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
+
+testform:
+	python3 -m http.server -d back_auth/test_form -b localhost 1234
 
 health:
 	while docker ps | grep "health: starting" > /dev/null; do true; done

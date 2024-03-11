@@ -37,6 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'rest_framework',
+	'tr_dj_app',
+	'health_check',                             # required
+    'health_check.db',                          # stock Django health checkers
+    'health_check.cache',                       # https://pypi.org/project/django-health-check/
+    'health_check.storage',
+    'health_check.contrib.migrations',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +92,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+# AUTH_USER_MODEL = 'tr_dj_app.User'
 
 print("Database settings:")
 print("Name:", DATABASES['default']['NAME'])
