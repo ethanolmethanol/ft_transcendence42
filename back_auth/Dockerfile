@@ -9,8 +9,6 @@ RUN pip install --upgrade pip
 RUN pip install django django-cors-headers djangorestframework django-health-check
 # 																^^^^ useful for monitoring?
 
-# RUN pip install django-hurricane
-
 RUN pip install psycopg2-binary
 
 RUN mkdir /var/run/back
