@@ -1,16 +1,12 @@
 <div class="login-background">
   <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <label for="email">Email:</label>
-      <input type="email" id="email" formControlName="email">
-      <div class="error-message" *ngIf="signInForm.controls['email'].touched && signInForm.controls['email'].errors?.['required']">Email is required.</div>
-      <div class="error-message" *ngIf="signInForm.controls['email'].touched && signInForm.controls['email'].errors?.['email']">Email is not valid.</div>
+      <label for="login">Username or email:</label>
+      <input id="login" formControlName="login">
     </div>
     <div class="form-group">
       <label for="password">Password:</label>
       <input type="password" id="password" formControlName="password">
-      <div class="error-message" *ngIf="signInForm.controls['password'].touched && signInForm.controls['password'].errors?.['required']">Password is required.</div>
-      <div class="error-message" *ngIf="signInForm.controls['password'].touched && signInForm.controls['password'].errors?.['minlength']">Password must be at least 8 characters long.</div>
     </div>
     <button type="submit" [disabled]="!signInForm.valid">Sign In</button>
     <a class="sign-up-message" routerLink="/sign-up">Don't have an account? Sign up here.</a>

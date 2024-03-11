@@ -6,7 +6,7 @@ import {RouterLink} from "@angular/router";
   standalone: true,
   imports: [
     SignInComponent,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './sign-in-page.component.html',
   styleUrl: './sign-in-page.component.css'
