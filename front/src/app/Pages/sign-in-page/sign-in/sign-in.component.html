@@ -10,5 +10,8 @@
     </div>
     <button type="submit" [disabled]="!signInForm.valid">Sign In</button>
     <a class="sign-up-message" routerLink="/sign-up">Don't have an account? Sign up here.</a>
+    <div *ngIf="isAuthenticationFailed()" class="error-message">
+      {{errorMessage}}
+    </div>
   </form>
 </div>

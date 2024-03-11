@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {NgIf} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import { AuthService } from '../../../services/auth.service';
+import {routes} from "../../../app.routes";
 
 @Component({
   selector: 'app-sign-in',
@@ -18,7 +19,7 @@ import { AuthService } from '../../../services/auth.service';
 
 export class SignInComponent implements OnInit {
   signInForm!: FormGroup;
-
+  errorMessage: string | null = null;
   constructor(private formBuilder: FormBuilder, private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -38,9 +39,18 @@ export class SignInComponent implements OnInit {
         },
         error => {
           console.error("Authentication failed: ", error);
-          // Handle authentication failure here
+          // Assuming the backend sends back an error object with a message property
+          if (error.status === 401) {
+            this.errorMessage = "Invalid username or password";
+          } else {
+            this.errorMessage = "An error occurred while authenticating";
+          }
         }
       );
     }
+  }
+
+  isAuthenticationFailed(): boolean {
+    return this.errorMessage !== "";
   }
 }
