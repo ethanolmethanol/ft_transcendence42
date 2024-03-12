@@ -1,12 +1,13 @@
 NAME			= ft_transcendence
 
-DATADIRS		= db/data/
+DATADIRS		= db/data/ front/dist/transcendence/browser/
 
 ENV_SRC			= ~/.env
 
 ENV_FILE		= .env
 
-DOMAIN_NAME		= $$(grep DOMAIN ${ENV_FILE} | sed 's.DOMAIN_NAME=..')
+# WIP
+# DB_NAME		= $$(grep POSTGRES_DB ${ENV_FILE} | sed "s.POSTGRES_DB='(.*)'.\1.")
 
 BROWSER			= firefox
 
@@ -25,7 +26,7 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-${NAME}: up
+${NAME}: up health
 	$(call printname)
 
 # ${ENV_FILE}
@@ -49,6 +50,10 @@ ${ENV_FILE}:
 	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
+
+# WIP
+# hellodb:
+# 	echo $(DB_NAME)
 
 testform:
 	python3 -m http.server -d back_auth/test_form -b localhost 1234

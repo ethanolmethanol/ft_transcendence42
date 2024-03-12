@@ -22,9 +22,6 @@ jobs:
           echo POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo POSTGRES_DB="${{ secrets.POSTGRES_DB }}" >> .env
           echo PGDATA="$PWD/db/data" >> .env
-      - name: Build containers
+      - name: Build containers AND check healthiness
         run: |
           make
-      - name: Check containers status
-        run: |
-          make health
