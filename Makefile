@@ -54,14 +54,15 @@ testform:
 	python3 -m http.server -d back_auth/test_form -b localhost 1234
 
 health:
-	while docker ps | grep "health: starting" > /dev/null; do true; done
+	while docker ps | grep "health: starting"; do true; done
 	if [ $$(docker ps | grep -c "(healthy)") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
 		echo -e "$(G)All is good :)$(N)"; \
 		exit 0; \
 	else \
 		echo -e "$(R)Something's wrong... :/$(N)"; \
+		docker ps -a | grep -v "(healthy)"; \
 		exit 1; \
-	fi
+	fi \
 
 info:
 	@docker ps -a
