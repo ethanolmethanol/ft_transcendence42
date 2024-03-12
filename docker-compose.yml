@@ -47,7 +47,7 @@ services:
             context: front
         volumes:
             - ./front/:/app
-            - ./front/dist/transcendence/browser:/usr/share/nginx/html
+            - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -172,6 +172,12 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
+    front-data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './front/dist/transcendence/browser'
 
 networks:
     transcendence:

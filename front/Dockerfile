@@ -11,7 +11,7 @@ COPY . .
 RUN npm install
 
 # Build the application
-RUN ng build
+RUN npm run build
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine
