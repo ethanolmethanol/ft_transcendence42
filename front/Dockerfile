@@ -1,5 +1,5 @@
 # Stage 1: Build the Angular application
-FROM node:alpine as build
+FROM node:alpine as builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ COPY nginx/gen_certificate.sh .
 RUN chmod +x ./gen_certificate.sh
 RUN ./gen_certificate.sh
 RUN rm ./gen_certificate.sh
-COPY --from=build /app/dist/transcendence/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/transcendence/browser /usr/share/nginx/html
 
 # Expose port 443
 EXPOSE 443

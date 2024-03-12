@@ -45,7 +45,6 @@ services:
         container_name: front
         build:
             context: front
-            dockerfile: Dockerfile
         volumes:
             - ./front/:/app
             - ./front/dist/transcendence/browser:/usr/share/nginx/html
