@@ -1,30 +1,35 @@
-FROM node:alpine AS builder
+# Stage 1: Build the Angular application
+FROM node:20-alpine as builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-RUN apk update
-RUN apk upgrade
-RUN apk add curl
-RUN npm install -g @angular/cli
+# Install Angular CLI and project dependencies
+RUN npm install -g @angular/cli@latest
 
-COPY . /usr/src/app
+# Copy the app
+COPY . .
 
 RUN npm install
+RUN npm update
 
+# Build the application
+RUN npm run build
+
+# Stage 2: Serve the application with Nginx
 FROM nginx:alpine
 
-RUN rm -rf /usr/share/nginx/html/*
+RUN apk update && apk upgrade && apk add curl openssl
 
-COPY ./nginx/gen_certificate.sh ./gen_certificate.sh
+# Copy the Nginx configuration file
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-RUN apk update && apk upgrade && apk add openssl curl
+COPY nginx/gen_certificate.sh .
 
-RUN chmod +x gen_certificate.sh
-RUN sh gen_certificate.sh
-RUN rm gen_certificate.sh
+RUN chmod +x ./gen_certificate.sh
+RUN ./gen_certificate.sh
+RUN rm ./gen_certificate.sh
 
-COPY --from=builder /usr/src/app/src/ /usr/share/nginx/html
+COPY --from=builder /app/dist/transcendence/browser /usr/share/nginx/html
 
-COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-
+# Expose port 443
 EXPOSE 443

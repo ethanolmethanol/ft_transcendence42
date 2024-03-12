@@ -45,6 +45,8 @@ services:
         container_name: front
         build:
             context: front
+        volumes:
+            - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -60,7 +62,7 @@ services:
             retries: 10
             start_period: 5s
 
-# yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
+    # yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
     prometheus:
         image: prom/prometheus:v2.35.0
         container_name: prometheus
@@ -169,6 +171,12 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
+    front-data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './front/dist/transcendence/browser'
 
 networks:
     transcendence:

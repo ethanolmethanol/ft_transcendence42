@@ -1,0 +1,26 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px)
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px)
+  }
+}
+
+.error-message-container {
+  height: 50px; /* Adjust this value based on the height of your error message */
+  overflow: hidden; /* Hide the content that exceeds the container's height */
+}
+
+.error-message {
+  font-size: 0.8em;
+  padding: 14px;
+  margin-top: 50px;
+  border-radius: 5px;
+  background-color: #f8d7da; /* Light red background */
+  color: #721c24; /* Dark red text */
+  border: 1px solid #f5c6cb; /* Light red border */
+  animation: fadeIn 1s ease-out;
+}

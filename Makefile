@@ -1,12 +1,13 @@
 NAME			= ft_transcendence
 
-DATADIRS		= db/data/
+DATADIRS		= db/data/ front/dist/transcendence/browser/
 
 ENV_SRC			= ~/.env
 
 ENV_FILE		= .env
 
-DOMAIN_NAME		= $$(grep DOMAIN ${ENV_FILE} | sed 's.DOMAIN_NAME=..')
+# WIP
+# DB_NAME		= $$(grep POSTGRES_DB ${ENV_FILE} | sed "s.POSTGRES_DB='(.*)'.\1.")
 
 BROWSER			= firefox
 
@@ -25,7 +26,7 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-${NAME}: up
+${NAME}: up health
 	$(call printname)
 
 # ${ENV_FILE}
@@ -50,18 +51,23 @@ ${ENV_FILE}:
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
+# WIP
+# hellodb:
+# 	echo $(DB_NAME)
+
 testform:
 	python3 -m http.server -d back_auth/test_form -b localhost 1234
 
 health:
 	while docker ps | grep "health: starting" > /dev/null; do true; done
-	if [ $$(docker ps | grep -c "healthy") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
+	if [ $$(docker ps | grep -c "(healthy)") -eq $$(echo $(CONTAINERS) | wc -w) ]; then \
 		echo -e "$(G)All is good :)$(N)"; \
 		exit 0; \
 	else \
 		echo -e "$(R)Something's wrong... :/$(N)"; \
+		docker ps -a | grep -v "(healthy)"; \
 		exit 1; \
-	fi
+	fi \
 
 info:
 	@docker ps -a
@@ -92,6 +98,11 @@ talk:
 	select c in ${CONTAINERS}; \
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
 
+rmi:
+	@PS3="Select for which image you want to remove: "; \
+	select c in ${CONTAINERS}; \
+	do echo "Downing and deleting image $$c:"; docker-compose down $$c && docker rmi $$c; exit $?; done
+
 nginxlogs:
 	@docker exec -it nginx cat /var/log/nginx/error.log
 
@@ -100,6 +111,9 @@ dbip:
 
 fix:
 	sudo chmod 666 /var/run/docker.sock
+
+dev: all
+	cd front/; npm run watch
 
 clean:
 	@${COMPOSE} down -v
