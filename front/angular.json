@@ -57,9 +57,13 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
+          "options": {
+            "browserTarget": "transcendence:build"
+          },
+            "configurations": {
             "production": {
-              "buildTarget": "transcendence:build:production"
+              "buildTarget": "transcendence:build:production",
+              "browserTarget": "transcendence:build"
             },
             "development": {
               "buildTarget": "transcendence:build:development"
