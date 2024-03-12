@@ -46,7 +46,6 @@ services:
         build:
             context: front
         volumes:
-            - ./front/:/app
             - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"

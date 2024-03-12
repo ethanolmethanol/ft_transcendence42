@@ -5,13 +5,9 @@ WORKDIR /app
 
 # Install Angular CLI and project dependencies
 RUN npm install -g @angular/cli@latest
-RUN npm install --save-dev @angular-devkit/build-angular@latest
-RUN npm install rollup
 
 # Copy package.json and package-lock.json
 COPY . .
-
-RUN rm package-lock.json
 
 RUN npm install
 RUN npm update
