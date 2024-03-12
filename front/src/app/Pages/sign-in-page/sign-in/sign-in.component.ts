@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from "@angular/common";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import { AuthService } from '../../../services/auth.service';
-import {routes} from "../../../app.routes";
 import {ErrorMessageComponent} from "../../../components/error-message/error-message.component";
 
 @Component({
@@ -22,7 +21,10 @@ import {ErrorMessageComponent} from "../../../components/error-message/error-mes
 export class SignInComponent implements OnInit {
   signInForm!: FormGroup;
   errorMessage: string = "";
-  constructor(private formBuilder: FormBuilder, private authService: AuthService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router) {}
 
   ngOnInit(): void {
     this.signInForm = this.formBuilder.group({
@@ -37,7 +39,7 @@ export class SignInComponent implements OnInit {
       this.authService.signIn(login, password).subscribe(
         response => {
           console.log("Valid authentication : ", response);
-          // Handle successful authentication here
+          this.router.navigate(['home']).then(r => console.log("Navigated to home"));
         },
         error => {
           console.error("Authentication failed: ", error);
