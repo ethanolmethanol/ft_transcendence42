@@ -49,7 +49,7 @@ def signin(request):
 
 
 @api_view(['POST'])
-def logout(request):
+def logout_view(request):
     try:
         logout(request)
         logger.info("User successfully logged out.")
