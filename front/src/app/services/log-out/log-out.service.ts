@@ -16,6 +16,14 @@ export class LogoutService {
     const headers = new HttpHeaders({
       'X-CSRFToken': csrfToken,
     });
-    return this.http.post(`${this.apiUrl}/logout/`, {}, {headers});
+
+    const res = this.http.post(`${this.apiUrl}/logout/`, {}, {headers});
+    this.removeCookie('csrftoken');
+    return res;
   }
+
+  private removeCookie(name: string): void {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  }
+
 }
