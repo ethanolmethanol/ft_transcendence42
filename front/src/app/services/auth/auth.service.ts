@@ -4,6 +4,8 @@ import {Observable, tap} from 'rxjs';
 
 interface SignInResponse {
   detail: string;
+  sessionId: string;
+  csrfToken: string;
 }
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,8 @@ export class AuthService {
     return this.http.post<SignInResponse>(`${this.apiUrl}/signin/`, { login, password }).pipe(
       tap(response => {
         if (response.detail === 'Successfully signed in.') {
-          document.cookie = 'csrftoken=true'; // Set the csrftoken cookie
+          document.cookie = `csrftoken=${response.csrfToken}`; // Set the csrftoken cookie
+          document.cookie = `sessionId=${response.sessionId}`; // Set the csrftoken cookie
         }
       })
     );
