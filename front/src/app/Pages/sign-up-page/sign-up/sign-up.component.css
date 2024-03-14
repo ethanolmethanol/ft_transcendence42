@@ -1,0 +1,72 @@
+.login-background {
+    background-color: rgba(150, 150, 150, 0.9);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.arcade-machine-image {
+    position: absolute;
+    /* top: 10%; */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    height: auto;
+}
+.auth-card{
+    top: 40%;
+    /* background: #c31432;
+    background: -webkit-linear-gradient(to right, #240b36, #c31432);
+    background: linear-gradient(to right, #240b36, #c31432); */
+    /* width: 400px;
+    height: 500px; */
+    border-radius: 5px;
+    box-shadow: 0px 0px 30px #f7f7f7;
+}
+label{
+    color: #fff;
+    font-weight: 700;
+}
+.pong-image{
+    height: 70px;
+}
+.auth-avatar{
+    text-align: center;
+    margin-top: -50px;
+}
+.auth{
+    margin-top: 35px;
+    border: none;
+    border-radius: 6px;
+}
+.btn-my{
+    background-color: #ed7c5a;
+    border-color: #ed7c5a;
+    color: #fff;
+    margin-top: 15px;
+}
+.btn-my:hover{
+    background-color: #2dcfc9;
+    border-color: #2dcfc9;
+  }
+.login{
+    color: #fff;
+}
+.login a{
+    color: #ed7c5a;
+    font-weight: 600;
+    text-decoration: none;
+}
+a:hover{
+    color: #2dcfc9;
+}
+  
+.error-message{
+    /* color: whitesmoke; */
+    color: #ed7c5a;
+    min-height: 20px; /* Adjust based on the expected height of your error messages */
+}

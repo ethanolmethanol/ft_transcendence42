@@ -1,0 +1,51 @@
+<div class="login-background">
+    <!-- <img src="../../../../assets/arcade.png" alt="arcade-machine" class="arcade-machine-image"> -->
+    <div class="card auth">
+      <div class="card-body auth-card">
+        <div class="auth-avatar">
+          <img src="../../../../assets/logo.png" alt="pong ball" class="pong-image">
+        </div>
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="name">Username : </label>
+              <input type="text" formControlName="name" class="form-control" placeholder="Username">
+              <div *ngIf="signupForm.controls.name.invalid && signupForm.controls.name.touched" class="error-message">
+                <small *ngIf="signupForm.controls.name?.errors?.required">Username is required.</small>
+                <small *ngIf="signupForm.controls.name?.errors?.minlength">Username must be at least 3 characters long.</small>
+                <small *ngIf="signupForm.controls.name?.errors?.maxlength">Username cannot be more than 20 characters long.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email : </label>
+              <input type="email" formControlName="email" class="form-control" placeholder="Email">
+              <div *ngIf="signupForm.controls.email.invalid && signupForm.controls.email.touched" class="error-message">
+                <small *ngIf="signupForm.controls.email?.errors?.required">Email is required.</small>
+                <small *ngIf="signupForm.controls.email?.errors?.email">Email is not valid.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">Password : </label>
+              <input type="password" formControlName="password" class="form-control" placeholder="********">
+              <div *ngIf="signupForm.controls.password.invalid && signupForm.controls.password.touched" class="error-message">
+                <small *ngIf="signupForm.controls.password?.errors?.required">Password is required.</small>
+                <small *ngIf="signupForm.controls.password?.errors?.minlength">Password must be at least 8 characters long.</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="c_password">Confirm Password : </label>
+              <input type="password" FormControlName="c_password" class="form-control" placeholder="********">
+              <div *ngIf="signupForm.controls.c_password?.invalid && signupForm.controls.c_password.touched" class="error-message">
+                <small *ngIf="signupForm.controls.c_password?.errors?.required">Confirm Password is required.</small>
+                <small *ngIf="signupForm.controls.c_password?.errors?.notSame">Passwords do not match.</small>
+              </div>
+            </div>
+            <div class="text-center">
+              <input type="submit" class="btn btn-my" value="Let's Pong!" [disabled]="!signupForm.valid">
+            </div>
+            <div class="text-center login">
+              Already have an account ? <a routerLink="/sign-in">Sign in</a>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
