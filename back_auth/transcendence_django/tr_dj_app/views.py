@@ -38,15 +38,14 @@ def signin(request):
     user = authenticate(request, login=user_login, password=password)
     if user is not None:
         login(request, user)
-        # Get the CSRF token
+        # Get the session ID
+        session_id = request.session.session_key
+        # Get the csrf_token
         csrf_token = get_token(request)
         # Create a response
-        response = Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
-        # Set the CSRF token as a cookie in the response
-        response.set_cookie('csrftoken', csrf_token)
+        response = Response({"detail": "Successfully signed in.", "sessionId": session_id, "csrfToken": csrf_token}, status=status.HTTP_200_OK)
         return response
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 @api_view(['POST'])
 def logout_view(request):

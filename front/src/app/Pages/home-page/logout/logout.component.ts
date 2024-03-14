@@ -18,6 +18,8 @@ export class LogoutComponent {
     if (csrfToken) {
       this.logOutService.logout(csrfToken).subscribe();
       console.log('Log out!');
+      document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       this.router.navigate(['/sign-in']);
     } else {
       console.error('CSRF token not found');

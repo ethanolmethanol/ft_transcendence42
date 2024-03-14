@@ -10,7 +10,6 @@ RUN npm install -g @angular/cli@latest
 COPY . .
 
 RUN npm install
-RUN npm update
 
 # Build the application
 RUN npm run build
