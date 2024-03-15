@@ -6,30 +6,26 @@
     width: 100vw;
     height: 100vh;
     display: flex;
+    flex-direction: column; /* Align items vertically */
     justify-content: center;
     align-items: center;
 }
-.arcade-machine-image {
-    position: absolute;
-    /* top: 10%; */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1000px;
-    height: auto;
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    color:white;
+    font-size: 1.5em;
 }
-.auth-card{
-    top: 40%;
-    /* background: #c31432;
-    background: -webkit-linear-gradient(to right, #240b36, #c31432);
-    background: linear-gradient(to right, #240b36, #c31432); */
-    /* width: 400px;
-    height: 500px; */
-    border-radius: 5px;
-    box-shadow: 0px 0px 30px #f7f7f7;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
 }
-label{
-    color: #fff;
-    font-weight: 700;
+.form-group label {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 1px black;
 }
 .pong-image{
     height: 70px;
@@ -38,35 +34,60 @@ label{
     text-align: center;
     margin-top: -50px;
 }
-.auth{
-    margin-top: 35px;
+.form-group input {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1em;
+}
+button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    border-radius: 10px;
+    background-color: #007bff; /* Change the background color on hover */
+    color: white; /* Change the text color on hover */
+    box-shadow: none;
     border: none;
-    border-radius: 6px;
 }
-.btn-my{
-    background-color: #ed7c5a;
-    border-color: #ed7c5a;
-    color: #fff;
-    margin-top: 15px;
+.disabled-button {
+    background-color: #ccc; /* Light grey background */
+    color: #666; /* Darker grey text */
+    cursor: not-allowed; /* Cursor style to indicate not clickable */
 }
-.btn-my:hover{
-    background-color: #2dcfc9;
-    border-color: #2dcfc9;
-  }
-.login{
-    color: #fff;
+.hover-effect:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+    transition: background-color 0.3s ease;
 }
-.login a{
-    color: #ed7c5a;
-    font-weight: 600;
-    text-decoration: none;
-}
-a:hover{
-    color: #2dcfc9;
-}
-  
 .error-message{
-    /* color: whitesmoke; */
-    color: #ed7c5a;
-    min-height: 20px; /* Adjust based on the expected height of your error messages */
+    color: #91170c;
+    height: 10px;
+}
+.error-message-placeholder {
+    height: 10px;
+}
+.sign-in-message {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white;
+    text-decoration: none;
+    font-size: 0.6em;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    animation: fadeIn 1s ease-out;
+}
+.sign-in-message:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px)
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0px)
+    }
 }

@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from .serializers import UserSerializer
 # import the logging library
 import logging
+#import libraries for username and email availability checks
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -21,6 +24,8 @@ def signup(request):
         logger.error("username: %s\nemail: %s\npassword: %s" % (username, email, password))
         # User.objects.create_user(username='newuser', password='password')
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        logger.error("Signup Error: %s" % serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -33,3 +38,13 @@ def signin(request):
         login(request, user)
         return Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def check_username_availability(request, username):
+    is_available = not User.objects.filter(username=username).exists()
+    return JsonResponse({'isAvailable': is_available})
+
+@api_view(['GET'])
+def check_email_availability(request, email):
+    is_available = not User.objects.filter(email=email).exists()
+    return JsonResponse({'isAvailable': is_available})
