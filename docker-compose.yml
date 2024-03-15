@@ -5,7 +5,7 @@ services:
         image: postgres:latest
         container_name: db
         volumes:
-            - ./db/data:/var/lib/postgresql/data
+            - db-data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
         networks:
@@ -45,8 +45,8 @@ services:
         container_name: front
         build:
             context: front
-        volumes:
-            - front-data:/usr/share/nginx/html
+        # volumes:
+        #     - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -171,12 +171,14 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    front-data:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: './front/dist/transcendence/browser'
+    # front-data:
+    #     driver: local
+    #     driver_opts:
+    #         type: 'none'
+    #         o: 'bind'
+    #         device: './front/dist/transcendence/browser'
+    db-data:
+
 
 networks:
     transcendence:
