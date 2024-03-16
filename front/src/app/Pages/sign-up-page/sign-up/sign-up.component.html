@@ -5,45 +5,26 @@
     <h1>Create account</h1>
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label for="username">Username : </label>
+          <label for="username">Username: </label>
           <input type="text" formControlName="username" class="form-control" placeholder="Username">
-          <div *ngIf="signupForm.controls.username.valid || !signupForm.controls.username.touched" class="error-message-placeholder"></div>
-          <div *ngIf="signupForm.controls.username.invalid && signupForm.controls.username.touched" class="error-message">
-            <small *ngIf="signupForm.controls.username?.errors?.required">Username is required.</small>
-            <small *ngIf="signupForm.controls.username?.errors?.minlength">Username must be at least 3 characters long.</small>
-            <small *ngIf="signupForm.controls.username?.errors?.maxlength">Username cannot be more than 20 characters long.</small>
-            <small *ngIf="signupForm.get('username')?.hasError('usernameTaken')">Username is already taken.</small>
-          </div>
+          <app-username-error [control]="signupForm.controls.username"></app-username-error>
         </div>
         <div class="form-group">
-          <label for="email">Email : </label>
+          <label for="email">Email: </label>
           <input type="email" formControlName="email" class="form-control" placeholder="Email">
-          <div *ngIf="signupForm.controls.email.valid || !signupForm.controls.email.touched" class="error-message-placeholder"></div>
-          <div *ngIf="signupForm.controls.email.invalid && signupForm.controls.email.touched" class="error-message">
-            <small *ngIf="signupForm.controls.email?.errors?.required">Email is required.</small>
-            <small *ngIf="signupForm.controls.email?.errors?.email">Email is not valid.</small>
-            <small *ngIf="signupForm.get('email')?.hasError('emailTaken')">Email is already taken.</small>
-          </div>
+          <app-email-error [control]="signupForm.controls.email"></app-email-error>
         </div>
         <div class="form-group">
-          <label for="password">Password : </label>
+          <label for="password">Password: </label>
           <input type="password" formControlName="password" class="form-control" placeholder="********">
-          <div *ngIf="signupForm.controls.password.valid || !signupForm.controls.password.touched" class="error-message-placeholder"></div>
-          <div *ngIf="signupForm.controls.password.invalid && signupForm.controls.password.touched" class="error-message">
-            <small *ngIf="signupForm.controls.password?.errors?.required">Password is required.</small>
-            <small *ngIf="signupForm.controls.password?.errors?.minlength">Password must be at least 8 characters long.</small>
-          </div>
+          <app-password-error [control]="signupForm.controls.password"></app-password-error>
         </div>
         <div class="form-group">
-          <label for="c_password">Confirm Password : </label>
+          <label for="c_password">Confirm Password: </label>
           <input type="password" formControlName="c_password" class="form-control" placeholder="********">
-          <div *ngIf="signupForm.controls.c_password.valid || !signupForm.controls.c_password.touched" class="error-message-placeholder"></div>
-          <div *ngIf="signupForm.controls.c_password?.invalid && signupForm.controls.c_password.touched" class="error-message">
-            <small *ngIf="signupForm.controls.c_password?.errors?.required">Confirm Password is required.</small>
-            <small *ngIf="signupForm.controls.c_password?.errors?.notSame">Passwords do not match.</small>
-          </div>
+          <app-c-password-error [control]="signupForm.controls.c_password"></app-c-password-error>
         </div>
         <button type="submit" [disabled]="!signupForm.valid" [class.hover-effect]="signupForm.valid" [class.disabled-button]="!signupForm.valid">Sign Up!</button>
-        <a class="sign-in-message" routerLink="/sign-in">Already have an account ? Sign in</a>
+        <a class="sign-in-message" routerLink="/sign-in">Already have an account? Sign in</a>
     </form>
 </div>

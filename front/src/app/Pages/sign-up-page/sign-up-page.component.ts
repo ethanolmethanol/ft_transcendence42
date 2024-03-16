@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {SignUpComponent} from "./sign-up/sign-up.component";
-import {RouterLink} from "@angular/router";
+import { SignUpComponent } from "./sign-up/sign-up.component";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-sign-up-page',

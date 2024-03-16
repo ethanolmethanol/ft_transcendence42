@@ -5,7 +5,10 @@ import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { Router, RouterLink} from "@angular/router";
-
+import { CPasswordErrorComponent } from "./c-password-error/c-password-error.component";
+import { PasswordErrorComponent } from "./password-error/password-error.component";
+import { EmailErrorComponent } from "./email-error/email-error.component";
+import { UsernameErrorComponent } from "./username-error/username-error.component";
 
 @Component({
   selector: 'app-sign-up',
@@ -13,6 +16,10 @@ import { Router, RouterLink} from "@angular/router";
   imports: [CommonModule,
     ReactiveFormsModule,
     RouterLink,
+    CPasswordErrorComponent,
+    PasswordErrorComponent,
+    EmailErrorComponent,
+    UsernameErrorComponent,
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
@@ -30,7 +37,8 @@ export class SignUpComponent implements OnInit {
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)], this.usernameValidator()],
       email: ['', [Validators.required, Validators.email], [this.emailValidator()]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      c_password: ['', Validators.required]
+      c_password: ['', Validators.required],
+      updateOn: 'blur'
     }, { validator: this.checkPasswords.bind(this) });
   }
 

@@ -59,13 +59,6 @@ button {
     background-color: #0056b3; /* Darker shade for hover effect */
     transition: background-color 0.3s ease;
 }
-.error-message{
-    color: #91170c;
-    height: 10px;
-}
-.error-message-placeholder {
-    height: 10px;
-}
 .sign-in-message {
     display: inline-block;
     padding: 10px 20px;
