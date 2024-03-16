@@ -21,8 +21,8 @@ export class AuthService {
     return this.http.post<SignInResponse>(`${this.apiUrl}/signin/`, { login, password }).pipe(
       tap(response => {
         if (response.detail === 'Successfully signed in.') {
+          document.cookie = `sessionId=${response.sessionId}`; // Set the sessionId cookie
           document.cookie = `csrftoken=${response.csrfToken}`; // Set the csrftoken cookie
-          document.cookie = `sessionId=${response.sessionId}`; // Set the csrftoken cookie
         }
       })
     );

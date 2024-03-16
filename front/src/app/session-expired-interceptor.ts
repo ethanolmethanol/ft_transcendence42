@@ -1,25 +1,28 @@
-// src/app/services/session-expired.interceptor.ts
-
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class SessionExpiredInterceptor implements HttpInterceptor {
+export class CsrfInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router) {}
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const csrfToken = this.getCookie('csrftoken');
+    if (csrfToken) {
+      const clonedRequest = req.clone({
+        withCredentials: true,
+        headers: req.headers.set('X-CSRFToken', csrfToken)
+      });
+      return next.handle(clonedRequest);
+    }
+    return next.handle(req);
+  }
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          // Session has expired. Redirect the user to the sign-in page.
-          this.router.navigate(['sign-in']);
-        }
-        return throwError(error);
-      })
-    );
+  private getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop()?.split(';').shift() || null;
+    }
+    return null;
   }
 }

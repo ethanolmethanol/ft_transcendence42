@@ -17,6 +17,6 @@ export class LogoutService {
     const headers = new HttpHeaders({
       'X-CSRFToken': csrfToken,
     });
-    return this.http.post(`${this.apiUrl}/logout/`, {}, {headers});
+    return this.http.post(`${this.apiUrl}/logout/`, {}, {headers, withCredentials: true});
   }
 }

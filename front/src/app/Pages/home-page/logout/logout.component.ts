@@ -13,13 +13,13 @@ export class LogoutComponent {
 
   constructor(private logOutService: LogoutService, private router: Router) {}
 
-  logOut() {
+  public logOut() {
     const csrfToken = this.getCookie('csrftoken');
     if (csrfToken) {
       this.logOutService.logout(csrfToken).subscribe();
       console.log('Log out!');
-      document.cookie = 'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'sessionId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      this.removeCookie('csrftoken');
+      this.removeCookie('sessionId');
       this.router.navigate(['/sign-in']);
     } else {
       console.error('CSRF token not found');
@@ -33,5 +33,9 @@ export class LogoutComponent {
       return parts.pop()?.split(';').shift() || null;
     }
     return null;
+  }
+
+  private removeCookie(name: string) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 }
