@@ -5,26 +5,33 @@
     <h1>Create account</h1>
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label for="username">Username: </label>
-          <input type="text" formControlName="username" class="form-control" placeholder="Username">
-          <app-username-error [control]="signupForm.controls.username"></app-username-error>
+          <div class="input-error-container">
+            <input type="text" formControlName="username" class="form-control" placeholder="Username">
+            <app-username-error [control]="signupForm.controls.username" class="form-group label"></app-username-error>
+          </div>
         </div>
         <div class="form-group">
-          <label for="email">Email: </label>
-          <input type="email" formControlName="email" class="form-control" placeholder="Email">
-          <app-email-error [control]="signupForm.controls.email"></app-email-error>
+          <div class="input-error-container">
+            <input type="email" formControlName="email" class="form-control" placeholder="Email">
+            <app-email-error [control]="signupForm.controls.email"  class="form-group label"></app-email-error>
+          </div>
         </div>
         <div class="form-group">
-          <label for="password">Password: </label>
-          <input type="password" formControlName="password" class="form-control" placeholder="********">
-          <app-password-error [control]="signupForm.controls.password"></app-password-error>
+          <div class="input-error-container">
+            <input type="password" formControlName="password" class="form-control" placeholder="********">
+            <app-password-error [control]="signupForm.controls.password"  class="form-group label"></app-password-error>
+          </div>
         </div>
         <div class="form-group">
-          <label for="c_password">Confirm Password: </label>
-          <input type="password" formControlName="c_password" class="form-control" placeholder="********">
-          <app-c-password-error [control]="signupForm.controls.c_password"></app-c-password-error>
+          <div class="input-error-container">
+            <input type="password" formControlName="c_password" class="form-control" placeholder="********">
+            <app-c-password-error [control]="signupForm.controls.c_password"  class="form-group label"></app-c-password-error>
+          </div>
         </div>
         <button type="submit" [disabled]="!signupForm.valid" [class.hover-effect]="signupForm.valid" [class.disabled-button]="!signupForm.valid">Sign Up!</button>
         <a class="sign-in-message" routerLink="/sign-in">Already have an account? Sign in</a>
+        <div class="error-message-container">
+          <app-error-message [condition]="hasUserCreationFailed()" [message]="errorMessage"></app-error-message>
+        </div>
     </form>
 </div>

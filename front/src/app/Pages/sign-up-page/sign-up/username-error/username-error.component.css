@@ -1,7 +1,21 @@
-.error-message{
-    color: #91170c;
-    height: 10px;
+.error-message-container {
+    height: 40px;
+    overflow: hidden;
 }
-.error-message-placeholder {
-    height: 10px;
+
+.error-message{
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-25%);
+    min-height: 20px;
+    margin-left: 10px;
+    font-size: 0.8em;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    padding: 5px 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap; /* Prevents the text from wrapping */
 }

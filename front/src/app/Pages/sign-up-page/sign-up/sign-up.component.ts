@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AsyncValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { Router, RouterLink} from "@angular/router";
@@ -9,6 +7,7 @@ import { CPasswordErrorComponent } from "./c-password-error/c-password-error.com
 import { PasswordErrorComponent } from "./password-error/password-error.component";
 import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
+import {ErrorMessageComponent} from "../../../components/error-message/error-message.component";
 
 @Component({
   selector: 'app-sign-up',
@@ -20,12 +19,14 @@ import { UsernameErrorComponent } from "./username-error/username-error.componen
     PasswordErrorComponent,
     EmailErrorComponent,
     UsernameErrorComponent,
+    ErrorMessageComponent,
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
 export class SignUpComponent implements OnInit {
   signupForm!: FormGroup;
+  errorMessage: string = "";
   
   constructor(
     private formBuilder: FormBuilder,
@@ -34,8 +35,8 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)], this.usernameValidator()],
-      email: ['', [Validators.required, Validators.email], [this.emailValidator()]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       c_password: ['', Validators.required],
       updateOn: 'blur'
@@ -49,21 +50,6 @@ export class SignUpComponent implements OnInit {
     return pass === confirmPass ? null : { notSame: true }
   }
 
-  private usernameValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      return this.authService.checkUsernameAvailability(control.value).pipe(
-        map(isAvailable => (isAvailable ? null : { usernameTaken: true }))
-      );
-    };
-  }
-
-  private emailValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      return this.authService.checkEmailAvailability(control.value).pipe(map(isAvailable => (isAvailable ? null : { emailTaken: true }))
-      );
-    };
-  }
-
   onSubmit() {
     console.log('Form Value at Submission:', this.signupForm.value);
     if (this.signupForm.valid) {
@@ -75,8 +61,13 @@ export class SignUpComponent implements OnInit {
         },
         error => {
           console.error("Account creation failed: ", error);
+          this.errorMessage = error.error.username[0] || error.error.email[0] || 'An error occured.';
         }
       )
     }
+  }
+
+  hasUserCreationFailed(): boolean {
+    return this.errorMessage !== "";
   }
 }

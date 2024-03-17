@@ -1,7 +1,5 @@
-<div *ngIf="control?.valid || !control?.touched" class="error-message-placeholder"></div>
 <div *ngIf="control?.invalid && control?.touched" class="error-message">
     <small *ngIf="control?.errors?.required">Username is required.</small>
     <small *ngIf="control?.errors?.minlength">Username must be at least 3 characters long.</small>
     <small *ngIf="control?.errors?.maxlength">Username cannot be more than 20 characters long.</small>
-    <small *ngIf="control?.hasError('usernameTaken')">Username is already taken.</small>
 </div>

@@ -1,6 +1,4 @@
-<div *ngIf="control?.valid || !control?.touched" class="error-message-placeholder"></div>
-    <div *ngIf="control?.invalid && control?.touched" class="error-message">
+<div *ngIf="control?.invalid && control?.touched" class="error-message">
     <small *ngIf="control?.errors?.required">Email is required.</small>
     <small *ngIf="control?.errors?.email">Email is not valid.</small>
-    <small *ngIf="control?.hasError('emailTaken')">Email is already taken.</small>
 </div>

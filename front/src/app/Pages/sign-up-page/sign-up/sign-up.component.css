@@ -18,14 +18,21 @@ form {
     font-size: 1.5em;
 }
 .form-group {
+    position:relative;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
+    align-items: flex-start;
 }
-.form-group label {
-    margin-bottom: 10px;
-    font-size: 1.2em;
-    text-shadow: 1px 1px 1px black;
+.input-error-container {
+    position: relative;
+    display: flex;
+    align-items: center; /* This ensures the input and error message are vertically aligned */
+    width: 100%;
+}
+.form-control {
+    flex: 0 0 auto; /* This prevents the input field from growing or shrinking */
+    width: calc(100% - 120px); /* Adjust the width as needed, subtracting the space for the error message */
 }
 .pong-image{
     height: 70px;
