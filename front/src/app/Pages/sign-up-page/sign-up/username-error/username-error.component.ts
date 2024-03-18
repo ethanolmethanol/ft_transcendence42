@@ -22,7 +22,8 @@ export class UsernameErrorComponent {
   errorMessagesMap : ErrorMessagesMap = {
     required: 'Username is required',
     minlength: 'Username must be at least 3 characters long.',
-    maxlength: 'Username cannot be more than 20 characters long.'
+    maxlength: 'Username cannot be more than 20 characters long.',
+    whitespace: 'Username cannot be whitespace.'
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);

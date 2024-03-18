@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AsyncValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidatorFn} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { Router, RouterLink} from "@angular/router";
@@ -8,6 +8,7 @@ import { PasswordErrorComponent } from "./password-error/password-error.componen
 import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
 import { ErrorMessageComponent } from "../../../components/error-message/error-message.component";
+import { notOnlyWhitespaceValidator } from '../../../validators/not-only-whitespace.validator';
 
 @Component({
   selector: 'app-sign-up',
@@ -35,7 +36,7 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), notOnlyWhitespaceValidator()]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       c_password: ['', Validators.required],
@@ -77,7 +78,18 @@ export class SignUpComponent implements OnInit {
         },
         error => {
           console.error("Account creation failed: ", error);
-          this.errorMessage = error.error.username[0] || error.error.email[0] || 'An error occured.';
+          console.log(JSON.stringify(error, null, 2));
+          this.errorMessage = "An error occurred. Please try again.";
+
+          if (error && error.error) {
+            const errors = error.error;
+            for (const key in errors) {
+              if (errors.hasOwnProperty(key) && errors[key].length > 0) {
+                this.errorMessage = errors[key][0];
+                break; // Use the first error message found
+              }
+            }
+          }
         }
       )
     }

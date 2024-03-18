@@ -38,13 +38,3 @@ def signin(request):
         login(request, user)
         return Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
-
-@api_view(['GET'])
-def check_username_availability(request, username):
-    is_available = not User.objects.filter(username=username).exists()
-    return JsonResponse({'isAvailable': is_available})
-
-@api_view(['GET'])
-def check_email_availability(request, email):
-    is_available = not User.objects.filter(email=email).exists()
-    return JsonResponse({'isAvailable': is_available})
