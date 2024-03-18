@@ -23,7 +23,8 @@ export class UsernameErrorComponent {
     required: 'Username is required',
     minlength: 'Username must be at least 3 characters long.',
     maxlength: 'Username cannot be more than 20 characters long.',
-    whitespace: 'Username cannot be whitespace.'
+    whitespace: 'Username can only contain letters and @/./+/-/_.',
+    invalidUsername: 'Username can only contain letters and @/./+/-/_.'
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);

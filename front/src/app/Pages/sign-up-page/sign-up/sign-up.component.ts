@@ -9,6 +9,8 @@ import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
 import { ErrorMessageComponent } from "../../../components/error-message/error-message.component";
 import { notOnlyWhitespaceValidator } from '../../../validators/not-only-whitespace.validator';
+import { usernameValidator } from '../../../validators/username.validator';
+import { emailValidator } from '../../../validators/email.validator';
 
 @Component({
   selector: 'app-sign-up',
@@ -36,8 +38,8 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), notOnlyWhitespaceValidator()]],
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), notOnlyWhitespaceValidator(), usernameValidator()]],
+      email: ['', [Validators.required, Validators.email, emailValidator()]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       c_password: ['', Validators.required],
       updateOn: 'blur'

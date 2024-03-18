@@ -21,7 +21,8 @@ export class EmailErrorComponent {
   @Input() isTouched: boolean = false;
   errorMessagesMap : ErrorMessagesMap = {
     required: 'Email is required.',
-    email: 'Email is not valid.'
+    email: 'Email is not valid.',
+    invalidEmail: 'Email is not valid'
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);
