@@ -1,4 +1,7 @@
-<div *ngIf="control?.invalid && control?.touched" class="error-message">
-    <small *ngIf="control?.errors?.required">Email is required.</small>
-    <small *ngIf="control?.errors?.email">Email is not valid.</small>
-</div>
+<ng-container *ngIf="isTouched">
+    <app-status-icon 
+        [testPassed]="allTestsPassed()" 
+        [errorMessage]="getErrorMessage()" 
+        [isTouched]="isTouched"> 
+    </app-status-icon>
+</ng-container>

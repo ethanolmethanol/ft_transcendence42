@@ -1,3 +1,7 @@
-<app-test-status-icon [testPassed]="allTestsPassed()" [errorMessage]="getErrorMessage()"> </app-test-status-icon>
-
-
+<ng-container *ngIf="isTouched">
+    <app-status-icon 
+        [testPassed]="allTestsPassed()" 
+        [errorMessage]="getErrorMessage()" 
+        [isTouched]="isTouched"> 
+    </app-status-icon>
+</ng-container>

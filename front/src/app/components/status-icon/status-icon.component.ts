@@ -2,18 +2,19 @@ import {Component, Input} from '@angular/core';
 import {CommonModule, NgStyle} from "@angular/common";
 
 @Component({
-  selector: 'app-test-status-icon',
+  selector: 'app-status-icon',
   standalone: true,
   imports: [
     NgStyle,
     CommonModule
   ],
-  templateUrl: './test-status-icon.component.html',
-  styleUrl: './test-status-icon.component.css'
+  templateUrl: './status-icon.component.html',
+  styleUrl: './status-icon.component.css'
 })
-export class TestStatusIconComponent {
+export class StatusIconComponent {
   @Input() testPassed: boolean = false;
   @Input() errorMessage: string = '';
+  @Input() isTouched: boolean = false;
   showError: boolean = false;
 
   onMouseOver() {

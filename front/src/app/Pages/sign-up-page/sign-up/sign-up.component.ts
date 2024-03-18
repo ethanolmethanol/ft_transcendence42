@@ -7,7 +7,7 @@ import { CPasswordErrorComponent } from "./c-password-error/c-password-error.com
 import { PasswordErrorComponent } from "./password-error/password-error.component";
 import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
-import {ErrorMessageComponent} from "../../../components/error-message/error-message.component";
+import { ErrorMessageComponent } from "../../../components/error-message/error-message.component";
 
 @Component({
   selector: 'app-sign-up',
@@ -41,6 +41,22 @@ export class SignUpComponent implements OnInit {
       c_password: ['', Validators.required],
       updateOn: 'blur'
     }, { validator: this.checkPasswords.bind(this) });
+    this.signupForm.valueChanges.subscribe(() => {
+      if (this.signupForm.errors?.notSame) {
+        this.signupForm.controls.c_password.setErrors({ notSame: true });
+      } else {
+        // If there are no errors or if the notSame error has been resolved, clear the error.
+        if (this.signupForm.controls.c_password.errors?.notSame) {
+          let errors = {...this.signupForm.controls.c_password.errors};
+          delete errors.notSame;
+          if (Object.keys(errors).length > 0) {
+            this.signupForm.controls.c_password.setErrors(errors);
+          } else {
+            this.signupForm.controls.c_password.setErrors(null);
+          }
+        }
+      }
+    });
   }
 
   checkPasswords(group: FormGroup) {
