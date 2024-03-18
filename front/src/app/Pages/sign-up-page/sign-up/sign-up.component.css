@@ -10,6 +10,7 @@
     justify-content: center;
     align-items: center;
 }
+
 form {
     display: flex;
     flex-direction: column;
@@ -17,6 +18,7 @@ form {
     color:white;
     font-size: 1.5em;
 }
+
 .form-group {
     position:relative;
     margin-bottom: 20px;
@@ -24,29 +26,41 @@ form {
     flex-direction: column;
     align-items: flex-start;
 }
+
 .input-error-container {
     position: relative;
     display: flex;
     align-items: center; /* This ensures the input and error message are vertically aligned */
     width: 100%;
 }
+
 .form-control {
     flex: 0 0 auto; /* This prevents the input field from growing or shrinking */
     width: calc(100% - 120px); /* Adjust the width as needed, subtracting the space for the error message */
 }
+
 .pong-image{
     height: 70px;
 }
+
 .auth-avatar{
     text-align: center;
-    margin-top: -50px;
+    margin-bottom: 20px;
 }
+
+.signup-header {
+    font-size: 2em;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
 .form-group input {
     border: 2px solid #ccc;
     border-radius: 8px;
     width: 100%;
     font-size: 1em;
 }
+
 button {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -57,15 +71,18 @@ button {
     box-shadow: none;
     border: none;
 }
+
 .disabled-button {
     background-color: #ccc; /* Light grey background */
     color: #666; /* Darker grey text */
     cursor: not-allowed; /* Cursor style to indicate not clickable */
 }
+
 .hover-effect:hover {
     background-color: #0056b3; /* Darker shade for hover effect */
     transition: background-color 0.3s ease;
 }
+
 .sign-in-message {
     display: inline-block;
     padding: 10px 20px;
@@ -78,9 +95,11 @@ button {
     transition: background-color 0.3s ease;
     animation: fadeIn 1s ease-out;
 }
+
 .sign-in-message:hover {
     background-color: #0056b3; /* Darker shade for hover effect */
 }
+
 @keyframes fadeIn {
     from {
       opacity: 0;
