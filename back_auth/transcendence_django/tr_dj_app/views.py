@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, get_user_model, logout
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -32,6 +32,7 @@ from django.middleware.csrf import get_token
 
 
 @api_view(['POST'])
+@ensure_csrf_cookie
 def signin(request):
     user_login = request.data.get('login')
     password = request.data.get('password')
