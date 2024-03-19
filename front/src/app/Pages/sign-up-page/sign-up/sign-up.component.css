@@ -110,3 +110,7 @@ button {
       transform: translateY(0px)
     }
 }
+
+.error-message-container {
+    height: 40px; /* Adjust this value based on the height of your error message */
+}
