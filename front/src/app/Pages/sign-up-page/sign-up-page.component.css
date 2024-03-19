@@ -2,7 +2,7 @@ body {
     background-image: url("../../../assets/logo.png");
     background-size: 5%;
 }
-  
+
 .form-container {
     display: flex;
     justify-content: center; /* Center horizontally */
