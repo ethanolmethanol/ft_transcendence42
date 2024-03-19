@@ -27,6 +27,10 @@ export class AuthService {
       })
     );
   }
+
+  signUp(username: string, email: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/signup/`, { username, email, password });
+  }
   isLoggedIn(): boolean {
     return this.getCookie('csrftoken') !== null;
   }

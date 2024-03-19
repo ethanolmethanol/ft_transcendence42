@@ -1,0 +1,20 @@
+@font-face {
+  font-family: 'Space_Quest';
+  src: url('SpaceQuest-Xj4o.ttf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Astro_Space';
+  src: url('AstroSpace-0Wl3o.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Bruce_Forever';
+  src: url('BruceForeverRegular-X3jd2.ttf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

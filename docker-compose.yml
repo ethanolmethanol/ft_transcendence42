@@ -5,7 +5,7 @@ services:
         image: postgres:latest
         container_name: db
         volumes:
-            - ./db/data:/var/lib/postgresql/data
+            - db-data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
         networks:
@@ -177,6 +177,8 @@ volumes:
             type: 'none'
             o: 'bind'
             device: './front/dist/transcendence/browser'
+    db-data:
+
 
 networks:
     transcendence:

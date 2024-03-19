@@ -1,43 +1,9 @@
-.login-background {
-  background-color: rgba(150, 150, 150, 0.9);
-  /* Make the .login element cover the entire viewport */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw; /* 100% of the viewport width */
-  height: 100vh; /* 100% of the viewport height */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-  color:white;
-  font-size: 1.5em;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
+form-group {
+  position:relative;
   margin-bottom: 20px;
-}
-
-.form-group label {
-  margin-bottom: 10px;
-  font-size: 1.2em;
-  text-shadow: 1px 1px 1px black;
-}
-
-.form-group input {
-  /* Example: Set a 2px solid border with a light gray color */
-  border: 2px solid #ccc;
-  /* Example: Add a border-radius to make the corners rounded */
-  border-radius: 8px;
-  width: 100%;
-  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 button {
@@ -68,6 +34,7 @@ button {
   margin-top: 20px;
   background-color: #007bff; /* Bootstrap primary color */
   color: white;
+  text-align: center;
   text-decoration: none;
   font-size: 0.6em;
   border-radius: 10px;
@@ -92,4 +59,11 @@ button {
 
 .error-message-container {
   height: 50px; /* Adjust this value based on the height of your error message */
+}
+
+.signin-header {
+  font-size: 5em;
+  margin-bottom: 60px;
+  text-align: center;
+  color: rgb(200, 250, 230);
 }
