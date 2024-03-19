@@ -5,3 +5,31 @@ body {
   width: 100vw; /* Full viewport width */
   margin: 0;
 }
+
+h1 {
+  color:white;
+  font-size: 1.5em;
+  text-shadow: 1px 1px 1px black;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  color:white;
+  font-size: 1.5em;
+}
+
+.background {
+  background-color: rgba(150, 150, 150, 0.9);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column; /* Align items vertically */
+  justify-content: center;
+  align-items: center;
+}
+
