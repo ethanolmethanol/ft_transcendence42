@@ -6,7 +6,7 @@ body {
   height: 100vh; /* Full viewport height */
   width: 100vw; /* Full viewport width */
   margin: 0;
-  font-family: 'Astro_Space', sans-serif;
+  font-family: 'Bruce_Forever', sans-serif;
 }
 
 h1 {
@@ -25,7 +25,7 @@ form {
 }
 
 .background {
-  background-color: rgba(100, 100, 100, 0.9);
+  /*background-color: rgba(100, 100, 100, 0.9);*/
   position: fixed;
   top: 0;
   left: 0;
