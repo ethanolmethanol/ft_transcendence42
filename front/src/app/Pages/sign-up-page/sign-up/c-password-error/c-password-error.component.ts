@@ -21,7 +21,7 @@ export class CPasswordErrorComponent {
   @Input() isTouched: boolean = false;
   errorMessagesMap : ErrorMessagesMap = {
     required: 'Confirm Password is required.',
-    notSame: 'Passwords do not match.'
+    matching: 'Passwords must match.',
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);

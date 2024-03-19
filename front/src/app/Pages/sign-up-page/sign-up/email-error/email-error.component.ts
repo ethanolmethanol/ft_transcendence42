@@ -22,7 +22,7 @@ export class EmailErrorComponent {
   errorMessagesMap : ErrorMessagesMap = {
     required: 'Email is required.',
     email: 'Email is not valid.',
-    invalidEmail: 'Email is not valid'
+    invalidEmail: 'Email is not valid.'
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);

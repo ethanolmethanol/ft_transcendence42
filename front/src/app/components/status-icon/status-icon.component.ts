@@ -14,7 +14,6 @@ import {CommonModule, NgStyle} from "@angular/common";
 export class StatusIconComponent {
   @Input() testPassed: boolean = false;
   @Input() errorMessage: string = '';
-  @Input() isTouched: boolean = false;
   showError: boolean = false;
 
   onMouseOver() {

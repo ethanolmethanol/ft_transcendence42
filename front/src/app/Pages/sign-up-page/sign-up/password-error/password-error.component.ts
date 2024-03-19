@@ -21,7 +21,7 @@ export class PasswordErrorComponent {
   @Input() isTouched: boolean = false;
   errorMessageMap : ErrorMessagesMap = {
     required: 'Password is required.',
-    minlength: 'Password must be at least 8 characters long.'
+    minlength: 'Password must be at least 8 characters long.',
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);

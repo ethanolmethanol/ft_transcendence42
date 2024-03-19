@@ -21,10 +21,20 @@
   padding: 5px 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   white-space: nowrap; /* Prevents the text from wrapping */
-  transition: opacity 0.3s; /* Smooth transition */
+  transition: opacity 0.3s ease-in-out; /* Smooth transition */
+  opacity: 0; /* set initial opacity to 0 */
+  animation: fadeIn 0.9s ease-in-out forwards; /* Apply the fadeIn animation */
 }
 
-.window-error-message:hover {
-  opacity: 1; /* Show the error message on hover */
-  background-color: #0056b3; /* Darker shade for hover effect */
+.window-error-message.show {
+  opacity: 1; /* Set opacity to 1 when the error message is shown */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

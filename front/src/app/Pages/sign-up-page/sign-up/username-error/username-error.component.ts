@@ -20,10 +20,9 @@ export class UsernameErrorComponent {
   @Input() control: AbstractControl | null = null;
   @Input() isTouched: boolean = false;
   errorMessagesMap : ErrorMessagesMap = {
-    required: 'Username is required',
+    required: 'Username is required.',
     minlength: 'Username must be at least 3 characters long.',
     maxlength: 'Username cannot be more than 20 characters long.',
-    whitespace: 'Username can only contain letters and @/./+/-/_.',
     invalidUsername: 'Username can only contain letters and @/./+/-/_.'
   };
   allTestsPassed(): boolean {

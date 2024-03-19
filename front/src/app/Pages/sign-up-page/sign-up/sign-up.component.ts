@@ -8,9 +8,9 @@ import { PasswordErrorComponent } from "./password-error/password-error.componen
 import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
 import { ErrorMessageComponent } from "../../../components/error-message/error-message.component";
-import { notOnlyWhitespaceValidator } from '../../../validators/not-only-whitespace.validator';
 import { usernameValidator } from '../../../validators/username.validator';
 import { emailValidator } from '../../../validators/email.validator';
+import { matchValidator } from '../../../validators/match.validator';
 
 @Component({
   selector: 'app-sign-up',
@@ -38,62 +38,52 @@ export class SignUpComponent implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), notOnlyWhitespaceValidator(), usernameValidator()]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), usernameValidator()]],
       email: ['', [Validators.required, Validators.email, emailValidator()]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      c_password: ['', Validators.required],
+      c_password: ['', [Validators.required, matchValidator('password')]],
       updateOn: 'blur'
-    }, { validator: this.checkPasswords.bind(this) });
-    this.signupForm.valueChanges.subscribe(() => {
-      if (this.signupForm.errors?.notSame) {
-        this.signupForm.controls.c_password.setErrors({ notSame: true });
-      } else {
-        // If there are no errors or if the notSame error has been resolved, clear the error.
-        if (this.signupForm.controls.c_password.errors?.notSame) {
-          let errors = {...this.signupForm.controls.c_password.errors};
-          delete errors.notSame;
-          if (Object.keys(errors).length > 0) {
-            this.signupForm.controls.c_password.setErrors(errors);
-          } else {
-            this.signupForm.controls.c_password.setErrors(null);
-          }
-        }
-      }
     });
-  }
-
-  checkPasswords(group: FormGroup) {
-    let pass = group.get('password')?.value;
-    let confirmPass = group.get('c_password')?.value;
-
-    return pass === confirmPass ? null : { notSame: true }
   }
 
   onSubmit() {
     console.log('Form Value at Submission:', this.signupForm.value);
     if (this.signupForm.valid) {
-      const {username, email, password} = this.signupForm.value;
-      this.authService.signUp(username, email, password).subscribe(
-        response => {
-          console.log("Accout created: ", response);
-          this.router.navigate(['sign-in']).then(r => console.log("Navigated to sign-in-page"));
-        },
-        error => {
-          console.error("Account creation failed: ", error);
-          console.log(JSON.stringify(error, null, 2));
-          this.errorMessage = "An error occurred. Please try again.";
+      this.signUp();
+    }
+  }
 
-          if (error && error.error) {
-            const errors = error.error;
-            for (const key in errors) {
-              if (errors.hasOwnProperty(key) && errors[key].length > 0) {
-                this.errorMessage = errors[key][0];
-                break; // Use the first error message found
-              }
-            }
-          }
+  private signUp() {
+    const { username, email, password } = this.signupForm.value;
+    
+    this.authService.signUp(username, email, password).subscribe({
+      next: (response) => {
+        console.log("Account created: ", response);
+        this.signIn();
+      },
+      error: (error) => this.handleSignUpError(error)
+    });
+  }
+  
+  private signIn() {
+    this.router.navigate(['sign-in']).then(() => console.log("Navigated to sign-in page"));
+  }
+  
+  private handleSignUpError(signUpError: any) {
+    console.error("Account creation failed: ", signUpError);
+    this.errorMessage = "An error occurred. Please try again.";
+    this.extractErrorMessage(signUpError);
+  }
+  
+  private extractErrorMessage(signUpError: any) {
+    if (signUpError && signUpError.error) {
+      const errors = signUpError.error;
+      for (const key in errors) {
+        if (Object.hasOwnProperty.call(errors, key) && errors[key].length > 0) {
+          this.errorMessage = errors[key][0];
+          break; // Use the first error message found
         }
-      )
+      }
     }
   }
 
