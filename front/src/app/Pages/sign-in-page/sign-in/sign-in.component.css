@@ -6,18 +6,6 @@ form-group {
   align-items: flex-start;
 }
 
-input {
-  /* Example: Set a 2px solid border with a light gray color */
-  border: 2px solid #ccc;
-  /* Example: Add a border-radius to make the corners rounded */
-  border-radius: 8px;
-  width: 100%;
-  font-size: 1em;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
 button {
   margin-top: 10px;
   margin-bottom: 10px;
@@ -46,6 +34,7 @@ button {
   margin-top: 20px;
   background-color: #007bff; /* Bootstrap primary color */
   color: white;
+  text-align: center;
   text-decoration: none;
   font-size: 0.6em;
   border-radius: 10px;
@@ -70,4 +59,11 @@ button {
 
 .error-message-container {
   height: 50px; /* Adjust this value based on the height of your error message */
+}
+
+.signin-header {
+  font-size: 5em;
+  margin-bottom: 60px;
+  text-align: center;
+  color: rgb(200, 250, 230);
 }

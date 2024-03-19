@@ -1,13 +1,17 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 /* You can add global styles to this file, and also import other style files */
+@import './assets/fonts/custom-font.css';
+
 body {
   height: 100vh; /* Full viewport height */
   width: 100vw; /* Full viewport width */
   margin: 0;
+  font-family: 'Astro_Space', sans-serif;
 }
 
 h1 {
   color:white;
+  font-family: 'Space_Quest', sans-serif;
   font-size: 1.5em;
   text-shadow: 1px 1px 1px black;
 }
@@ -21,7 +25,7 @@ form {
 }
 
 .background {
-  background-color: rgba(150, 150, 150, 0.9);
+  background-color: rgba(100, 100, 100, 0.9);
   position: fixed;
   top: 0;
   left: 0;
@@ -33,3 +37,15 @@ form {
   align-items: center;
 }
 
+input {
+  /* Example: Set a 2px solid border with a light gray color */
+  border: 2px solid #ccc;
+  /* Example: Add a border-radius to make the corners rounded */
+  border-radius: 8px;
+  width: 100%;
+  font-size: 0.8em;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
