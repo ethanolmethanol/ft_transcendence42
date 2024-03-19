@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestStatusIconComponent } from './status-icon.component';
+import {StatusIconComponent} from './status-icon.component';
 
 describe('StatusIconComponent', () => {
   let component: StatusIconComponent;
@@ -11,7 +11,7 @@ describe('StatusIconComponent', () => {
       imports: [StatusIconComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(StatusIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

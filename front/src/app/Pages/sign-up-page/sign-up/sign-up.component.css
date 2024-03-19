@@ -1,6 +1,5 @@
 .form-group {
     position:relative;
-    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -10,21 +9,13 @@
     position: relative;
     display: flex;
     align-items: center; /* This ensures the input and error message are vertically aligned */
+    justify-content: space-between;
     width: 100%;
 }
 
 .form-control {
     flex: 0 0 auto; /* This prevents the input field from growing or shrinking */
     width: calc(100% - 120px); /* Adjust the width as needed, subtracting the space for the error message */
-}
-
-.pong-image{
-    height: 70px;
-}
-
-.pong-image-container{
-    text-align: center;
-    margin-bottom: 20px;
 }
 
 .signup-header {

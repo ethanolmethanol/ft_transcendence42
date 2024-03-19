@@ -1,9 +1,9 @@
 .test-status {
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  margin-left: 20px;
-  transform: translateY(-25%);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
 }
 
 .window-error-message {
