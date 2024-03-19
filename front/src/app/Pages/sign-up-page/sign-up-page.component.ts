@@ -1,9 +1,14 @@
 import { Component } from '@angular/core';
+import { SignUpComponent } from "./sign-up/sign-up.component";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-sign-up-page',
   standalone: true,
-  imports: [],
+  imports: [
+    SignUpComponent,
+    RouterLink,
+  ],
   templateUrl: './sign-up-page.component.html',
   styleUrl: './sign-up-page.component.css'
 })

@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from .serializers import UserSerializer
 # import the logging library
 import logging
+#import libraries for username and email availability checks
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -21,6 +24,8 @@ def signup(request):
         logger.error("username: %s\nemail: %s\npassword: %s" % (username, email, password))
         # User.objects.create_user(username='newuser', password='password')
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        logger.error("Signup Error: %s" % serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

@@ -5,12 +5,17 @@ import { AuthService } from './services/auth.service';
 import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 
 @NgModule({
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    CommonModule,
   ],
   providers: [
     AuthService,

@@ -10,14 +10,14 @@
 }
 
 .error-message-container {
-  height: 50px; /* Adjust this value based on the height of your error message */
+  height: 40px; /* Adjust this value based on the height of your error message */
   overflow: hidden; /* Hide the content that exceeds the container's height */
 }
 
 .error-message {
   font-size: 0.8em;
-  padding: 14px;
-  margin-top: 50px;
+  padding: 5px 10px;
+  margin-top: 20px;
   border-radius: 5px;
   background-color: #f8d7da; /* Light red background */
   color: #721c24; /* Dark red text */
