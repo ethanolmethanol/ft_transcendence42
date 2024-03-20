@@ -2,24 +2,22 @@ from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
 from .serializers import UserSerializer
-
-# import the logging library
-import logging
-#import libraries for username and email availability checks
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-
-
 from django.contrib.auth import logout
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+# import the logging library
 import logging
+#import libraries for username and email availability checks
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
+# SignUp
 
 @api_view(['POST'])
 def signup(request):
@@ -37,9 +35,7 @@ def signup(request):
         logger.error("Signup Error: %s" % serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-from django.middleware.csrf import get_token
-
+# SignIn
 
 @api_view(['POST'])
 @ensure_csrf_cookie
@@ -59,37 +55,45 @@ def signin(request):
         return response
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
 
+# Logout
 
-logger = logging.getLogger(__name__)
-
-@api_view(['POST'])
-# @csrf_protect
-def logout_view(request):
-    # Extract the session ID from the request headers
-    logger.error(f"Request headers: {request.META}")
-    session_id = request.META.get('HTTP_X_SESSION_ID')
+def get_session_id(request):
+    session_id = request.META.get('HTTP_X_SESSIONTOKEN')
     if not session_id:
         logger.error("Session ID is missing.")
-        return Response({"detail": "Session ID is missing!"}, status=400)
+        raise ValueError("Session ID is missing!")
+    return session_id
 
+def get_session(session_id):
     try:
-        # Attempt to load the session using the provided session ID
         session = Session.objects.get(session_key=session_id)
     except ObjectDoesNotExist:
         logger.error("Invalid session ID.")
-        return Response({"detail": "Invalid session ID."}, status=401)
+        raise ValueError("Invalid session ID.")
+    return session
 
-    # Check if the session is associated with an authenticated user
+def get_user_id(session):
     user_id = session.get_decoded().get('_auth_user_id')
     if not user_id:
         logger.error("User not authenticated.")
-        return Response({"detail": "User not authenticated."}, status=401)
+        raise ValueError("User not authenticated.")
+    return user_id
 
+def perform_logout(request):
     try:
-        # Proceed with the logout operation
         logout(request)
         logger.info("User successfully logged out.")
-        return Response({"detail": "Successfully logged out."}, status=200)
     except Exception as e:
         logger.error(f"Error logging out: {e}")
-        return Response({"detail": "Error logging out."}, status=500)
+        raise ValueError("Error logging out.")
+
+@api_view(['POST'])
+def logout_view(request):
+    try:
+        session_id = get_session_id(request)
+        session = get_session(session_id)
+        user_id = get_user_id(session)
+        perform_logout(request)
+        return Response({"detail": "Successfully logged out."}, status=200)
+    except ValueError as e:
+        return Response({"detail": str(e)}, status=500)

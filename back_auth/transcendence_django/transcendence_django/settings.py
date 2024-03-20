@@ -105,7 +105,7 @@ AUTHENTICATION_BACKENDS = ['tr_dj_app.backends.EmailOrUsernameModelBackend']
 CORS_ALLOW_HEADERS = [
     'CONTENT-TYPE',
     'X-CSRFToken',
-    'X-SESSION_ID',
+    'X-SESSIONToken',
 ]
 
 

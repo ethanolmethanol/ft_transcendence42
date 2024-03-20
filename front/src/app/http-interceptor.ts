@@ -9,7 +9,7 @@ export function interceptHttpRequests(req: HttpRequest<any>, next: HttpHandlerFn
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'X-CSRFToken': csrfToken, // Include CSRF token in the request
-      'X-SESSION_ID': sessionId, // Include CSRF token in the request
+      'X-SESSIONToken': sessionId, // Include CSRF token in the request
     });
     const cloned = req.clone({
       withCredentials: true,
