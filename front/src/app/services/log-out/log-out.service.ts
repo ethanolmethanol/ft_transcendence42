@@ -12,12 +12,8 @@ export class LogoutService {
 
   constructor(private router: Router, private http: HttpClient) {}
 
-  public logout(csrfToken: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'X-CSRFToken':csrfToken // Include CSRF token in the request
-    });
+  public logout(): Observable<any> {
     // Make the HTTP request with the headers
-    return this.http.post(`${this.apiUrl}/logout/`, {}, { headers, withCredentials: true });
+    return this.http.post(`${this.apiUrl}/logout/`, {}, { withCredentials: true });
   }
 }

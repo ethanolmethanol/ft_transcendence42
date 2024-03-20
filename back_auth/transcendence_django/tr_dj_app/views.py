@@ -1,16 +1,21 @@
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from .serializers import UserSerializer
-from django.middleware.csrf import get_token
 
 # import the logging library
 import logging
 #import libraries for username and email availability checks
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+
+
+from django.contrib.auth import logout
+from django.contrib.sessions.models import Session
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import logging
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -54,10 +59,34 @@ def signin(request):
         return response
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+logger = logging.getLogger(__name__)
+
 @api_view(['POST'])
-@csrf_protect
+# @csrf_protect
 def logout_view(request):
+    # Extract the session ID from the request headers
+    logger.error(f"Request headers: {request.META}")
+    session_id = request.META.get('HTTP_X_SESSION_ID')
+    if not session_id:
+        logger.error("Session ID is missing.")
+        return Response({"detail": "Session ID is missing!"}, status=400)
+
     try:
+        # Attempt to load the session using the provided session ID
+        session = Session.objects.get(session_key=session_id)
+    except ObjectDoesNotExist:
+        logger.error("Invalid session ID.")
+        return Response({"detail": "Invalid session ID."}, status=401)
+
+    # Check if the session is associated with an authenticated user
+    user_id = session.get_decoded().get('_auth_user_id')
+    if not user_id:
+        logger.error("User not authenticated.")
+        return Response({"detail": "User not authenticated."}, status=401)
+
+    try:
+        # Proceed with the logout operation
         logout(request)
         logger.info("User successfully logged out.")
         return Response({"detail": "Successfully logged out."}, status=200)

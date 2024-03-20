@@ -1,17 +1,32 @@
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpXsrfTokenExtractor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http'
+import { HttpRequest, HttpEvent, HttpHandlerFn, HttpHeaders} from '@angular/common/http'
 import { Observable } from 'rxjs';
 
-@Injectable()
-export class HttpXSRFInterceptor implements HttpInterceptor {
+export function interceptHttpRequests(req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> {
 
-  constructor(private tokenExtractor: HttpXsrfTokenExtractor){}
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const headerName = 'X-CSRFToken';
-    let token = this.tokenExtractor.getToken() as string;
-    if (token !== null && !req.headers.has(headerName)){
-      req=req.clone({ headers: req.headers.set(headerName, token)})
-    }
-    return next.handle(req);
+  const csrfToken = getCookie('csrftoken');
+  const sessionId = getCookie('sessionId');
+  if (csrfToken && sessionId) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken, // Include CSRF token in the request
+      'X-SESSION_ID': sessionId, // Include CSRF token in the request
+    });
+    const cloned = req.clone({
+      withCredentials: true,
+      headers: headers
+    });
+    return next(cloned);
+  } else {
+    return next(req);
   }
+}
+
+
+function getCookie(name: string): string | null {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() || null;
+  }
+  return null;
 }
