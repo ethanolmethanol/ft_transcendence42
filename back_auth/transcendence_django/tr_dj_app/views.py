@@ -1,9 +1,8 @@
 from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
 from .serializers import UserSerializer
-from django.http import JsonResponse
-from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
@@ -87,7 +86,9 @@ def perform_logout(request):
         logger.error(f"Error logging out: {e}")
         raise ValueError("Error logging out.")
 
+
 @api_view(['POST'])
+# @csrf_protect
 def logout_view(request):
     try:
         session_id = get_session_id(request)

@@ -1,26 +1,29 @@
-import { HttpRequest, HttpEvent, HttpHandlerFn, HttpHeaders} from '@angular/common/http'
+import { HttpRequest, HttpEvent, HttpHandlerFn, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export function interceptHttpRequests(req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> {
-
-  const csrfToken = getCookie('csrftoken');
-  const sessionId = getCookie('sessionId');
-  if (csrfToken && sessionId) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'X-CSRFToken': csrfToken, // Include CSRF token in the request
-      'X-SESSIONToken': sessionId, // Include CSRF token in the request
-    });
-    const cloned = req.clone({
-      withCredentials: true,
-      headers: headers
-    });
-    return next(cloned);
-  } else {
-    return next(req);
-  }
+  let headers = new HttpHeaders({
+    'Content-Type': 'application/json'
+  });
+  headers = addHeader(headers, 'X-CSRFToken', 'csrftoken');
+  headers = addHeader(headers, 'X-SESSIONToken', 'sessionId');
+  const cloned = req.clone({
+    withCredentials: true,
+    headers: headers
+  });
+  return next(cloned);
 }
 
+function addHeader(headers: HttpHeaders, headerName: string, cookieName: string): HttpHeaders {
+  const value = getCookie(cookieName);
+  console.log(`Attempting to add ${headerName} with value from ${cookieName}: ${value}`);
+  if (value) {
+    headers = headers.set(headerName, value);
+  } else {
+    console.log(`No value found for ${cookieName}`);
+  }
+  return headers;
+}
 
 function getCookie(name: string): string | null {
   const value = `; ${document.cookie}`;
