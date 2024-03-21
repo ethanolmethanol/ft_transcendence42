@@ -12,7 +12,7 @@ interface SignInResponse {
 })
 
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api'; // Replace with your Django server URL
+  private apiUrl = 'https://localhost:8000/api'; // Replace with your Django server URL
 
   constructor(private http: HttpClient) {}
 
@@ -21,8 +21,6 @@ export class AuthService {
     return this.http.post<SignInResponse>(`${this.apiUrl}/signin/`, { login, password }).pipe(
       tap(response => {
         if (response.detail === 'Successfully signed in.') {
-          document.cookie = `sessionId=${response.sessionId}`; // Set the sessionId cookie
-          document.cookie = `csrftoken=${response.csrfToken}`; // Set the csrftoken cookie
           console.log('csrfToken', response.csrfToken);
         }
       })

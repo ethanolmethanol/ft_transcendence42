@@ -8,15 +8,15 @@ import { Observable } from "rxjs";
 })
 export class LogoutService {
 
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'https://localhost:8000/api';
 
   constructor(private router: Router, private http: HttpClient) {}
 
   public logout(): void {
     // Make the HTTP request with the headers
     this.processLogout().subscribe();
-    this.removeCookie('csrftoken');
-    this.removeCookie('sessionId');
+    // this.removeCookie('csrftoken');
+    // this.removeCookie('sessionid');
   }
 
   private processLogout() {

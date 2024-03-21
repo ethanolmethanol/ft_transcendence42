@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'health_check.cache',  # https://pypi.org/project/django-health-check/
     'health_check.storage',
     'health_check.contrib.migrations',
-    'corsheaders'
+    'corsheaders',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -104,6 +105,10 @@ CORS_ALLOW_HEADERS = [
     'X-CSRFToken',
     'X-SESSIONToken',
 ]
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 print("Database settings:")
 print("Name:", DATABASES['default']['NAME'])

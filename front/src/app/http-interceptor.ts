@@ -6,7 +6,7 @@ export function interceptHttpRequests(req: HttpRequest<any>, next: HttpHandlerFn
     'Content-Type': 'application/json'
   });
   headers = addHeader(headers, 'X-CSRFToken', 'csrftoken');
-  headers = addHeader(headers, 'X-SESSIONToken', 'sessionId');
+  // headers = addHeader(headers, 'X-SESSIONToken', 'sessionId');
   const cloned = req.clone({
     withCredentials: true,
     headers: headers
