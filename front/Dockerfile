@@ -22,11 +22,9 @@ RUN apk update && apk upgrade && apk add curl openssl
 # Copy the Nginx configuration file
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-COPY nginx/gen_certificate.sh .
+RUN mkdir -p /etc/ssl
 
-RUN chmod +x ./gen_certificate.sh
-RUN ./gen_certificate.sh
-RUN rm ./gen_certificate.sh
+COPY ./ssl/* /etc/ssl
 
 COPY --from=builder /app/dist/transcendence/browser /usr/share/nginx/html
 

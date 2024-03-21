@@ -1,6 +1,6 @@
 NAME			= ft_transcendence
 
-DATADIRS		= db/data/ front/dist/transcendence/browser/
+DATADIRS		= db/data/ front/dist/transcendence/browser/ ~/tr_certs
 
 ENV_SRC			= ~/.env
 
@@ -26,7 +26,16 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-${NAME}: up health
+# Mkcert installation
+MKCERT_VERSION	= v1.4.3
+MKCERT_BIN		= mkcert
+MKCERT_URL		= https://github.com/FiloSottile/mkcert/releases/download/$(MKCERT_VERSION)/mkcert-$(MKCERT_VERSION)-linux-amd64
+CERT_DIR 		= ssl/
+CERT_PATH 		= $(CERT_DIR)/serv.crt
+KEY_PATH 		= $(CERT_DIR)/serv.key
+LOCAL_BIN		= $(HOME)/bin
+
+${NAME}: gen-cert up health
 	$(call printname)
 
 # ${ENV_FILE}
@@ -115,19 +124,50 @@ fix:
 dev: all
 	cd front/; npm run watch
 
+install-mkcert:
+	@if [ ! -e "$(LOCAL_BIN)/$(MKCERT_BIN)" ]; then \
+		mkdir -p $(LOCAL_BIN); \
+		wget $(MKCERT_URL) -O $(MKCERT_BIN); \
+		chmod +x $(MKCERT_BIN); \
+		mv $(MKCERT_BIN) $(LOCAL_BIN); \
+		export PATH="$(LOCAL_BIN):$$PATH"; \
+		mkcert -version; \
+	fi
+
+gen-cert: install-mkcert
+	@if [ ! -e "$(CERT_DIR)" ]; then \
+		mkcert serv localhost 127.0.0.1 ::1; \
+		mkdir -p $(CERT_DIR); \
+		mv ./serv+3.pem $(CERT_PATH); \
+		mv ./serv+3-key.pem ./$(KEY_PATH); \
+		cp -r $(CERT_DIR) front; \
+		cp -r $(CERT_DIR) back_auth; \
+	fi
+
 clean:
 	@${COMPOSE} down -v
 
 fclean: clean
-	@docker --log-level=warn system prune -af
+	@docker --log-level=warn system prune -f
+		@if [ -d "$(CERT_DIR)" ]; then \
+   		rm -rf $(CERT_DIR); \
+		rm -rf ~/bin/mkcert; \
+	fi
+	@if [ -d "front/ssl" ]; then \
+   		rm -rf front/ssl; \
+	fi
+	@if [ -d "back_auth/ssl" ]; then \
+   		rm -rf back_auth/ssl; \
+	fi
 
 ffclean: fclean
-	@sudo rm -rf ${DATADIRS}
+	@docker --log-level=warn system prune -af
+	@ rm -rf ${DATADIRS}
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all
 
 ######## FUNKY STUFF ########
 
-.PHONY: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health
+.PHONY: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health install-mkcert gen-cert
 .SILENT: health
