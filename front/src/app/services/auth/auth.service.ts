@@ -28,12 +28,17 @@ export class AuthService {
 
   public isLoggedIn(): boolean {
     this.checkLoggedInStatus();
-    console.log('isLoggedInStatus', this.isLoggedInStatus);
     return this.isLoggedInStatus;
   }
+  public logout(): void {
+    this.processLogout().subscribe();
+  }
 
+  private processLogout() {
+    return this.http.post(`${this.apiUrl}/logout/`, {});
+  }
   private checkLoggedInStatus(): void {
-    this.http.get(`${this.apiUrl}/is_logged/`, { observe: 'response', withCredentials: true }).pipe(
+    this.http.get(`${this.apiUrl}/is_logged/`, { observe: 'response' }).pipe(
       map((response: HttpResponse<any>) => response.status === 200)
     ).subscribe(isLoggedIn => {
       this.isLoggedInStatus = isLoggedIn;

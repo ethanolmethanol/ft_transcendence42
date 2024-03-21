@@ -1,6 +1,5 @@
-from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
 from .serializers import UserSerializer
@@ -12,10 +11,12 @@ from rest_framework.response import Response
 
 # import the logging library
 import logging
-#import libraries for username and email availability checks
+
+# import libraries for username and email availability checks
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
+
 
 # SignUp
 
@@ -36,6 +37,7 @@ def signup(request):
         logger.error("Signup Error: %s" % serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # SignIn
 
 
@@ -52,6 +54,7 @@ def signin(request):
         return response
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 # Logout
 
 
@@ -61,6 +64,7 @@ def get_session_id(request):
         logger.error("Session ID is missing.")
         raise ValueError("Session ID is missing!")
     return session_id
+
 
 def get_session(session_id):
     try:
@@ -87,6 +91,7 @@ def perform_logout(request):
         logger.error(f"Error logging out: {e}")
         raise ValueError("Error logging out.")
 
+
 def get_csrf(request):
     csrf = request.META.get('HTTP_X_CSRFTOKEN')
     if not csrf:
@@ -94,8 +99,10 @@ def get_csrf(request):
         raise ValueError("Csrf Token is missing!")
     return csrf
 
+
 @api_view(['POST'])
 @csrf_protect
+@login_required
 def logout_view(request):
     try:
         # Assuming you want to perform some action before logging out
@@ -112,7 +119,7 @@ def logout_view(request):
 
 @api_view(['GET'])
 @login_required
-def is_logged_view(request):
+def is_logged_view():
     try:
         return Response({"detail": "User is logged in."}, status=200)
     except Exception as e:
