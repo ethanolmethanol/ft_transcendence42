@@ -39,7 +39,7 @@ def signup(request):
 
 
 @api_view(['POST'])
-# @ensure_csrf_cookie
+@ensure_csrf_cookie
 def signin(request):
     user_login = request.data.get('login')
     password = request.data.get('password')
@@ -47,11 +47,6 @@ def signin(request):
     user = authenticate(request, login=user_login, password=password)
     if user is not None:
         login(request, user)
-        # Get the session ID
-        # session_id = request.session.session_key
-        # Get the csrf_token
-        # csrf_token = get_token(request)
-        # Create a response
         response = Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
         return response
     return Response({"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED)
@@ -60,12 +55,11 @@ def signin(request):
 
 
 def get_session_id(request):
-    session_id = request.META.get('HTTP_X_SESSIONTOKEN')
+    session_id = request.COOKIES.get('sessionid')
     if not session_id:
         logger.error("Session ID is missing.")
         raise ValueError("Session ID is missing!")
     return session_id
-
 
 def get_session(session_id):
     try:
@@ -107,7 +101,6 @@ def logout_view(request):
         session_id = get_session_id(request)
         session = get_session(session_id)
         user_id = get_user_id(session)
-
         perform_logout(request)
         return Response({"detail": "Successfully logged out."}, status=200)
     except ValueError as e:
