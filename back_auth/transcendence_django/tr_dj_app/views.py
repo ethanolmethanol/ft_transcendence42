@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.contrib.auth.decorators import login_required
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
@@ -104,4 +105,15 @@ def logout_view(request):
         perform_logout(request)
         return Response({"detail": "Successfully logged out."}, status=200)
     except ValueError as e:
+        return Response({"detail": str(e)}, status=500)
+
+
+# Is logged
+
+@api_view(['GET'])
+@login_required
+def is_logged_view(request):
+    try:
+        return Response({"detail": "User is logged in."}, status=200)
+    except Exception as e:
         return Response({"detail": str(e)}, status=500)

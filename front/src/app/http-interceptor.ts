@@ -15,7 +15,6 @@ export function interceptHttpRequests(req: HttpRequest<any>, next: HttpHandlerFn
 
 function addHeader(headers: HttpHeaders, headerName: string, cookieName: string): HttpHeaders {
   const value = getCookie(cookieName);
-  console.log(`Attempting to add ${headerName} with value from ${cookieName}: ${value}`);
   if (value) {
     headers = headers.set(headerName, value);
   } else {
