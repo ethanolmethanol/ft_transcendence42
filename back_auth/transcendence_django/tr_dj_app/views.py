@@ -42,7 +42,6 @@ def signup(request):
 
 
 @api_view(['POST'])
-@ensure_csrf_cookie
 def signin(request):
     user_login = request.data.get('login')
     password = request.data.get('password')
@@ -100,14 +99,18 @@ def get_csrf(request):
     return csrf
 
 
+def get_session_from_request(request):
+    session_id = get_session_id(request)
+    return get_session(session_id)
+
+
 @api_view(['POST'])
 @csrf_protect
 @login_required
 def logout_view(request):
     try:
         # Assuming you want to perform some action before logging out
-        session_id = get_session_id(request)
-        session = get_session(session_id)
+        session = get_session_from_request(request)
         user_id = get_user_id(session)
         perform_logout(request)
         return Response({"detail": "Successfully logged out."}, status=200)
@@ -118,9 +121,11 @@ def logout_view(request):
 # Is logged
 
 @api_view(['GET'])
+@csrf_protect
 @login_required
-def is_logged_view():
+def is_logged_view(request):
     try:
+        get_session_from_request(request)
         return Response({"detail": "User is logged in."}, status=200)
     except Exception as e:
-        return Response({"detail": str(e)}, status=500)
+        return Response({"detail": "User isn't logged in:" + str(e)}, status=status.HTTP_401_UNAUTHORIZED)
