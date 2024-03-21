@@ -22,6 +22,7 @@ export class PasswordErrorComponent {
   errorMessageMap : ErrorMessagesMap = {
     required: 'Password is required.',
     minlength: 'Password must be at least 8 characters long.',
+    matching: 'Passwords must match.',
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);
