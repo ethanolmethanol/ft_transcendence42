@@ -5,7 +5,7 @@ import { NotFoundPageComponent } from './Pages/not-found-page/not-found-page.com
 import {HomePageComponent} from "./Pages/home-page/home-page.component";
 import {AuthGuard} from "./guards/auth.guard";
 import {RootComponent} from "./components/root/root.component";
-import {GuestGuard} from "./guards/guest.guard";
+// import {GuestGuard} from "./guards/guest.guard";
 
 export const routes: Routes = [
   { path: '', component: RootComponent, pathMatch: 'full', canActivate: [AuthGuard] },

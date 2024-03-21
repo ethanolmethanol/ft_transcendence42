@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import {catchError, map, Observable, of} from 'rxjs';
 import { Router } from "@angular/router";
 
 interface SignInResponse {
@@ -26,7 +26,14 @@ export class AuthService {
 
   public isLoggedIn(): Observable<boolean> {
     return this.http.get(`${this.apiUrl}/is_logged/`, { observe: 'response' }).pipe(
-      map((response: HttpResponse<any>) => response.status === 200)
+      map((response: HttpResponse<any>) => {
+        return (response.status === 200);
+      }),
+      catchError((error) => {
+        console.error('Error checking login status', error);
+        this.router.navigate(['/sign-in']);
+        return of(false);
+      })
     );
   }
 
