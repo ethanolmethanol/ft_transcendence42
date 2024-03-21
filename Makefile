@@ -13,7 +13,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter
+CONTAINERS		= db back_auth pong front redis prometheus grafana node_exporter blackbox_exporter
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -34,6 +34,11 @@ CERT_DIR 		= ssl/
 CERT_PATH 		= $(CERT_DIR)/serv.crt
 KEY_PATH 		= $(CERT_DIR)/serv.key
 LOCAL_BIN		= $(HOME)/bin
+SSL_CONT_DIRS	= front/ssl back_auth/ssl
+SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
+
+# Architecture
+UNAME			= $(shell uname)
 
 ${NAME}: gen-cert up health
 	$(call printname)
@@ -125,14 +130,25 @@ dev: all
 	cd front/; npm run watch
 
 install-mkcert:
-	@if [ ! -e "$(LOCAL_BIN)/$(MKCERT_BIN)" ]; then \
-		mkdir -p $(LOCAL_BIN); \
-		wget $(MKCERT_URL) -O $(MKCERT_BIN); \
-		chmod +x $(MKCERT_BIN); \
-		mv $(MKCERT_BIN) $(LOCAL_BIN); \
+	@if [ $(UNAME) = "Darwin" ]; then \
+		echo "Checking for mkcert installation..."; \
+		if ! command -v mkcert &>/dev/null; then \
+			echo "mkcert not found, installing..."; \
+			brew install mkcert; \
+		else \
+			echo "mkcert is already installed."; \
+		fi; \
+	else \
+		if [ ! -e "$(LOCAL_BIN)/$(MKCERT_BIN)" ]; then \
+			echo "Downloading mkcert..."; \
+			mkdir -p $(LOCAL_BIN); \
+			curl -L $(MKCERT_URL) -o $(MKCERT_BIN); \
+			chmod +x $(MKCERT_BIN); \
+			mv $(MKCERT_BIN) $(LOCAL_BIN); \
+		fi; \
 		export PATH="$(LOCAL_BIN):$$PATH"; \
-		mkcert -version; \
 	fi
+	@mkcert -version
 
 gen-cert: install-mkcert
 	@if [ ! -e "$(CERT_DIR)" ]; then \
@@ -140,25 +156,22 @@ gen-cert: install-mkcert
 		mkdir -p $(CERT_DIR); \
 		mv ./serv+3.pem $(CERT_PATH); \
 		mv ./serv+3-key.pem ./$(KEY_PATH); \
-		cp -r $(CERT_DIR) front; \
-		cp -r $(CERT_DIR) back_auth; \
 	fi
+	for dir in $(SSL_CONT_DIRS); do \
+		mkdir -p $$dir; \
+		cp -r $(CERT_DIR) $$dir; \
+	done; \
 
 clean:
 	@${COMPOSE} down -v
 
 fclean: clean
 	@docker --log-level=warn system prune -f
-		@if [ -d "$(CERT_DIR)" ]; then \
-   		rm -rf $(CERT_DIR); \
-		rm -rf ~/bin/mkcert; \
-	fi
-	@if [ -d "front/ssl" ]; then \
-   		rm -rf front/ssl; \
-	fi
-	@if [ -d "back_auth/ssl" ]; then \
-   		rm -rf back_auth/ssl; \
-	fi
+	@for dir in $(SSL_DIRS); do \
+		if [ -d "$$dir" ]; then \
+			rm -rf $$dir; \
+		fi; \
+	done
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af
