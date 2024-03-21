@@ -23,6 +23,7 @@ export class AuthService {
         if (response.detail === 'Successfully signed in.') {
           document.cookie = `sessionId=${response.sessionId}`; // Set the sessionId cookie
           document.cookie = `csrftoken=${response.csrfToken}`; // Set the csrftoken cookie
+          console.log('csrfToken', response.csrfToken);
         }
       })
     );
@@ -32,7 +33,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/signup/`, { username, email, password });
   }
   isLoggedIn(): boolean {
-    return this.getCookie('csrftoken') !== null;
+    return this.getCookie('csrftoken') !== null; // TO DO: ASk to back if the sessionId is correct
   }
 
   private getCookie(name: string): string | null {

@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 # SignUp
 
+
 @api_view(['POST'])
 def signup(request):
     serializer = UserSerializer(data=request.data)
@@ -36,8 +37,9 @@ def signup(request):
 
 # SignIn
 
+
 @api_view(['POST'])
-@ensure_csrf_cookie
+# @ensure_csrf_cookie
 def signin(request):
     user_login = request.data.get('login')
     password = request.data.get('password')
@@ -56,12 +58,14 @@ def signin(request):
 
 # Logout
 
+
 def get_session_id(request):
     session_id = request.META.get('HTTP_X_SESSIONTOKEN')
     if not session_id:
         logger.error("Session ID is missing.")
         raise ValueError("Session ID is missing!")
     return session_id
+
 
 def get_session(session_id):
     try:
@@ -71,12 +75,14 @@ def get_session(session_id):
         raise ValueError("Invalid session ID.")
     return session
 
+
 def get_user_id(session):
     user_id = session.get_decoded().get('_auth_user_id')
     if not user_id:
         logger.error("User not authenticated.")
         raise ValueError("User not authenticated.")
     return user_id
+
 
 def perform_logout(request):
     try:
@@ -86,14 +92,22 @@ def perform_logout(request):
         logger.error(f"Error logging out: {e}")
         raise ValueError("Error logging out.")
 
+def get_csrf(request):
+    csrf = request.META.get('HTTP_X_CSRFTOKEN')
+    if not csrf:
+        logger.error("Csrf Token is missing.")
+        raise ValueError("Csrf Token is missing!")
+    return csrf
 
 @api_view(['POST'])
-# @csrf_protect
+@csrf_protect
 def logout_view(request):
     try:
+        # Assuming you want to perform some action before logging out
         session_id = get_session_id(request)
         session = get_session(session_id)
         user_id = get_user_id(session)
+
         perform_logout(request)
         return Response({"detail": "Successfully logged out."}, status=200)
     except ValueError as e:

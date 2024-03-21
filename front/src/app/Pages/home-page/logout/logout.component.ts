@@ -14,14 +14,8 @@ export class LogoutComponent {
   constructor(private logOutService: LogoutService, private router: Router) {}
 
   public logOut() {
-    this.logOutService.logout().subscribe();
+    this.logOutService.logout();
     console.log('Log out!');
-    this.removeCookie('csrftoken');
-    this.removeCookie('sessionId');
     this.router.navigate(['/sign-in']);
-  }
-
-  private removeCookie(name: string) {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 }
