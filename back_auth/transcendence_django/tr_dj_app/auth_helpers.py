@@ -1,3 +1,10 @@
+from django.contrib.auth import logout
+from django.contrib.sessions.models import Session
+from django.core.exceptions import ObjectDoesNotExist
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_session_id(request):
     session_id = request.COOKIES.get('sessionid')

@@ -1,10 +1,13 @@
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from rest_framework import status
 
-from .auth_helpers import perform_logout, get_session_from_request, get_user_id
+from .auth_helpers import get_session_from_request, get_user_id, perform_logout
 from .serializers import UserSerializer
+from django.contrib.auth import logout
+from django.contrib.sessions.models import Session
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -54,6 +57,53 @@ def signin(request):
 
 
 # Logout
+
+
+# def get_session_id(request):
+#     session_id = request.COOKIES.get('sessionid')
+#     if not session_id:
+#         logger.error("Session ID is missing.")
+#         raise ValueError("Session ID is missing!")
+#     return session_id
+
+
+# def get_session(session_id):
+#     try:
+#         session = Session.objects.get(session_key=session_id)
+#     except ObjectDoesNotExist:
+#         logger.error("Invalid session ID.")
+#         raise ValueError("Invalid session ID.")
+#     return session
+#
+#
+# def get_user_id(session):
+#     user_id = session.get_decoded().get('_auth_user_id')
+#     if not user_id:
+#         logger.error("User not authenticated.")
+#         raise ValueError("User not authenticated.")
+#     return user_id
+#
+#
+# def perform_logout(request):
+#     try:
+#         logout(request)
+#         logger.info("User successfully logged out.")
+#     except Exception as e:
+#         logger.error(f"Error logging out: {e}")
+#         raise ValueError("Error logging out.")
+#
+#
+# def get_csrf(request):
+#     csrf = request.META.get('HTTP_X_CSRFTOKEN')
+#     if not csrf:
+#         logger.error("Csrf Token is missing.")
+#         raise ValueError("Csrf Token is missing!")
+#     return csrf
+#
+#
+# def get_session_from_request(request):
+#     session_id = get_session_id(request)
+#     return get_session(session_id)
 
 
 @api_view(['POST'])
