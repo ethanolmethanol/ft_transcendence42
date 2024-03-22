@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { SignUpPageComponent } from './Pages/sign-up-page/sign-up-page.component';
-import { SignInPageComponent } from './Pages/sign-in-page/sign-in-page.component';
-import { NotFoundPageComponent } from './Pages/not-found-page/not-found-page.component';
-import { HomePageComponent } from "./Pages/home-page/home-page.component";
+import { SignUpPageComponent } from './pages/sign-up-page/sign-up-page.component';
+import { SignInPageComponent } from './pages/sign-in-page/sign-in-page.component';
+import { NotFoundPageComponent } from './pages/not-found-page/not-found-page.component';
+import { HomePageComponent } from "./pages/home-page/home-page.component";
 import { AuthGuard } from "./guards/auth.guard";
 
 export const routes: Routes = [

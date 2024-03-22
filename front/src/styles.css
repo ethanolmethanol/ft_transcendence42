@@ -40,7 +40,6 @@ form {
 input {
   /* Example: Set a 2px solid border with a light gray color */
   border: 2px solid #ccc;
-  /* Example: Add a border-radius to make the corners rounded */
   border-radius: 8px;
   width: 100%;
   font-size: 0.8em;
@@ -49,4 +48,15 @@ input {
   flex-direction: column;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  border-radius: 10px;
+  background-color: #007bff; /* Change the background color on hover */
+  color: white; /* Change the text color on hover */
+  box-shadow: none;
+  border: none;
 }

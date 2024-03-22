@@ -6,15 +6,10 @@ form-group {
   align-items: flex-start;
 }
 
-button {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  font-size: 1.2em;
-  border-radius: 10px;
-  background-color: #007bff; /* Change the background color on hover */
-  color: white; /* Change the text color on hover */
-  box-shadow: none;
-  border: none;
+.form-group input {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
 }
 
 .disabled-button {

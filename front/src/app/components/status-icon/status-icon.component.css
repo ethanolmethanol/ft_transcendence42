@@ -6,6 +6,12 @@
   margin-left: 10px;
 }
 
+.material-icons {
+  font-size: 1.3em;
+  background: white;
+  border-radius: 50%;
+}
+
 .window-error-message {
   position: absolute;
   top: 50%;
