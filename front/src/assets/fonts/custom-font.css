@@ -11,3 +11,10 @@
   font-weight: bold;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'Bruce_Forever';
+  src: url('BruceForeverRegular-X3jd2.ttf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}

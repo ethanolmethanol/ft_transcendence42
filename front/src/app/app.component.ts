@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {SignInPageComponent} from "./Pages/sign-in-page/sign-in-page.component";
+import {SignInPageComponent} from "./pages/sign-in-page/sign-in-page.component";
 
 @Component({
   selector: 'app-root',

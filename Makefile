@@ -1,6 +1,6 @@
 NAME			= ft_transcendence
 
-DATADIRS		= db/data/ front/dist/transcendence/browser/
+DATADIRS		= db/data/ front/dist/transcendence/browser/ ~/tr_certs
 
 ENV_SRC			= ~/.env
 
@@ -13,7 +13,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter
+CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter # pong redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -26,7 +26,14 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-${NAME}: up health
+# Mkcert installation
+
+LOCAL_BIN		= $(HOME)/bin
+CERT_DIR 		= ssl/
+SSL_CONT_DIRS	= front/ssl back_auth/ssl
+SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
+
+${NAME}: gen-cert up health
 	$(call printname)
 
 # ${ENV_FILE}
@@ -115,19 +122,27 @@ fix:
 dev: all
 	cd front/; npm run watch
 
+install-mkcert:
+	@$(SHELL) ./scripts/install_mkcert.sh
+
+gen-cert: install-mkcert
+	@$(SHELL) ./scripts/gen_cert.sh
+
 clean:
 	@${COMPOSE} down -v
 
 fclean: clean
-	@docker --log-level=warn system prune -af
+	@docker --log-level=warn system prune -f
+	@ rm -rf ${SSL_DIRS}
 
 ffclean: fclean
-	@sudo rm -rf ${DATADIRS}
+	@docker --log-level=warn system prune -af
+	@ rm -rf ${DATADIRS}
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all
 
 ######## FUNKY STUFF ########
 
-.PHONY: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health
+.PHONY: fclean full all datadirs fix logs nginxlogs wlogs dbip info re talk clean down infor up health install-mkcert gen-cert
 .SILENT: health
