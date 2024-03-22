@@ -37,8 +37,9 @@ export class AuthService {
   }
 
   public logout(): void {
-    this.processLogout().subscribe();
-    this.router.navigate(['sign-in']);
+    this.processLogout().subscribe(() => {
+      this.router.navigate(['sign-in']);
+    });
   }
 
   private processLogout() {
