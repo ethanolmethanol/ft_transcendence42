@@ -13,9 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Update
-        run: sudo apt-get update && sudo apt-get install -y make
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -29,11 +26,9 @@ jobs:
       - name: Install mkcert
         run: |
           sudo apt-get install -y libnss3-tools
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
-            wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-            chmod +x mkcert-v1.4.3-linux-amd64
-            mv mkcert-v1.4.3-linux-amd64 /usr/local/bin/mkcert
-          fi
+          wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+          chmod +x mkcert-v1.4.3-linux-amd64
+          mv mkcert-v1.4.3-linux-amd64 /usr/local/bin/mkcert
 
       - name: Build containers AND check healthiness
         run: |
