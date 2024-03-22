@@ -31,7 +31,6 @@ export class AuthService {
       }),
       catchError((error) => {
         console.error('Error checking login status', error);
-        this.router.navigate(['/sign-in']);
         return of(false);
       })
     );

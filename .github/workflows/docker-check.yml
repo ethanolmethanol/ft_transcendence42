@@ -33,9 +33,6 @@ jobs:
             wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
             chmod +x mkcert-v1.4.3-linux-amd64
             mv mkcert-v1.4.3-linux-amd64 /usr/local/bin/mkcert
-          elif [[ "${{ runner.os }}" == "macOS" ]]; then
-            brew install mkcert
-            brew link --force mkcert
           fi
 
       - name: Build containers AND check healthiness

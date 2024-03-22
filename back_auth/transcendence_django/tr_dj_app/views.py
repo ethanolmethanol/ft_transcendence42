@@ -122,10 +122,9 @@ def logout_view(request):
 
 @api_view(['GET'])
 @csrf_protect
-@login_required
 def is_logged_view(request):
     try:
         get_session_from_request(request)
         return Response({"detail": "User is logged in."}, status=200)
     except Exception as e:
-        return Response({"detail": "User isn't logged in:" + str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"detail": "User isn't logged in: " + str(e)}, status=status.HTTP_401_UNAUTHORIZED)
