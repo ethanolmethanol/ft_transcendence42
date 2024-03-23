@@ -16,6 +16,7 @@ export class PaddleComponent {
   ];
   private gameHeight = 500; // Height of the game component
   private paddleHeight = 100; // Height of the paddle
+  private speed = 10; // Speed at which the paddle moves
   position = (this.gameHeight - this.paddleHeight) / 2; // Initial position of the paddle
   @HostListener('window:keydown', ['$event'])
   private onKeyDown(event: KeyboardEvent) {
@@ -33,14 +34,14 @@ export class PaddleComponent {
 
   private moveUp() {
     if (this.position > 0) {
-      this.position -= 10; // Move the paddle up
+      this.position -= this.speed; // Move the paddle up
       this.updatePaddlePosition();
     }
   }
 
   private moveDown() {
     if (this.position < this.gameHeight - this.paddleHeight) {
-      this.position += 10; // Move the paddle down
+      this.position += this.speed; // Move the paddle down
       this.updatePaddlePosition();
     }
   }
