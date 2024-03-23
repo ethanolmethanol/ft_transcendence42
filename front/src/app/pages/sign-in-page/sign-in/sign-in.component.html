@@ -10,7 +10,7 @@
       <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password">
     </div>
     <button type="submit" [disabled]="!signInForm.valid" [class.hover-effect]="signInForm.valid" [class.disabled-button]="!signInForm.valid">Sign In</button>
-    <a class="sign-up-message" routerLink="/sign-up">
+    <a routerLink="/sign-up">
       Don't have an account?<br>
       Sign up here.
     </a>

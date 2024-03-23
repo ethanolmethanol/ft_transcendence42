@@ -36,40 +36,6 @@
     cursor: not-allowed; /* Cursor style to indicate not clickable */
 }
 
-.hover-effect:hover {
-    background-color: #0056b3; /* Darker shade for hover effect */
-    transition: background-color 0.3s ease;
-}
-
-.sign-in-message {
-    display: inline-block;
-    padding: 10px 20px;
-    margin-top: 20px;
-    background-color: #007bff; /* Bootstrap primary color */
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-size: 0.6em;
-    border-radius: 10px;
-    transition: background-color 0.3s ease;
-    animation: fadeIn 1s ease-out;
-}
-
-.sign-in-message:hover {
-    background-color: #0056b3; /* Darker shade for hover effect */
-}
-
-@keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px)
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0px)
-    }
-}
-
 .error-message-container {
     height: 40px; /* Adjust this value based on the height of your error message */
 }
