@@ -1,0 +1,13 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #2b669a;
+}
+
+.game {
+  border-radius: 4px;
+  background-color: #000;
+  width: 700px;
+  height: 500px;
+}
