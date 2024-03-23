@@ -1,13 +1,14 @@
+import logging
+
 from django.contrib.auth import logout
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
 
-import logging
-
 logger = logging.getLogger(__name__)
 
+
 def get_session_id(request):
-    session_id = request.COOKIES.get('sessionid')
+    session_id = request.COOKIES.get("sessionid")
     if not session_id:
         logger.error("Session ID is missing.")
         raise ValueError("Session ID is missing!")
@@ -24,7 +25,7 @@ def get_session(session_id):
 
 
 def get_user_id(session):
-    user_id = session.get_decoded().get('_auth_user_id')
+    user_id = session.get_decoded().get("_auth_user_id")
     if not user_id:
         logger.error("User not authenticated.")
         raise ValueError("User not authenticated.")
@@ -41,7 +42,7 @@ def perform_logout(request):
 
 
 def get_csrf(request):
-    csrf = request.META.get('HTTP_X_CSRFTOKEN')
+    csrf = request.META.get("HTTP_X_CSRFTOKEN")
     if not csrf:
         logger.error("Csrf Token is missing.")
         raise ValueError("Csrf Token is missing!")
