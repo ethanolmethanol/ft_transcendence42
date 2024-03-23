@@ -9,46 +9,28 @@ import {Component, HostListener, Input} from '@angular/core';
 })
 export class PaddleComponent {
   @Input() id: number = 0;
-  private paddles = [
-    { id: 1, upKey: 'ArrowUp', downKey: 'ArrowDown' },
-    { id: 2, upKey: 'w', downKey: 's' },
-    // Add more paddles as needed
-  ];
   private gameHeight = 500; // Height of the game component
   private paddleHeight = 100; // Height of the paddle
   private speed = 10; // Speed at which the paddle moves
-  position = (this.gameHeight - this.paddleHeight) / 2; // Initial position of the paddle
-  @HostListener('window:keydown', ['$event'])
-  private onKeyDown(event: KeyboardEvent) {
-    // Find the paddle with the current id
-    const paddle = this.paddles.find(p => p.id === this.id);
+  positionX = this.gameHeight * (this.id % 2); // Initial position of the paddle
+  positionY = (this.gameHeight - this.paddleHeight) / 2; // Initial position of the paddle
 
-    if (paddle) {
-      if (event.key === paddle.upKey) {
-        this.moveUp();
-      } else if (event.key === paddle.downKey) {
-        this.moveDown();
-      }
-    }
-  }
-
-  private moveUp() {
-    if (this.position > 0) {
-      this.position -= this.speed; // Move the paddle up
+  moveUp() {
+    if (this.positionY > 0) {
+      this.positionY -= this.speed; // Move the paddle up
       this.updatePaddlePosition();
     }
   }
 
-  private moveDown() {
-    if (this.position < this.gameHeight - this.paddleHeight) {
-      this.position += this.speed; // Move the paddle down
+  moveDown() {
+    if (this.positionY < this.gameHeight - this.paddleHeight) {
+      this.positionY += this.speed; // Move the paddle down
       this.updatePaddlePosition();
     }
   }
 
   private updatePaddlePosition() {
-    // Logic to update the paddle's position in the DOM
-    // This could involve setting a CSS property or manipulating the DOM directly
-    console.log('Paddle position updated:', this.position);
+    console.log('Paddle position updated:', this.positionX, this.positionY);
   }
 }
+
