@@ -1,4 +1,4 @@
-import {Component, HostListener} from '@angular/core';
+import {Component, HostListener, Input} from '@angular/core';
 
 @Component({
   selector: 'app-paddle',
@@ -8,34 +8,44 @@ import {Component, HostListener} from '@angular/core';
   styleUrl: './paddle.component.css'
 })
 export class PaddleComponent {
-  gameHeight = 500; // Height of the game component
-  paddleHeight = 100; // Height of the paddle
-  position = 0; // Initial position of the paddle
-
+  @Input() id: number = 0;
+  private paddles = [
+    { id: 1, upKey: 'ArrowUp', downKey: 'ArrowDown' },
+    { id: 2, upKey: 'w', downKey: 's' },
+    // Add more paddles as needed
+  ];
+  private gameHeight = 500; // Height of the game component
+  private paddleHeight = 100; // Height of the paddle
+  position = (this.gameHeight - this.paddleHeight) / 2; // Initial position of the paddle
   @HostListener('window:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'ArrowUp') {
-      this.moveUp();
-    } else if (event.key === 'ArrowDown') {
-      this.moveDown();
+  private onKeyDown(event: KeyboardEvent) {
+    // Find the paddle with the current id
+    const paddle = this.paddles.find(p => p.id === this.id);
+
+    if (paddle) {
+      if (event.key === paddle.upKey) {
+        this.moveUp();
+      } else if (event.key === paddle.downKey) {
+        this.moveDown();
+      }
     }
   }
 
-  moveUp() {
+  private moveUp() {
     if (this.position > 0) {
       this.position -= 10; // Move the paddle up
       this.updatePaddlePosition();
     }
   }
 
-  moveDown() {
+  private moveDown() {
     if (this.position < this.gameHeight - this.paddleHeight) {
       this.position += 10; // Move the paddle down
       this.updatePaddlePosition();
     }
   }
 
-  updatePaddlePosition() {
+  private updatePaddlePosition() {
     // Logic to update the paddle's position in the DOM
     // This could involve setting a CSS property or manipulating the DOM directly
     console.log('Paddle position updated:', this.position);

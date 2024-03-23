@@ -11,5 +11,4 @@ import {PaddleComponent} from "../../components/paddle/paddle.component";
   styleUrl: './game-page.component.css'
 })
 export class GamePageComponent {
-
 }
