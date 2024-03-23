@@ -1,16 +1,14 @@
 # import the logging library
 import logging
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.sessions.models import Session
-from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .auth_helpers import get_session_from_request, get_user_id, perform_logout
+from .auth_helpers import get_session_from_request, perform_logout
 from .serializers import UserSerializer
 
 # import libraries for username and email availability checks
@@ -72,8 +70,8 @@ def signin(request):
 def logout_view(request):
     try:
         # Assuming you want to perform some action before logging out
-        session = get_session_from_request(request)
-        user_id = get_user_id(session)
+        get_session_from_request(request)
+        # user_id = get_user_id(session)
         perform_logout(request)
         return Response({"detail": "Successfully logged out."}, status=200)
     except ValueError as e:

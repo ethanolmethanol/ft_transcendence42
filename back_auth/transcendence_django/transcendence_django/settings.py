@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,7 +25,7 @@ SECRET_KEY = "django-insecure-*6@dzmyjvs5+h)h1e)a!7rh*(u7%cb1g@zaad_p!a11n(k((zb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -80,8 +81,6 @@ WSGI_APPLICATION = "transcendence_django.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-import os
 
 DATABASES = {
     "default": {
