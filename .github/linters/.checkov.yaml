@@ -1,0 +1,13 @@
+block-list-secret-scan: []
+branch: master
+download-external-modules: false
+evaluate-variables: true
+external-modules-download-path: .external_modules
+mask: []
+quiet: true
+secrets-history-timeout: 12h
+secrets-scan-file-type: []
+skip-check:
+  - CKV_DOCKER_3
+  - CKV2_GHA_1
+summary-position: top
