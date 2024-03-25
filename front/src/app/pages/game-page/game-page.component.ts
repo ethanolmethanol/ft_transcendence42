@@ -16,8 +16,8 @@ export class GamePageComponent implements AfterViewInit {
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
 
   private paddleBinding = [
-    { id: 1, upKey: 'ArrowUp', downKey: 'ArrowDown' },
-    { id: 2, upKey: 'w', downKey: 's' },
+    { id: 1, upKey: 'w', downKey: 's' },
+    { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
   ];
 
   private pressedKeys = new Set<string>();
