@@ -7,6 +7,10 @@ body {
   width: 100vw; /* Full viewport width */
   margin: 0;
   font-family: 'Bruce_Forever', sans-serif;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
 }
 
 h1 {

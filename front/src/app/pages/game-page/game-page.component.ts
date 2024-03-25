@@ -39,17 +39,26 @@ export class GamePageComponent implements AfterViewInit {
     this.paddleBinding.forEach(paddleBinding => {
       const paddle = this.paddles.find(p => p.id === paddleBinding.id);
       if (paddle) {
-        if (this.pressedKeys.has(paddleBinding.upKey)) {
-          paddle.moveUp();
-        } else if (this.pressedKeys.has(paddleBinding.downKey)) {
-          paddle.moveDown();
-        }
+        this.movePaddle(paddle, paddleBinding)
       }
     });
 
     // Call this function again on the next frame
     requestAnimationFrame(() => this.gameLoop());
   }
+
+  private movePaddle(paddle: PaddleComponent, binding: { upKey: string; downKey: string }) {
+    const isMovingUp = this.pressedKeys.has(binding.upKey) && !this.pressedKeys.has(binding.downKey);
+    const isMovingDown = this.pressedKeys.has(binding.downKey) && !this.pressedKeys.has(binding.upKey);
+
+    if (isMovingUp) {
+      paddle.moveUp();
+    } else if (isMovingDown) {
+      paddle.moveDown();
+    }
+  }
+
+
 
   ngAfterViewInit() {
     this.gameLoop();

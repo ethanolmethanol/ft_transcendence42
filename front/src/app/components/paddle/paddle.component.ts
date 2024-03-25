@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, INITIAL_SHIFT_POSITION_X, PADDLE_SPEED} from '../../constants';
+import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_X_OFFSET, PADDLE_SPEED} from '../../constants';
 
 @Component({
   selector: 'app-paddle',
@@ -12,17 +12,14 @@ export class PaddleComponent implements OnInit {
   @Input() id: number = 0;
   paddleWidth = PADDLE_WIDTH;
   paddleHeight = PADDLE_HEIGHT;
-  positionX;
-  positionY;
-
-  constructor() {
-    this.positionX = INITIAL_SHIFT_POSITION_X;
-    this.positionY = (GAME_HEIGHT - PADDLE_HEIGHT) / 2; // Initial position of the paddle
-  }
+  positionX = 0;
+  positionY = (GAME_HEIGHT - PADDLE_HEIGHT) / 2;
 
   ngOnInit() {
-    if (this.id == 2) {
-      this.positionX *= -1;
+    if (this.id == 1) {
+      this.positionX = PADDLE_X_OFFSET;
+    } else if (this.id == 2) {
+      this.positionX = GAME_WIDTH - 2 * PADDLE_WIDTH - PADDLE_X_OFFSET;
     }
     console.log(`Paddle ${this.id} initialized:`, this.positionX, this.positionY);
   }
@@ -42,6 +39,6 @@ export class PaddleComponent implements OnInit {
   }
 
   private updatePaddlePosition() {
-    console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
+    // console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
   }
 }
