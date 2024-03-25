@@ -40,13 +40,33 @@ services:
             retries: 10
             start_period: 5s
 
+    back_engine:
+        image: back_engine
+        container_name: back_engine
+        build:
+            context: back_engine
+        depends_on:
+            redis:
+                condition: service_healthy
+        ports:
+            - "8001:443"
+        networks:
+            - transcendence
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+            interval: 5s
+            timeout: 1s
+            retries: 10
+            start_period: 5s
+            
     front:
         image: front
         container_name: front
         build:
             context: front
-        volumes:
-            - front-data:/usr/share/nginx/html
+        # volumes:
+        #     - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -55,12 +75,28 @@ services:
         depends_on:
             back_auth:
                 condition: service_healthy
+            back_engine:
+                condition: service_healthy
         healthcheck:
             test: 'curl -kfsSL https://localhost:443/'
             interval: 5s
             timeout: 1s
             retries: 10
             start_period: 5s
+    
+    redis:
+        image: "redis:latest"
+        container_name: redis
+        ports:
+          - "6380:6379"
+        healthcheck:
+            test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+            interval: 5s
+            timeout: 1s
+            retries: 10
+            start_period: 5s
+        networks:
+            - transcendence
 
     # yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
     prometheus:
@@ -171,12 +207,12 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    front-data:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: './front/dist/transcendence/browser'
+    # front-data:
+    #     driver: local
+    #     driver_opts:
+    #         type: 'none'
+    #         o: 'bind'
+    #         device: './front/dist/transcendence/browser'
     db-data:
 
 

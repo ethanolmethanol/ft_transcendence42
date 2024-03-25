@@ -3,7 +3,7 @@
 CERT_DIR="ssl/"
 CERT_PATH="${CERT_DIR}/serv.crt"
 KEY_PATH="${CERT_DIR}/serv.key"
-SSL_CONT_DIRS="front/ssl back_auth/ssl"
+SSL_CONT_DIRS="front/ssl back_auth/ssl back_engine/ssl"
 
 if [ ! -e "${CERT_DIR}" ]; then
 	mkcert serv localhost 127.0.0.1 ::1

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h2>WebSocket Test Client</h2>
+
+    <div>
+        <button id="connect">Connect</button>
+        <button id="disconnect" disabled>Disconnect</button>
+    </div>
+
+    <div>
+        <input type="text" id="message" placeholder="Message to send">
+        <button id="send">Send Message</button>
+    </div>
+
+    <div id="status">Disconnected</div>
+    <div id="messages"></div>
+
+    <script>
+        document.getElementById('connect').onclick = function() {
+            const ws = new WebSocket('wss://localhost:8001/ws/game/room_name/');
+
+            ws.onopen = function() {
+                document.getElementById('status').textContent = 'Connected';
+                document.getElementById('connect').disabled = true;
+                document.getElementById('disconnect').disabled = false;
+                console.log('Connected to the server');
+            };
+
+            ws.onclose = function() {
+                document.getElementById('status').textContent = 'Disconnected';
+                document.getElementById('connect').disabled = false;
+                document.getElementById('disconnect').disabled = true;
+                console.log('Disconnected from the server');
+            };
+
+            ws.onmessage = function(event) {
+                const messageElement = document.createElement('div');
+                messageElement.textContent = 'Message from server: ' + event.data;
+                document.getElementById('messages').appendChild(messageElement);
+                console.log('Message from server', event.data);
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+
+            document.getElementById('send').onclick = function() {
+            const message = document.getElementById('message').value;
+            const data = JSON.stringify({message: message});
+            ws.send(data);
+            console.log('Message sent to server', data);
+        };
+
+            document.getElementById('disconnect').onclick = function() {
+                ws.close();
+            };
+        };
+    </script>
+</body>
+</html>
