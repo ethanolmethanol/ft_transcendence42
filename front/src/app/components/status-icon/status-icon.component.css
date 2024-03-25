@@ -1,0 +1,47 @@
+.test-status {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.material-icons {
+  font-size: 1.3em;
+  background: white;
+  border-radius: 50%;
+}
+
+.window-error-message {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  min-height: 20px;
+  margin-left: 10px;
+  font-size: 0.8em;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  white-space: nowrap; /* Prevents the text from wrapping */
+  transition: opacity 0.3s ease-in-out; /* Smooth transition */
+  opacity: 0; /* set initial opacity to 0 */
+  animation: faade-in 0.9s ease-in-out forwards; /* Apply the faade-in animation */
+}
+
+.window-error-message.show {
+  opacity: 1; /* Set opacity to 1 when the error message is shown */
+}
+
+@keyframes faade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

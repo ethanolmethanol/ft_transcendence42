@@ -1,0 +1,39 @@
+<div class="background">
+  <div class="signup-header">
+    <h1>Create account</h1>
+  </div>
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <div class="input-error-container">
+          <input type="text" formControlName="username" class="form-control" placeholder="Username">
+          <app-username-error [control]="signupForm.controls.username" [isTouched]="signupForm.controls.username.touched" class="form-group label"></app-username-error>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="input-error-container">
+          <input type="email" formControlName="email" class="form-control" placeholder="Email">
+          <app-email-error [control]="signupForm.controls.email" [isTouched]="signupForm.controls.email.touched"  class="form-group label"></app-email-error>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="input-error-container">
+          <input type="password" formControlName="password" class="form-control" placeholder="Password">
+          <app-password-error [control]="signupForm.controls.password" [isTouched]="signupForm.controls.password.touched"  class="form-group label"></app-password-error>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="input-error-container">
+          <input type="password" formControlName="c_password" class="form-control" placeholder="Confirm Password">
+          <app-c-password-error [control]="signupForm.controls.c_password" [isTouched]="signupForm.controls.c_password.touched" class="form-group label"></app-c-password-error>
+        </div>
+      </div>
+      <button type="submit" [disabled]="!signupForm.valid" [class.hover-effect]="signupForm.valid" [class.disabled-button]="!signupForm.valid">Sign Up!</button>
+      <a class="sign-in-message" routerLink="/sign-in">
+        Already have an account?<br>
+        Sign in here.
+      </a>
+      <div class="error-message-container">
+        <app-error-message [condition]="hasUserCreationFailed()" [message]="errorMessage"></app-error-message>
+      </div>
+  </form>
+</div>

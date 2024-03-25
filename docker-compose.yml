@@ -2,12 +2,10 @@ version: '3'
 
 services:
     db:
-        image: db
+        image: postgres:latest
         container_name: db
-        build:
-            context: db
         volumes:
-            - db:/var/lib/pgsql/data
+            - db-data:/var/lib/postgresql/data
         ports:
             - "5432:5432"
         networks:
@@ -21,11 +19,11 @@ services:
             retries: 20
             start_period: 5s
 
-    back:
-        image: back
-        container_name: back
+    back_auth:
+        image: back_auth
+        container_name: back_auth
         build:
-            context: back
+            context: back_auth
         depends_on:
             db:
                 condition: service_healthy
@@ -36,7 +34,7 @@ services:
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: 'curl -kfsSL http://localhost:8000/'
+            test: 'python3 transcendence_django/manage.py health_check'
             interval: 5s
             timeout: 1s
             retries: 10
@@ -47,22 +45,24 @@ services:
         container_name: front
         build:
             context: front
+        volumes:
+            - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
             - transcendence
         restart: unless-stopped
         depends_on:
-            back:
+            back_auth:
                 condition: service_healthy
         healthcheck:
-            test: 'curl -kfsSL http://localhost:4200/'
+            test: 'curl -kfsSL https://localhost:443/'
             interval: 5s
             timeout: 1s
             retries: 10
             start_period: 5s
 
-# yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
+    # yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
     prometheus:
         image: prom/prometheus:v2.35.0
         container_name: prometheus
@@ -171,12 +171,14 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    db:
+    front-data:
         driver: local
         driver_opts:
             type: 'none'
             o: 'bind'
-            device: '${PWD}/db/data'
+            device: './front/dist/transcendence/browser'
+    db-data:
+
 
 networks:
     transcendence:

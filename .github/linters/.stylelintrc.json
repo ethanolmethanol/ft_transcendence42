@@ -1,0 +1,15 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "fix": true,
+  "rules": {
+    "number-max-precision": [
+      8,
+      {
+        "ignoreUnits": ["em"],
+        "severity": "warning"
+      }
+    ],
+    "no-descending-specificity": null,
+    "no-empty-source": null
+  }
+}
