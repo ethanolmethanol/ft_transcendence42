@@ -25,20 +25,30 @@ export class PaddleComponent implements OnInit {
   }
 
   moveUp() {
+    const initialPosition = this.positionY;
     if (this.positionY - PADDLE_SPEED >= 0) {
       this.positionY -= PADDLE_SPEED; // Move the paddle up
+    } else {
+      this.positionY = 0; // Move the paddle up
+    }
+    if (initialPosition !== this.positionY) {
       this.updatePaddlePosition();
     }
   }
 
   moveDown() {
+    const initialPosition = this.positionY;
     if (this.positionY + PADDLE_HEIGHT + PADDLE_SPEED <= GAME_HEIGHT) {
       this.positionY += PADDLE_SPEED; // Move the paddle down
+    } else {
+      this.positionY = GAME_HEIGHT - PADDLE_HEIGHT;
+    }
+    if (initialPosition !== this.positionY) {
       this.updatePaddlePosition();
     }
   }
 
   private updatePaddlePosition() {
-    // console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
+    console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
   }
 }
