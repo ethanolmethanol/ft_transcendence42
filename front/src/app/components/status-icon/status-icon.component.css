@@ -25,21 +25,22 @@
   border: 1px solid #f5c6cb;
   border-radius: 5px;
   padding: 5px 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   white-space: nowrap; /* Prevents the text from wrapping */
   transition: opacity 0.3s ease-in-out; /* Smooth transition */
   opacity: 0; /* set initial opacity to 0 */
-  animation: fadeIn 0.9s ease-in-out forwards; /* Apply the fadeIn animation */
+  animation: faade-in 0.9s ease-in-out forwards; /* Apply the faade-in animation */
 }
 
 .window-error-message.show {
   opacity: 1; /* Set opacity to 1 when the error message is shown */
 }
 
-@keyframes fadeIn {
+@keyframes faade-in {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
