@@ -73,6 +73,7 @@ def logout_view(request):
     except ValueError as e:
         return Response({"detail": str(e)}, status=500)
 
+
 # Is logged
 
 
