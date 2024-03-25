@@ -15,7 +15,7 @@ class EmailOrUsernameModelBackend(ModelBackend):
 
         if user.check_password(password):
             return user
-        # return None
+        return None
 
     def get_user(self, user_id):
         user_model = get_user_model()
