@@ -62,6 +62,43 @@ ${ENV_FILE}:
 # hellodb:
 # 	echo $(DB_NAME)
 
+front/.stylelintrc.json:
+	@echo -e "$(R)Woops! Looks like you don't have stylelint installed.$(N)"
+	cd front && npm install stylelint && npm init stylelint
+
+format-css: | front/.stylelintrc.json
+	cd front && npx stylelint "**/*.css" --fix
+
+%/venv:
+	@echo -e "$(Y)Setting up new venv for $@.$(N)"
+	@python3 -m venv $@
+
+PY_SERVICES = back_auth
+
+PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint flake8 isort mypy)
+
+PY_MOD_DEPS = pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
+
+PYLINT_ARGS = --load-plugins pylint_django --django-settings-module transcendence_django.settings --disable=C0114 --disable=C0115 --disable=C0116 --disable=R0903 transcendence_django/*_app
+
+$(addprefix %, $(PY_FMT_DEPS)): | %/venv
+	@echo -e "$(Y)Installing dependencies for python linting (missing at least $(notdir $@)).$(N)"
+	@cd $*/venv/bin && ./pip install $(notdir $(PY_FMT_DEPS)) $(PY_MOD_DEPS) > /dev/null
+
+format-python: | $(foreach tool,$(PY_FMT_DEPS),$(addsuffix $(tool),$(PY_SERVICES)))
+	for c in $(PY_SERVICES); do cd $$c; cp ../.github/linters/.flake8 .; $(foreach tool,$(PY_FMT_DEPS),echo -e "$(G)$(notdir $(tool)):$(N)"; .$(tool) $(if $(findstring pylint, $(tool)), $(PYLINT_ARGS), .); ) cd ..; done
+
+format-cleanup:
+	rm -rf $(addsuffix /venv, $(PY_SERVICES))
+# pushd front && npm uninstall stylelint
+
+# lint:
+# 	docker run --rm \
+# 		-e RUN_LOCAL=true \
+# 		--env-file ".github/super-linter.env" \
+# 		-v "$(shell pwd)":/tmp/lint \
+# 		ghcr.io/super-linter/super-linter:latest
+
 testform:
 	python3 -m http.server -d back_auth/test_form -b localhost 1234
 

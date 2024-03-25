@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 /* You can add global styles to this file, and also import other style files */
-@import './assets/fonts/custom-font.css';
+@import url('./assets/fonts/custom-font.css');
 
 body {
   height: 100vh; /* Full viewport height */

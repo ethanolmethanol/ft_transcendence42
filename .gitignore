@@ -15,8 +15,10 @@ db/*
 /*/node_modules
 npm-debug.log
 yarn-error.log
+package-lock.json
+package.json
 
-# IDEs and editors
+# IDEs and edito
 .idea/
 .project
 .classpath
@@ -26,11 +28,7 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 .history/*
 
 # Miscellaneous
