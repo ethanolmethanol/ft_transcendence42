@@ -1,1 +1,4 @@
-<div class="paddle" [style.top.px]="positionY"></div>
+<div class="paddle"
+     [style]="{'--paddle-width': paddleWidth + 'px', '--paddle-height': paddleHeight + 'px'}"
+     [style.left.px]="positionX" [style.top.px]="positionY">
+</div>

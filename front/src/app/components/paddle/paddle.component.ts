@@ -1,4 +1,5 @@
-import {Component, HostListener, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, INITIAL_SHIFT_POSITION_X, PADDLE_SPEED} from '../../constants';
 
 @Component({
   selector: 'app-paddle',
@@ -7,30 +8,40 @@ import {Component, HostListener, Input} from '@angular/core';
   templateUrl: './paddle.component.html',
   styleUrl: './paddle.component.css'
 })
-export class PaddleComponent {
+export class PaddleComponent implements OnInit {
   @Input() id: number = 0;
-  private gameHeight = 500; // Height of the game component
-  private paddleHeight = 100; // Height of the paddle
-  private speed = 10; // Speed at which the paddle moves
-  // positionX = this.gameHeight * (this.id % 2); // Initial position of the paddle
-  positionY = (this.gameHeight - this.paddleHeight) / 2; // Initial position of the paddle
+  paddleWidth = PADDLE_WIDTH;
+  paddleHeight = PADDLE_HEIGHT;
+  positionX;
+  positionY;
+
+  constructor() {
+    this.positionX = INITIAL_SHIFT_POSITION_X;
+    this.positionY = (GAME_HEIGHT - PADDLE_HEIGHT) / 2; // Initial position of the paddle
+  }
+
+  ngOnInit() {
+    if (this.id == 2) {
+      this.positionX *= -1;
+    }
+    console.log(`Paddle ${this.id} initialized:`, this.positionX, this.positionY);
+  }
 
   moveUp() {
-    if (this.positionY > 0) {
-      this.positionY -= this.speed; // Move the paddle up
+    if (this.positionY - PADDLE_SPEED >= 0) {
+      this.positionY -= PADDLE_SPEED; // Move the paddle up
       this.updatePaddlePosition();
     }
   }
 
   moveDown() {
-    if (this.positionY < this.gameHeight - this.paddleHeight) {
-      this.positionY += this.speed; // Move the paddle down
+    if (this.positionY + PADDLE_HEIGHT + PADDLE_SPEED <= GAME_HEIGHT) {
+      this.positionY += PADDLE_SPEED; // Move the paddle down
       this.updatePaddlePosition();
     }
   }
 
   private updatePaddlePosition() {
-    // console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
+    console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
   }
 }
-

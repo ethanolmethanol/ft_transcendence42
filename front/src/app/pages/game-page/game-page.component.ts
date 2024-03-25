@@ -1,6 +1,7 @@
 import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit} from '@angular/core';
 import {PaddleComponent} from "../../components/paddle/paddle.component";
 import {RouterLink} from "@angular/router";
+import {GAME_HEIGHT, GAME_WIDTH} from "../../constants";
 
 @Component({
   selector: 'app-game-page',
@@ -13,6 +14,8 @@ import {RouterLink} from "@angular/router";
   styleUrl: './game-page.component.css'
 })
 export class GamePageComponent implements AfterViewInit {
+  gameWidth = GAME_WIDTH;
+  gameHeight = GAME_HEIGHT;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
 
   private paddleBinding = [

@@ -10,7 +10,7 @@ import {GamePageComponent} from "./pages/game-page/game-page.component";
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
-  { path: 'game', component: GamePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
+  { path: 'local-game', component: GamePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'sign-in', component: SignInPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: 'sign-up', component: SignUpPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: '404', component: NotFoundPageComponent, pathMatch: 'full' },
