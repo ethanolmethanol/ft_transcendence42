@@ -1,13 +1,16 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
 /* You can add global styles to this file, and also import other style files */
-@import url('./assets/fonts/custom-font.css');
+@import './assets/fonts/custom-font.css';
 
 body {
   height: 100vh; /* Full viewport height */
   width: 100vw; /* Full viewport width */
   margin: 0;
   font-family: 'Bruce_Forever', sans-serif;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
 }
 
 h1 {
@@ -59,4 +62,39 @@ button {
   color: white; /* Change the text color on hover */
   box-shadow: none;
   border: none;
+}
+
+a {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.6em;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+  animation: fadeIn 1s ease-out;
+}
+
+a:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
+  transition: background-color 0.3s ease;
+}
+
+.hover-effect:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
+  transition: background-color 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px)
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px)
+  }
 }
