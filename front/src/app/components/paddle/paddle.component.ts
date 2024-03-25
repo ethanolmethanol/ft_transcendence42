@@ -12,7 +12,7 @@ export class PaddleComponent {
   private gameHeight = 500; // Height of the game component
   private paddleHeight = 100; // Height of the paddle
   private speed = 10; // Speed at which the paddle moves
-  positionX = this.gameHeight * (this.id % 2); // Initial position of the paddle
+  // positionX = this.gameHeight * (this.id % 2); // Initial position of the paddle
   positionY = (this.gameHeight - this.paddleHeight) / 2; // Initial position of the paddle
 
   moveUp() {
@@ -30,7 +30,7 @@ export class PaddleComponent {
   }
 
   private updatePaddlePosition() {
-    console.log('Paddle position updated:', this.positionX, this.positionY);
+    // console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
   }
 }
 

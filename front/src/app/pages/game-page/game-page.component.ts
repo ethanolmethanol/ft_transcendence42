@@ -1,4 +1,4 @@
-import {Component, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit} from '@angular/core';
 import {PaddleComponent} from "../../components/paddle/paddle.component";
 import {RouterLink} from "@angular/router";
 
@@ -12,7 +12,7 @@ import {RouterLink} from "@angular/router";
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
 })
-export class GamePageComponent {
+export class GamePageComponent implements AfterViewInit {
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
 
   private paddleBinding = [
@@ -20,19 +20,35 @@ export class GamePageComponent {
     { id: 2, upKey: 'w', downKey: 's' },
   ];
 
+  private pressedKeys = new Set<string>();
+
   @HostListener('window:keydown', ['$event'])
   private onKeyDown(event: KeyboardEvent) {
-    const paddleBinding = this.paddleBinding.find(p => event.key === p.upKey || event.key === p.downKey);
+    this.pressedKeys.add(event.key);
+  }
 
-    if (paddleBinding) {
+  @HostListener('window:keyup', ['$event'])
+  private onKeyUp(event: KeyboardEvent) {
+    this.pressedKeys.delete(event.key);
+  }
+
+  private gameLoop() {
+    this.paddleBinding.forEach(paddleBinding => {
       const paddle = this.paddles.find(p => p.id === paddleBinding.id);
       if (paddle) {
-        if (event.key === paddleBinding.upKey) {
+        if (this.pressedKeys.has(paddleBinding.upKey)) {
           paddle.moveUp();
-        } else if (event.key === paddleBinding.downKey) {
+        } else if (this.pressedKeys.has(paddleBinding.downKey)) {
           paddle.moveDown();
         }
       }
-    }
+    });
+
+    // Call this function again on the next frame
+    requestAnimationFrame(() => this.gameLoop());
+  }
+
+  ngAfterViewInit() {
+    this.gameLoop();
   }
 }
