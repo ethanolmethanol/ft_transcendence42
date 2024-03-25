@@ -1,3 +1,5 @@
+#!/bin/bash
+
 CERT_DIR="ssl/"
 CERT_PATH="${CERT_DIR}/serv.crt"
 KEY_PATH="${CERT_DIR}/serv.key"

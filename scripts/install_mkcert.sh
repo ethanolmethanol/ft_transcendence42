@@ -1,3 +1,5 @@
+#!/bin/bash
+
 MKCERT_VERSION="v1.4.3"
 MKCERT_BIN="mkcert"
 MKCERT_URL="https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-${MKCERT_VERSION}-linux-amd64"
