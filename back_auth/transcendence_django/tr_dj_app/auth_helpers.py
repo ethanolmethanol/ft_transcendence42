@@ -13,14 +13,12 @@ def get_session_id(request):
         logger.error("Session ID is missing.")
         raise ValueError("Session ID is missing!")
     return session_id
-
-
 def get_session(session_id):
     try:
         session = Session.objects.get(session_key=session_id)
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist as exc:
         logger.error("Invalid session ID.")
-        raise ValueError("Invalid session ID.")
+        raise ValueError("Invalid session ID.") from exc
     return session
 
 
@@ -30,15 +28,13 @@ def get_user_id(session):
         logger.error("User not authenticated.")
         raise ValueError("User not authenticated.")
     return user_id
-
-
 def perform_logout(request):
     try:
         logout(request)
         logger.info("User successfully logged out.")
     except Exception as e:
-        logger.error(f"Error logging out: {e}")
-        raise ValueError("Error logging out.")
+        logger.error("Error logging out: %s", e)
+        raise ValueError("Error logging out.") from e
 
 
 def get_csrf(request):
@@ -47,8 +43,6 @@ def get_csrf(request):
         logger.error("Csrf Token is missing.")
         raise ValueError("Csrf Token is missing!")
     return csrf
-
-
 def get_session_from_request(request):
     session_id = get_session_id(request)
     return get_session(session_id)
