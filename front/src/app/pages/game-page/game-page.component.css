@@ -18,10 +18,11 @@ body {
   scale: 120%;
 }
 
-a {
+button {
   margin: 50px;
   position: absolute;
-  top: 30px;
-  left: 30px;
+  top: 2%;
+  left: 3%;
+  background-color: rgb(255, 0, 0, 0.5);
+  z-index: 1;
 }
-
