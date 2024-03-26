@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {BannerComponent} from "./banner/banner.component";
 import {LeaderboardComponent} from "./leaderboard/leaderboard.component";
+import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'app-home-page',
@@ -14,6 +15,14 @@ import {LeaderboardComponent} from "./leaderboard/leaderboard.component";
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
-export class HomePageComponent {
+export class HomePageComponent implements OnInit {
+  username!: string;
 
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+    this.userService.getUsername().subscribe(data => {
+      this.username = data.username;
+    });
+ }
 }

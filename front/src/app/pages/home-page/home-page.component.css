@@ -20,8 +20,15 @@ body {
   overflow: scroll;
 }
 
+.welcome {
+  font-size: 4em;
+  position: sticky;
+  top: 25vh;
+  color: white;
+}
+
 a {
   font-size: 2em;
-  position: absolute;
+  position: sticky;
   top: 50vh;
 }

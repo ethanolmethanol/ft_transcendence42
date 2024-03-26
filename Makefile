@@ -13,7 +13,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter # pong redis
+CONTAINERS		= back_auth back_user front db prometheus grafana node_exporter blackbox_exporter # pong redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -30,7 +30,7 @@ N				= \033[0m    # RESET
 
 LOCAL_BIN		= $(HOME)/bin
 CERT_DIR 		= ssl/
-SSL_CONT_DIRS	= front/ssl back_auth/ssl
+SSL_CONT_DIRS	= front/ssl back_auth/ssl back_user/ssl
 SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
 
 ${NAME}: gen-cert up health
@@ -73,7 +73,7 @@ format-css: | front/.stylelintrc.json
 	@echo -e "$(Y)Setting up new venv for $@.$(N)"
 	@python3 -m venv $@
 
-PY_SERVICES = back_auth
+PY_SERVICES = back_auth back_user
 
 PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint flake8 isort mypy)
 
