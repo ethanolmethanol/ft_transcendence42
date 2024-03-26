@@ -142,6 +142,10 @@ talk:
 	select c in ${CONTAINERS}; \
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
 
+test-engine:
+	@docker exec -it back_engine python manage.py test
+
+
 rmi:
 	@PS3="Select for which image you want to remove: "; \
 	select c in ${CONTAINERS}; \
