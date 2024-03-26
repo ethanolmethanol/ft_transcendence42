@@ -8,6 +8,25 @@
   margin: 5px;
 }
 
+.score-display {
+  position: absolute;
+  color: rgba(220, 220, 220, 0.5);
+  font-size: 100px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.score-player1, .score-player2 {
+  width: 50%;
+  text-align: center;
+  display: inline;
+  margin: 0 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .dotted-line {
   position: absolute;
   height: var(--game-height);

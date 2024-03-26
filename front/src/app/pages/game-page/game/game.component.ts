@@ -12,8 +12,10 @@ import {PaddleComponent} from "../../../components/paddle/paddle.component";
   styleUrl: './game.component.css'
 })
 export class GameComponent implements AfterViewInit {
-  gameWidth = GAME_WIDTH;
-  gameHeight = GAME_HEIGHT;
+  player1Score = 0;
+  player2Score = 0;
+  readonly gameWidth = GAME_WIDTH;
+  readonly gameHeight = GAME_HEIGHT;
   lineThickness = LINE_THICKNESS;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
 
