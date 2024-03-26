@@ -1,4 +1,5 @@
 body {
+  background-image: url("../../../assets/app-themes/game-background.gif");
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,6 +10,18 @@ body {
   overflow: auto;
 }
 
+.home-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+}
+
 a {
   font-size: 2em;
+  position: absolute;
+  top: 50vh;
 }
