@@ -32,7 +32,7 @@ async def test_move_paddle():
         "type": "move_paddle",
         "message": {
             "position": "up"
-        }async de
+        }
     })
     response = await communicator.receive_json_from()
     assert "paddle_moved" in response["type"]
