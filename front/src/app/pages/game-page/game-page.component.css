@@ -15,6 +15,7 @@ body {
   align-items: center;
   justify-content: center;
   background-color: #aaaaaa;
+  scale: 120%;
 }
 
 a {

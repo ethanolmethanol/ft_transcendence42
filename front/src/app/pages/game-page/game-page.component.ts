@@ -1,7 +1,6 @@
-import {Component, HostListener, OnInit, QueryList, ViewChildren, AfterViewInit} from '@angular/core';
+import {Component, HostListener, ElementRef, OnInit, AfterViewInit} from '@angular/core';
 import {PaddleComponent} from "../../components/paddle/paddle.component";
 import {RouterLink} from "@angular/router";
-import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS} from "../../constants";
 import {GameComponent} from "./game/game.component";
 
 @Component({
@@ -15,6 +14,25 @@ import {GameComponent} from "./game/game.component";
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
 })
-export class GamePageComponent {
+export class GamePageComponent implements OnInit, AfterViewInit {
+  constructor(private elementRef: ElementRef) {}
 
+  @HostListener('window:resize', ['$event'])
+  private onResize(event: Event) {
+    this.updateGameContainerScale();
+  }
+
+  ngOnInit() {
+    this.updateGameContainerScale();
+  }
+
+  ngAfterViewInit() {
+    this.updateGameContainerScale();
+  }
+
+  private updateGameContainerScale() {
+    const gameContainer = this.elementRef.nativeElement.querySelector('.game-container');
+    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    gameContainer.style.transform = `scale(${scale})`;
+  }
 }
