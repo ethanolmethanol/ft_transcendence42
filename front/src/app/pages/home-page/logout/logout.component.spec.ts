@@ -1,20 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { LogoutComponent } from './logout.component';
+import { AuthService } from "../../../services/auth/auth.service";
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;
-  let fixture: ComponentFixture<LogoutComponent>;
+  let authService: AuthService;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [LogoutComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(LogoutComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new LogoutComponent(authService);
   });
 
   it('should create', () => {

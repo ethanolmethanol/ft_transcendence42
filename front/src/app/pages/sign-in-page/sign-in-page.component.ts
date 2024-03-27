@@ -9,7 +9,7 @@ import {RouterLink} from "@angular/router";
     RouterLink,
   ],
   templateUrl: './sign-in-page.component.html',
-  styleUrl: './sign-in-page.component.css'
+  styleUrls: ['./sign-in-page.component.css']
 })
 export class SignInPageComponent {
 

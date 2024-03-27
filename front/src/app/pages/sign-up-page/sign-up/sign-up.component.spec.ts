@@ -1,20 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SignUpComponent } from './sign-up.component';
+import {AuthService} from "../../../services/auth/auth.service";
+import {FormBuilder} from "@angular/forms";
+import {Router} from "@angular/router";
 
 describe('SignUpComponent', () => {
   let component: SignUpComponent;
-  let fixture: ComponentFixture<SignUpComponent>;
+  let formBuilder: FormBuilder;
+  let authService: AuthService;
+  let router: Router;
+
+
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SignUpComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(SignUpComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new SignUpComponent(formBuilder, authService, router);
   });
 
   it('should create', () => {
