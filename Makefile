@@ -143,7 +143,6 @@ talk:
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
 
 test-engine:
-	@docker exec -it back_engine python manage.py test -v 2
 	@docker exec -it back_engine pytest
 
 

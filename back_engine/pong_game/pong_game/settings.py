@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
     'django.contrib.auth',
+    'rest_framework',
 	'game',
 	'health_check',                             # required
     'corsheaders',

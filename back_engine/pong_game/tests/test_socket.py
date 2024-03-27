@@ -4,10 +4,6 @@ from channels.testing import WebsocketCommunicator
 from game.routing import application
 
 @pytest.mark.asyncio
-async def test_test_works():
-    assert True, "This test should always be successful."
-
-@pytest.mark.asyncio
 async def test_game_connection():
     communicator = WebsocketCommunicator(application, "/ws/game/room123")
     connected, subprotocol = await communicator.connect()
