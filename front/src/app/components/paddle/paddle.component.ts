@@ -19,7 +19,7 @@ export class PaddleComponent implements OnInit {
     if (this.id == 1) {
       this.positionX = PADDLE_X_OFFSET;
     } else if (this.id == 2) {
-      this.positionX = GAME_WIDTH - 2 * PADDLE_WIDTH - PADDLE_X_OFFSET;
+      this.positionX = GAME_WIDTH - PADDLE_WIDTH - PADDLE_X_OFFSET;
     }
     console.log(`Paddle ${this.id} initialized:`, this.positionX, this.positionY);
   }

@@ -1,12 +1,14 @@
 import {AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS} from "../../../constants";
+import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} from "../../../constants";
 import {PaddleComponent} from "../../../components/paddle/paddle.component";
+import {BallComponent} from "../../../components/ball/ball.component";
 
 @Component({
   selector: 'app-game',
   standalone: true,
   imports: [
-    PaddleComponent
+    PaddleComponent,
+    BallComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -62,4 +64,7 @@ export class GameComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.gameLoop();
   }
+
+  protected readonly PADDLE_WIDTH = PADDLE_WIDTH;
+  protected readonly PADDLE_HEIGHT = PADDLE_HEIGHT;
 }

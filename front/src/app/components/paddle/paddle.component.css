@@ -1,6 +1,6 @@
 .paddle {
-  position: relative;
   width: var(--paddle-width);
   height: var(--paddle-height);
   background-color: white;
+  position: absolute;
 }

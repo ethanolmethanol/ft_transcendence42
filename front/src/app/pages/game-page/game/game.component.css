@@ -1,11 +1,11 @@
 .game {
+  position: relative;
   border-radius: 4px;
   background-color: #000;
   width: var(--game-width);
   height: var(--game-height);
   display: flex;
   justify-content: flex-start;
-  margin: 5px;
 }
 
 .score-display {
@@ -16,15 +16,16 @@
   justify-content: space-around;
   align-items: center;
   width: 100%;
+  margin: 0;
 }
 
 .score-player1, .score-player2 {
   width: 50%;
   text-align: center;
   display: inline;
-  margin: 0 20px;
   text-overflow: ellipsis;
   overflow: hidden;
+  margin: 0;
 }
 
 .dotted-line {
@@ -32,6 +33,6 @@
   height: var(--game-height);
   width: var(--line-thickness);
   left: calc(50% - var(--line-thickness) / 2);
-  background: linear-gradient(to bottom, #FFFFFF 60%, transparent 10%);
+  background: linear-gradient(to bottom, #aaaaaa 60%, transparent 10%);
   background-size: 100% 40px;
 }

@@ -6,3 +6,5 @@ export const PADDLE_HEIGHT = 100;
 export const PADDLE_WIDTH = 20;
 export const PADDLE_SPEED = 20;
 export const PADDLE_X_OFFSET = 60;
+
+export const BALL_RADIUS = 10;
