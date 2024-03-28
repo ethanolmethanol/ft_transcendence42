@@ -20,6 +20,7 @@ export class GameComponent implements AfterViewInit {
   readonly gameHeight = GAME_HEIGHT;
   lineThickness = LINE_THICKNESS;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
+  @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
 
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
