@@ -66,7 +66,7 @@ export class SignUpComponent implements OnInit {
   }
 
   private signIn() {
-    this.router.navigate(['sign-in']).then(() => console.log("Navigated to sign-in page"));
+    this.router.navigate(['sign-in']);
   }
 
   private handleSignUpError(signUpError: any) {

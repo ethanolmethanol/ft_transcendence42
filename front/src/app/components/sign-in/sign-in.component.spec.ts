@@ -29,7 +29,7 @@ describe('SignInComponent', () => {
     expect(component.signInForm.value).toEqual({ login: '', password: '' });
   });
 
-  it('should call signIn method', () => {
+  it('should call onSubmit method', () => {
       spyOn(component, 'onSubmit');
       component.onSubmit();
       expect(component.onSubmit).toHaveBeenCalled();

@@ -159,6 +159,9 @@ fix:
 dev: all
 	cd front/; npm run watch
 
+test:
+	cd front/; npm run test
+
 install-mkcert:
 	@$(SHELL) ./scripts/install_mkcert.sh
 
