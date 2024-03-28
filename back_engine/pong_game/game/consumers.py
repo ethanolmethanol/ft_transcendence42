@@ -1,12 +1,17 @@
 import json
 import logging
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.consumer import SyncConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.db import database_sync_to_async
 # from .engine import Position, GameEngine
 
 log = logging.getLogger(__name__)
 
-class PlayerConsumer(AsyncWebsocketConsumer):
+class PlayerConsumer(AsyncJsonWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.username = None
+        self.joined = False
+    
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'game_{self.room_name}'
@@ -29,27 +34,69 @@ class PlayerConsumer(AsyncWebsocketConsumer):
 
     async def join(self, message: dict):
         username = message["username"]
-        self.scope["session"].setdefault("username", username)
-        self.scope["session"].save()
+        await self.save_username_in_session(username)
 
         self.username = self.scope["session"]["username"]
 
         log.info(f"{self.username} joining game")
         await self.channel_layer.send(
-            "game_engine",
-            {"type": "player.new", "player": self.username, "channel": self.channel_name},
+            "game_engine", {
+                "type": "player.new", 
+                "player": self.username, 
+                "channel": self.channel_name
+                },
         )
 
-    # async def move_paddle(self, message: dict):
-    #     if not self.username:
-    #         log.error("Attempt to move paddle without joining.")
-    #         return
+        await self.send_json({
+            "type": "user_joined",
+            "username": self.username
+        })
 
-    #     log.info(f"{self.username} is moving paddle")
-    #     await self.channel_layer.send(
-    #         "game_engine",
-    #         {"type": "player.position", "player": self.username, "position": message["position"]}
-    #     )
+        self.joined = True
+    
+    @database_sync_to_async
+    def save_username_in_session(self, username):
+        self.scope["session"].setdefault("username", username)
+        self.scope["session"].save()
+
+    async def move_paddle(self, message: dict):
+        if not self.joined:
+            log.error("Attempt to move paddle without joining.")
+            return
+
+        log.info(f"{self.username} is moving paddle")
+        await self.channel_layer.send(
+            "game_engine", {
+                "type": "player.position", 
+                "player": self.username, 
+                "position": message["position"]}
+        )
+
+        await self.send_json({
+            "type": "paddle_moved",
+            "username": self.username
+        })
+
+    async def leave(self, message: dict):
+        if not self.joined:
+            log.error("Attempt to leave without joining.")
+            return
+        
+        log.info(f"{self.username} leaving game")
+        await self.channel_layer.send(
+            "game_engine", {
+                "type": "player.leave",
+                "player": self.username,
+                "channel": self.channel_name
+            },
+        )
+
+        await self.send_json({
+            "type": "user_left",
+            "username": self.username
+        })
+
+        self.joined = False
 
     async def receive(self, text_data=None, bytes_data=None):
         content = json.loads(text_data)
@@ -59,6 +106,8 @@ class PlayerConsumer(AsyncWebsocketConsumer):
             await self.move_paddle(message)
         elif message_type == 'join':
             await self.join(message)
+        elif message_type == 'leave':
+            await self.leave(message)
         else:
             log.warning(f"Unknown message type: {message_type}")
 
