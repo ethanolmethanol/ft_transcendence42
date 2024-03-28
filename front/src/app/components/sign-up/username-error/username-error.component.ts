@@ -1,27 +1,29 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl } from '@angular/forms';
-import { StatusIconComponent } from "../../../../components/status-icon/status-icon.component";
+import { StatusIconComponent } from "../../status-icon/status-icon.component";
 
 interface ErrorMessagesMap {
   [key: string]: string;
 }
 
 @Component({
-  selector: 'app-c-password-error',
+  selector: 'app-username-error',
   standalone: true,
   imports: [CommonModule,
     StatusIconComponent,
   ],
-  templateUrl: './c-password-error.component.html',
-  styleUrl: './c-password-error.component.css'
+  templateUrl: './username-error.component.html',
+  styleUrl: './username-error.component.css'
 })
-export class CPasswordErrorComponent {
+export class UsernameErrorComponent {
   @Input() control: AbstractControl | null = null;
   @Input() isTouched: boolean = false;
   errorMessagesMap : ErrorMessagesMap = {
-    required: 'Confirm Password is required.',
-    matching: 'Passwords must match.',
+    required: 'Username is required.',
+    minlength: 'Username must be at least 3 characters long.',
+    maxlength: 'Username cannot be more than 20 characters long.',
+    invalidUsername: 'Username can only contain letters and @/./+/-/_.'
   };
   allTestsPassed(): boolean {
     return !(this.control?.errors);

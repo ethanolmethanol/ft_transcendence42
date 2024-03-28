@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
-import { AuthService } from '../../../services/auth/auth.service';
-import {ErrorMessageComponent} from "../../../components/error-message/error-message.component";
+import { AuthService } from '../../services/auth/auth.service';
+import {ErrorMessageComponent} from "../error-message/error-message.component";
 
 @Component({
   selector: 'app-sign-in',
@@ -39,7 +39,7 @@ export class SignInComponent implements OnInit {
       this.authService.signIn(login, password).subscribe(
         response => {
           console.log("Valid authentication : ", response);
-          this.router.navigate(['home']).then(r => console.log("Navigated to home"));
+          this.router.navigate(['home']);
         },
         error => {
           console.error("Authentication failed: ", error);

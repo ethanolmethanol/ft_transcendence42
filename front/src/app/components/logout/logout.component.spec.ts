@@ -1,5 +1,5 @@
 import { LogoutComponent } from './logout.component';
-import { AuthService } from "../../../services/auth/auth.service";
+import { AuthService } from "../../services/auth/auth.service";
 
 describe('LogoutComponent', () => {
   let component: LogoutComponent;

@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} from "../../../constants";
-import {PaddleComponent} from "../../../components/paddle/paddle.component";
-import {BallComponent} from "../../../components/ball/ball.component";
+import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} from "../../constants";
+import {PaddleComponent} from "../paddle/paddle.component";
+import {BallComponent} from "../ball/ball.component";
 
 @Component({
   selector: 'app-game',

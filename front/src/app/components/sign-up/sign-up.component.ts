@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidatorFn} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../services/auth/auth.service';
+import { AuthService } from '../../services/auth/auth.service';
 import { Router, RouterLink} from "@angular/router";
 import { CPasswordErrorComponent } from "./c-password-error/c-password-error.component";
 import { PasswordErrorComponent } from "./password-error/password-error.component";
 import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
-import { ErrorMessageComponent } from "../../../components/error-message/error-message.component";
-import { usernameValidator } from '../../../validators/username.validator';
-import { emailValidator } from '../../../validators/email.validator';
-import { matchValidator } from '../../../validators/match.validator';
+import { ErrorMessageComponent } from "../error-message/error-message.component";
+import { usernameValidator } from '../../validators/username.validator';
+import { emailValidator } from '../../validators/email.validator';
+import { matchValidator } from '../../validators/match.validator';
 
 @Component({
   selector: 'app-sign-up',

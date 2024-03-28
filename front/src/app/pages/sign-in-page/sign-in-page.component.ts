@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {SignInComponent} from "./sign-in/sign-in.component";
+import {SignInComponent} from "../../components/sign-in/sign-in.component";
 import {RouterLink} from "@angular/router";
 @Component({
   selector: 'app-sign-in-page',

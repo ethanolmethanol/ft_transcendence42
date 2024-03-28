@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {LogoutComponent} from "./logout/logout.component";
+import {LogoutComponent} from "../../components/logout/logout.component";
 import {RouterLink} from "@angular/router";
 
 @Component({

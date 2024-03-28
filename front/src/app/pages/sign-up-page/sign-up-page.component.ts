@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SignUpComponent } from "./sign-up/sign-up.component";
+import { SignUpComponent } from "../../components/sign-up/sign-up.component";
 import { RouterLink } from "@angular/router";
 
 @Component({

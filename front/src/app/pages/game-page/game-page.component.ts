@@ -1,7 +1,7 @@
 import {Component, HostListener, ElementRef, OnInit, AfterViewInit} from '@angular/core';
 import {PaddleComponent} from "../../components/paddle/paddle.component";
 import {Router, RouterLink} from "@angular/router";
-import {GameComponent} from "./game/game.component";
+import {GameComponent} from "../../components/game/game.component";
 
 @Component({
   selector: 'app-game-page',
@@ -38,7 +38,7 @@ export class GamePageComponent implements OnInit, AfterViewInit {
 
   confirmGiveUp() {
     if (confirm('Are you sure you want to give up?')) {
-      this.router.navigate(['/home']).then(r => {});
+      this.router.navigate(['/home']);
     }
   }
 }

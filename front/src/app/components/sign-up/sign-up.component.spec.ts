@@ -1,5 +1,5 @@
 import { SignUpComponent } from './sign-up.component';
-import {AuthService} from "../../../services/auth/auth.service";
+import {AuthService} from "../../services/auth/auth.service";
 import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
 
