@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
 import { AuthService } from '../../services/auth/auth.service';
 import {ErrorMessageComponent} from "../error-message/error-message.component";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
@@ -18,9 +19,11 @@ import {ErrorMessageComponent} from "../error-message/error-message.component";
   styleUrl: './sign-in.component.css'
 })
 
-export class SignInComponent implements OnInit {
+export class SignInComponent implements OnInit, OnDestroy {
   signInForm!: FormGroup;
   errorMessage: string = "";
+  private authSubscription?: Subscription;
+
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -36,7 +39,7 @@ export class SignInComponent implements OnInit {
   onSubmit(): void {
     if (this.signInForm.valid) {
       const {login, password} = this.signInForm.value;
-      this.authService.signIn(login, password).subscribe(
+      this.authSubscription = this.authService.signIn(login, password).subscribe(
         response => {
           console.log("Valid authentication : ", response);
           this.router.navigate(['home']);
@@ -56,5 +59,12 @@ export class SignInComponent implements OnInit {
 
   hasAuthenticationFailed(): boolean {
     return this.errorMessage !== "";
+  }
+
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+      console.log("Unsubscribed from authentication service");
+    }
   }
 }
