@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Game
-from .game_logic import update_game_state
+from game.models import Game
+from game.game_logic.game_logic import update_game_state
 from .serializers import GameSerializer
 from django.http import HttpResponse, JsonResponse
 from django.db import connections
