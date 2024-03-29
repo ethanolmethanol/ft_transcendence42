@@ -12,6 +12,7 @@ export class PaddleComponent implements OnInit {
   @Input() id: number = 0;
   paddleWidth = PADDLE_WIDTH;
   paddleHeight = PADDLE_HEIGHT;
+  speed = PADDLE_SPEED;
   positionX = 0;
   positionY = (GAME_HEIGHT - PADDLE_HEIGHT) / 2;
 
@@ -26,8 +27,8 @@ export class PaddleComponent implements OnInit {
 
   moveUp() {
     const initialPosition = this.positionY;
-    if (this.positionY - PADDLE_SPEED >= 0) {
-      this.positionY -= PADDLE_SPEED; // Move the paddle up
+    if (this.positionY - this.speed >= 0) {
+      this.positionY -= this.speed; // Move the paddle up
     } else {
       this.positionY = 0; // Move the paddle up
     }
@@ -38,8 +39,8 @@ export class PaddleComponent implements OnInit {
 
   moveDown() {
     const initialPosition = this.positionY;
-    if (this.positionY + PADDLE_HEIGHT + PADDLE_SPEED <= GAME_HEIGHT) {
-      this.positionY += PADDLE_SPEED; // Move the paddle down
+    if (this.positionY + PADDLE_HEIGHT + this.speed <= GAME_HEIGHT) {
+      this.positionY += this.speed; // Move the paddle down
     } else {
       this.positionY = GAME_HEIGHT - PADDLE_HEIGHT;
     }
