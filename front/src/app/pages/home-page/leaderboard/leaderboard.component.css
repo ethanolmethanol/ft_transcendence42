@@ -1,20 +1,18 @@
 .leaderboard-container {
   display: flex;
   align-items: center;
-  position: static;
-  top: 110vh;
+  position: relative;
+  top: 50vh;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 30px;
-  padding-top: 150vh;
+  padding-bottom: 5vh;
 }
 
 .leaderboard {
   display: table;
   table-layout: fixed;
   width: 90vw;
-  padding: 10px;
   align-items: center;
   text-align: center;
   border-radius: 20px;
@@ -22,5 +20,4 @@
   background-color: black;
   color: white;
   opacity: 0.80;
-  padding-top: 100vh;
 }
