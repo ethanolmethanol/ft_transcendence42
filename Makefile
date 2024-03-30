@@ -26,13 +26,6 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-# Mkcert installation
-
-LOCAL_BIN		= $(HOME)/bin
-CERT_DIR 		= ssl/
-SSL_CONT_DIRS	= front/ssl back_auth/ssl back_user/ssl
-SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
-
 ${NAME}: gen-cert up health
 	$(call printname)
 
@@ -170,7 +163,6 @@ clean:
 
 fclean: clean
 	@docker --log-level=warn system prune -f
-	@ rm -rf ${SSL_DIRS}
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af

@@ -1,17 +1,12 @@
 # import the logging library
 import logging
 
+from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
-
-
-# get_user_id,
 from .auth_helpers import get_session_from_request
-
-# import libraries for username and email availability checks
 
 # import libraries for username and email availability checks
 
@@ -34,6 +29,7 @@ def username_view(request):
         return Response({"username": username}, status=200)
     except get_user_model().DoesNotExist:
         return Response({"detail": "User does not exist."}, status=404)
+
 
 # Is logged
 
