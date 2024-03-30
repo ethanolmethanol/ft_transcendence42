@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from .auth_helpers import get_session_from_request
 
 # import libraries for username and email availability checks

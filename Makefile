@@ -163,6 +163,7 @@ clean:
 
 fclean: clean
 	@docker --log-level=warn system prune -f
+	@./scripts/gen_cert.sh clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af
