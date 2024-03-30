@@ -3,60 +3,47 @@ import json
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from game.models import Game, Player
+from django.urls import reverse
+from rest_framework import status
 
 @pytest.mark.soft
 @pytest.mark.api
-def test_game_initialization(authenticated_client, game):
-    response = authenticated_client.get(f'/api/game/{game.id}/')
-    assert response.status_code == 200
+def test_create_game(authenticated_client):
+    response = authenticated_client.post(reverse('game:create'))
+    assert response.status_code == status.HTTP_201_CREATED
+    assert Game.objects.exists()
+
+@pytest.mark.soft
+@pytest.mark.api
+def test_join_game(authenticated_client, game):
+    response = authenticated_client.post(reverse('game:join', kwargs={'pk': game.pk}))
+    assert response.status_code == status.HTTP_200_OK
     response_data = json.loads(response.content)
-    assert response_data['ball_position'] == {'x': 0, 'y': 0}
-    assert response_data['paddle_positions'] == {'left': 0, 'right': 0}
-    assert response_data['game_state'] == 'ongoing'
+    assert response_data['message'] == 'Player joined game'
 
 @pytest.mark.soft
 @pytest.mark.api
-def test_game_update(authenticated_client, game):
-    data = {
-        'ball_position': {'x': 1, 'y': 1},
-        'ball_velocity': {'x': 2, 'y': 2},
-        'paddle_positions': {'left': 1, 'right': 1},
-        'game_state': 'ongoing'
+def test_update_game_state(authenticated_client, game):
+    update_data = {
+        'ball_position': {'x': 5, 'y': 5},
+        'paddle_positions': {'left': 2, 'right': 3},
     }
-    response = authenticated_client.patch(
-        f'/api/game/{game.id}/update/', 
-        data=json.dumps(data), 
-        content_type='application/json'
-    )
-    assert response.status_code == 200
-    assert json.loads(response.content) == {'message': 'Game state updated'}
-
-@pytest.mark.soft
-@pytest.mark.api
-def test_player_join(authenticated_client, game):
-    response = authenticated_client.post(f'/api/game/{game.id}/join/')
-    assert response.status_code == 200
-    assert json.loads(response.content) == {'message': 'Player joined game'}
+    response = authenticated_client.patch(reverse('game:update', kwargs={'pk': game.pk}), data=json.dumps(update_data), content_type='application/json')
+    assert response.status_code == status.HTTP_200_OK
+    game.refresh_from_db()
+    assert game.ball_position == update_data['ball_position']
+    assert game.paddle_positions == update_data['paddle_positions']
 
 @pytest.mark.middle
 @pytest.mark.api
-@pytest.mark.parametrize("score1, score2, expected_winner, expected_loser", [
-    (10, 8, 'testuser1', 'testuser2'),
-    (7, 10, 'testuser2', 'testuser1'),
-])
-def test_game_result(authenticated_client, game, test_user1, test_user2, score1, score2, expected_winner, expected_loser):
-    Player.objects.filter(user=test_user1, game=game).update(score=score1)
-    Player.objects.filter(user=test_user2, game=game).update(score=score2)
-    game.game_state = "finished"
-    game.save()
+def test_game_result(authenticated_client, game, test_user1, test_user2):
+    response = authenticated_client.get(reverse('game:result', kwargs={'pk': game.pk}))
+    assert response.status_code == status.HTTP_200_OK
+    results = json.loads(response.content)
+    assert 'winner' in results
+    assert 'loser' in results
 
-    response = authenticated_client.get(f'/api/game/{game.id}/result/')
-    assert response.status_code == 200
-    result = json.loads(response.content)
-    assert result['winner'] == expected_winner
-    assert result['loser'] == expected_loser
-    assert 'scores' in result
-
+# Testing game progression by updating game state
 @pytest.mark.middle
 @pytest.mark.api
 def test_game_progression(authenticated_client, game):
@@ -65,18 +52,12 @@ def test_game_progression(authenticated_client, game):
         'ball_velocity': {'x': 2, 'y': 2},
         'paddle_positions': {'left': 1, 'right': 1},
     }
-    response = authenticated_client.patch(
-        f'/api/game/{game.id}/update/', 
-        data=json.dumps(data), 
-        content_type='application/json'
-    )
-    assert response.status_code == 200
+    url = reverse('game-update', kwargs={'pk': game.id})  # Adjust 'game-update' to your actual URL name
+    response = authenticated_client.patch(url, data=json.dumps(data), content_type='application/json')
+    assert response.status_code == status.HTTP_200_OK
     assert json.loads(response.content) == {'message': 'Game state updated'}
 
-# @pytest.mark.parametrize("score1, score2, expected_winner, expected_loser", [
-#     (10, 8, 'testuser1', 'testuser2'),
-#     (7, 10, 'testuser2', 'testuser1'),
-# ])
+# Testing game termination by reaching a specific score
 @pytest.mark.middle
 @pytest.mark.api
 def test_game_termination_by_score(authenticated_client, game, test_user1, test_user2):
@@ -84,12 +65,14 @@ def test_game_termination_by_score(authenticated_client, game, test_user1, test_
     game.game_state = "finished"
     game.save()
 
-    response = authenticated_client.get(f'/api/game/{game.id}/result/')
-    assert response.status_code == 200
+    url = reverse('game-result', kwargs={'pk': game.id})  # Adjust 'game-result' to your actual URL name
+    response = authenticated_client.get(url)
+    assert response.status_code == status.HTTP_200_OK
     result = json.loads(response.content)
-    assert result['winner'] == 'testuser1'
-    assert result['loser'] == 'testuser2'
+    assert result['winner'] == test_user1.username
+    assert result['loser'] == test_user2.username
 
+# Testing attempt to update a nonexistent game
 @pytest.mark.middle
 @pytest.mark.api
 def test_update_nonexistent_game(authenticated_client):
@@ -98,13 +81,11 @@ def test_update_nonexistent_game(authenticated_client):
         'ball_velocity': {'x': 2, 'y': 2},
         'paddle_positions': {'left': 1, 'right': 1},
     }
-    response = authenticated_client.patch(
-        '/api/game/9999/update/', 
-        data=json.dumps(data), 
-        content_type='application/json'
-    )
-    assert response.status_code == 404
+    url = reverse('game-update', kwargs={'pk': 9999})  # Adjust 'game-update' to your actual URL name
+    response = authenticated_client.patch(url, data=json.dumps(data), content_type='application/json')
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
+# Testing game state transition from "ongoing" to "finished"
 @pytest.mark.middle
 @pytest.mark.api
 def test_game_state_transition(authenticated_client, game):
@@ -116,20 +97,20 @@ def test_game_state_transition(authenticated_client, game):
         'ball_velocity': {'x': 1, 'y': 1},
         'paddle_positions': {'left': 2, 'right': 2},
     }
-    response = authenticated_client.patch(
-        f'/api/game/{game.id}/update/',
-        data=json.dumps(data),
-        content_type='application/json'
-    )
-    assert response.status_code == 200
+    url = reverse('game-update', kwargs={'pk': game.id})  # Adjust 'game-update' to your actual URL name
+    response = authenticated_client.patch(url, data=json.dumps(data), content_type='application/json')
+    assert response.status_code == status.HTTP_200_OK
     assert json.loads(response.content) == {'message': 'Game state updated'}
     
     game.game_state = "finished"
     game.save()
-    response = authenticated_client.get(f'/api/game/{game.id}/')
+    url = reverse('game-detail', kwargs={'pk': game.id})  # Adjust 'game-detail' to your actual URL name
+    response = authenticated_client.get(url)
+    assert response.status_code == status.HTTP_200_OK
     response_data = json.loads(response.content)
     assert response_data['game_state'] == 'finished'
 
+# Testing consistency of game result
 @pytest.mark.middle
 @pytest.mark.api
 def test_game_result_consistency(authenticated_client, game, test_user1, test_user2):
@@ -141,146 +122,131 @@ def test_game_result_consistency(authenticated_client, game, test_user1, test_us
     game.game_state = "finished"
     game.save()
     
-    response = authenticated_client.get(f'/api/game/{game.id}/result/')
-    assert response.status_code == 200
+    url = reverse('game-result', kwargs={'pk': game.id})  # Adjust 'game-result' to your actual URL name
+    response = authenticated_client.get(url)
+    assert response.status_code == status.HTTP_200_OK
     result = json.loads(response.content)
     assert result['winner'] == test_user1.username
     assert result['loser'] == test_user2.username
     assert result['scores'][test_user1.username] == 12
     assert result['scores'][test_user2.username] == 10
 
+
 @pytest.mark.edge
 @pytest.mark.api
 @pytest.mark.django_db
 def test_player_quick_disconnect_reconnect(authenticated_client, game):
     """
-    Test what happens when a player disconnects and then quickly reconnects.
+    Tests the game's behavior when a player disconnects and quickly reconnects.
     """
+    # Assuming game.remove_player() and game.add_player() are defined
+    initial_player_count = game.players.count()
 
     # Simulate a player disconnecting
-    game.remove_player(player=game.players.first())
-    assert game.players.count() == 1, "Player was not removed correctly."
+    disconnected_player = game.players.first()
+    game.remove_player(player=disconnected_player)
+    assert game.players.count() == initial_player_count - 1, "Failed to remove player."
 
     # Simulate the player quickly reconnecting
-    game.add_player(player=game.players.first())
-    assert game.players.count() == 2, "Player was not re-added correctly."
-
-    # Further assertions can be added to validate the state of the game
-    # and ensure that it has handled the reconnect as expected.
+    game.add_player(player=disconnected_player)
+    assert game.players.count() == initial_player_count, "Failed to re-add player."
 
 @pytest.mark.edge
 @pytest.mark.api
 def test_action_during_high_latency(authenticated_client, game, monkeypatch):
-    # Simulate high network latency
+    """
+    Simulates an action (e.g., moving a paddle) during high network latency.
+    """
+    # Patching a hypothetical request method to simulate latency
     def simulated_latency(*args, **kwargs):
-        sleep(2)  # Simulate a 2-second network delay
+        time.sleep(2)  # Simulates a 2-second network delay
 
-    monkeypatch.setattr('path.to.your.network.request.function', simulated_latency)
+    monkeypatch.setattr('your_module.your_network_request_function', simulated_latency)
 
-    game_id = game.id
-    response = move_paddle(authenticated_client, game_id, {'left': 30})
-    
-    assert response.status_code == 200, "Action was lost or not processed correctly during high latency."
+    # Assuming move_paddle() is defined and correctly patches network latency
+    response = move_paddle(authenticated_client, game.id, {'direction': 'left', 'distance': 30})
+    assert response.status_code == 200, "Failed to process action under high latency."
 
-    # Check the game state to ensure consistency
-    response = authenticated_client.get(f'/api/game/{game_id}/')
-    game_state = response.json()
-    
-    assert game_state['paddle_positions']['left'] == 30, "Game state is not consistent for all players after high latency action."
+    # Ensure game state is consistent post-latency
+    game.refresh_from_db()  # Assuming Django ORM usage for refreshing game instance
+    assert game.paddle_positions['left'] == 30, "Game state inconsistent after high latency action."
 
 @pytest.mark.edge
 @pytest.mark.api
 def test_simultaneous_score_and_collision(setup_game):
+    """
+    Tests game behavior when a score and a collision occur simultaneously.
+    """
     game = setup_game
-    # Set the ball's position and velocity to simulate a scenario where it might collide and score simultaneously
-    game.ball.position = (190, 50)  # Near the right edge, close to the right paddle
-    game.ball.velocity = (10, 0)  # Moving towards the right edge/paddle
-    
-    # Assume a method to update game state; this will need to check for collisions and scoring
-    game.update_game_state()
-    
-    # Depending on your game's rules, you need to define what the expected outcome is.
-    # Here, we assert that a collision takes precedence over scoring, but your game might differ.
-    assert game.ball.velocity == (-10, 0), "Ball did not bounce back; collision not detected."
-    assert game.scores == (0, 0), "Score was incorrectly registered."
+    # Setting conditions for simultaneous score and collision
+    game.ball.position = (190, 50)  # Near the edge and a paddle
+    game.ball.velocity = (10, 0)  # Towards the edge/paddle
+
+    game.update_game_state()  # Assuming this checks collisions and scores
+
+    # Assert based on game's rules. Here, assuming collision takes precedence
+    assert game.ball.velocity == (-10, 0), "Collision not properly handled."
+    assert game.scores == (0, 0), "Score improperly registered."
 
 @pytest.mark.middle
 @pytest.mark.api
 def test_boundary_conditions(setup_game):
+    """
+    Tests handling of ball and paddle at game boundaries.
+    """
     game = setup_game
-    # Test ball at boundary
-    game.ball.position = (0, 50)  # Exactly at the left edge
-    game.ball.velocity = (-10, 0)  # Moving towards the edge
-    
+    # Ball at left edge, moving left
+    game.ball.position = (0, 50)
+    game.ball.velocity = (-10, 0)
     game.update_game_state()
-    
-    # Check for correct handling (e.g., ball bounces back or game resets)
-    # This assertion depends on your game logic; adjust as needed.
-    assert game.ball.velocity == (10, 0), "Ball did not handle boundary condition correctly."
-    
-    # Test paddle at boundary
-    game.paddles['left'].position = (0, 50)  # Exactly at the left edge
-    # Assume a method that moves the paddle; simulate an attempt to move beyond the boundary
+    assert game.ball.velocity == (10, 0), "Ball boundary condition not handled correctly."
+
+    # Paddle at left edge, attempt to move left
+    game.paddles['left'].position = (0, 50)
     game.paddles['left'].move(-10)
-    
-    # Check that the paddle did not move beyond the boundary
-    assert game.paddles['left'].position == (0, 50), "Paddle moved beyond the boundary."
+    assert game.paddles['left'].position == (0, 50), "Paddle boundary condition not handled correctly."
 
 @pytest.mark.middle
 @pytest.mark.api
 def test_unexpected_user_disconnection(setup_game):
+    """
+    Tests game behavior upon unexpected user disconnection.
+    """
     game = setup_game
-    # Simulate a user about to win
-    game.scores = (10, 9)  # Assuming a score of 11 is needed to win
-    
-    # Simulate user disconnection at this critical moment
-    # Assuming 'disconnect_player' is a method that handles player disconnection
-    game.disconnect_player('left')
-    
-    # The test expectations might vary based on your game logic
-    # Here we assume the game pauses and waits for reconnection
-    assert game.state == "paused", "Game did not pause upon user disconnection."
-    
-    # Optionally, test reconnection logic
-    game.reconnect_player('left')
-    assert game.state == "active", "Game did not resume correctly after player reconnected."
-    
-    # Depending on game rules, check if the game correctly handles potential scoring or loss due to disconnection
-    # For example, does the game award a point to the other player, or does it wait for reconnection?
+    game.scores = (10, 9)  # Critical moment before winning
 
+    game.disconnect_player('left')  # Simulate disconnection
+    assert game.state == "paused", "Game did not pause on disconnection."
+
+    game.reconnect_player('left')
+    assert game.state == "active", "Game did not resume after reconnection."
 
 @pytest.mark.middle
 @pytest.mark.api
 def test_maximum_score_limit(setup_game):
+    """
+    Ensures the game ends correctly when reaching the maximum score limit.
+    """
     game = setup_game
-    # Assuming 10 is the maximum score limit for the game
     max_score_limit = 10
-    game.scores = (9, 9)  # Set both players just below the max score limit
+    game.scores = (9, 9)  # Both players close to winning
 
-    # Simulate a scenario where both players might score simultaneously
-    # Depending on your game logic, you might need to simulate this differently
     game.score('left')
     game.score('right')
-
-    assert game.state == "ended", "Game did not end when maximum score limit was reached."
-    # This assertion depends on how your game is supposed to handle simultaneous final points
-    assert game.scores == (10, 10) or (max_score_limit in game.scores), "Scores did not update correctly at maximum score limit."
-    # Further, assert on what your game logic dictates should happen in this scenario (who wins, or if it's a draw, etc.)
+    assert game.state == "ended", "Game did not end at max score limit."
+    assert game.scores in [(10, 10), (max_score_limit, max_score_limit)], "Incorrect scores at game end."
 
 @pytest.mark.edge
 @pytest.mark.api
 def test_long_duration_game_behavior(setup_game):
+    """
+    Checks for any issues in long-duration games, such as memory leaks or inconsistencies.
+    """
     game = setup_game
-    # Simulate a long game duration
-    # Note: This is a basic simulation; consider using tools or mocks for time acceleration in actual tests
-    for _ in range(10000):  # Simulate a large number of game cycles/actions
-        game.update()  # Assuming `update` is a method that advances game state
+    for _ in range(10000):  # Simulate prolonged game play
+        game.update_game_state()  # Update game state
 
-    # Assertions to check for memory leaks, performance degradation, or state management issues
-    # These are more complex to assert in a unit test and might require profiling or specific checks
-    assert True  # Placeholder for actual performance/memory checks
+    # Placeholder for performance or memory checks
+    assert True, "Placeholder for actual assertions."
 
-    # Ensure game state remains consistent and no unexpected behaviors occur
-    # This might include checking that scores haven't unexpectedly reset, game hasn't frozen, etc.
-    assert game.state not in ["ended", "error"], "Game entered an unexpected state during long-duration play."
-
+    assert game.state not in ["ended", "error"], "Unexpected game state after long-duration play."

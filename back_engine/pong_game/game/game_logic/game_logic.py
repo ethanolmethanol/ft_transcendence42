@@ -1,6 +1,6 @@
 from game.game_entities.ball import Ball
 from game.game_entities.paddle import Paddle
-from game.game_entities.collision import Collision
+from game.game_physics.collision import Collision
 
 def update_game_state(game, user_input):
     # Logic to update game state based on user input
