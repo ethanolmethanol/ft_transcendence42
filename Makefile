@@ -64,13 +64,13 @@ format-css: | front/.stylelintrc.json
 
 %/venv:
 	@echo -e "$(Y)Setting up new venv for $@.$(N)"
-	@python3 -m venv $@
+	@python3.12 -m venv $@
 
 PY_SERVICES = back
 
 PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint flake8 isort mypy)
 
-PY_MOD_DEPS = pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
+PY_MOD_DEPS = django pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
 
 PYLINT_ARGS = --load-plugins pylint_django --django-settings-module transcendence_django.settings --disable=C0114 --disable=C0115 --disable=C0116 --disable=R0903 transcendence_django/back_*
 
@@ -85,12 +85,13 @@ format-cleanup:
 	rm -rf $(addsuffix /venv, $(PY_SERVICES))
 # pushd front && npm uninstall stylelint
 
-# lint:
-# 	docker run --rm \
-# 		-e RUN_LOCAL=true \
-# 		--env-file ".github/super-linter.env" \
-# 		-v "$(shell pwd)":/tmp/lint \
-# 		ghcr.io/super-linter/super-linter:latest
+lint: | $(foreach tool,$(PY_FMT_DEPS),$(addsuffix $(tool),$(PY_SERVICES)))
+	docker run --rm \
+		-e RUN_LOCAL=true \
+		-e DEFAULT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD) \
+		--env-file ".github/super-linter.env" \
+		-v "$(shell pwd)":/tmp/lint \
+		ghcr.io/super-linter/super-linter:slim-latest
 
 testform:
 	python3 -m http.server -d back/test_form -b localhost 1234
