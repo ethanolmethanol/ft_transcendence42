@@ -35,7 +35,9 @@ jobs:
           path: venv
           key: ${{ runner.os }}-pydeps
       - name: Create virtual environment and install dependencies
-        run: pipenv install django django-stubs djangorestframework djangorestframework-stubs django-cors-headers django-health-check psycopg[binary]
+        run: |
+          python3 -m venv venv
+          venv/bin/pip install django django-stubs djangorestframework djangorestframework-stubs django-cors-headers django-health-check psycopg[binary]
       - name: Move the dependencies
         run: |
           mv venv /home/runner/work/_temp/_github_workflow
