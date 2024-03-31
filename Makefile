@@ -66,13 +66,13 @@ format-css: | front/.stylelintrc.json
 	@echo -e "$(Y)Setting up new venv for $@.$(N)"
 	@python3 -m venv $@
 
-PY_SERVICES = back_auth back_user
+PY_SERVICES = back
 
 PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint flake8 isort mypy)
 
 PY_MOD_DEPS = pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
 
-PYLINT_ARGS = --load-plugins pylint_django --django-settings-module transcendence_django.settings --disable=C0114 --disable=C0115 --disable=C0116 --disable=R0903 transcendence_django/*_app
+PYLINT_ARGS = --load-plugins pylint_django --django-settings-module transcendence_django.settings --disable=C0114 --disable=C0115 --disable=C0116 --disable=R0903 transcendence_django/back_*
 
 $(addprefix %, $(PY_FMT_DEPS)): | %/venv
 	@echo -e "$(Y)Installing dependencies for python linting (missing at least $(notdir $@)).$(N)"
@@ -93,7 +93,7 @@ format-cleanup:
 # 		ghcr.io/super-linter/super-linter:latest
 
 testform:
-	python3 -m http.server -d back_auth/test_form -b localhost 1234
+	python3 -m http.server -d back/test_form -b localhost 1234
 
 health:
 	while docker ps | grep "health: starting" > /dev/null; do true; done

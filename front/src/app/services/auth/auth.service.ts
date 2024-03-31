@@ -12,7 +12,7 @@ interface SignInResponse {
 })
 
 export class AuthService {
-  private apiUrl = 'https://localhost:8000/api';
+  private apiUrl = 'https://localhost:8000/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 

@@ -9,7 +9,7 @@
     <div class="main">
         <h1>Signin</h1>
         <h3>Enter your login credentials</h3>
-        <form action="https://localhost:8000/api/signin/" method="POST">
+        <form action="https://localhost:8000/auth/signin/" method="POST">
             <label for="login">Username/email:</label>
             <input type="text" id="login" name="login" placeholder="Enter your Username or Email" required>
             
@@ -25,7 +25,7 @@
     <div class="main">
         <h1>Signup</h1>
         <h3>Enter your new credentials</h3>
-        <form action="https://localhost:8000/api/signup/" method="POST">
+        <form action="https://localhost:8000/auth/signup/" method="POST">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" placeholder="Enter your Username" required>
 
@@ -43,7 +43,7 @@
     </div>
     <div class="main">
         <h1>Logout</h1>
-        <form action="https://localhost:8000/api/logout/" method="POST">
+        <form action="https://localhost:8000/auth/logout/" method="POST">
             <div class="wrap">
                 <button type="submit">Logout</button>
             </div>

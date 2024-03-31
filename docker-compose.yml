@@ -23,7 +23,7 @@ services:
         image: back_auth
         container_name: back_auth
         build:
-            context: back_auth
+            context: back
         depends_on:
             db:
                 condition: service_healthy
@@ -44,7 +44,7 @@ services:
         image: back_user
         container_name: back_user
         build:
-            context: back_user
+            context: back
         depends_on:
             db:
                 condition: service_healthy
