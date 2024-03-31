@@ -33,7 +33,7 @@ CERT_DIR 		= ssl/
 SSL_CONT_DIRS	= front/ssl back_auth/ssl back_engine/ssl
 SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
 
-TEST-ENGINE-TAGS = soft middle edge auth ball cheating collision front api paddle performance scoring socket start_end env
+TEST-ENGINE-TAGS = soft middle edge auth ball cheating collision front state paddle performance scoring socket start_end env
 
 ${NAME}: gen-cert up health
 	$(call printname)

@@ -12,7 +12,7 @@ BALL_INITIAL_VELOCITY = {'x': 5, 'y': 5}
 MAX_VELOCITY = 10
 MIN_VELOCITY = 1
 BALL_RADIUS = 3
-
+           
 # Paddle parameters
 PADDLE_INITIAL_POSITION = {'y': 50}
 PADDLE_WIDTH = 10
