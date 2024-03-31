@@ -30,7 +30,7 @@ jobs:
           python-version: '3.12.2'
           cache: 'pipenv'
       - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+        run: pip install --user pipenv
       - name: Create virtual environment and install dependencies
         run: pipenv install django django-stubs djangorestframework djangorestframework-stubs django-cors-headers django-health-check psycopg[binary]
       - name: Move the dependencies
