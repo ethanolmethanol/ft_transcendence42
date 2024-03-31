@@ -38,9 +38,9 @@ jobs:
         run: |
           python3 -m venv venv
           venv/bin/pip install django django-stubs djangorestframework djangorestframework-stubs django-cors-headers django-health-check psycopg[binary]
-      - name: Move the dependencies
+      - name: Copy the dependencies
         run: |
-          mv venv /home/runner/work/_temp/_github_workflow
+          cp venv /home/runner/work/_temp/_github_workflow
       - name: Super-linter
         uses: super-linter/super-linter@v6.3.0  # x-release-please-version
         env:
