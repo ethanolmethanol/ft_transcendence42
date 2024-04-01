@@ -46,7 +46,7 @@ services:
         build:
             context: back
         depends_on:
-            db:
+            back_auth:
                 condition: service_healthy
         ports:
             - "8002:8000"
