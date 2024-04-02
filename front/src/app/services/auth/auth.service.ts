@@ -12,7 +12,7 @@ interface SignInResponse {
 })
 
 export class AuthService {
-  private apiUrl = 'https://localhost:8000/api';
+  private apiUrl = 'https://localhost:8000/auth';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -38,7 +38,7 @@ export class AuthService {
 
   public logout(): void {
     this.processLogout().subscribe(() => {
-      this.router.navigate(['sign-in']);
+      this.router.navigate(['/sign-in']);
     });
   }
 

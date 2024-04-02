@@ -75,7 +75,7 @@ a {
   font-size: 0.6em;
   border-radius: 10px;
   transition: background-color 0.3s ease;
-  animation: fadeIn 1s ease-out;
+  animation: fade-in 1s ease-out;
 }
 
 a:hover {
@@ -88,7 +88,7 @@ a:hover {
   transition: background-color 0.3s ease;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(10px)

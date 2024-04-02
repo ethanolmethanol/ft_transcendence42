@@ -37,4 +37,4 @@ jobs:
 
       - name: Build containers AND check healthiness
         run: |
-          make
+          make || { make logs; exit 1; }

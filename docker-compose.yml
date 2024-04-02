@@ -23,12 +23,33 @@ services:
         image: back_auth
         container_name: back_auth
         build:
-            context: back_auth
+            context: back
         depends_on:
             db:
                 condition: service_healthy
         ports:
             - "8000:8000"
+        networks:
+            - transcendence
+        restart: unless-stopped
+        env_file: .env
+        healthcheck:
+            test: 'python3 transcendence_django/manage.py health_check'
+            interval: 5s
+            timeout: 1s
+            retries: 10
+            start_period: 5s
+
+    back_user:
+        image: back_user
+        container_name: back_user
+        build:
+            context: back
+        depends_on:
+            back_auth:
+                condition: service_healthy
+        ports:
+            - "8002:8000"
         networks:
             - transcendence
         restart: unless-stopped

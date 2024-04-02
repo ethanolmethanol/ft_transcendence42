@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
+import {API_AUTH} from "../../constants";
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -29,7 +30,7 @@ describe('AuthService', () => {
       expect(response).toEqual(loginResponse);
     });
 
-    const req = httpMock.expectOne('https://localhost:8000/api/signin/');
+    const req = httpMock.expectOne(`${API_AUTH}/signin/`);
     expect(req.request.method).toBe('POST');
     req.flush(loginResponse);
   });
@@ -40,7 +41,7 @@ describe('AuthService', () => {
       expect(response).toEqual(signUpResponse);
     });
 
-    const req = httpMock.expectOne('https://localhost:8000/api/signup/');
+    const req = httpMock.expectOne(`${API_AUTH}/signup/`);
     expect(req.request.method).toBe('POST');
     req.flush(signUpResponse);
   });
@@ -50,7 +51,7 @@ describe('AuthService', () => {
       expect(response).toBeTrue();
     });
 
-    const req = httpMock.expectOne('https://localhost:8000/api/is_logged/');
+    const req = httpMock.expectOne(`${API_AUTH}/is_logged/`);
     expect(req.request.method).toBe('GET');
     req.flush({}, { status: 200, statusText: 'OK' });
   });
@@ -58,7 +59,7 @@ describe('AuthService', () => {
   it('logout should send a POST request', () => {
     service.logout();
 
-    const req = httpMock.expectOne('https://localhost:8000/api/logout/');
+    const req = httpMock.expectOne(`${API_AUTH}/logout/`);
     expect(req.request.method).toBe('POST');
     req.flush({});
   });

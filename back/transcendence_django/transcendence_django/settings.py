@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "tr_dj_app",
+    "back_auth",
+    "back_user",
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",  # https://pypi.org/project/django-health-check/
@@ -93,12 +94,12 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'tr_dj_app.User'
+# AUTH_USER_MODEL = 'auth.User'
 
 CSRF_TRUSTED_ORIGINS = ["https://localhost:4200", "http://localhost:1234"]
 CORS_ALLOWED_ORIGINS = ["https://localhost:4200"]
 CORS_ALLOW_CREDENTIALS = True
-AUTHENTICATION_BACKENDS = ["tr_dj_app.backends.EmailOrUsernameModelBackend"]
+AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
 CORS_ALLOW_HEADERS = [
     "CONTENT-TYPE",
     "X-CSRFToken",

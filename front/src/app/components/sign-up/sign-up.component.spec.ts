@@ -45,7 +45,7 @@ describe('SignUpComponent', () => {
     component.ngOnInit();
     component.signupForm.setValue({ username: 'test', email: 'test@gmail.com', password: 'password', c_password: 'password', updateOn: 'blur' });
     component.onSubmit();
-    expect(routerMock.navigate).toHaveBeenCalledWith(['sign-in']);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/sign-in']);
   });
 
   it('should validate username', () => {
