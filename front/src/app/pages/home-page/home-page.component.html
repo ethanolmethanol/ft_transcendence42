@@ -1,2 +1,8 @@
-<p>home-page works!</p>
-<app-logout></app-logout>
+<body>
+  <div class="home-page-container">
+    <app-banner></app-banner>
+    <div class="welcome"><h3>{{welcome}}</h3></div>
+    <a routerLink="/local-game">Play local</a>
+    <app-leaderboard></app-leaderboard>
+  </div>
+</body>

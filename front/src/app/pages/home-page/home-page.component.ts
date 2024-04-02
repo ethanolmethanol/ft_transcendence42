@@ -1,15 +1,28 @@
-import { Component } from '@angular/core';
-import {LogoutComponent} from "./logout/logout.component";
+import { Component, OnInit } from '@angular/core';
+import {RouterLink} from "@angular/router";
+import {BannerComponent} from "./banner/banner.component";
+import {LeaderboardComponent} from "./leaderboard/leaderboard.component";
+import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
   imports: [
-    LogoutComponent
+    RouterLink,
+    BannerComponent,
+    LeaderboardComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
-export class HomePageComponent {
+export class HomePageComponent implements OnInit {
+  welcome: string = '';
 
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+    this.userService.getUsername().subscribe(data => {
+      this.welcome = `Welcome, ${data.username}!`;
+    });
+ }
 }
