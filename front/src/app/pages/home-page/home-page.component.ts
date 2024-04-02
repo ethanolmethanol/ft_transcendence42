@@ -16,13 +16,13 @@ import { UserService } from '../../services/user/user.service';
   styleUrl: './home-page.component.css'
 })
 export class HomePageComponent implements OnInit {
-  username!: string;
+  welcome: string = '';
 
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.userService.getUsername().subscribe(data => {
-      this.username = data.username;
+      this.welcome = `Welcome, ${data.username}!`;
     });
  }
 }
