@@ -3,7 +3,35 @@ import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 log = logging.getLogger(__name__)
+# from channels.db import database_sync_to_async
+# from django.core.exceptions import ObjectDoesNotExist
 
+# class PlayerConsumer(AsyncJsonWebsocketConsumer):
+
+#     async def join(self, message: dict):
+#         self.username = message["username"]
+#         room_id = message["room_id"]
+        
+#         can_join = await self.can_join_room(room_id)
+#         if can_join:
+#             log.info(f"{self.username} joined game in room {room_id}")
+#             await self.channel_layer.group_send(
+#                 self.room_group_name, {
+#                     "type": "game_message", 
+#                     'message': f"{self.username} has joined the game in room {room_id}."
+#                 }
+#             )
+#             self.joined = True
+#         else:
+#             log.error(f"Failed to join room {room_id}: Room may be full or the game started.")
+
+#     @database_sync_to_async
+#     def can_join_room(self, room_id):
+#         try:
+#             room = PongRoom.objects.get(room_id=room_id)
+#             return not room.is_full() and not room.game_started
+#         except ObjectDoesNotExist:
+#             return False
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
@@ -43,7 +71,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             log.warning(f"Unknown message type: {message_type}")
     
     async def join(self, message: dict):
-        self.username = message["username"]  # Now setting self.username
+        self.username = message["username"]
         log.info(f"{self.username} joined game")
         await self.channel_layer.group_send(
             self.room_group_name, {

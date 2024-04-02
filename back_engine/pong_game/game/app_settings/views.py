@@ -6,6 +6,10 @@ from django.db import connections, IntegrityError
 from django.db.utils import OperationalError
 from django.db.models import Count, F
 from game.models import PongRoom, Player, Game
+from django.views.decorators.csrf import csrf_exempt
+import logging
+
+logger = logging.getLogger(__name__)
 
 def health(request):
     try:
@@ -20,6 +24,8 @@ def health(request):
 @require_http_methods(["GET"])
 def list_rooms(request):
     rooms = PongRoom.objects.filter(game_started=False)
+    if not rooms.exists():
+        return JsonResponse([], safe=False)
     rooms_data = [{
         'id': room.id,
         'room_id': room.room_id,
@@ -28,10 +34,11 @@ def list_rooms(request):
     } for room in rooms if not room.is_full()]
     return JsonResponse(rooms_data, safe=False)
 
+@csrf_exempt
 @require_http_methods(["POST"])
 def create_room(request):
     try:
-        data = request.POST
+        data = json.loads(request.body.decode('utf-8'))
         room_id = data.get('room_id')
         max_players = data.get('max_players')
 
@@ -42,7 +49,7 @@ def create_room(request):
             room_id = room_id,
             defaults = {'max_players': max_players, 'game_started': False})
         if created:
-            return JsonResponse({'message': f'Room {room.room_id} created successfully.', room_id: room.room_id}, status=201)
+            return JsonResponse({'message': f'Room {room.room_id} created successfully.', 'room_id': room.room_id}, status=201)
         else:
             return JsonResponse({'error': 'Room already exists.'}, status=400)
     except IntegrityError as e:
@@ -50,7 +57,7 @@ def create_room(request):
 
 @require_http_methods(["GET"])
 def check_room_exists(request, room_id):
-    exists = PongRoom,objects.filter(room_id=room_id).exists()
+    exists = PongRoom.objects.filter(room_id=room_id).exists()
     if exists:
         return JsonResponse({'message': 'Room exists.', 'room_id': room_id}, status=200)
     else:

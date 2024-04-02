@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Game(models.Model):
     game_state = models.CharField(max_length=255, default='ongoing')
@@ -13,7 +16,7 @@ class PongRoom(models.Model):
         return f"Room {self.room_id} (Max Players: {self.max_players})"
     
     def is_full(self):
-        return self.players.count() >= self.max_players
+        is_full = self.players.count() >= self.max_players
 
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -4,6 +4,8 @@ export DJANGO_SETTINGS_MODULE=pong_game.settings
 
 echo "Applying database migrations..."
 python manage.py migrate
+python manage.py makemigrations game
+python manage.py migrate game
 
 if [ $? -ne 0 ]; then
   echo "Failed to apply database migrations."
