@@ -40,11 +40,11 @@ services:
             retries: 10
             start_period: 5s
 
-    back_engine:
-        image: back_engine
-        container_name: back_engine
+    back_game:
+        image: back_game
+        container_name: back_game
         build:
-            context: back_engine
+            context: back_game
         depends_on:
             redis:
                 condition: service_healthy
@@ -75,7 +75,7 @@ services:
         depends_on:
             back_auth:
                 condition: service_healthy
-            back_engine:
+            back_game:
                 condition: service_healthy
         healthcheck:
             test: 'curl -kfsSL https://localhost:443/'

@@ -13,7 +13,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter back_engine redis
+CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter back_game redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -30,7 +30,7 @@ N				= \033[0m    # RESET
 
 LOCAL_BIN		= $(HOME)/bin
 CERT_DIR 		= ssl/
-SSL_CONT_DIRS	= front/ssl back_auth/ssl back_engine/ssl
+SSL_CONT_DIRS	= front/ssl back_auth/ssl back_game/ssl
 SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
 
 TEST-ENGINE-TAGS = soft middle edge auth ball cheating collision front state paddle performance scoring socket start_end env rooms
@@ -148,7 +148,7 @@ test-engine:
 	@PS3="Select a tag: "; \
 	select TAG in ${TEST-ENGINE-TAGS}; do \
 		if [ -n "$$TAG" ]; then \
-			docker exec -it back_engine pytest -m $$TAG; \
+			docker exec -it back_game pytest -m $$TAG; \
 		fi; \
 		break; \
 	done
