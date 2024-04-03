@@ -6,27 +6,63 @@ from game.game_settings.game_constants import LEFT, RIGHT
 @pytest.mark.soft
 @pytest.mark.paddle
 @pytest.mark.parametrize("num_players, player_slot", [
-    (3, LEFT),
-    (2, RIGHT),
+    (2, 0,),
+    (2, 1),
+    (3, 0),
+    (3, 1),
+    (3, 2),
 ])
 def test_paddle_initialization(num_players, player_slot):
     paddle = Paddle(num_players=num_players, player_slot=player_slot)
-    assert paddle._player_slot == player_slot;
-#
-#
-# @pytest.mark.soft
-# @pytest.mark.paddle
-# @pytest.mark.parametrize("initial_position, move_amount, expected_position", [
-#     (20, 5, 25),  # Move down
-#     (20, -10, 10),  # Move up
-#     (90, 10, 100),  # Attempt to move beyond the lower boundary, clamped to 100
-#     (10, -15, 0),  # Attempt to move beyond the upper boundary, clamped to 0
-# ])
-# def test_paddle_movement(initial_position, move_amount, expected_position):
-#     paddle = Paddle(position=initial_position)
-#     paddle.move(move_amount)
-#     assert paddle.position == expected_position
-#
+    assert paddle._num_players == num_players
+    assert paddle._player_slot == player_slot
+    assert paddle._position == {
+        'x': (paddle._axis[0]['x'] + paddle._axis[1]['x']) / 2,
+        'y': (paddle._axis[0]['y'] + paddle._axis[1]['y']) / 2
+    }
+
+@pytest.mark.soft
+@pytest.mark.paddle
+@pytest.mark.parametrize("num_players, player_slot", [
+    (2, 0),
+    (2, 1),
+    (3, 1),
+    (3, 2),
+    (3, 3),
+])
+def test_paddle_movement(num_players, player_slot):
+    paddle = Paddle(num_players=num_players, player_slot=player_slot)
+    paddle.move(100)
+    assert paddle._position == {
+        'x': round(paddle._axis[1]['x']),
+        'y': round(paddle._axis[1]['y'])
+    }
+    paddle.move(50)
+    assert paddle._position == {
+        'x': round((paddle._axis[0]['x'] + paddle._axis[1]['x']) / 2),
+        'y': round((paddle._axis[0]['y'] + paddle._axis[1]['y']) / 2)
+    }
+    paddle.move(0)
+    assert paddle._position == {
+        'x': round(paddle._axis[0]['x']),
+        'y': round(paddle._axis[0]['y'])
+    }
+
+
+@pytest.mark.soft
+@pytest.mark.paddle
+@pytest.mark.parametrize("num_players, player_slot", [
+    (2, 0),
+    (2, 1),
+    (3, 1),
+    (3, 2),
+    (3, 3),
+])
+def test_something_that_should_fail(num_players, player_slot):
+    paddle = Paddle(num_players=num_players, player_slot=player_slot)
+    with pytest.raises(ValueError, match="Percentage must be between 0 and 100"):
+        paddle.move(-3)
+
 # @pytest.mark.soft
 # @pytest.mark.paddle
 # def test_paddle_boundaries():
