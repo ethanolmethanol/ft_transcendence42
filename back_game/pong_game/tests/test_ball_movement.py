@@ -1,7 +1,7 @@
 import pytest
 from game.game_logic.game_logic import *
 
-from game.game_entities.ball import *
+from game.game_entities.ball import Ball
 
 
 @pytest.mark.middle
