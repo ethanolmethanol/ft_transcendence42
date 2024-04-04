@@ -13,7 +13,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back_auth back_user front db prometheus grafana node_exporter blackbox_exporter # pong redis
+CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis # pong
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -135,6 +135,16 @@ talk:
 	@PS3="Select for which container you want to access a shell: "; \
 	select c in ${CONTAINERS}; \
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
+
+test-engine:
+	@PS3="Select a tag: "; \
+	select TAG in ${TEST-ENGINE-TAGS}; do \
+		if [ -n "$$TAG" ]; then \
+			docker exec -it back_game pytest -m $$TAG; \
+		fi; \
+		break; \
+	done
+
 
 rmi:
 	@PS3="Select for which image you want to remove: "; \
