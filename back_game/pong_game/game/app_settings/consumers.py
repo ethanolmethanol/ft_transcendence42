@@ -61,7 +61,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data=None, bytes_data=None):
         content = json.loads(text_data)
         message_type, message = content['type'], content['message']
-        if message_type == 'move_paddle':
+        if message_type == 'heartbeat':
+            pass  # Ignore 'heartbeat' messages
+        elif message_type == 'move_paddle':
             await self.move_paddle(message)
         elif message_type == 'join':
             await self.join(message)

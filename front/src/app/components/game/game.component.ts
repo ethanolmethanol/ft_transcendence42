@@ -2,6 +2,7 @@ import {AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@
 import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
+import {WebSocketService} from "../../services/web-socket/web-socket.service";
 
 @Component({
   selector: 'app-game',
@@ -29,6 +30,16 @@ export class GameComponent implements AfterViewInit {
 
   private pressedKeys = new Set<string>();
 
+  constructor(private webSocketService: WebSocketService) {
+    this.webSocketService.connect('room1');
+    this.webSocketService.getMessages().subscribe(message => {
+      const { paddleId, position } = JSON.parse(message);
+      const paddle = this.paddles.find(p => p.id === paddleId);
+      if (paddle) {
+        paddle.positionY = position;
+      }
+    });
+  }
   @HostListener('window:keydown', ['$event'])
   private onKeyDown(event: KeyboardEvent) {
     this.pressedKeys.add(event.key);
@@ -57,8 +68,10 @@ export class GameComponent implements AfterViewInit {
 
     if (isMovingUp) {
       paddle.moveUp();
+      this.webSocketService.sendPaddleMovement(paddle.id, paddle.positionY);
     } else if (isMovingDown) {
       paddle.moveDown();
+      this.webSocketService.sendPaddleMovement(paddle.id, paddle.positionY);
     }
   }
 
