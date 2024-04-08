@@ -17,14 +17,6 @@ export class WebSocketService {
     const url = `wss://localhost:8001/ws/game/${roomName}/`;
     this.socket = new WebSocket(url);
 
-    this.socket.onopen = () => {
-      // this.heartbeatInterval = setInterval(() => {
-      //   if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      //     this.socket.send('heartbeat');
-      //   }
-      // }, 5000);
-    };
-
     this.socket.onmessage = (event) => this.messages.next(event.data);
 
     this.socket.onerror = (event) => {
@@ -51,16 +43,18 @@ export class WebSocketService {
   public sendPaddleMovement(paddleId: number, position: number): void {
     console.log('Sending paddle movement:', { paddleId, position });
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify({ paddleId, position }));
+      this.send('move_paddle', {paddleId, position});
     } else {
       console.log('WebSocket is not open when trying to send paddle movement');
     }
   }
 
-  public send(message: string): void {
+  public send(type: string, message: Object): void {
     if (this.socket) {
-      this.socket.send(message);
-    }
+      this.socket.send(JSON.stringify({
+        type: type,
+        message: message
+      }))}
   }
 
   public getMessages(): Observable<string> {
