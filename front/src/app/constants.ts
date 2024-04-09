@@ -3,6 +3,7 @@
 // API
 export const API_AUTH = 'https://localhost:8000/auth';
 export const API_USER = 'https://localhost:8002/user';
+export const API_GAME = 'https://localhost:8001';
 // GAME
 export const GAME_HEIGHT = 600;
 export const GAME_WIDTH = 1000;

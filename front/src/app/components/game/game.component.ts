@@ -3,6 +3,7 @@ import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} fr
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
+import {MonitorService} from "../../services/monitor/monitor.service";
 
 @Component({
   selector: 'app-game',
@@ -22,7 +23,7 @@ export class GameComponent implements AfterViewInit {
   lineThickness = LINE_THICKNESS;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
-
+  postData = JSON.stringify({"gameData": {"PlayerMode": {"mode": 0, "nbPlayers": 2}}})
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
@@ -30,18 +31,21 @@ export class GameComponent implements AfterViewInit {
 
   private pressedKeys = new Set<string>();
 
-  constructor(private webSocketService: WebSocketService) {
-    this.webSocketService.connect('room1');
-    this.webSocketService.getConnectionOpenedEvent().subscribe(message => {
-      this.webSocketService.join('room1');
+  constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
+    monitorService.getWebSocketUrl(this.postData).subscribe(url=>
+      this.webSocketService.connect(url)
+    );
+
+    // this.webSocketService.getConnectionOpenedEvent().subscribe(message => {
+    //   this.webSocketService.join('room1');
 
       // const { paddleId, position } = JSON.parse(message);
       // const paddle = this.paddles.find(p => p.id === paddleId);
       // if (paddle) {
       //   paddle.positionY = position;
       // }
-    });
   }
+
   @HostListener('window:keydown', ['$event'])
   private onKeyDown(event: KeyboardEvent) {
     this.pressedKeys.add(event.key);
