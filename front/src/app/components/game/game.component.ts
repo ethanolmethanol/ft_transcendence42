@@ -32,12 +32,14 @@ export class GameComponent implements AfterViewInit {
 
   constructor(private webSocketService: WebSocketService) {
     this.webSocketService.connect('room1');
-    this.webSocketService.getMessages().subscribe(message => {
-      const { paddleId, position } = JSON.parse(message);
-      const paddle = this.paddles.find(p => p.id === paddleId);
-      if (paddle) {
-        paddle.positionY = position;
-      }
+    this.webSocketService.getConnectionOpenedEvent().subscribe(message => {
+      this.webSocketService.join('room1');
+
+      // const { paddleId, position } = JSON.parse(message);
+      // const paddle = this.paddles.find(p => p.id === paddleId);
+      // if (paddle) {
+      //   paddle.positionY = position;
+      // }
     });
   }
   @HostListener('window:keydown', ['$event'])

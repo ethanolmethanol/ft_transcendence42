@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 })
 export class WebSocketService {
   private socket: WebSocket | null;
+  private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
   private heartbeatInterval: any;
 
@@ -16,6 +17,11 @@ export class WebSocketService {
   public connect(roomName: string): void {
     const url = `wss://localhost:8001/ws/game/${roomName}/`;
     this.socket = new WebSocket(url);
+
+    this.socket.onopen = (event) => {
+      console.log('WebSocket connection opened:', event);
+      this.connectionOpened.next();
+    };
 
     this.socket.onmessage = (event) => this.messages.next(event.data);
 
@@ -49,12 +55,25 @@ export class WebSocketService {
     }
   }
 
+  public join(room: string): void {
+    console.log('Join', { room });
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.send('join', room);
+    } else {
+      console.log('WebSocket is not open when trying to join room');
+    }
+  }
+
   public send(type: string, message: Object): void {
     if (this.socket) {
       this.socket.send(JSON.stringify({
         type: type,
         message: message
       }))}
+  }
+
+  public getConnectionOpenedEvent(): Observable<void> {
+    return this.connectionOpened.asObservable();
   }
 
   public getMessages(): Observable<string> {
