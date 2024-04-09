@@ -13,7 +13,7 @@ BROWSER			= firefox
 
 SHELL			= /bin/bash
 
-CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis # pong
+CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis
 
 COMPOSE_PATH	= docker-compose.yml
 

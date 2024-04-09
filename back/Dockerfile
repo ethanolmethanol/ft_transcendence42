@@ -14,6 +14,10 @@ RUN pip install --no-cache-dir --upgrade pip==24.0 && \
 	pip install --no-cache-dir django==5.0.3 django-cors-headers==4.3.1 \
 		djangorestframework==3.14.0 django-health-check==3.18.1 \
 		psycopg2-binary==2.9.9 werkzeug==3.0.1 django-extensions==3.2.3 pyOpenSSL==24.1.0
+# remove workzeug & pyOpenSSL
+RUN python -m pip install -U 'channels[daphne]'
+RUN pip install -U "Twisted[tls,http2]"
+RUN pip install pytest pytest-asyncio pytest-django pytest-cov
 
 RUN mkdir -p /var/run/back /etc/ssl
 
@@ -21,4 +25,5 @@ COPY ./ssl/* /etc/ssl/
 WORKDIR /var/run/back
 COPY . /var/run/back
 RUN chmod +x wait-for-it.sh
-ENTRYPOINT ["./wait-for-it.sh", "db", "5432", "python3", "transcendence_django/manage.py", "runserver_plus", "--cert-file", "/etc/ssl/serv.crt", "--key-file", "/etc/ssl/serv.key", "0.0.0.0:8000"]
+ENTRYPOINT ["./wait-for-it.sh", "db", "5432"]
+#  daphne -b 0.0.0.0 -p 8000 -e ssl:443:privateKey=/etc/ssl/serv.key:certKey=/etc/ssl/serv.crt transcendence_django.asgi:application"]

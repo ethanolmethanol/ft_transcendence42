@@ -56,11 +56,12 @@ services:
         env_file: .env
         healthcheck:
             test: 'python3 transcendence_django/manage.py health_check'
+
     back_game:
         image: back_game
         container_name: back_game
         build:
-            context: back_game
+            context: back
         depends_on:
             redis:
                 condition: service_healthy

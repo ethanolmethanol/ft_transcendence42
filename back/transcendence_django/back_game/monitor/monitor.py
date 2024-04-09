@@ -1,5 +1,5 @@
 import json
-from game.game_settings.game_constants import LOCAL_MODE
+from ..game_settings.game_constants import LOCAL_MODE
 
 class Position:
    def __init__(self, x=0, y=0):
