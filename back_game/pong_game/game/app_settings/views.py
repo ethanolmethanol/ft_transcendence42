@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db import connections
 from django.db.utils import OperationalError
+from game.monitor.monitor import Monitor
 # from django.views.decorators.csrf import csrf_exempt
 import logging
 
@@ -24,8 +25,8 @@ def health(request):
 def join(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        # game_data = data['game_data']
-
+        monitor = Monitor(data['game_data'])
+        return JsonResponse(monitor.game_config, status=200)
     except Exception as e:
         logger.error(e)
         return JsonResponse({'error': str(e)}, status=400)
