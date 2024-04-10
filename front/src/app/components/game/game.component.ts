@@ -23,7 +23,7 @@ export class GameComponent implements AfterViewInit {
   lineThickness = LINE_THICKNESS;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
-  postData = JSON.stringify({"gameData": {"PlayerMode": {"mode": 0, "nbPlayers": 2}}})
+  postData = JSON.stringify({"gameData": {"playerMode": {"nbPlayers": 2, "mode": 0}}})
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },

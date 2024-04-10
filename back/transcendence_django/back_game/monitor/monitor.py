@@ -10,6 +10,12 @@ class Position:
       self.x = x
       self.y = y
 
+   def to_dict(self):
+      return {
+         'x': self.x,
+         'y': self.y
+      }
+
 class Vector(Position):
 
    def __init__(self, x=0, y=0):
@@ -20,9 +26,15 @@ class PlayerMode:
       self.nbPlayers = 2
       self.mode = LOCAL_MODE
 
-   def update(self, nbPlayers, mode):
-      self.nbPlayers = nbPlayers
-      self.mode = mode
+   def update(self, config):
+      self.nbPlayers = config['nbPlayers']
+      self.mode = config['mode']
+
+   def to_dict(self):
+        return {
+            'nbPlayers': self.nbPlayers,
+            'mode': self.mode
+        }
 
 class Paddle:
    def __init__(self):
@@ -31,8 +43,14 @@ class Paddle:
       self.width = 5
       self.height = 50
 
-   def update(self, x, y):
-      self.speed.setCoordinates(x, y)
+   def update(self, config):
+      self.speed.setCoordinates(config['x'], config['y'])
+
+   def to_dict(self):
+      return {
+         'position': self.position.to_dict(),
+         'speed': self.speed.to_dict()
+      }
 
 class Ball:
    def __init__(self):
@@ -45,30 +63,45 @@ class Ball:
       self.speed.setCoordinates(newSpeed.x, newSpeed.y)
       self.radius = newRadius
 
+   def to_dict(self):
+      return {
+         'position': self.position.to_dict(),
+         'speed': self.speed.to_dict()
+      }
+
 class Map:
-    def __init__(self):
+   def __init__(self):
       self.width = 900
       self.height = 500
 
-    def update(self, newWidth, newHeight):
-        self.width = newWidth
-        self.height = newHeight
+   def update(self, newWidth, newHeight):
+      self.width = newWidth
+      self.height = newHeight
+
+   def to_dict(self):
+      return {
+         'width': self.width,
+         'height': self.height
+      }
+
 
 class Monitor:
-    game_config = {
+    gameConfig = {
       "playerMode": PlayerMode(),
       "paddle": Paddle(),
       "ball": Ball(),
       "map": Map(),
     }
 
-    def __init__(self, json_game_data):
-        game_data = json.loads(json_game_data)
-        for key in game_data.keys():
-            if key in self.game_config:
-                self.game_config[key].update(game_data[key])
+    def __init__(self, gameData): #json
+      #   gameData = json.loads(jsonGameData)
+        for key in gameData.keys():
+            if key in self.gameConfig:
+                self.gameConfig[key].update(gameData[key])
             else:
-                raise ValueError(f"Key '{key}' not found in game_config.")
+                raise ValueError(f"Key '{key}' not found in gameConfig.")
 
+    def getGameConfig(self):
+        return {k: v.to_dict() for k, v in self.gameConfig.items()}
 
-# json_game_data = '{ "playerMode": {"nbPlayer, mode"}, "paddle": {"height": 10, "width": 10}, "ball": {"speed": {"x": 1, "y": 2}, "radius": 5}}'
+# jsonGameData = '{ "playerMode": {"nbPlayer, mode"}, "paddle": {"height": 10, "width": 10}, "ball": {"speed": {"x": 1, "y": 2}, "radius": 5}}'
