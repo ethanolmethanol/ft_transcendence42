@@ -2,7 +2,7 @@ import pytest
 import json
 from channels.testing import WebsocketCommunicator
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from pong_game.asgi import application
+from transcendence_django.asgi import application
 
 @pytest.mark.soft
 @pytest.mark.socket
