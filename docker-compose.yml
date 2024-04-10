@@ -28,13 +28,13 @@ services:
             db:
                 condition: service_healthy
         ports:
-            - "8000:8000"
+            - "8000:443"
         networks:
             - transcendence
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: 'python3 transcendence_django/manage.py health_check'
+            test: 'python3 manage.py health_check'
             interval: 5s
             timeout: 1s
             retries: 10
@@ -49,21 +49,24 @@ services:
             back_auth:
                 condition: service_healthy
         ports:
-            - "8002:8000"
+            - "8002:443"
         networks:
             - transcendence
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: 'python3 transcendence_django/manage.py health_check'
+            test: 'python3 manage.py health_check'
 
     back_game:
         image: back_game
         container_name: back_game
         build:
             context: back
+        env_file: .env
         depends_on:
             redis:
+                condition: service_healthy
+            back_user:
                 condition: service_healthy
         ports:
             - "8001:443"
@@ -71,11 +74,13 @@ services:
             - transcendence
         restart: unless-stopped
         healthcheck:
-            test: ["CMD", "curl", "-kfsSL", "https://localhost:443/health/"]
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 5s
+            test: 'python3 manage.py health_check'
+        # healthcheck:
+        #     test: ["CMD", "curl", "-kfsSL", "https://localhost:443/health/"]
+        #     interval: 5s
+        #     timeout: 1s
+        #     retries: 10
+        #     start_period: 5s
 
     front:
         image: front
