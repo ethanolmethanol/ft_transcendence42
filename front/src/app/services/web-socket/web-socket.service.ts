@@ -8,14 +8,13 @@ export class WebSocketService {
   private socket: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
-  private heartbeatInterval: any;
 
   constructor() {
     this.socket = null;
   }
 
-  public connect(endpoint: string): void {
-    const url = `wss://localhost:8001/${endpoint}`;
+  public connect(arenaID: string): void {
+    const url = `wss://localhost:8001/ws/game/${arenaID}/`;
     this.socket = new WebSocket(url);
 
     this.socket.onopen = (event) => {
@@ -42,7 +41,6 @@ export class WebSocketService {
       } else {
         console.log('WebSocket was null');
       }
-      clearInterval(this.heartbeatInterval);
     };
   }
 
@@ -55,12 +53,12 @@ export class WebSocketService {
     }
   }
 
-  public join(room: string): void {
-    console.log('Join', { room });
+  public join(): void {
+    console.log('Join');
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', room);
+      this.send('join', {"username": "Player"});
     } else {
-      console.log('WebSocket is not open when trying to join room');
+      console.log('WebSocket is not open when trying to join arena');
     }
   }
 

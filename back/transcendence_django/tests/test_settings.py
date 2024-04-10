@@ -1,15 +1,15 @@
-from pong_game.settings import *
+from transcendence_django.settings import *
 
 SECRET_KEY = "fake-key"
 
 DEBUG = False
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': ':memory:',
+#     }
+# }
 
 INSTALLED_APPS = [
     "tests",

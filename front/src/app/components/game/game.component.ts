@@ -34,10 +34,7 @@ export class GameComponent implements AfterViewInit {
   private pressedKeys = new Set<string>();
 
   constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
-    monitorService.getWebSocketUrl(this.postData).subscribe(response => {
-      console.log(response)
-      this.webSocketService.connect(response.mediatorURL);
-    });
+    this.establishConnection();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -48,6 +45,17 @@ export class GameComponent implements AfterViewInit {
   @HostListener('window:keyup', ['$event'])
   private onKeyUp(event: KeyboardEvent) {
     this.pressedKeys.delete(event.key);
+  }
+
+  private establishConnection() {
+    this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
+      console.log(response)
+      this.webSocketService.connect(response.arenaID)
+      this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
+        console.log('WebSocket connection opened');
+        this.webSocketService.join()
+      })
+    });
   }
 
   private gameLoop() {

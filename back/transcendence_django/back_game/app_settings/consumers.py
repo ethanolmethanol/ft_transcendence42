@@ -41,18 +41,18 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.leave(message)
         else:
             log.warning(f"Unknown message type: {message_type}")
-    
+
     async def join(self, message: dict):
-#         self.username = message["username"]
-#         log.info(f"{self.username} joined game")
+        self.username = message["username"]
+        log.info(f"{self.username} joined game")
         await self.channel_layer.group_send(
             self.room_group_name, {
-                "type": "game_message", 
-#                 'message': f"{self.username} has joined the game."
+                "type": "game_message",
+                'message': f"{self.username} has joined the game."
             }
         )
         self.joined = True
-    
+
     async def move_paddle(self, message: dict):
         if not self.joined:
             log.error("Attempt to move paddle without joining.")
@@ -61,7 +61,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"{self.username} moved paddle to {position}.")
         await self.channel_layer.group_send(
             self.room_group_name, {
-                "type": "game_message", 
+                "type": "game_message",
                 "position": position,
                 "message": f"{self.username} moved paddle to{position}."
             }

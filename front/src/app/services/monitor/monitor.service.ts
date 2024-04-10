@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { API_GAME } from "../../constants";
 
 export interface WebSocketUrlResponse {
-  mediatorURL: string;
+  arenaID: string;
 }
 
 @Injectable({

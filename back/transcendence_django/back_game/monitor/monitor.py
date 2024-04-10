@@ -1,4 +1,5 @@
 import json
+import uuid
 from ..game_settings.game_constants import LOCAL_MODE
 
 class Position:
@@ -103,8 +104,8 @@ class Monitor:
     def getGameConfig(self):
         return {k: v.to_dict() for k, v in self.gameConfig.items()}
 
-    def getNewWebSocket(self):
-        id = "42"
-        return {"mediatorURL": f"ws/game/{id}/"}
-
-# jsonGameData = '{ "playerMode": {"nbPlayer, mode"}, "paddle": {"height": 10, "width": 10}, "ball": {"speed": {"x": 1, "y": 2}, "radius": 5}}'
+    def getNewArena(self):
+      unique_id = 42#str(uuid.uuid4())
+      # self.arenas[unique_id] = Arena()
+      # returns the Arena id
+      return {"arenaID": unique_id}
