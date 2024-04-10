@@ -23,7 +23,9 @@ export class GameComponent implements AfterViewInit {
   lineThickness = LINE_THICKNESS;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
-  postData = JSON.stringify({"gameData": {"playerMode": {"nbPlayers": 2, "mode": 0}}})
+  postData = JSON.stringify({"gameData":
+    {"playerMode": {"nbPlayers": 2, "mode": 0}
+  }})
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
@@ -32,18 +34,10 @@ export class GameComponent implements AfterViewInit {
   private pressedKeys = new Set<string>();
 
   constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
-    monitorService.getWebSocketUrl(this.postData).subscribe(url=>
-      this.webSocketService.connect(url)
-    );
-
-    // this.webSocketService.getConnectionOpenedEvent().subscribe(message => {
-    //   this.webSocketService.join('room1');
-
-      // const { paddleId, position } = JSON.parse(message);
-      // const paddle = this.paddles.find(p => p.id === paddleId);
-      // if (paddle) {
-      //   paddle.positionY = position;
-      // }
+    monitorService.getWebSocketUrl(this.postData).subscribe(response => {
+      console.log(response)
+      this.webSocketService.connect(response.mediatorURL);
+    });
   }
 
   @HostListener('window:keydown', ['$event'])

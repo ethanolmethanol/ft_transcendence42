@@ -94,7 +94,6 @@ class Monitor:
     }
 
     def __init__(self, gameData): #json
-      #   gameData = json.loads(jsonGameData)
         for key in gameData.keys():
             if key in self.gameConfig:
                 self.gameConfig[key].update(gameData[key])
@@ -103,5 +102,9 @@ class Monitor:
 
     def getGameConfig(self):
         return {k: v.to_dict() for k, v in self.gameConfig.items()}
+
+    def getNewWebSocket(self):
+        id = "42"
+        return {"mediatorURL": f"ws/game/{id}/"}
 
 # jsonGameData = '{ "playerMode": {"nbPlayer, mode"}, "paddle": {"height": 10, "width": 10}, "ball": {"speed": {"x": 1, "y": 2}, "radius": 5}}'

@@ -14,8 +14,8 @@ export class WebSocketService {
     this.socket = null;
   }
 
-  public connect(url: string): void {
-    // const url = `wss://localhost:8001/ws/game/${roomName}/`;
+  public connect(endpoint: string): void {
+    const url = `wss://localhost:8001/${endpoint}`;
     this.socket = new WebSocket(url);
 
     this.socket.onopen = (event) => {
