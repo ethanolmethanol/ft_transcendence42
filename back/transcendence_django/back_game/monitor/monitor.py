@@ -31,3 +31,4 @@ class Monitor:
       newArena = Arena(self.gameConfig)
       self.arenas[newArena.id] = newArena
       return {"arenaID": newArena.id}
+

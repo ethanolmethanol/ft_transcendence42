@@ -1,6 +1,9 @@
 import json
 import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from back_game.monitor.monitor import Monitor
+from back_game.game_arena.arena import Arena
+
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +46,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             log.warning(f"Unknown message type: {message_type}")
 
     async def join(self, message: dict):
+        arena = Monitor().arenas.get(self.channelID)
         self.username = message["username"]
+        arena.join(self.username)
         log.info(f"{self.username} joined game")
         await self.channel_layer.group_send(
             self.room_group_name, {
@@ -52,6 +57,21 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             }
         )
         self.joined = True
+
+    async def leave(self, message: dict):
+        if not self.joined:
+            log.error("Attempt to leave without joining.")
+            return
+        arena = Monitor().arenas.get(self.channelID)
+        arena.leave(self.username)
+        log.info(f"{self.username} leaving game")
+        await self.channel_layer.group_send(
+            self.room_group_name, {
+                "type": "game_message",
+                "message": f"{self.username} has left the game."
+            },
+        )
+        self.joined = False
 
     async def move_paddle(self, message: dict):
         if not self.joined:
@@ -66,19 +86,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 "message": f"{self.username} moved paddle to{position}."
             }
         )
-
-    async def leave(self, message: dict):
-        if not self.joined:
-            log.error("Attempt to leave without joining.")
-            return
-        log.info(f"{self.username} leaving game")
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                "type": "game_message",
-                "message": f"{self.username} has left the game."
-            },
-        )
-        self.joined = False
 
     async def game_message(self, event):
         message = event['message']

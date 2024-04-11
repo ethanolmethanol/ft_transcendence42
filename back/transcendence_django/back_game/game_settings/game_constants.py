@@ -22,3 +22,9 @@
 
 LOCAL_MODE = 0
 ONLINE_MODE = 1
+
+# Game status
+
+WAITING = 0
+STARTED = 1
+OVER = 2
