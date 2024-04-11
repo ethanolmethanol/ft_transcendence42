@@ -8,14 +8,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.room_name = None
+        self.channelID = None
         self.room_group_name = None
         self.joined = False
         self.username = None
 
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f'game_{self.room_name}'
+        self.channelID = self.scope['url_route']['kwargs']['channelID']
+        self.room_group_name = f'game_{self.channelID}'
         log.info(f"User Connected to {self.room_group_name}")
         await self.channel_layer.group_add(
             self.room_group_name,

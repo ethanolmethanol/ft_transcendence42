@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 @require_http_methods(["POST"])
-def join(request):
+def getChannelID(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
         logger.error(data['gameData'])

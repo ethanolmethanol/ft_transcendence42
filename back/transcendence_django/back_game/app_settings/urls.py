@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import join
+from .views import getChannelID
 
 urlpatterns = [
-    path('join/', join, name='join'),
+    path('get_channel_id/', getChannelID, name='getChannelID'),
 ]

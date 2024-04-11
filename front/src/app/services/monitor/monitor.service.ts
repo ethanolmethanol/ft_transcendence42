@@ -15,6 +15,6 @@ export class MonitorService {
   constructor(private http: HttpClient) {}
 
   public getWebSocketUrl(postData: string): Observable<WebSocketUrlResponse> {
-    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join/`, postData);
+    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/get_channel_id/`, postData);
   }
 }
