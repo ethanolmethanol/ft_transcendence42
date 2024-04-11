@@ -6,6 +6,7 @@ from back_game.game_arena.playerMode import PlayerMode
 
 class Arena:
    def __init__(self, gameConfig):
+      self.id = id(self)
       self.__initPaddles(gameConfig['playerMode'].to_dict()['nbPlayers'], gameConfig['paddle'])
       self.__initBall(gameConfig['ball'])
       self.__initMap(gameConfig['map'])
