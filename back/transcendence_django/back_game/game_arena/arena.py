@@ -9,9 +9,9 @@ class Arena:
    def __init__(self, gameConfig):
       self.id = id(self)
       self.status = WAITING
-      self.playerList = []
+      self.playerList = [] # rename players ??
       self.maxPlayers = gameConfig['playerMode'].to_dict()['nbPlayers']
-      self.mode = gameConfig['playerMode'].to_dict()['mode']
+      self.mode = gameConfig['playerMode'].to_dict()['mode']   
       self.__initPaddles(self.maxPlayers, gameConfig['paddle'])
       self.__initBall(gameConfig['ball'])
       self.__initMap(gameConfig['map'])
@@ -33,7 +33,7 @@ class Arena:
    def __initPlayerMode(self, playerModeTemplate):
       self.playerMode = cp.deepcopy(playerModeTemplate)
 
-   def join(self, username):
+   def join(self, username): # rename addPlayer ??
       if (self.mode == LOCAL_MODE):
          self.playerList = ["Player 1", "Player 2"]
       else:
@@ -44,13 +44,20 @@ class Arena:
    def isFull(self):
       return len(self.playerList) >= self.maxPlayers
 
-   def isEmpty(self):
+   def isEmpty(self): # rename isGameOver ??
       return len(self.playerList) == 0
 
-   def leave(self, username):
+   
+   # TODO: When a player gives up or is disconnected, call this function
+   def leave(self, username): # rename removePlayer ??
       if (self.mode == LOCAL_MODE):
          self.playerList.clear()
       else:
          self.playerList.remove(username)
-      if self.isEmpty():
+      # remove this part below, as we continuously check for a change of status in the game engine ??
+      if self.playerList.isEmpty():
          self.status = OVER
+
+   def endOfGame(self):
+      self.playerList.clear()
+      self.status = OVER

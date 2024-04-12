@@ -1,8 +1,8 @@
 import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
-from game.models import Game, Player
-from game.game_settings.game_constants import *
+#from game.models import Game, Player
+from back_game.game_settings.game_constants import *
 
 
 @pytest.fixture

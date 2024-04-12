@@ -4,7 +4,6 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from back_game.monitor.monitor import Monitor
 from back_game.game_arena.arena import Arena
 
-
 log = logging.getLogger(__name__)
 
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
