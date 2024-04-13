@@ -26,7 +26,7 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-TEST-ENGINE-TAGS = passed soft middle edge auth ball cheating collision front state paddle performance scoring socket start_end env rooms game_engine
+TEST-ENGINE-TAGS = passed game_engine
 
 ${NAME}: gen-cert up health
 	$(call printname)

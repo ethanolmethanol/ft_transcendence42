@@ -52,8 +52,8 @@ async def test_run_game_loop():
 			"ball": Ball(),
 			"map": Map(),
 		}))
-		SINGLE.arenas[-1].playerList.append("TestPlayer1")
-		SINGLE.arenas[-1].playerList.append("TestPlayer2")
+		SINGLE.arenas[-1].players.append("TestPlayer1")
+		SINGLE.arenas[-1].players.append("TestPlayer2")
 		SINGLE.arenas[-1].status = STARTED
 	await SINGLE.start()
 	assert(SINGLE.started)
@@ -61,9 +61,9 @@ async def test_run_game_loop():
 	await asyncio.sleep(2)
 	assert(len(SINGLE.arenas) == 9)
 	SINGLE.arenas
-	SINGLE.arenas[2].playerList.remove("TestPlayer1")
+	SINGLE.arenas[2].players.remove("TestPlayer1")
 	assert(len(SINGLE.arenas) == 9)
-	SINGLE.arenas[2].playerList.remove("TestPlayer2")
+	SINGLE.arenas[2].players.remove("TestPlayer2")
 	await asyncio.sleep(2)
 	assert(len(SINGLE.arenas) == 8)
 	SINGLE.arenas.clear()

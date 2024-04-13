@@ -23,18 +23,29 @@ class GameEngine:
 
     async def run_game_loop(self):
         while any(arena.status != OVER for arena in self.arenas):
-            self.update_game_states()
+            await self.update_game_states()
             await asyncio.sleep(1)
         self.started = False
 
-    def update_game_states(self):
+    async def update_game_states(self):
         for arena in self.arenas:
+            if (arena.status == STARTED and len(arena.players) == 1):
+                # make the only one player win and set the status to over
+                pass
             if (arena.status == STARTED and arena.isEmpty())\
                 or arena.status == OVER:
-                self.gameOver(arena)
-
-    def gameOver(self, arena):
+                await self.gameOver(arena)
+            
+    async def gameOver(self, arena):
         arena.status = OVER
+        if hasattr(arena, 'game_over_callback'):
+            await arena.game_over_callback('Game Over! Thank you for playing.')
         self.removeArena(arena)
-        # send the end of game stats via the consumer.
-        # room_name = arena.id
+
+
+#   TODO - NEXT STEPS (before the game physics)
+#       -> checker que le test passe toujours comme ca avec les async / await
+#       -> finir arena pour stocker les scores des joueurs
+#       -> envoyer stats de fin de jeux / finir implementation sendGameOver
+#       -> implementer test pour la ws, le monitor et l'arene
+#       -> connecter avec le front
