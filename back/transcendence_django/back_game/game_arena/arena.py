@@ -26,7 +26,7 @@ class Arena:
       return len(self.players) == 0
    
    def isFull(self):
-      return len(self.players) >= self.maxPlayers
+      return len(self.players) >= self.nbPlayers
    
    def addPlayer(self, username):
       if (self.mode == LOCAL_MODE):

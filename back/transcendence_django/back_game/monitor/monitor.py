@@ -17,7 +17,8 @@ class Monitor:
     #     return {k: v.to_dict() for k, v in self.gameConfig.items()}
 
     def getUniqueID(self):
-        return uuid.uuid4().int
+        # return uuid.uuid1()
+        return '42'
 
     async def getNewChannel(self, playerSpecs):
       newArena = Arena(playerSpecs)

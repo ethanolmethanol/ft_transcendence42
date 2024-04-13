@@ -1,7 +1,7 @@
 import json
 import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from back_game.monitor.monitor import Monitor
+from back_game.monitor.monitor import monitor
 from back_game.game_arena.arena import Arena
 
 log = logging.getLogger(__name__)
@@ -11,6 +11,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channelID = None
+        self.arenaID = None
         self.room_group_name = None
         self.joined = False
         self.username = None
@@ -45,8 +46,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             log.warning(f"Unknown message type: {message_type}")
 
     async def join(self, message: dict):
-        arena = Monitor().arenas.get(self.channelID)
         self.username = message["username"]
+        self.arenaID = message["arenaID"]
+        arena = monitor.channels[self.channelID][self.arenaID]
         arena.addPlayer(self.username)
         arena.game_over_callback = self.sendGameOver
         log.info(f"{self.username} joined game")
@@ -62,7 +64,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             log.error("Attempt to leave without joining.")
             return
-        arena = Monitor().arenas.get(self.channelID)
+        arena = monitor.channels[self.channelID][self.arenaID]
         arena.removePlayer(self.username)
         log.info(f"{self.username} leaving game")
         await self.channel_layer.group_send(
@@ -72,6 +74,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             },
         )
         self.joined = False
+        self.arenaID = None
 
     async def move_paddle(self, message: dict):
         if not self.joined:
@@ -88,7 +91,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def sendGameOver(self, gameOverMessage):
-        arena = Monitor().arenas.get(self.channelID)
+        arena = monitor.channels[self.channelID][self.arenaID]
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'game_over',
@@ -97,12 +100,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             }
         )
         # remove the arena
-        # Monitor().deleteArena(arena.id)
         # check dans le front qui a gagne
         # close the connection ? (back or front?)
 
-    # async def game_message(self, event):
-    #     message = event['message']
-    #     await self.send(text_data=json.dumps({
-    #         'message': message
-    #     }))
+    async def game_message(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps({
+            'message': message
+        }))

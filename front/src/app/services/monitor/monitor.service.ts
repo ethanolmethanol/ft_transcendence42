@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { API_GAME } from "../../constants";
 
 export interface WebSocketUrlResponse {
+  channelID: string;
   arenaID: string;
 }
 

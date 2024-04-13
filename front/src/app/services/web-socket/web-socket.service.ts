@@ -13,8 +13,8 @@ export class WebSocketService {
     this.socket = null;
   }
 
-  public connect(arenaID: string): void {
-    const url = `wss://localhost:8001/ws/game/${arenaID}/`;
+  public connect(channelID: string): void {
+    const url = `wss://localhost:8001/ws/game/${channelID}/`;
     this.socket = new WebSocket(url);
 
     this.socket.onopen = (event) => {
@@ -53,10 +53,10 @@ export class WebSocketService {
     }
   }
 
-  public join(): void {
+  public join(arenaID: string): void {
     console.log('Join');
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"username": "Player"});
+      this.send('join', {"username": "Player", "arenaID": arenaID});
     } else {
       console.log('WebSocket is not open when trying to join arena');
     }

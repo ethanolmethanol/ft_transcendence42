@@ -50,10 +50,10 @@ export class GameComponent implements AfterViewInit {
   private establishConnection() {
     this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
       console.log(response)
-      this.webSocketService.connect(response.arenaID)
+      this.webSocketService.connect(response.channelID)
       this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
         console.log('WebSocket connection opened');
-        this.webSocketService.join()
+        this.webSocketService.join(response.arenaID)
       })
     });
   }
