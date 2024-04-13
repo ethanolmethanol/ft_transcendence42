@@ -6,7 +6,7 @@ from back_game.game_settings.game_constants import *
 class Arena:
    def __init__(self, playerSpecs):
       self.__fillPlayerSpecs(playerSpecs)
-      self.id = id(self)
+      self.id = str(id(self))
       self.status = WAITING
       self.players = []
       self.scores = []
