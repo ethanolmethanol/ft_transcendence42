@@ -1,5 +1,5 @@
 class Map:
-   def __init__(self):
+   def __init__(self): # TODO Map size and shape depends on number of player
       self.width = 900
       self.height = 500
 

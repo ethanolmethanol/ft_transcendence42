@@ -2,9 +2,9 @@
 # GAME_WIDTH = 100
 # GAME_HEIGHT = 100
 
-# # Game arena
-# MIN_PLAYER = 2
-# MAX_PLAYER = 10
+# Game arena
+MIN_PLAYER = 2
+MAX_PLAYER = 10
 
 # # Ball parameters
 # BALL_INITIAL_POSITION = {'x': 50, 'y': 50}
@@ -28,3 +28,5 @@ ONLINE_MODE = 1
 WAITING = 0
 STARTED = 1
 OVER = 2
+# When all arenas are DEAD, the corresponding channel can be deleted
+DEAD = 3 
