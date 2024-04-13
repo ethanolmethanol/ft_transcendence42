@@ -58,6 +58,11 @@ export class GameComponent implements AfterViewInit {
     });
   }
 
+  public endConnection() {
+    console.log('WebSocket connection closed');
+    this.webSocketService.disconnect();
+  }
+
   private gameLoop() {
     this.paddleBinding.forEach(paddleBinding => {
       const paddle = this.paddles.find(p => p.id === paddleBinding.id);

@@ -1,4 +1,4 @@
-import {Component, HostListener, ElementRef, OnInit, AfterViewInit} from '@angular/core';
+import {Component, HostListener, ElementRef, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import {PaddleComponent} from "../../components/paddle/paddle.component";
 import {Router, RouterLink} from "@angular/router";
 import {GameComponent} from "../../components/game/game.component";
@@ -15,6 +15,8 @@ import {GameComponent} from "../../components/game/game.component";
   styleUrl: './game-page.component.css'
 })
 export class GamePageComponent implements OnInit, AfterViewInit {
+  @ViewChild(GameComponent) gameComponent!: GameComponent;
+
   constructor(private elementRef: ElementRef, private router: Router) {}
 
   @HostListener('window:resize', ['$event'])
@@ -38,6 +40,7 @@ export class GamePageComponent implements OnInit, AfterViewInit {
 
   confirmGiveUp() {
     if (confirm('Are you sure you want to give up?')) {
+      this.gameComponent.endConnection();
       this.router.navigate(['/home']);
     }
   }

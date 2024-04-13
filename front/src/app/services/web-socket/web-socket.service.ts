@@ -44,6 +44,11 @@ export class WebSocketService {
     };
   }
 
+  public disconnect(): void {
+    // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
+    this.socket?.close(1000, "Client disconnect.");
+  }
+
   public sendPaddleMovement(paddleId: number, position: number): void {
     console.log('Sending paddle movement:', { paddleId, position });
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {

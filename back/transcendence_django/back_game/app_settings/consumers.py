@@ -48,6 +48,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def join(self, message: dict):
         self.username = message["username"]
         self.arenaID = message["arenaID"]
+        logging.error(f"Hello the self.arenaID is {self.arenaID}\n\
+                      And the message[\"arenaID\"] is {message["arenaID"]}\
+                     And the whole arena dict is {monitor.channels[self.channelID]}")
         arena = monitor.channels[self.channelID][self.arenaID]
         arena.addPlayer(self.username)
         arena.game_over_callback = self.sendGameOver
