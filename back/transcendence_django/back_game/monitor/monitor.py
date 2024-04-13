@@ -23,8 +23,8 @@ class Monitor:
       newArena = Arena(playerSpecs)
       channelID = self.getUniqueID()
       self.channels[channelID] = {newArena.id: newArena}
-      self.game_loop_task[channelID] = asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
-      return {"channelID": channelID.id, "arenaID": newArena.id}
+      asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
+      return {"channelID": channelID, "arenaID": newArena.id}
 
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]
