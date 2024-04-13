@@ -40,12 +40,10 @@ class GameEngine:
         arena.status = OVER
         if hasattr(arena, 'game_over_callback'):
             await arena.game_over_callback('Game Over! Thank you for playing.')
-        self.removeArena(arena)
+        # self.removeArena(arena)
 
 
 #   TODO - NEXT STEPS (before the game physics)
-#       -> checker que le test passe toujours comme ca avec les async / await
-#       -> finir arena pour stocker les scores des joueurs
 #       -> envoyer stats de fin de jeux / finir implementation sendGameOver
 #       -> implementer test pour la ws, le monitor et l'arene
 #       -> connecter avec le front

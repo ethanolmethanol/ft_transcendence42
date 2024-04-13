@@ -88,14 +88,18 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def sendGameOver(self, gameOverMessage):
-        # remove the arena
+        arena = Monitor().arenas.get(self.channelID)
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'game_over',
+                'winner': f'{arena.getWinner()}',
                 'message': gameOverMessage,
             }
         )
-        # close the connection ?
+        # remove the arena
+        # Monitor().deleteArena(arena.id)
+        # check dans le front qui a gagne
+        # close the connection ? (back or front?)
 
     # async def game_message(self, event):
     #     message = event['message']

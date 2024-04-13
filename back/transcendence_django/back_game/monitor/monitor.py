@@ -36,3 +36,8 @@ class Monitor:
       await gameEngine.start()
       return {"arenaID": newArena.id}
 
+    def deleteArena(self, id):
+        for elt in self.arenas:
+            if elt.id == id:
+                self.arenas.remove(elt)
+                break
