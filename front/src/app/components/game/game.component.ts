@@ -24,8 +24,9 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   lineThickness = LINE_THICKNESS;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
-  postData = JSON.stringify({"playerSpecs":
-     {"nbPlayers": 2, "mode": 0}
+  postData = JSON.stringify({
+    "username": "placeholder",
+    "playerSpecs": {"nbPlayers": 2, "mode": 0}
   })
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },

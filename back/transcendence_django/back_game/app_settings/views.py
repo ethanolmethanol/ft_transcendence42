@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 async def getChannelID(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        logger.error(data['playerSpecs'])
-        return JsonResponse(await monitor.getNewChannel(data['playerSpecs']), status=200)
+        username = data['username']
+        playerSpecs = data['playerSpecs']
+        channel = await monitor.getChannel(username, playerSpecs)
+        return JsonResponse(await monitor.getChannel(username, playerSpecs), status=200)
     except Exception as e:
         logger.error(e)
         return JsonResponse({'error': str(e)}, status=400)

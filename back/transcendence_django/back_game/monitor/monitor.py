@@ -14,6 +14,7 @@ class Monitor:
 
     def __init__(self): #json
         self.channels = {} # key: channelID, value: dict [key: arenaID, value: arena]
+        self.userGameTable = {}
 
     # def getGameConfig(self):
     #     return {k: v.to_dict() for k, v in self.gameConfig.items()}
@@ -22,12 +23,19 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def getNewChannel(self, playerSpecs):
-      newArena = Arena(playerSpecs)
-      channelID = self.generateRandomID(10)
-      self.channels[channelID] = {newArena.id: newArena}
-      asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
-      return {"channelID": channelID, "arena": newArena.toDict()}
+    async def getChannel(self, username, playerSpecs):
+        channel = self.userGameTable.get(username)
+        if channel is None:
+            return await self.getNewChannel(username, playerSpecs)
+        return channel
+
+    async def getNewChannel(self, username, playerSpecs):
+        newArena = Arena(playerSpecs)
+        channelID = self.generateRandomID(10)
+        self.channels[channelID] = {newArena.id: newArena}
+        asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
+        self.userGameTable[username] = {"channelID": channelID, "arena": newArena.toDict()}
+        return self.userGameTable[username]
 
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]
