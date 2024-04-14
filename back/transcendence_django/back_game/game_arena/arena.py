@@ -22,12 +22,23 @@ class Arena:
       if self.mode not in (LOCAL_MODE, ONLINE_MODE):
          raise ValueError("The mode is invalid.")
 
+   def toDict(self):
+      return {
+         "id": self.id,
+         "status": self.status,
+         "players": self.players,
+         "scores": self.scores,
+         "ball": self.ball.toDict(),
+         "paddles": [paddle.toDict() for paddle in self.paddles],
+         "map": self.map.toDict()
+      }
+
    def isEmpty(self):
       return len(self.players) == 0
-   
+
    def isFull(self):
       return len(self.players) >= self.nbPlayers
-   
+
    def addPlayer(self, username):
       if (self.mode == LOCAL_MODE):
          self.players = ["Player 1", "Player 2"]

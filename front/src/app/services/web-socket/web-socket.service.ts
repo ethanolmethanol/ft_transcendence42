@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class WebSocketService {
-  private socket: WebSocket | null;
+  private socket?: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
 
@@ -14,6 +14,7 @@ export class WebSocketService {
   }
 
   public connect(channelID: string): void {
+    console.log('Connecting to WebSocket -> ', channelID);
     const url = `wss://localhost:8001/ws/game/${channelID}/`;
     this.socket = new WebSocket(url);
 
@@ -46,6 +47,7 @@ export class WebSocketService {
 
   public disconnect(): void {
     // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
+    this.leave();
     this.socket?.close(1000, "Client disconnect.");
   }
 
@@ -59,11 +61,20 @@ export class WebSocketService {
   }
 
   public join(arenaID: string): void {
-    console.log('Join');
+    console.log(`Join ${arenaID}`);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('join', {"username": "Player", "arenaID": arenaID});
     } else {
       console.log('WebSocket is not open when trying to join arena');
+    }
+  }
+
+  public leave(): void {
+    console.log('Leave');
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.send('leave', {});
+    } else {
+      console.log('WebSocket is not open when trying to leave arena');
     }
   }
 

@@ -1,9 +1,10 @@
-import {AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {AfterViewInit, Component, HostListener, QueryList, ViewChildren, OnDestroy} from '@angular/core';
 import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
 import {MonitorService} from "../../services/monitor/monitor.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-game',
@@ -15,7 +16,7 @@ import {MonitorService} from "../../services/monitor/monitor.service";
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit {
+export class GameComponent implements AfterViewInit, OnDestroy {
   player1Score = 0;
   player2Score = 0;
   readonly gameWidth = GAME_WIDTH;
@@ -32,9 +33,20 @@ export class GameComponent implements AfterViewInit {
   ];
 
   private pressedKeys = new Set<string>();
+  private connectionOpenedSubscription?: Subscription;
+  private WebSocketSubscription?: Subscription;
+
 
   constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
     this.establishConnection();
+  }
+
+  public ngOnDestroy() {
+    localStorage.removeItem('channelID');
+    localStorage.removeItem('arenaID');
+    this.endConnection();
+    this.connectionOpenedSubscription?.unsubscribe();
+    this.WebSocketSubscription?.unsubscribe();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -48,13 +60,28 @@ export class GameComponent implements AfterViewInit {
   }
 
   private establishConnection() {
-    this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
-      console.log(response)
-      this.webSocketService.connect(response.channelID)
-      this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
-        console.log('WebSocket connection opened');
-        this.webSocketService.join(response.arenaID)
-      })
+    const storedChannelID = localStorage.getItem('channelID');
+    const storedArenaID = localStorage.getItem('arenaID');
+    if (storedChannelID && storedArenaID) {
+      this.webSocketService.connect(storedChannelID);
+      this.handleWebSocketConnection(storedArenaID);
+    } else {
+      localStorage.removeItem('channelID');
+      localStorage.removeItem('arenaID');
+      this.WebSocketSubscription = this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
+        console.log(response);
+        localStorage.setItem('channelID', response.channelID);
+        localStorage.setItem('arenaID', response.arena.id);
+        this.webSocketService.connect(response.channelID);
+        this.handleWebSocketConnection(response.arena.id);
+      });
+    }
+  }
+
+  private handleWebSocketConnection(arenaID: string) {
+    this.connectionOpenedSubscription = this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
+      console.log('WebSocket connection opened');
+      this.webSocketService.join(arenaID);
     });
   }
 

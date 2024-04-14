@@ -7,7 +7,7 @@ class Map:
       self.width = newWidth
       self.height = newHeight
 
-   def to_dict(self):
+   def toDict(self):
       return {
          'width': self.width,
          'height': self.height

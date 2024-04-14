@@ -74,7 +74,7 @@ class Paddle:
       self.width = config['width']
       self.height = config['height']
 
-   def to_dict(self):
+   def toDict(self):
       return {
          'slot': self.slot,
          'speed': self.speed.to_dict(),

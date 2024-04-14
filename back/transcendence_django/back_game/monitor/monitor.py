@@ -27,7 +27,7 @@ class Monitor:
       channelID = self.generateRandomID(10)
       self.channels[channelID] = {newArena.id: newArena}
       asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
-      return {"channelID": channelID, "arenaID": newArena.id}
+      return {"channelID": channelID, "arena": newArena.toDict()}
 
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]

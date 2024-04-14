@@ -78,7 +78,7 @@ class Ball:
       self.speed.setCoordinates(newSpeed.x, newSpeed.y)
       self.radius = newRadius
 
-   def to_dict(self):
+   def toDict(self):
       return {
          'position': self.position.to_dict(),
          'speed': self.speed.to_dict()
