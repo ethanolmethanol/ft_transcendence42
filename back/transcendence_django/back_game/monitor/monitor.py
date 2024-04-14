@@ -6,6 +6,8 @@ from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import *
 import logging
 import uuid
+import random
+import string
 
 logger = logging.getLogger(__name__)
 class Monitor:
@@ -16,13 +18,13 @@ class Monitor:
     # def getGameConfig(self):
     #     return {k: v.to_dict() for k, v in self.gameConfig.items()}
 
-    def getUniqueID(self):
-        # return uuid.uuid1()
-        return '42'
+    def generateRandomID(self, length):
+        letters_and_digits = string.ascii_letters + string.digits
+        return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
     async def getNewChannel(self, playerSpecs):
       newArena = Arena(playerSpecs)
-      channelID = self.getUniqueID()
+      channelID = self.generateRandomID(10)
       self.channels[channelID] = {newArena.id: newArena}
       asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
       return {"channelID": channelID, "arenaID": newArena.id}
@@ -46,7 +48,7 @@ class Monitor:
             elif (arena.status == STARTED and arena.isEmpty())\
                 or arena.status == OVER:
                 await self.gameOver(arena)
-            
+
     async def gameOver(self, arena):
         arena.status = OVER
         if hasattr(arena, 'game_over_callback'):
