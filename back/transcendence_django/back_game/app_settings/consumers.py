@@ -27,11 +27,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        log.info(f"Disconnect with code: {close_code}")
+        await self.leave()
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+        log.info(f"Disconnect with code: {close_code}")
 
     async def receive(self, text_data=None, bytes_data=None):
         content = json.loads(text_data)
@@ -48,45 +49,37 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def join(self, message: dict):
         self.username = message["username"]
         arenaID = message["arenaID"]
-        logging.error(f"Hello the self.arenaID is {arenaID}\n\
-                      And the message[\"arenaID\"] is {message["arenaID"]}\
-                     And the whole arena dict is {monitor.channels[self.channelID]}")
         self.arena = monitor.channels[self.channelID][arenaID]
         self.arena.enter_arena(self.username)
         self.arena.game_over_callback = self.send_game_over
+        self.joined = True
         log.info(f"{self.username} joined game")
         self.send_message(f"{self.username} has joined the game.")
         self.send_update({"player_list": self.arena.players})
-        self.joined = True
 
-    async def leave(self, message: dict):
+    async def leave(self):
         if not self.joined:
             log.error("Attempt to leave without joining.")
             return
         self.arena.removePlayer(self.username)
-        log.info(f"{self.username} leaving game")
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                "type": "game_message",
-                "message": f"{self.username} has left the game."
-            },
-        )
         self.joined = False
         self.arena = None
+        log.info(f"{self.username} leaving game")
+        await self.send_message(f"{self.username} has left the game.")
 
     async def move_paddle(self, message: dict):
         if not self.joined:
             log.error("Attempt to move paddle without joining.")
             return
-        position = message['position']
         player_name = message['player']
-        log.info(f"{self.username} moved paddle to {position}.")
-        paddle_data = self.arena.move_paddle(player_name, position)
+        rate = message['rate']
+        paddle_data = self.arena.move_paddle(player_name, rate)
         await self.send_update({"paddle": paddle_data})
         await self.send_message(f"Moved paddle to {paddle_data['position']}.")
+        log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
     async def send_game_over(self, gameOverMessage):
-        arena = monitor.channels[self.channelID][self.arenaID]
+        arena = monitor.channels[self.channelID][self.arena.id]
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'game_over',

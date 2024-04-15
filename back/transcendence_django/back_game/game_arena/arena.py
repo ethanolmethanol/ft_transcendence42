@@ -25,7 +25,7 @@ class Arena:
    def __register_player(self, username):
       player = Player(username)
       self.players.append(player)
-      self.paddles[username] = Paddle(len(self.players))
+      self.paddles[username] = Paddle(len(self.players), self.nbPlayers)
       if self.isFull():
          self.status = STARTED
 
@@ -56,22 +56,19 @@ class Arena:
    def removePlayer(self, username):
       if (self.mode == LOCAL_MODE):
          self.players.clear()
+         self.paddles.clear()
       else:
          self.players.remove(username)
+         self.paddles.pop(username)
 
    def endOfGame(self):
       self.status = OVER
 
    def get_winner(self):
-      highestScore = self.scores[0]
-      winner = self.players[0]
-      nbPlayers = len(self.scores)
-      for i in range (0, nbPlayers):
-         if self.scores[i] > highestScore:
-            highestScore, winner = self.scores, self.players[i]
-      return winner
+      winner = max(self.players, key=lambda player: player.score)
+      return winner.username
 
-   def move_paddle(self, username, position):
+   def move_paddle(self, username, rate):
       paddle = self.paddles[username]
-      # paddle.move(position)
+      paddle.move(rate)
       return paddle.toDict()

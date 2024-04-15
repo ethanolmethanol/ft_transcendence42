@@ -51,10 +51,10 @@ export class WebSocketService {
     this.socket?.close(1000, "Client disconnect.");
   }
 
-  public sendPaddleMovement(playerName: string, position: number): void {
-    console.log('Sending paddle movement:', { playerName, position });
+  public sendPaddleMovement(playerName: string, rate: number): void {
+    console.log('Sending paddle movement:', { playerName, rate });
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('move_paddle', {"player": playerName, "position": position});
+      this.send('move_paddle', {"player": playerName, "rate": rate});
     } else {
       console.log('WebSocket is not open when trying to send paddle movement');
     }

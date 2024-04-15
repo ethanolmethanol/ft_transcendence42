@@ -130,7 +130,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }
     if (initialPosition !== paddle.positionY) {
       const playerName = paddle.id === 1 ? "Player1" : "Player2";
-      this.webSocketService.sendPaddleMovement(playerName, paddle.positionY);
+      this.webSocketService.sendPaddleMovement(playerName, 0.3);
       console.log(`Paddle ${paddle.id} position updated:`, paddle.positionX, paddle.positionY);
     }
   }

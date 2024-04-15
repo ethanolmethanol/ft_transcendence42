@@ -1,6 +1,6 @@
-# # Game area dimensions
-# GAME_WIDTH = 100
-# GAME_HEIGHT = 100
+# Game area dimensions
+GAME_WIDTH = 300
+GAME_HEIGHT = 100
 
 # Game arena
 MIN_PLAYER = 2
@@ -13,20 +13,18 @@ MAX_PLAYER = 10
 # MIN_VELOCITY = 1
 # BALL_RADIUS = 3
 
-# # Paddle parameters
-# PADDLE_INITIAL_POSITION = {'y': 50}
-# PADDLE_WIDTH = 10
-# PADDLE_HEIGHT = 50
-# LEFT = 1
-# RIGHT = 2
+# Paddle parameters
+PADDLE_INITIAL_SPEED_RATE = 0.05
+PADDLE_WIDTH = 10
+PADDLE_HEIGHT = 50
 
+# Game mode
 LOCAL_MODE = 0
 ONLINE_MODE = 1
 
 # Game status
-
 WAITING = 0
 STARTED = 1
 OVER = 2
 # When all arenas are DEAD, the corresponding channel can be deleted
-DEAD = 3 
+DEAD = 3

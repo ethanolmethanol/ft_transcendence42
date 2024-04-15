@@ -19,7 +19,7 @@ interface Ball {
 interface Paddle {
   slot: number;
   position: Position;
-  speed: Vector;
+  speed: number;
   width: number;
   height: number;
 }
