@@ -38,7 +38,7 @@ class Paddle:
          round(self.axis['start'].y + (self.axis['end'].y - self.axis['start'].y) * rate)
       )
 
-   def toDict(self):
+   def to_dict(self):
       return {
          'slot': self.slot,
          'position': self.position.to_dict(),

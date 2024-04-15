@@ -33,7 +33,7 @@ class Monitor:
         channelID = self.generateRandomID(10)
         self.channels[channelID] = {newArena.id: newArena}
         asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
-        self.userGameTable[username] = {"channelID": channelID, "arena": newArena.toDict()}
+        self.userGameTable[username] = {"channelID": channelID, "arena": newArena.to_dict()}
         return self.userGameTable[username]
 
     def deleteArena(self, channelID, arenaID):
@@ -52,7 +52,7 @@ class Monitor:
             elif (arena.status == STARTED and len(arena.players) == 1):
                 # make the only one player win and set the status to over
                 pass
-            elif (arena.status == STARTED and arena.isEmpty())\
+            elif (arena.status == STARTED and arena.is_empty())\
                 or arena.status == OVER:
                 await self.gameOver(arena)
 

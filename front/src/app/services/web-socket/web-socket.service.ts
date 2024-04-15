@@ -49,7 +49,8 @@ export class WebSocketService {
     // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
     this.leave();
     this.socket?.close(1000, "Client disconnect.");
-  }
+    this.socket = null;
+}
 
   public sendPaddleMovement(playerName: string, rate: number): void {
     console.log('Sending paddle movement:', { playerName, rate });

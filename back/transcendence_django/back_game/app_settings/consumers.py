@@ -61,9 +61,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             log.error("Attempt to leave without joining.")
             return
-        self.arena.removePlayer(self.username)
+        self.arena.disable_player(self.username)
         self.joined = False
-        self.arena = None
         log.info(f"{self.username} leaving game")
         await self.send_message(f"{self.username} has left the game.")
 
@@ -79,11 +78,10 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
     async def send_game_over(self, gameOverMessage):
-        arena = monitor.channels[self.channelID][self.arena.id]
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'game_over',
-                'winner': f'{arena.get_winner()}',
+                'winner': f'{self.arena.get_winner()}',
                 'message': gameOverMessage,
             }
         )
