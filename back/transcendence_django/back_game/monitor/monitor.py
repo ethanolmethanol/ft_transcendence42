@@ -5,7 +5,6 @@ from back_game.game_arena.map import Map
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import *
 import logging
-import uuid
 import random
 import string
 

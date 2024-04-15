@@ -68,8 +68,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private setArena(arena: ArenaResponse) {
-    this.player1Score = arena.scores[0];
-    this.player2Score = arena.scores[1];
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
