@@ -22,10 +22,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
-  players!: string[];
-  scores!: number[];
-  // player1Score = 0;
-  // player2Score = 0;
+  // players!: string[];
+  // scores!: number[];
+  player1Score = 0;
+  player2Score = 0;
   private postData = JSON.stringify({
     "username": "placeholder",
     "playerSpecs": {"nbPlayers": 2, "mode": 0}
@@ -37,6 +37,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private pressedKeys = new Set<string>();
   private connectionOpenedSubscription?: Subscription;
   private WebSocketSubscription?: Subscription;
+  private WebSocketMessagesSubscription?: Subscription;
 
   constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
     this.establishConnection();
@@ -46,6 +47,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.endConnection();
     this.connectionOpenedSubscription?.unsubscribe();
     this.WebSocketSubscription?.unsubscribe();
+    this.WebSocketMessagesSubscription?.unsubscribe();
   }
 
   private establishConnection() {
@@ -61,6 +63,18 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       console.log('WebSocket connection opened');
       this.webSocketService.join(arena.id);
       this.setArena(arena);
+    });
+  }
+
+  private listenToWebSocketMessages() {
+    this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
+      console.log('Received WebSocket message:', message);
+      // Perform actions based on the received message
+      // For example, if the message is a JSON string representing a game state, you can parse it and update your game state
+      // const data = JSON.parse(message);
+      // if (data.type === 'game_state') {
+      //   this.updateGameState(data.message);
+      // }
     });
   }
 
@@ -115,12 +129,14 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       paddle.moveDown();
     }
     if (initialPosition !== paddle.positionY) {
-      this.webSocketService.sendPaddleMovement(paddle.id, paddle.positionY);
+      const playerName = paddle.id === 1 ? "Player1" : "Player2";
+      this.webSocketService.sendPaddleMovement(playerName, paddle.positionY);
       console.log(`Paddle ${paddle.id} position updated:`, paddle.positionX, paddle.positionY);
     }
   }
 
   ngAfterViewInit() {
+    this.listenToWebSocketMessages();
     this.gameLoop();
   }
 }

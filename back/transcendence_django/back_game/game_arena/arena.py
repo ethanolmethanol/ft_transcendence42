@@ -1,6 +1,7 @@
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_arena.map import Map
+from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import *
 
 class Arena:
@@ -9,9 +10,8 @@ class Arena:
       self.id = str(id(self))
       self.status = WAITING
       self.players = []
-      self.scores = []
+      self.paddles = {}
       self.ball = Ball()
-      self.paddles = [Paddle(slot + 1) for slot in range(self.nbPlayers)]
       self.map = Map() # depends on the number of players
 
    def __fillPlayerSpecs(self, playerSpecs):
@@ -22,14 +22,21 @@ class Arena:
       if self.mode not in (LOCAL_MODE, ONLINE_MODE):
          raise ValueError("The mode is invalid.")
 
+   def __register_player(self, username):
+      player = Player(username)
+      self.players.append(player)
+      self.paddles[username] = Paddle(len(self.players))
+      if self.isFull():
+         self.status = STARTED
+
    def toDict(self):
       return {
          "id": self.id,
          "status": self.status,
-         "players": self.players,
-         "scores": self.scores,
+         "players": [player.username for player in self.players],
+         "scores": [player.score for player in self.players],
          "ball": self.ball.toDict(),
-         "paddles": [paddle.toDict() for paddle in self.paddles],
+         "paddles": [paddle.toDict() for paddle in self.paddles.values()],
          "map": self.map.toDict()
       }
 
@@ -39,15 +46,12 @@ class Arena:
    def isFull(self):
       return len(self.players) >= self.nbPlayers
 
-   def addPlayer(self, username):
+   def enter_arena(self, username):
       if (self.mode == LOCAL_MODE):
-         self.players = ["Player 1", "Player 2"]
-         self.scores = [0, 0]
+         self.__register_player("Player1")
+         self.__register_player("Player2")
       else:
-         self.players.append(username)
-         self.scores.append(0)
-      if self.isFull():
-         self.status = STARTED
+         self.__register_player(username)
 
    def removePlayer(self, username):
       if (self.mode == LOCAL_MODE):
@@ -58,7 +62,7 @@ class Arena:
    def endOfGame(self):
       self.status = OVER
 
-   def getWinner(self):
+   def get_winner(self):
       highestScore = self.scores[0]
       winner = self.players[0]
       nbPlayers = len(self.scores)
@@ -66,3 +70,8 @@ class Arena:
          if self.scores[i] > highestScore:
             highestScore, winner = self.scores, self.players[i]
       return winner
+
+   def move_paddle(self, username, position):
+      paddle = self.paddles[username]
+      # paddle.move(position)
+      return paddle.toDict()

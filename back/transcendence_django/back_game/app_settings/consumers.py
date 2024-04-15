@@ -11,7 +11,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channelID = None
-        self.arenaID = None
+        self.arena = None
         self.room_group_name = None
         self.joined = False
         self.username = None
@@ -47,41 +47,23 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def join(self, message: dict):
         self.username = message["username"]
-        self.arenaID = message["arenaID"]
-        logging.error(f"Hello the self.arenaID is {self.arenaID}\n\
+        arenaID = message["arenaID"]
+        logging.error(f"Hello the self.arenaID is {arenaID}\n\
                       And the message[\"arenaID\"] is {message["arenaID"]}\
                      And the whole arena dict is {monitor.channels[self.channelID]}")
-        arena = monitor.channels[self.channelID][self.arenaID]
-        arena.addPlayer(self.username)
-        arena.game_over_callback = self.sendGameOver
+        self.arena = monitor.channels[self.channelID][arenaID]
+        self.arena.enter_arena(self.username)
+        self.arena.game_over_callback = self.send_game_over
         log.info(f"{self.username} joined game")
         self.send_message(f"{self.username} has joined the game.")
-        self.send_update({"player_list": arena.players})
+        self.send_update({"player_list": self.arena.players})
         self.joined = True
-
-    async def send_update(self, update):
-        self.send_data({
-            "type": "game_update",
-            'info': update
-        })
-
-    async def send_message(self, message):
-        self.send_data({
-            "type": "game_message",
-            'message': message
-        })
-
-    async def send_data(self, data):
-        await self.channel_layer.group_send(
-            self.room_group_name, data
-        )
 
     async def leave(self, message: dict):
         if not self.joined:
             log.error("Attempt to leave without joining.")
             return
-        arena = monitor.channels[self.channelID][self.arenaID]
-        arena.removePlayer(self.username)
+        self.arena.removePlayer(self.username)
         log.info(f"{self.username} leaving game")
         await self.channel_layer.group_send(
             self.room_group_name, {
@@ -90,28 +72,25 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             },
         )
         self.joined = False
-        self.arenaID = None
+        self.arena = None
 
     async def move_paddle(self, message: dict):
         if not self.joined:
             log.error("Attempt to move paddle without joining.")
             return
         position = message['position']
+        player_name = message['player']
         log.info(f"{self.username} moved paddle to {position}.")
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                "type": "game_message",
-                "position": position,
-                "message": f"{self.username} moved paddle to{position}."
-            }
-        )
+        paddle_data = self.arena.move_paddle(player_name, position)
+        await self.send_update({"paddle": paddle_data})
+        await self.send_message(f"Moved paddle to {paddle_data['position']}.")
 
-    async def sendGameOver(self, gameOverMessage):
+    async def send_game_over(self, gameOverMessage):
         arena = monitor.channels[self.channelID][self.arenaID]
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'game_over',
-                'winner': f'{arena.getWinner()}',
+                'winner': f'{arena.get_winner()}',
                 'message': gameOverMessage,
             }
         )
@@ -124,3 +103,26 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+
+    async def game_update(self, event):
+        message = event['update']
+        await self.send(text_data=json.dumps({
+            'update': message
+        }))
+
+    async def send_update(self, update):
+        await self.send_data({
+            "type": "game_update",
+            'update': update
+        })
+
+    async def send_message(self, message):
+        await self.send_data({
+            "type": "game_message",
+            'message': message
+        })
+
+    async def send_data(self, data):
+        await self.channel_layer.group_send(
+            self.room_group_name, data
+        )
