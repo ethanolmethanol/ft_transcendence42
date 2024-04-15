@@ -55,13 +55,26 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         arena.addPlayer(self.username)
         arena.game_over_callback = self.sendGameOver
         log.info(f"{self.username} joined game")
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                "type": "game_message",
-                'message': f"{self.username} has joined the game."
-            }
-        )
+        self.send_message(f"{self.username} has joined the game.")
+        self.send_update({"player_list": arena.players})
         self.joined = True
+
+    async def send_update(self, update):
+        self.send_data({
+            "type": "game_update",
+            'info': update
+        })
+
+    async def send_message(self, message):
+        self.send_data({
+            "type": "game_message",
+            'message': message
+        })
+
+    async def send_data(self, data):
+        await self.channel_layer.group_send(
+            self.room_group_name, data
+        )
 
     async def leave(self, message: dict):
         if not self.joined:

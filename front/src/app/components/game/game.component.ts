@@ -22,8 +22,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
-  player1Score = 0;
-  player2Score = 0;
+  players!: string[];
+  scores!: number[];
+  // player1Score = 0;
+  // player2Score = 0;
   private postData = JSON.stringify({
     "username": "placeholder",
     "playerSpecs": {"nbPlayers": 2, "mode": 0}
