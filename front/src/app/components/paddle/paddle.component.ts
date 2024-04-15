@@ -10,8 +10,8 @@ import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_X_OFFSET, P
 })
 export class PaddleComponent implements OnInit {
   @Input() id: number = 0;
-  paddleWidth = PADDLE_WIDTH;
-  paddleHeight = PADDLE_HEIGHT;
+  width = PADDLE_WIDTH;
+  height = PADDLE_HEIGHT;
   speed = PADDLE_SPEED;
   positionX = 0;
   positionY = (GAME_HEIGHT - PADDLE_HEIGHT) / 2;
@@ -20,7 +20,7 @@ export class PaddleComponent implements OnInit {
     if (this.id == 1) {
       this.positionX = PADDLE_X_OFFSET;
     } else if (this.id == 2) {
-      this.positionX = GAME_WIDTH - PADDLE_WIDTH - PADDLE_X_OFFSET;
+      this.positionX = GAME_WIDTH - this.width - PADDLE_X_OFFSET;
     }
     console.log(`Paddle ${this.id} initialized:`, this.positionX, this.positionY);
   }
@@ -39,10 +39,10 @@ export class PaddleComponent implements OnInit {
 
   moveDown() {
     const initialPosition = this.positionY;
-    if (this.positionY + PADDLE_HEIGHT + this.speed <= GAME_HEIGHT) {
+    if (this.positionY + this.height + this.speed <= GAME_HEIGHT) {
       this.positionY += this.speed; // Move the paddle down
     } else {
-      this.positionY = GAME_HEIGHT - PADDLE_HEIGHT;
+      this.positionY = GAME_HEIGHT - this.height;
     }
     if (initialPosition !== this.positionY) {
       this.updatePaddlePosition();

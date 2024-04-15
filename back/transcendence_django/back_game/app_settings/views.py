@@ -14,7 +14,7 @@ async def getChannelID(request):
         username = data['username']
         playerSpecs = data['playerSpecs']
         channel = await monitor.getChannel(username, playerSpecs)
-        return JsonResponse(await monitor.getChannel(username, playerSpecs), status=200)
+        return JsonResponse(channel, status=200)
     except Exception as e:
         logger.error(e)
         return JsonResponse({'error': str(e)}, status=400)

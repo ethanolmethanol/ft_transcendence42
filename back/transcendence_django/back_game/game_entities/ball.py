@@ -69,9 +69,9 @@ from back_game.game_physics.vector import Vector
 
 class Ball:
    def __init__(self):
-      self.position = Position()
+      self.position = Position(50, 50)
       self.speed = Vector(1, 1)
-      self.radius = 2
+      self.radius = 20
 
    def update(self, newPosition, newSpeed, newRadius):
       self.position.setCoordinates(newPosition.x, newPosition.y)
@@ -81,5 +81,6 @@ class Ball:
    def toDict(self):
       return {
          'position': self.position.to_dict(),
-         'speed': self.speed.to_dict()
+         'speed': self.speed.to_dict(),
+         'radius': self.radius
       }

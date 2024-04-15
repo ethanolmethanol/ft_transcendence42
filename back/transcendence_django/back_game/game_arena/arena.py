@@ -11,7 +11,7 @@ class Arena:
       self.players = []
       self.scores = []
       self.ball = Ball()
-      self.paddles = [Paddle(slot) for slot in range(self.nbPlayers)]
+      self.paddles = [Paddle(slot + 1) for slot in range(self.nbPlayers)]
       self.map = Map() # depends on the number of players
 
    def __fillPlayerSpecs(self, playerSpecs):

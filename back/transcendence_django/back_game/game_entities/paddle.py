@@ -60,11 +60,16 @@
 #     def move(self, percentage):
 #         self._position = self.calculate_position_with_progression(percentage);
 
+from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 
 class Paddle:
    def __init__(self, slot=0):
       self.slot = slot
+      if (slot == 1):
+         self.position = Position(0, 0)
+      else:
+         self.position = Position(50, 50)
       self.speed = Vector(1, 1)
       self.width = 5
       self.height = 50
@@ -77,6 +82,7 @@ class Paddle:
    def toDict(self):
       return {
          'slot': self.slot,
+         'position': self.position.to_dict(),
          'speed': self.speed.to_dict(),
          'width': self.width,
          'height': self.height

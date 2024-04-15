@@ -17,6 +17,7 @@ interface Ball {
 }
 
 interface Paddle {
+  slot: number;
   position: Position;
   speed: Vector;
   width: number;
@@ -28,17 +29,19 @@ interface Map {
   height: number;
 }
 
+export interface ArenaResponse {
+  id: string;
+  status: number;
+  players: number[];
+  scores: number[];
+  ball: Ball;
+  paddles: Paddle[];
+  map: Map;
+}
+
 export interface WebSocketUrlResponse {
   channelID: string;
-  arena: {
-    id: string;
-    status: number;
-    players: number[];
-    scores: number[];
-    ball: Ball;
-    paddles: Paddle[];
-    map: Map;
-  };
+  arena: ArenaResponse;
 }
 
 @Injectable({

@@ -3,7 +3,7 @@ import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} fr
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
-import {MonitorService} from "../../services/monitor/monitor.service";
+import { ArenaResponse, MonitorService, WebSocketUrlResponse} from "../../services/monitor/monitor.service";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -17,14 +17,14 @@ import {Subscription} from "rxjs";
   styleUrl: './game.component.css'
 })
 export class GameComponent implements AfterViewInit, OnDestroy {
-  player1Score = 0;
-  player2Score = 0;
   readonly gameWidth = GAME_WIDTH;
   readonly gameHeight = GAME_HEIGHT;
-  lineThickness = LINE_THICKNESS;
-  @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
+  readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
-  postData = JSON.stringify({
+  @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
+  player1Score = 0;
+  player2Score = 0;
+  private postData = JSON.stringify({
     "username": "placeholder",
     "playerSpecs": {"nbPlayers": 2, "mode": 0}
   })
@@ -32,22 +32,55 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
   ];
-
   private pressedKeys = new Set<string>();
   private connectionOpenedSubscription?: Subscription;
   private WebSocketSubscription?: Subscription;
-
 
   constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
     this.establishConnection();
   }
 
   public ngOnDestroy() {
-    localStorage.removeItem('channelID');
-    localStorage.removeItem('arenaID');
     this.endConnection();
     this.connectionOpenedSubscription?.unsubscribe();
     this.WebSocketSubscription?.unsubscribe();
+  }
+
+  private establishConnection() {
+    this.WebSocketSubscription = this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
+      console.log(response);
+      this.webSocketService.connect(response.channelID);
+      this.handleWebSocketConnection(response.arena);
+    });
+  }
+
+  private handleWebSocketConnection(arena: ArenaResponse) {
+    this.connectionOpenedSubscription = this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
+      console.log('WebSocket connection opened');
+      this.webSocketService.join(arena.id);
+      this.setArena(arena);
+    });
+  }
+
+  public endConnection() {
+    console.log('WebSocket connection closed');
+    this.webSocketService.disconnect();
+  }
+
+  private setArena(arena: ArenaResponse) {
+    this.player1Score = arena.scores[0];
+    this.player2Score = arena.scores[1];
+    this.paddles.forEach(paddle => {
+      const paddleData = arena.paddles.find(p => p.slot === paddle.id);
+      if (paddleData) {
+        paddle.positionY = paddleData.position.y;
+        paddle.width = paddleData.width;
+        paddle.height = paddleData.height;
+      }
+    });
+    this.ball.first.positionX = arena.ball.position.x;
+    this.ball.first.positionY = arena.ball.position.y;
+    this.ball.first.ballSize = 2 * arena.ball.radius;
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -59,38 +92,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private onKeyUp(event: KeyboardEvent) {
     this.pressedKeys.delete(event.key);
   }
-
-  private establishConnection() {
-    const storedChannelID = localStorage.getItem('channelID');
-    const storedArenaID = localStorage.getItem('arenaID');
-    if (storedChannelID && storedArenaID) {
-      this.webSocketService.connect(storedChannelID);
-      this.handleWebSocketConnection(storedArenaID);
-    } else {
-      localStorage.removeItem('channelID');
-      localStorage.removeItem('arenaID');
-      this.WebSocketSubscription = this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
-        console.log(response);
-        localStorage.setItem('channelID', response.channelID);
-        localStorage.setItem('arenaID', response.arena.id);
-        this.webSocketService.connect(response.channelID);
-        this.handleWebSocketConnection(response.arena.id);
-      });
-    }
-  }
-
-  private handleWebSocketConnection(arenaID: string) {
-    this.connectionOpenedSubscription = this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
-      console.log('WebSocket connection opened');
-      this.webSocketService.join(arenaID);
-    });
-  }
-
-  public endConnection() {
-    console.log('WebSocket connection closed');
-    this.webSocketService.disconnect();
-  }
-
   private gameLoop() {
     this.paddleBinding.forEach(paddleBinding => {
       const paddle = this.paddles.find(p => p.id === paddleBinding.id);
@@ -106,20 +107,20 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private movePaddle(paddle: PaddleComponent, binding: { upKey: string; downKey: string }) {
     const isMovingUp = this.pressedKeys.has(binding.upKey) && !this.pressedKeys.has(binding.downKey);
     const isMovingDown = this.pressedKeys.has(binding.downKey) && !this.pressedKeys.has(binding.upKey);
+    const initialPosition = paddle.positionY;
 
     if (isMovingUp) {
       paddle.moveUp();
-      this.webSocketService.sendPaddleMovement(paddle.id, paddle.positionY);
     } else if (isMovingDown) {
       paddle.moveDown();
+    }
+    if (initialPosition !== paddle.positionY) {
       this.webSocketService.sendPaddleMovement(paddle.id, paddle.positionY);
+      console.log(`Paddle ${paddle.id} position updated:`, paddle.positionX, paddle.positionY);
     }
   }
 
   ngAfterViewInit() {
     this.gameLoop();
   }
-
-  protected readonly PADDLE_WIDTH = PADDLE_WIDTH;
-  protected readonly PADDLE_HEIGHT = PADDLE_HEIGHT;
 }

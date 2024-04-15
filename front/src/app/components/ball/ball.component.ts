@@ -11,7 +11,7 @@ import {BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH} from "../../constants";
 export class BallComponent {
   @Input() positionX: number = 150;
   @Input() positionY: number = 150;
-  protected readonly ballSize = BALL_RADIUS * 2;
+  @Input() ballSize = BALL_RADIUS * 2;
 
   constructor() {
     this.updatePosition(this.positionX, this.positionY);
