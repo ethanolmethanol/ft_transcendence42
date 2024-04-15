@@ -10,7 +10,7 @@ class Arena:
       self.id = str(id(self))
       self.status = WAITING
       self.players = []
-      self.paddles = {}
+      self.paddles = {f'{i}': Paddle(i, self.nbPlayers) for i in range(self.nbPlayers)}  # Initialize paddles dictionary
       self.ball = Ball()
       self.map = Map() # depends on the number of players
 
@@ -25,7 +25,7 @@ class Arena:
    def __register_player(self, username):
       player = Player(username)
       self.players.append(player)
-      self.paddles[username] = Paddle(len(self.players), self.nbPlayers)
+      self.paddles[username] = self.paddles.pop(f'{len(self.players) - 1}')  # Update the key in the paddles dictionary
       if self.isFull():
          self.status = STARTED
 

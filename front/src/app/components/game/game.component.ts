@@ -87,6 +87,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
+        paddle.positionX = paddleData.position.x;
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;

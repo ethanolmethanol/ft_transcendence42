@@ -53,4 +53,4 @@ class Paddle:
       self.height = config['height']
 
    def move(self, rate):
-      self._position = self.__convert_rate_to_position(rate)
+      self.position = self.__convert_rate_to_position(rate)
