@@ -3,4 +3,7 @@
   height: var(--paddle-height);
   background-color: white;
   position: absolute;
+  top: 50%;
+  /* left: 50%; */
+  transform: translate(0%, -50%); /* Adjusts the child's position to be centered */
 }

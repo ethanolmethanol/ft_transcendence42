@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import X_OFFSET, Y_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
+from back_game.game_settings.game_constants import PADDLE_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
 import math
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
@@ -22,12 +22,13 @@ class Paddle:
          return self.__calculate_regular_axis(num_players)
 
    def __calculate_axis_2_players(self):
+      demi_height = self.height / 2
       if (self.slot == 1):
-         start = Position(X_OFFSET, Y_OFFSET)
-         end = Position(X_OFFSET, GAME_HEIGHT - Y_OFFSET)
+         start = Position(PADDLE_OFFSET, demi_height)
+         end = Position(PADDLE_OFFSET, GAME_HEIGHT - demi_height)
       else:
-         start = Position(GAME_WIDTH - X_OFFSET, Y_OFFSET)
-         end = Position(GAME_WIDTH - X_OFFSET, GAME_HEIGHT - Y_OFFSET)
+         start = Position(GAME_WIDTH - PADDLE_OFFSET, demi_height)
+         end = Position(GAME_WIDTH - PADDLE_OFFSET, GAME_HEIGHT - demi_height)
       return {'start': start, 'end': end}
 
    def __calculate_regular_axis(self, num_players):
@@ -57,13 +58,14 @@ class Paddle:
          round(self.axis['start'].y + (self.axis['end'].y - self.axis['start'].y) * rate)
       )
 
+
    def to_dict(self):
       return {
          'slot': self.slot,
          'position': self.position.to_dict(),
          'speed': self.speed,
          'width': self.width,
-         'height': self.height
+         'height': self.height,
       }
 
    def update(self, config):
