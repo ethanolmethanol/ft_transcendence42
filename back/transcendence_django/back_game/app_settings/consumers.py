@@ -71,8 +71,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             log.error("Attempt to move paddle without joining.")
             return
         player_name = message['player']
-        rate = message['rate']
-        paddle_data = self.arena.move_paddle(player_name, rate)
+        direction = message['direction']
+        paddle_data = self.arena.move_paddle(player_name, direction)
         await self.send_update({"paddle": paddle_data})
         await self.send_message(f"Moved paddle to {paddle_data['position']}.")
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")

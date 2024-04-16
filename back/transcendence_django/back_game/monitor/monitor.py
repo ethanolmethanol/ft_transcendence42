@@ -23,7 +23,7 @@ class Monitor:
         return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
     async def getChannel(self, username, playerSpecs):
-        channel = self.userGameTable.get(username)
+        channel = self.get_channel_from_username(username)
         if channel is None:
             return await self.getNewChannel(username, playerSpecs)
         return channel
@@ -35,6 +35,16 @@ class Monitor:
         asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
         self.userGameTable[username] = {"channelID": channelID, "arena": newArena.to_dict()}
         return self.userGameTable[username]
+
+    def get_channel_from_username(self, username):
+        channel = self.userGameTable.get(username)
+        if channel is None:
+            return None
+        channelID = channel["channelID"]
+        arenaID = channel["arena"]["id"]
+        arena = self.channels[channelID][arenaID]
+        channel = {"channelID": channelID, "arena": arena.to_dict()}
+        return channel
 
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]

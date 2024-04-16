@@ -33,8 +33,8 @@ class Arena:
       return {
          "id": self.id,
          "status": self.status,
-         "players": [player.username for player in self.players],
-         "scores": [player.score for player in self.players],
+         "players": [player.username for player in self.players.values()],
+         "scores": [player.score for player in self.players.values()],
          "ball": self.ball.to_dict(),
          "paddles": [paddle.to_dict() for paddle in self.paddles.values()],
          "map": self.map.to_dict()
@@ -75,7 +75,9 @@ class Arena:
       winner = max(self.players, key=lambda player: player.score)
       return winner.username
 
-   def move_paddle(self, username, rate):
+   def move_paddle(self, username, direction):
+      if (direction not in [-1, 1]):
+         raise ValueError("Direction is invalid. It should be -1 or 1.")
       paddle = self.paddles[username]
-      paddle.move(rate)
+      paddle.move(direction)
       return paddle.to_dict()

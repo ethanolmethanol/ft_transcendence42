@@ -81,16 +81,10 @@ export class GameComponent implements AfterViewInit {
   private movePaddle(paddle: PaddleComponent, binding: { upKey: string; downKey: string }) {
     const isMovingUp = this.pressedKeys.has(binding.upKey) && !this.pressedKeys.has(binding.downKey);
     const isMovingDown = this.pressedKeys.has(binding.downKey) && !this.pressedKeys.has(binding.upKey);
-    const initialPosition = paddle.positionY;
-
-    if (isMovingUp) {
-      paddle.moveUp();
-    } else if (isMovingDown) {
-      paddle.moveDown();
-    }
-    if (initialPosition !== paddle.positionY) {
+    const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;
+    if (direction !== 0) {
       const playerName = paddle.id === 1 ? "Player1" : "Player2";
-      this.webSocketService.sendPaddleMovement(playerName, 0.5);
+      this.webSocketService.sendPaddleMovement(playerName, direction);
       console.log(`Paddle ${paddle.id} position updated:`, paddle.positionX, paddle.positionY);
     }
   }

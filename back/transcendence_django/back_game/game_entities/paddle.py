@@ -11,8 +11,9 @@ class Paddle:
       self.speed = PADDLE_INITIAL_SPEED_RATE
       self.width = PADDLE_WIDTH
       self.height = PADDLE_HEIGHT
+      self.rate = 0.5
       self.axis = self.__calculate_axis(num_players)
-      self.position = self.__convert_rate_to_position(0.5)
+      self.position = self.__convert_rate_to_position(self.rate)
       log.info(f"Paddle created at {self.position.to_dict()}")
 
    def __calculate_axis(self, num_players):
@@ -23,6 +24,7 @@ class Paddle:
 
    def __calculate_axis_2_players(self):
       demi_height = self.height / 2
+      # demi_width = self.width / 2
       if (self.slot == 1):
          start = Position(PADDLE_OFFSET, demi_height)
          end = Position(PADDLE_OFFSET, GAME_HEIGHT - demi_height)
@@ -48,11 +50,6 @@ class Paddle:
       return {'start': start, 'end': end}
 
    def __convert_rate_to_position(self, rate):
-      # Ensure the rate is between 0 and 1
-      if not (0 <= rate <= 1):
-          raise ValueError("Rate must be between 0 and 1.")
-
-      # Calculate the position using linear interpolation
       return Position (
          round(self.axis['start'].x + (self.axis['end'].x - self.axis['start'].x) * rate),
          round(self.axis['start'].y + (self.axis['end'].y - self.axis['start'].y) * rate)
@@ -73,5 +70,6 @@ class Paddle:
       self.width = config['width']
       self.height = config['height']
 
-   def move(self, rate):
-      self.position = self.__convert_rate_to_position(rate)
+   def move(self, direction):
+      self.rate = min(max(self.rate + self.speed * direction, 0), 1)
+      self.position = self.__convert_rate_to_position(self.rate)
