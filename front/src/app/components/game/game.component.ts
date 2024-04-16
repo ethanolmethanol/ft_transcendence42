@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, HostListener, QueryList, ViewChildren, OnDestroy} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, PADDLE_HEIGHT, PADDLE_WIDTH} from "../../constants";
+import {AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS} from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
-import { ArenaResponse, MonitorService, WebSocketUrlResponse} from "../../services/monitor/monitor.service";
-import {Subscription} from "rxjs";
+import { ArenaResponse, MonitorService } from "../../services/monitor/monitor.service";
+import { ConnectionComponent } from "./connection.component";
 
 @Component({
   selector: 'app-game',
@@ -16,70 +16,26 @@ import {Subscription} from "rxjs";
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit, OnDestroy {
+export class GameComponent implements AfterViewInit {
   gameWidth = GAME_WIDTH;
   gameHeight = GAME_HEIGHT;
   readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
+  private connection!: ConnectionComponent;
   // players!: string[];
   player1Score = 0;
   player2Score = 0;
-  private postData = JSON.stringify({
-    "username": "placeholder",
-    "playerSpecs": {"nbPlayers": 2, "mode": 0}
-  })
+
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
   ];
   private pressedKeys = new Set<string>();
-  private connectionOpenedSubscription?: Subscription;
-  private WebSocketSubscription?: Subscription;
-  private WebSocketMessagesSubscription?: Subscription;
 
-  constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {
-    this.establishConnection();
-  }
-
-  public ngOnDestroy() {
-    this.endConnection();
-    this.connectionOpenedSubscription?.unsubscribe();
-    this.WebSocketSubscription?.unsubscribe();
-    this.WebSocketMessagesSubscription?.unsubscribe();
-  }
-
-  private establishConnection() {
-    this.WebSocketSubscription = this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
-      console.log(response);
-      this.webSocketService.connect(response.channelID);
-      this.handleWebSocketConnection(response.arena);
-    });
-  }
-
-  private handleWebSocketConnection(arena: ArenaResponse) {
-    this.connectionOpenedSubscription = this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
-      console.log('WebSocket connection opened');
-      this.webSocketService.join(arena.id);
-      this.setArena(arena);
-    });
-  }
-
-  private listenToWebSocketMessages() {
-    this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
-      console.log('Received WebSocket message:', message);
-      // Perform actions based on the received message
-      // For example, if the message is a JSON string representing a game state, you can parse it and update your game state
-      // const data = JSON.parse(message);
-      // if (data.type === 'game_state') {
-      //   this.updateGameState(data.message);
-      // }
-    });
-  }
-
-  public endConnection() {
-    console.log('WebSocket connection closed');
-    this.webSocketService.disconnect();
+  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService) {
+    this.connection = new ConnectionComponent(monitorService, webSocketService);
+    this.connection.establishConnection(this.setArena.bind(this));
   }
 
   private setArena(arena: ArenaResponse) {
@@ -140,7 +96,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.listenToWebSocketMessages();
+    this.connection.listenToWebSocketMessages();
     this.gameLoop();
   }
 }
