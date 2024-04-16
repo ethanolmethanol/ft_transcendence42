@@ -83,8 +83,7 @@ export class GameComponent implements AfterViewInit {
   private updatePaddle(paddle: PaddleUpdateResponse) {
     const paddleComponent = this.paddles.find(p => p.id === paddle.slot);
     if (paddleComponent) {
-        paddleComponent.positionX = paddle.position.x;
-        paddleComponent.positionY = paddle.position.y;
+      paddleComponent.updatePaddlePosition(paddle.position);
     }
   }
 
