@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
+from back_game.game_settings.game_constants import X_OFFSET, Y_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
 import math
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
@@ -16,8 +16,23 @@ class Paddle:
       log.info(f"Paddle created at {self.position.to_dict()}")
 
    def __calculate_axis(self, num_players):
+      if (num_players == 2):
+         return self.__calculate_axis_2_players()
+      else:
+         return self.__calculate_regular_axis(num_players)
+
+   def __calculate_axis_2_players(self):
+      if (self.slot == 1):
+         start = Position(X_OFFSET, Y_OFFSET)
+         end = Position(X_OFFSET, GAME_HEIGHT - Y_OFFSET)
+      else:
+         start = Position(GAME_WIDTH - X_OFFSET, Y_OFFSET)
+         end = Position(GAME_WIDTH - X_OFFSET, GAME_HEIGHT - Y_OFFSET)
+      return {'start': start, 'end': end}
+
+   def __calculate_regular_axis(self, num_players):
       # Calculate the angle of the axis based on the player slot and the number of players
-      angle = math.pi * (self.slot - 1)
+      angle =  2 * math.pi * (self.slot - 1) / num_players
 
       # Calculate the start and end points of the axis
       start = Position(

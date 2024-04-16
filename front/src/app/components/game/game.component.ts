@@ -17,8 +17,8 @@ import {Subscription} from "rxjs";
   styleUrl: './game.component.css'
 })
 export class GameComponent implements AfterViewInit, OnDestroy {
-  readonly gameWidth = GAME_WIDTH;
-  readonly gameHeight = GAME_HEIGHT;
+  gameWidth = GAME_WIDTH;
+  gameHeight = GAME_HEIGHT;
   readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
@@ -90,11 +90,15 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
+        paddle.gameHeight = arena.map.height;
+        paddle.gameWidth = arena.map.width;
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
     this.ball.first.positionY = arena.ball.position.y;
     this.ball.first.ballSize = 2 * arena.ball.radius;
+    this.gameHeight = arena.map.height;
+    this.gameWidth = arena.map.width;
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -130,7 +134,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }
     if (initialPosition !== paddle.positionY) {
       const playerName = paddle.id === 1 ? "Player1" : "Player2";
-      this.webSocketService.sendPaddleMovement(playerName, 0.3);
+      this.webSocketService.sendPaddleMovement(playerName, 0.5);
       console.log(`Paddle ${paddle.id} position updated:`, paddle.positionX, paddle.positionY);
     }
   }

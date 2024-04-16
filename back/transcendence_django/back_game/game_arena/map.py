@@ -1,7 +1,9 @@
+from back_game.game_settings.game_constants import GAME_WIDTH, GAME_HEIGHT
+
 class Map:
    def __init__(self): # TODO Map size and shape depends on number of player
-      self.width = 900
-      self.height = 500
+      self.width = GAME_WIDTH
+      self.height = GAME_HEIGHT
 
    def update(self, newWidth, newHeight):
       self.width = newWidth
