@@ -74,7 +74,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         direction = message['direction']
         paddle_data = self.arena.move_paddle(player_name, direction)
         await self.send_update({"paddle": paddle_data})
-        await self.send_message(f"Moved paddle to {paddle_data['position']}.")
+        # await self.send_message(f"Moved paddle to {paddle_data['position']}.")
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
     async def send_game_over(self, gameOverMessage):
@@ -92,12 +92,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def game_message(self, event):
         message = event['message']
         await self.send(text_data=json.dumps({
+            'type': "game_message",
             'message': message
         }))
 
     async def game_update(self, event):
         message = event['update']
         await self.send(text_data=json.dumps({
+            'type': "game_update",
             'update': message
         }))
 

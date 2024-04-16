@@ -24,15 +24,13 @@ export class ConnectionComponent implements OnDestroy {
         this.WebSocketMessagesSubscription?.unsubscribe();
     }
 
-    public listenToWebSocketMessages() {
+    public listenToWebSocketMessages(handleGameUpdate: (response: string) => void) {
         this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
-        console.log('Received WebSocket message:', message);
-        // Perform actions based on the received message
-        // For example, if the message is a JSON string representing a game state, you can parse it and update your game state
-        // const data = JSON.parse(message);
-        // if (data.type === 'game_state') {
-        //   this.updateGameState(data.message);
-        // }
+            console.log('Received WebSocket message:', message);
+            const data = JSON.parse(message);
+            if (data.type === 'game_update') {
+                handleGameUpdate(data.update);
+            }
         });
     }
 

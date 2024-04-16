@@ -5,6 +5,17 @@ import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
 import { ArenaResponse, MonitorService } from "../../services/monitor/monitor.service";
 import { ConnectionComponent } from "./connection.component";
+import { Position } from "../../services/monitor/monitor.service";
+import { VariableBinding } from '@angular/compiler';
+
+interface PaddleUpdateResponse {
+  slot: number;
+  position: Position;
+}
+
+interface VariableMapping {
+  [key: string]: (value: any) => void;
+}
 
 @Component({
   selector: 'app-game',
@@ -57,6 +68,26 @@ export class GameComponent implements AfterViewInit {
     this.gameWidth = arena.map.width;
   }
 
+  private handleGameUpdate(gameState: any) {
+    const variableMapping : VariableMapping = {
+        'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
+    };
+
+    for (const variable in gameState) {
+        if (variable in variableMapping) {
+            variableMapping[variable](gameState[variable]);
+        }
+    }
+  }
+
+  private updatePaddle(paddle: PaddleUpdateResponse) {
+    const paddleComponent = this.paddles.find(p => p.id === paddle.slot);
+    if (paddleComponent) {
+        paddleComponent.positionX = paddle.position.x;
+        paddleComponent.positionY = paddle.position.y;
+    }
+  }
+
   @HostListener('window:keydown', ['$event'])
   private onKeyDown(event: KeyboardEvent) {
     this.pressedKeys.add(event.key);
@@ -85,12 +116,11 @@ export class GameComponent implements AfterViewInit {
     if (direction !== 0) {
       const playerName = paddle.id === 1 ? "Player1" : "Player2";
       this.webSocketService.sendPaddleMovement(playerName, direction);
-      console.log(`Paddle ${paddle.id} position updated:`, paddle.positionX, paddle.positionY);
     }
   }
 
   ngAfterViewInit() {
-    this.connection.listenToWebSocketMessages();
+    this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this));
     this.gameLoop();
   }
 }

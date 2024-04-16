@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_GAME } from "../../constants";
 
-interface Position {
+export interface Position {
   x: number;
   y: number;
 }

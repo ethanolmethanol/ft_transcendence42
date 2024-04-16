@@ -80,4 +80,4 @@ class Arena:
          raise ValueError("Direction is invalid. It should be -1 or 1.")
       paddle = self.paddles[username]
       paddle.move(direction)
-      return paddle.to_dict()
+      return {"slot": paddle.slot, "position": paddle.position.to_dict()}
