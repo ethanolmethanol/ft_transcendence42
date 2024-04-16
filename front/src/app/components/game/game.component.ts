@@ -23,7 +23,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   // players!: string[];
-  // scores!: number[];
   player1Score = 0;
   player2Score = 0;
   private postData = JSON.stringify({
