@@ -81,11 +81,12 @@ class Ball:
       self.update_position(new_position)
 
    def update_position(self, new_position):
-      if 0 <= new_position.x <= GAME_WIDTH and 0 <= new_position.y <= GAME_HEIGHT:
+      if BALL_RADIUS <= new_position.x <= GAME_WIDTH - BALL_RADIUS\
+         and BALL_RADIUS <= new_position.y <= GAME_HEIGHT - BALL_RADIUS:
          self.position = new_position
       else:
          self.reset()
 
    def reset(self):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
-      self.speed = Vector(1, 1)
+      self.speed = Vector(5, 5)
