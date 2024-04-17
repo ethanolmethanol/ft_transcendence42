@@ -32,6 +32,7 @@ class Monitor:
         newArena = Arena(playerSpecs)
         channelID = self.generateRandomID(10)
         self.channels[channelID] = {newArena.id: newArena}
+        asyncio.create_task(self.monitor_arenas_loop(channelID, self.channels[channelID].values()))
         asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
         self.userGameTable[username] = {"channelID": channelID, "arena": newArena.to_dict()}
         return self.userGameTable[username]
@@ -49,7 +50,7 @@ class Monitor:
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]
 
-    async def run_game_loop(self, channelID, arenas):
+    async def monitor_arenas_loop(self, channelID, arenas):
         while any(arena.status != DEAD for arena in arenas):
             await self.update_game_states(arenas)
             await asyncio.sleep(1)
@@ -66,8 +67,16 @@ class Monitor:
                 or arena.status == OVER:
                 await self.gameOver(arena)
 
+    async def run_game_loop(self, channelID, arenas):
+        while any(arena.status != DEAD for arena in arenas):
+            for arena in arenas:
+                if arena.status == STARTED:
+                    update_message = await arena.update_game()
+                    await arena.game_update_callback(update_message)
+            await asyncio.sleep(0.01)
+
     async def gameOver(self, arena):
-        arena.status = OVER
+        arena.end_of_game()
         if hasattr(arena, 'game_over_callback'):
             await arena.game_over_callback('Game Over! Thank you for playing.')
 

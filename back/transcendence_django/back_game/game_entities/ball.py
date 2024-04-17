@@ -1,7 +1,6 @@
 #from game.game_settings.game_constants import *
 
-#from game.game_settings.game_constants import BALL_INITIAL_POSITION, BALL_INITIAL_VELOCITY, GAME_WIDTH, \
-#    GAME_HEIGHT, BALL_RADIUS
+from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS
 
 
 # class Ball:
@@ -19,12 +18,6 @@
 #     def position(self, value):
 #         raise ValueError("Use update_position() to set position")
 
-#     def move(self):
-#         new_position = {
-#             'x': self._position['x'] + self._velocity['x'],
-#             'y': self._position['y'] + self._velocity['y']
-#         }
-#         self.update_position(new_position)
 
 #     @property
 #     def velocity(self):
@@ -35,10 +28,6 @@
 #         raise ValueError("Use update_velocity() to set velocity")
 
 #     def update_position(self, new_position):
-#         if 0 <= new_position['x'] <= GAME_WIDTH and 0 <= new_position['y'] <= GAME_HEIGHT:
-#             self._position = new_position
-#         else:
-#             raise ValueError("New position is out of bounds")
 
 #     def update_velocity(self, new_velocity):
 #         if (self.MIN_VELOCITY <= new_velocity['x'] <= self.MAX_VELOCITY and
@@ -69,9 +58,9 @@ from back_game.game_physics.vector import Vector
 
 class Ball:
    def __init__(self):
-      self.position = Position(50, 50)
-      self.speed = Vector(1, 1)
-      self.radius = 20
+      self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
+      self.speed = Vector(5, 5)
+      self.radius = BALL_RADIUS
 
    def update(self, newPosition, newSpeed, newRadius):
       self.position.setCoordinates(newPosition.x, newPosition.y)
@@ -84,3 +73,19 @@ class Ball:
          'speed': self.speed.to_dict(),
          'radius': self.radius
       }
+
+   def move(self):
+      new_position = Position(
+         self.position.x + self.speed.x,
+         self.position.y + self.speed.y)
+      self.update_position(new_position)
+
+   def update_position(self, new_position):
+      if 0 <= new_position.x <= GAME_WIDTH and 0 <= new_position.y <= GAME_HEIGHT:
+         self.position = new_position
+      else:
+         self.reset()
+
+   def reset(self):
+      self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
+      self.speed = Vector(1, 1)

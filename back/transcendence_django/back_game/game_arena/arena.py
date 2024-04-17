@@ -4,6 +4,8 @@ from back_game.game_arena.map import Map
 from back_game.game_arena.player import *
 from back_game.game_settings.game_constants import *
 
+import logging
+logger = logging.getLogger(__name__)
 class Arena:
    def __init__(self, playerSpecs):
       self.__fill_player_specs(playerSpecs)
@@ -27,7 +29,7 @@ class Arena:
       self.players[username] = player
       self.paddles[username] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
       if self.is_full():
-         self.status = STARTED
+         self.start_game()
 
    def to_dict(self):
       return {
@@ -44,7 +46,7 @@ class Arena:
       return len(self.players) == 0
 
    def is_full(self):
-      return len(self.players) >= self.nbPlayers
+      return len(self.players) == self.nbPlayers
 
    def enter_arena(self, username):
       if self.mode == LOCAL_MODE:
@@ -68,6 +70,10 @@ class Arena:
       else:
          self.players[username].status = DISABLED
 
+   def start_game(self):
+      self.status = STARTED
+      logger.info("Game started.")
+
    def end_of_game(self):
       self.status = OVER
 
@@ -81,3 +87,9 @@ class Arena:
       paddle = self.paddles[username]
       paddle.move(direction)
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
+
+   async def update_game(self):
+      logger.info("Updating game (ball)")
+      self.ball.move()
+      # return Json message with ball position / score / etc.
+      return {"ball": {"position": self.ball.position.to_dict()}}

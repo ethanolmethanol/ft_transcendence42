@@ -50,8 +50,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.username = message["username"]
         arenaID = message["arenaID"]
         self.arena = monitor.channels[self.channelID][arenaID]
-        self.arena.enter_arena(self.username)
+        self.arena.game_update_callback = self.send_update
         self.arena.game_over_callback = self.send_game_over
+        self.arena.enter_arena(self.username)
         self.joined = True
         log.info(f"{self.username} joined game")
         self.send_message(f"{self.username} has joined the game.")
@@ -74,15 +75,15 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         direction = message['direction']
         paddle_data = self.arena.move_paddle(player_name, direction)
         await self.send_update({"paddle": paddle_data})
-        # await self.send_message(f"Moved paddle to {paddle_data['position']}.")
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
-    async def send_game_over(self, gameOverMessage):
+
+    async def send_game_over(self, game_over_message):
         await self.channel_layer.group_send(
             self.room_group_name, {
                 'type': 'game_over',
                 'winner': f'{self.arena.get_winner()}',
-                'message': gameOverMessage,
+                'message': game_over_message,
             }
         )
         # remove the arena
