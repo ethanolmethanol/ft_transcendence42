@@ -13,7 +13,7 @@ class Arena:
       self.status = WAITING
       self.players = {}
       self.paddles = {f'{i + 1}': Paddle(i + 1, self.nbPlayers) for i in range(self.nbPlayers)}  # Initialize paddles dictionary
-      self.ball = Ball()
+      self.ball = Ball(self.paddles.values())
       self.map = Map() # depends on the number of players
 
    def __fill_player_specs(self, playerSpecs):
@@ -86,6 +86,7 @@ class Arena:
          raise ValueError("Direction is invalid. It should be -1 or 1.")
       paddle = self.paddles[username]
       paddle.move(direction)
+      self.ball.update_collision(paddle)
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
 
    async def update_game(self):

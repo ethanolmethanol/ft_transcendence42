@@ -1,6 +1,6 @@
 # Game area dimensions
-GAME_HEIGHT = 600
-GAME_WIDTH = 1000
+GAME_HEIGHT = 500
+GAME_WIDTH = 700
 
 # Game arena
 MIN_PLAYER = 2
@@ -9,8 +9,8 @@ MAX_PLAYER = 10
 # # Ball parameters
 # BALL_INITIAL_POSITION = {'x': 50, 'y': 50}
 # BALL_INITIAL_VELOCITY = {'x': 5, 'y': 5}
-# MAX_VELOCITY = 10
-# MIN_VELOCITY = 1
+INITIAL_SPEEDX = 5
+INITIAL_SPEEDY = 5
 BALL_RADIUS = 15
 
 # Paddle parameters
