@@ -90,7 +90,5 @@ class Arena:
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
 
    async def update_game(self):
-      logger.info("Updating game (ball)")
       self.ball.move()
-      # return Json message with ball position / score / etc.
       return {"ball": {"position": self.ball.position.to_dict()}}

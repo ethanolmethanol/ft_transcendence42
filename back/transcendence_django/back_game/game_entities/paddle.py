@@ -13,8 +13,15 @@ class Paddle:
       self.height = PADDLE_HEIGHT
       self.rate = 0.5
       self.axis = self.__calculate_axis(num_players)
-      self.position = self.__convert_rate_to_position(self.rate)
+      self.__update_position()
       log.info(f"Paddle created at {self.position.to_dict()}")
+
+   def __update_position(self):
+      self.position = self.__convert_rate_to_position(self.rate)
+      self.bottom = self.position.y + self.height / 2
+      self.top = self.position.y - self.height / 2
+      self.left = self.position.x - self.width / 2
+      self.right = self.position.x + self.width / 2
 
    def __calculate_axis(self, num_players):
       if (num_players == 2):
@@ -72,4 +79,4 @@ class Paddle:
 
    def move(self, direction):
       self.rate = min(max(self.rate + self.speed * direction, 0), 1)
-      self.position = self.__convert_rate_to_position(self.rate)
+      self.__update_position()
