@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import PADDLE_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
+from back_game.game_settings.game_constants import PADDLE_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT, CONVEXITY, RIGHT_SLOT, LEFT_SLOT, INITIAL_BALL_SPEED_COEFF
 import math
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
@@ -22,6 +22,7 @@ class Paddle:
       self.top = self.position.y - self.height / 2
       self.left = self.position.x - self.width / 2
       self.right = self.position.x + self.width / 2
+      self.convexity_center = self.__calculate_convexity_center()
 
    def __calculate_axis(self, num_players):
       if (num_players == 2):
@@ -61,7 +62,14 @@ class Paddle:
          round(self.axis['start'].x + (self.axis['end'].x - self.axis['start'].x) * rate),
          round(self.axis['start'].y + (self.axis['end'].y - self.axis['start'].y) * rate)
       )
-
+   
+   def __calculate_convexity_center(self):
+      self.distance_from_center = self.height / (2 * math.tan(CONVEXITY / 2))
+      if self.slot == LEFT_SLOT:
+         center_x = self.right - self.distance_from_center
+      elif self.slot == RIGHT_SLOT:
+         center_x = self.left + self.distance_from_center
+      return Position(center_x, self.position.y)
 
    def to_dict(self):
       return {
@@ -80,3 +88,17 @@ class Paddle:
    def move(self, direction):
       self.rate = min(max(self.rate + self.speed * direction, 0), 1)
       self.__update_position()
+
+   def calc_speed_after_collision(self, collision_point):
+      speed_component = self.calculate_speed_direction(collision_point)
+      u_speed = speed_component.unit_vector()
+      return Vector(INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y)
+   
+   def calculate_speed_direction(self, collision_point):
+      if self.slot == LEFT_SLOT:
+         speed_component_x = self.distance_from_center
+      elif self.slot == RIGHT_SLOT:
+         speed_component_x = -self.distance_from_center
+      # speed_component_y = self.convexity_center.y - collision_point.y
+      speed_component_y = collision_point.y - self.convexity_center.y
+      return Vector(speed_component_x, speed_component_y)

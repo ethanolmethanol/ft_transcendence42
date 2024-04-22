@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, INITIAL_SPEEDX, INITIAL_SPEEDY, RIGHT_SLOT, LEFT_SLOT, INITIAL_SPEED_MAGNITUDE, CONVEXITY
+from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, INITIAL_SPEEDX, INITIAL_SPEEDY, RIGHT_SLOT, LEFT_SLOT
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 import math
@@ -48,7 +48,7 @@ class Ball:
             # self.__push_ball(side, paddle)
             # new_position = self.position
             collision_point = self.get_collision_point(paddle)
-            self.speed = self.calculate_speed_after_paddle_collision(paddle, collision_point)
+            self.speed = paddle.calc_speed_after_collision(collision_point)
             logger.info(f"New speed is: ({self.speed.x}, {self.speed.y})")
             self.position.x += self.speed.x
             self.position.y += self.speed.y
@@ -73,35 +73,6 @@ class Ball:
       closest_y = max(min(self.position.y, paddle.bottom), paddle.top)
       return Position(closest_x, closest_y)
    
-   def calculate_speed_after_paddle_collision(self, paddle, collision_point):
-        radius = paddle.height / 2
-        if paddle.slot == LEFT_SLOT:
-           x_center = paddle.left
-        elif paddle.slot == RIGHT_SLOT:
-           x_center = paddle.right
-        center = Position(x_center, paddle.position.y)
-        logger.info(f"collision_point: ({collision_point.x}, {collision_point.y})")
-        logger.info(f"center: ({center.x}, {center.y})")
-      #   logger.info(f"MC^2: {(collision_point.x - center.x)**2 + (collision_point.y - center.y)**2}")
-      #   logger.info(f"MC: {math.sqrt((collision_point.x - center.x)**2 + (collision_point.y - center.y)**2)}")
-        norm_speed_vector = abs(radius - math.sqrt((collision_point.x - center.x)**2 + (collision_point.y - center.y)**2))
-        logger.info(f"norm_speed_vector: {norm_speed_vector}")
-        if norm_speed_vector == 0:
-           norm_speed_vector = 1
-        speed_x_component = (norm_speed_vector * paddle.width) / (radius - norm_speed_vector)
-        logger.info(f"speed_x_component: {speed_x_component}")
-        speed_y_component = math.sqrt(norm_speed_vector**2 - speed_x_component**2)
-        logger.info(f"speed_y_component: {speed_y_component}")
-        speed_x = speed_x_component * INITIAL_SPEED_MAGNITUDE / norm_speed_vector
-        speed_y = speed_y_component * INITIAL_SPEED_MAGNITUDE / norm_speed_vector
-        logger.info(f"speed_x: {speed_x}")
-        logger.info(f"speed_y: {speed_y}")
-        if paddle.slot == RIGHT_SLOT:
-           speed_x *= -1
-        if collision_point.y < center.y:
-           speed_y *= -1
-        return Vector(speed_x, speed_y)
-
    def __push_ball(self, side, paddle):
       push_position = Position(self.position.x, self.position.y)
       if side == "top":
