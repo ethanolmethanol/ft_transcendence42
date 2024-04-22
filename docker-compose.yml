@@ -87,16 +87,14 @@ services:
         container_name: front
         build:
             context: front
-        volumes:
-            - front-data:/usr/share/nginx/html
+        # volumes:
+        #     - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
             - transcendence
         restart: unless-stopped
         depends_on:
-            back_auth:
-                condition: service_healthy
             back_game:
                 condition: service_healthy
         healthcheck:
@@ -229,12 +227,12 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    front-data:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: './front/dist/transcendence/browser'
+    # front-data:
+    #     driver: local
+    #     driver_opts:
+    #         type: 'none'
+    #         o: 'bind'
+    #         device: './front/dist/transcendence/browser'
     db-data:
 
 
