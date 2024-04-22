@@ -7,12 +7,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Ball:
-   def __init__(self, paddles):
+   def __init__(self, paddles, hit_wall_func):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
       self.speed = Vector(INITIAL_SPEEDX, INITIAL_SPEEDY)
       self.radius = BALL_RADIUS
       self.paddles = paddles
-      self.hasCollided = {paddle.slot : False for paddle in paddles}
+      self.hit_wall = hit_wall_func
 
    def update(self, newPosition, newSpeed, newRadius):
       self.position.setCoordinates(newPosition.x, newPosition.y)
@@ -35,7 +35,8 @@ class Ball:
       new_position = Position(
          self.position.x + self.speed.x,
          self.position.y + self.speed.y)
-      self.update_position(new_position)
+      update = self.update_position(new_position)
+      return update if update is not None else {"ball": {"position": self.position.to_dict()}}
 
    def update_collision(self, paddle):
       if self.is_paddle_collision(self.position, paddle):
@@ -60,8 +61,9 @@ class Ball:
             # return # Exit the function after handling the collision
 
       # If no collision with paddles, proceed with the normal update
-      self.__update_wall_collision(new_position)
+      score = self.__update_wall_collision(new_position)
       self.set_position(new_position)
+      return score
 
    def __push_ball(self, side, paddle):
       push_position = Position(self.position.x, self.position.y)
@@ -114,13 +116,22 @@ class Ball:
                return "top"
 
    def __update_wall_collision(self, new_position):
-      if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:
-         self.speed.x *= -1
-      if new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
-         self.speed.y *= -1
-      else:
-         self.position = new_position
+      if len(self.paddles) == 2:
+         if new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
+            self.speed.y *= -1
+         if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:
+            self.speed.x *= -1
+            which = new_position.x <= self.radius
+            logger.info(f"Ball collided with wall {which}.")
+            self.position.setCoordinates(GAME_WIDTH / 2, GAME_HEIGHT / 2)
+            new_position.x = GAME_WIDTH / 2
+            new_position.y = GAME_HEIGHT / 2
+            return self.hit_wall(which)
+         return None
+      raise NotImplementedError()
+         # else: # useless
+         #    self.position = new_position
 
    def reset(self):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
-      self.speed = Vector(5, 5)
+      self.speed = Vector(INITIAL_SPEEDX, INITIAL_SPEEDY)

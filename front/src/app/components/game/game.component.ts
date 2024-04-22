@@ -17,6 +17,10 @@ interface BallUpdateResponse {
   position: Position;
 }
 
+interface ScoreUpdateResponse {
+  username: string;
+}
+
 interface VariableMapping {
   [key: string]: (value: any) => void;
 }
@@ -75,7 +79,8 @@ export class GameComponent implements AfterViewInit {
   private handleGameUpdate(gameState: any) {
     const variableMapping : VariableMapping = {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
-        'ball': (value: BallUpdateResponse) => { this.updateBall(value) }
+        'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
+        'score': (value: ScoreUpdateResponse) => { this.updateScore(value) }
     };
 
     for (const variable in gameState) {
@@ -94,6 +99,14 @@ export class GameComponent implements AfterViewInit {
 
   private updateBall(ball: BallUpdateResponse) {
     this.ball.first.updateBallPosition(ball.position);
+  }
+
+  private updateScore(score: ScoreUpdateResponse) {
+    if (this.paddles.length == 2) {
+      if (score.username == "Player1")
+        this.player1Score += 1;
+      else this.player2Score += 1;
+    }
   }
 
   @HostListener('window:keydown', ['$event'])

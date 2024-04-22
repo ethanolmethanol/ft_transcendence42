@@ -71,7 +71,7 @@ class Monitor:
         while any(arena.status != DEAD for arena in arenas):
             for arena in arenas:
                 if arena.status == STARTED:
-                    update_message = await arena.update_game()
+                    update_message = arena.update_game()
                     await arena.game_update_callback(update_message)
             await asyncio.sleep(0.01)
 
