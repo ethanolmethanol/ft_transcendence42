@@ -104,13 +104,13 @@ class Ball:
       # Determine which side of the paddle the ball hits
       if abs(distance_x) > abs(distance_y):
          # The ball hits the left or right side of the paddle
-         if distance_x > 0:
+         if distance_x > paddle.position.x - position.x:
                return "right"
          else:
                return "left"
       else:
          # The ball hits the top or bottom side of the paddle
-         if distance_y > 0:
+         if distance_y > paddle.position.y - position.y:
                return "bottom"
          else:
                return "top"
