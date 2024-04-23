@@ -22,7 +22,7 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def getChannel(self, username, playerSpecs):
+    async def get_channel(self, username, playerSpecs):
         channel = self.get_channel_from_username(username)
         if channel is None:
             return await self.getNewChannel(username, playerSpecs)
