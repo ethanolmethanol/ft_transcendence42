@@ -73,7 +73,7 @@ class Monitor:
                 if arena.status == STARTED:
                     update_message = await arena.update_game()
                     await arena.game_update_callback(update_message)
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.005)
 
     async def gameOver(self, arena):
         arena.end_of_game()

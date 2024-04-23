@@ -27,8 +27,12 @@ class Ball:
       }
 
    def set_position(self, position):
-      x = max(self.radius, min(position.x, GAME_WIDTH - self.radius))
-      y = max(self.radius, min(position.y, GAME_HEIGHT - self.radius))
+      x = position.x
+      y = position.y
+      if x < self.radius or x > GAME_WIDTH - self.radius:
+         raise ValueError("Ball x-coordinate is out of bounds.")
+      elif y < self.radius or y > GAME_HEIGHT - self.radius:
+         raise ValueError("Ball y-coordinate is out of bounds.")
       self.position.setCoordinates(x, y)
 
    def move(self):
@@ -44,26 +48,16 @@ class Ball:
    def update_position(self, new_position):
       for paddle in self.paddles:
          if self.is_paddle_collision(self.position, paddle):
-            side = self.get_collision_side(new_position, paddle)
-            self.__push_ball(side, paddle)
-            new_position = self.position
-            # Adjust the ball's position based on the collision point
-            if side == "top" or side == "bottom":
-               # Ball hits the top of the paddle
-               self.speed.y *= -1
-            elif side == "left" or side == "right":
-               # Ball hits the left or right side of the paddle
-               self.speed.x *= -1
-            logger.info(f"Ball collided with paddle {paddle.slot} on the {side} side.")
+            self.__push_ball(paddle)
             new_position = self.position
             break
             # return # Exit the function after handling the collision
 
       # If no collision with paddles, proceed with the normal update
       self.__update_wall_collision(new_position)
-      self.set_position(new_position)
 
-   def __push_ball(self, side, paddle):
+   def __push_ball(self, paddle):
+      side = self.get_collision_side(self.position, paddle)
       push_position = Position(self.position.x, self.position.y)
       if side == "top":
          push_position.y = paddle.top - self.radius
@@ -74,6 +68,14 @@ class Ball:
       elif side == "right":
          push_position.x = paddle.right + self.radius
       self.set_position(push_position)
+      # Adjust the ball's position based on the collision point
+      if side == "top" or side == "bottom":
+         # Ball hits the top of the paddle
+         self.speed.y *= -1
+      if side == "left" or side == "right":
+         # Ball hits the left or right side of the paddle
+         self.speed.x *= -1
+      logger.info(f"Ball collided with paddle {paddle.slot} on the {side} side.")
 
    def is_paddle_collision(self, position, paddle):
       """

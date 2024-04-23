@@ -1,14 +1,12 @@
 # Game area dimensions
-GAME_HEIGHT = 500
-GAME_WIDTH = 700
+GAME_HEIGHT = 600
+GAME_WIDTH = 1000
 
 # Game arena
 MIN_PLAYER = 2
 MAX_PLAYER = 10
 
 # # Ball parameters
-# BALL_INITIAL_POSITION = {'x': 50, 'y': 50}
-# BALL_INITIAL_VELOCITY = {'x': 5, 'y': 5}
 INITIAL_SPEEDX = 5
 INITIAL_SPEEDY = 5
 BALL_RADIUS = 15
@@ -29,3 +27,6 @@ STARTED = 1
 OVER = 2
 # When all arenas are DEAD, the corresponding channel can be deleted
 DEAD = 3
+
+# Other states
+LISTENING = 4

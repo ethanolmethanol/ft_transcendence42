@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import PADDLE_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
+from back_game.game_settings.game_constants import LISTENING, PADDLE_OFFSET, PADDLE_INITIAL_SPEED_RATE, PADDLE_HEIGHT, PADDLE_WIDTH, GAME_WIDTH, GAME_HEIGHT
 import math
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 class Paddle:
    def __init__(self, slot=1, num_players=2):
       self.slot = slot
+      self.status = LISTENING
       self.speed = PADDLE_INITIAL_SPEED_RATE
       self.width = PADDLE_WIDTH
       self.height = PADDLE_HEIGHT
