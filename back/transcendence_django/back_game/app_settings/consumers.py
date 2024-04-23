@@ -79,13 +79,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def send_game_over(self, game_over_message):
-        await self.channel_layer.group_send(
-            self.room_group_name, {
-                'type': 'game_over',
+        await self.send_update({
+            "gameover": {
                 'winner': f'{self.arena.get_winner()}',
-                'message': game_over_message,
-            }
-        )
+                'message': game_over_message
+                }
+            })
         # remove the arena
         # check dans le front qui a gagne
         # close the connection ? (back or front?)

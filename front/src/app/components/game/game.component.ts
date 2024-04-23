@@ -7,6 +7,7 @@ import { ArenaResponse, MonitorService } from "../../services/monitor/monitor.se
 import { ConnectionComponent } from "./connection.component";
 import { Position } from "../../services/monitor/monitor.service";
 import { VariableBinding } from '@angular/compiler';
+import { GameOverComponent } from '../gameover/gameover.component';
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -21,6 +22,11 @@ interface ScoreUpdateResponse {
   username: string;
 }
 
+interface GameOverUpdateResponse {
+  winner: string;
+  message: string;
+}
+
 interface VariableMapping {
   [key: string]: (value: any) => void;
 }
@@ -30,7 +36,8 @@ interface VariableMapping {
   standalone: true,
   imports: [
     PaddleComponent,
-    BallComponent
+    BallComponent,
+    GameOverComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -41,6 +48,7 @@ export class GameComponent implements AfterViewInit {
   readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
+  @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
   private connection!: ConnectionComponent;
   // players!: string[];
   player1Score = 0;
@@ -80,7 +88,8 @@ export class GameComponent implements AfterViewInit {
     const variableMapping : VariableMapping = {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
-        'score': (value: ScoreUpdateResponse) => { this.updateScore(value) }
+        'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
+        'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) }
     };
 
     for (const variable in gameState) {
@@ -107,6 +116,12 @@ export class GameComponent implements AfterViewInit {
         this.player1Score += 1;
       else this.player2Score += 1;
     }
+  }
+
+  private gameOver(info: GameOverUpdateResponse) {
+    this.overlay.first.message = info.winner + " won! " + info.message
+    this.overlay.first.show = true
+    // for online mode, use info.winner to update the user score db?
   }
 
   @HostListener('window:keydown', ['$event'])
