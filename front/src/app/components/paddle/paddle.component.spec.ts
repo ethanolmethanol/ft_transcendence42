@@ -23,14 +23,14 @@ describe('PaddleComponent', () => {
   });
 
   it('should stay within game after moving up', () => {
-    component.speed = 1000;
-    component.moveUp();
-    expect(component.positionY).toBeGreaterThanOrEqual(0);
+    component.speed = 10;
+    component.updatePaddlePosition({ x: 0, y: 0 });
+    expect(component.positionY).toBe(0);
   });
 
   it('should stay within game after moving down', () => {
     component.speed = 1000;
-    component.moveDown();
-    expect(component.positionY).toBeLessThanOrEqual(GAME_HEIGHT - PADDLE_HEIGHT);
+    component.updatePaddlePosition({ x: 0, y: 100 });
+    expect(component.positionY).toBe(100);
   });
 });

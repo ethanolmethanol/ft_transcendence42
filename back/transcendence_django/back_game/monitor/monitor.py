@@ -47,6 +47,9 @@ class Monitor:
         channel = {"channelID": channelID, "arena": arena.to_dict()}
         return channel
 
+    def deleteChannel(self, channelID):
+        del self.channels[channelID]
+
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]
 
