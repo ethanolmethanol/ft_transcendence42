@@ -1,6 +1,7 @@
 # Game area dimensions
-GAME_HEIGHT = 600
-GAME_WIDTH = 1000
+GAME_HEIGHT = 300
+GAME_WIDTH = 500
+GAME_REFRESH_RATE = 0.01
 
 # Game arena
 MIN_PLAYER = 2

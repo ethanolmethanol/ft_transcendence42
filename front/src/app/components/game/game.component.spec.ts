@@ -1,22 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameComponent } from './game.component';
-import {By} from "@angular/platform-browser";
 import {PaddleComponent} from "../paddle/paddle.component";
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { WebSocketService } from '../../services/web-socket/web-socket.service';
 
 describe('GameComponent', () => {
   let component: GameComponent;
   let fixture: ComponentFixture<GameComponent>;
+  let webSocketService: WebSocketService;
+  let sendPaddleMovementSpy: jasmine.Spy;
 
   beforeEach(async () => {
       await TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule, GameComponent, PaddleComponent]
+        imports: [HttpClientTestingModule, GameComponent, PaddleComponent],
+        providers: [WebSocketService]
       }).compileComponents();
 
       fixture = TestBed.createComponent(GameComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
+      webSocketService = TestBed.inject(WebSocketService);
+      sendPaddleMovementSpy = spyOn(webSocketService, 'sendPaddleMovement').and.callThrough();
   });
 
 
@@ -44,19 +49,18 @@ describe('GameComponent', () => {
     expect(component['pressedKeys'].has('w')).toBeFalse();
   });
 
-  it('should move paddle up or down based on pressed keys', () => {
-    // Query the PaddleComponent instance directly from the fixture
-    const paddle = fixture.debugElement.query(By.directive(PaddleComponent)).componentInstance;
-    // Set up the spy on the PaddleComponent instance
-    spyOn(paddle, 'updatePaddlePosition').and.callThrough();
+  it('should move paddle up on pressed keys', () => {
+    const event = new KeyboardEvent('keydown', { key: 'w' });
+    window.dispatchEvent(event);
+    component['gameLoop']();
+    expect(sendPaddleMovementSpy).toHaveBeenCalledWith("Player1", -1);
+ });
 
-    // Simulate key press to trigger the movePaddle method
-    component['pressedKeys'].add('w');
-    component['pressedKeys'].add('s');
-    component['movePaddle'](paddle, { upKey: 'w', downKey: 's'});
-
-    // Check if updatePaddlePosition was called
-    expect(paddle.updatePaddlePosition).toHaveBeenCalled();
+ it('should move paddle down on pressed keys', () => {
+    const event = new KeyboardEvent('keydown', { key: 's' });
+    window.dispatchEvent(event);
+    component['gameLoop']();
+    expect(sendPaddleMovementSpy).toHaveBeenCalledWith("Player1", 1);
  });
 
   it('should call movePaddle for each paddle in gameLoop', () => {
