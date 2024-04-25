@@ -77,6 +77,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if self.arena.mode == LOCAL_MODE:
             self.arena.end_of_game()
         self.arena.player_gave_up(self.username)
+        monitor.userGameTable.pop(self.username)
         self.joined = False
         log.info(f"{self.username} gave up")
         await self.send_message(f"{self.username} has given up.")
