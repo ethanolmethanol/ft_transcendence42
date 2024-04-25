@@ -47,6 +47,9 @@ class Monitor:
         channel = {"channelID": channelID, "arena": arena.to_dict()}
         return channel
 
+    def deleteChannel(self, channelID):
+        del self.channels[channelID]
+
     def deleteArena(self, channelID, arenaID):
         del self.channels[channelID][arenaID]
 
@@ -73,7 +76,7 @@ class Monitor:
                 if arena.status == STARTED:
                     update_message = await arena.update_game()
                     await arena.game_update_callback(update_message)
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(GAME_REFRESH_RATE)
 
     async def gameOver(self, arena):
         arena.end_of_game()

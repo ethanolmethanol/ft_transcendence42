@@ -1,8 +1,9 @@
 import math
 
 # Game area dimensions
-GAME_HEIGHT = 500
-GAME_WIDTH = 700
+GAME_HEIGHT = 600
+GAME_WIDTH = 1000
+GAME_REFRESH_RATE = 0.005
 
 # Game arena
 MIN_PLAYER = 2
@@ -35,3 +36,7 @@ STARTED = 1
 OVER = 2
 # When all arenas are DEAD, the corresponding channel can be deleted
 DEAD = 3
+
+# Paddle status
+LISTENING = 1
+PROCESSING = 2

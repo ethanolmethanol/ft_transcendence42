@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 
 import { MonitorService } from './monitor.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('MonitorService', () => {
   let service: MonitorService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
     service = TestBed.inject(MonitorService);
   });
 
