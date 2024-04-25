@@ -4,16 +4,6 @@
 # from game.game_entities.ball import Ball
 
 
-# @pytest.mark.middle
-# @pytest.mark.ball
-# def test_ball_initialization():
-#     ball = Ball()
-#     assert isinstance(ball, Ball), "Ball instance should be created"
-#     assert hasattr(ball, 'position'), "Ball instance should have a 'position' attribute"
-#     assert hasattr(ball, 'velocity'), "Ball instance should have a 'velocity' attribute"
-#     assert ball.position == {'x': 50, 'y': 50}, "Ball position should be initialized to the default value"
-#     assert ball.velocity == {'x': 5, 'y': 5}, "Ball velocity should be initialized to the default value"
-
 
 # @pytest.mark.middle
 # @pytest.mark.ball

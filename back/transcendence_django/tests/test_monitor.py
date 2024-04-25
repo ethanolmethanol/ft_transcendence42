@@ -1,15 +1,9 @@
 import pytest
-import logging
-import asyncio
 import back_game.monitor.monitor as monitor
-from back_game.game_arena.arena import Arena
-from back_game.game_entities.ball import Ball
-from back_game.game_entities.paddle import Paddle
-from back_game.game_arena.map import Map
 from back_game.game_settings.game_constants import *
 
 @pytest.mark.passed
-@pytest.mark.game_engine
+@pytest.mark.monitor
 async def test_addRemoveArena():
 	request = {
 		"username": "TestUser",
@@ -24,7 +18,7 @@ async def test_addRemoveArena():
 
 # @pytest.mark.passed
 # @pytest.mark.asyncio
-# @pytest.mark.game_engine
+# @pytest.mark.monitor
 # async def test_start():
 # 	arena = Arena({
 # 		"playerMode": PlayerMode(),
@@ -40,7 +34,7 @@ async def test_addRemoveArena():
 
 # @pytest.mark.passed
 # @pytest.mark.asyncio
-# @pytest.mark.game_engine
+# @pytest.mark.monitor
 # async def test_run_game_loop():
 # 	for i in range (0, 10):
 # 		SINGLE.addArena(Arena({
