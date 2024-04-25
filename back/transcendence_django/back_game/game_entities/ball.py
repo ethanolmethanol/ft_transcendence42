@@ -50,8 +50,7 @@ class Ball:
             collision_point = self.get_collision_point(paddle)
             self.speed = paddle.calc_speed_after_collision(collision_point)
             logger.info(f"New speed is: ({self.speed.x}, {self.speed.y})")
-            self.position.x += self.speed.x
-            self.position.y += self.speed.y
+            self.position = new_position
             # Adjust the ball's position based on the collision point
             # if side == "top" or side == "bottom":
             #    # Ball hits the top of the paddle
@@ -72,7 +71,7 @@ class Ball:
       closest_x = max(min(self.position.x, paddle.right), paddle.left)
       closest_y = max(min(self.position.y, paddle.bottom), paddle.top)
       return Position(closest_x, closest_y)
-   
+
    def __push_ball(self, side, paddle):
       push_position = Position(self.position.x, self.position.y)
       if side == "top":
