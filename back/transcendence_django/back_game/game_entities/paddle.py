@@ -23,7 +23,7 @@ class Paddle:
       self.top = self.position.y - self.height / 2
       self.left = self.position.x - self.width / 2
       self.right = self.position.x + self.width / 2
-      self.convexity_center = self.__calculate_convexity_center()
+      self.convexity_center = self.__get_convexity_center()
 
    def __calculate_axis(self, num_players):
       if (num_players == 2):
@@ -42,10 +42,8 @@ class Paddle:
       return {'start': start.round(), 'end': end.round()}
 
    def __calculate_regular_axis(self, num_players):
-      # Calculate the angle of the axis based on the player slot and the number of players
       angle =  2 * math.pi * (self.slot - 1) / num_players
 
-      # Calculate the start and end points of the axis
       start = Position(
          GAME_HEIGHT / 2 + GAME_HEIGHT / 2 * math.sin(angle),
          GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle)
@@ -63,7 +61,7 @@ class Paddle:
          self.axis['start'].y + (self.axis['end'].y - self.axis['start'].y) * rate
       ).round()
 
-   def __calculate_convexity_center(self):
+   def __get_convexity_center(self):
       self.distance_from_center = self.height / (2 * math.tan(CONVEXITY / 2))
       if self.slot == LEFT_SLOT:
          center_x = self.right - self.distance_from_center
@@ -90,16 +88,15 @@ class Paddle:
       self.rate = min(max(self.rate + self.speed * direction, 0), 1)
       self.__update_position()
 
-   def calc_speed_after_collision(self, collision_point):
-      speed_component = self.calculate_speed_direction(collision_point)
+   def get_speed_after_collision(self, collision_point):
+      speed_component = self.get_speed_direction(collision_point)
       u_speed = speed_component.unit_vector()
       return Vector(INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y)
 
-   def calculate_speed_direction(self, collision_point):
+   def get_speed_direction(self, collision_point):
       if self.slot == LEFT_SLOT:
          speed_component_x = self.distance_from_center
       elif self.slot == RIGHT_SLOT:
          speed_component_x = -self.distance_from_center
-      # speed_component_y = self.convexity_center.y - collision_point.y
       speed_component_y = collision_point.y - self.convexity_center.y
       return Vector(speed_component_x, speed_component_y)
