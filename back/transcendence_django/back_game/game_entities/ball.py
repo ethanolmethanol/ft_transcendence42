@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, INITIAL_SPEEDX, INITIAL_SPEEDY
+from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, INITIAL_SPEEDX, INITIAL_SPEEDY, RIGHT_SLOT, LEFT_SLOT
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 import math
@@ -49,12 +49,16 @@ class Ball:
       for paddle in self.paddles:
          if self.is_paddle_collision(self.position, paddle):
             self.__push_ball(paddle)
-            new_position = self.position
+            collision_point = self.get_collision_point(paddle)
+            self.speed = paddle.get_speed_after_collision(collision_point)
+            logger.info(f"New speed is: ({self.speed.x}, {self.speed.y})")
             break
-            # return # Exit the function after handling the collision
-
-      # If no collision with paddles, proceed with the normal update
       self.__update_wall_collision(new_position)
+
+   def get_collision_point(self, paddle):
+      closest_x = max(min(self.position.x, paddle.right), paddle.left)
+      closest_y = max(min(self.position.y, paddle.bottom), paddle.top)
+      return Position(closest_x, closest_y)
 
    def __push_ball(self, paddle):
       side = self.get_collision_side(self.position, paddle)
@@ -68,27 +72,18 @@ class Ball:
       elif side == "right":
          push_position.x = paddle.right + self.radius
       self.set_position(push_position)
-      # Adjust the ball's position based on the collision point
-      if side == "top" or side == "bottom":
-         # Ball hits the top of the paddle
-         self.speed.y *= -1
-      if side == "left" or side == "right":
-         # Ball hits the left or right side of the paddle
-         self.speed.x *= -1
       logger.info(f"Ball collided with paddle {paddle.slot} on the {side} side.")
 
    def is_paddle_collision(self, position, paddle):
       """
       Checks if the ball collides with a paddle.
       """
-      # Calculate the distance from the ball's center to the closest point on the paddle
       closest_x = max(min(position.x, paddle.right), paddle.left)
       closest_y = max(min(position.y, paddle.bottom), paddle.top)
       distance_x = position.x - closest_x
       distance_y = position.y - closest_y
       distance = math.sqrt(distance_x**2 + distance_y**2)
 
-      # Check if the distance is less than or equal to the ball's radius
       return distance < self.radius
 
    def get_collision_side(self, position, paddle):
@@ -116,12 +111,12 @@ class Ball:
 
    def __update_wall_collision(self, new_position):
       if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:
-         self.speed.x *= -1
-      if new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
+         self.reset()
+      elif new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
          self.speed.y *= -1
       else:
          self.position = new_position
 
    def reset(self):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
-      self.speed = Vector(5, 5)
+      self.speed = Vector(INITIAL_SPEEDX, INITIAL_SPEEDY)

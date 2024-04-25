@@ -6,5 +6,9 @@ class Vector(Position):
    def __init__(self, x=0, y=0):
       super().__init__(x, y)
 
-   def magnitude(vector):
-    return math.sqrt(vector.x**2 + vector.y**2)
+   def magnitude(self):
+    return math.sqrt(self.x**2 + self.y**2)
+   
+   def unit_vector(self):
+     magnitude_value = self.magnitude()
+     return Vector(self.x / magnitude_value, self.y / magnitude_value)
