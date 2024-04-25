@@ -20,7 +20,7 @@ export class GameOverComponent {
   }
 
   backToHomePage() {
-
+    this.webSocketService.giveUp();
   }
 
   reMatch() {

@@ -61,7 +61,7 @@ export class WebSocketService {
     }
   }
 
-  public giveUp(playerName: string, direction: number): void {
+  public giveUp(): void {
     console.log('Giving Up');
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('give_up', {});
