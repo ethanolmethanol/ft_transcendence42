@@ -95,21 +95,20 @@ class Ball:
       """
       Determines which side of the paddle the ball collides with, accurately considering the ball's radius.
       """
-      # Calculate the distance from the ball's center to the closest point on the paddle's edge
       closest_x = max(min(position.x, paddle.right), paddle.left)
       closest_y = max(min(position.y, paddle.bottom), paddle.top)
       distance_x = position.x - closest_x
       distance_y = position.y - closest_y
 
-      # Determine which side of the paddle the ball hits
+      return self.__get_side(distance_x, distance_y, position, paddle)
+
+   def __get_side(self, distance_x, distance_y, position, paddle):
       if abs(distance_x) > abs(distance_y):
-         # The ball hits the left or right side of the paddle
          if distance_x > paddle.position.x - position.x:
                return "right"
          else:
                return "left"
       else:
-         # The ball hits the top or bottom side of the paddle
          if distance_y > paddle.position.y - position.y:
                return "bottom"
          else:

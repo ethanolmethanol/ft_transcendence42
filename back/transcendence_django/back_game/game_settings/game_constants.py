@@ -29,5 +29,6 @@ OVER = 2
 # When all arenas are DEAD, the corresponding channel can be deleted
 DEAD = 3
 
-# Other states
-LISTENING = 4
+# Paddle status
+LISTENING = 1
+PROCESSING = 2

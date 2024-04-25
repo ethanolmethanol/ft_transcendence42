@@ -86,7 +86,7 @@ class Arena:
          raise ValueError("Direction is invalid. It should be -1 or 1.")
       paddle = self.paddles[username]
       if paddle.status == LISTENING:
-         paddle.status = WAITING
+         paddle.status = PROCESSING
          paddle.move(direction)
          try:
             self.ball.update_collision(paddle)
