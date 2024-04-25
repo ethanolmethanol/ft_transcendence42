@@ -1,5 +1,6 @@
 ENABLED=0
 DISABLED=1
+GIVEN_UP = 2
 
 class Player:
 	def __init__(self, username):

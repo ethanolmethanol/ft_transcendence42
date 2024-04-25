@@ -28,4 +28,5 @@ WAITING = 0
 STARTED = 1
 OVER = 2
 # When all arenas are DEAD, the corresponding channel can be deleted
-DEAD = 3
+DYING = 3
+DEAD = 4

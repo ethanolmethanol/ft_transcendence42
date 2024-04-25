@@ -43,7 +43,7 @@ class Arena:
       }
 
    def is_empty(self):
-      return len(self.players) == 0
+      return len(self.players) == 0 or not any(player.status != LEFT for player in self.players)
 
    def is_full(self):
       return len(self.players) == self.nbPlayers
@@ -64,11 +64,17 @@ class Arena:
          self.__register_player("Player2")
 
    def disable_player(self, username):
+      self.__change_player_status(username, DISABLED)
+
+   def player_gave_up(self, username):
+      self.__change_player_status(username, GIVEN_UP)
+
+   def __change_player_status(self, username, status):
       if self.mode == LOCAL_MODE:
          for player in self.players.values():
-            player.status = DISABLED
+            player.status = status
       else:
-         self.players[username].status = DISABLED
+         self.players[username].status = status
 
    def start_game(self):
       self.status = STARTED

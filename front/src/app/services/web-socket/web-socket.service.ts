@@ -61,6 +61,15 @@ export class WebSocketService {
     }
   }
 
+  public giveUp(playerName: string, direction: number): void {
+    console.log('Giving Up');
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.send('give_up', {});
+    } else {
+      console.log('WebSocket is not open when trying to give up');
+    }
+  }
+
   public join(arenaID: string): void {
     console.log(`Join ${arenaID}`);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
