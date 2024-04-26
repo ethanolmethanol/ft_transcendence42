@@ -85,8 +85,15 @@ class Arena:
       if (direction not in [-1, 1]):
          raise ValueError("Direction is invalid. It should be -1 or 1.")
       paddle = self.paddles[username]
-      paddle.move(direction)
-      self.ball.update_collision(paddle)
+      if paddle.status == LISTENING:
+         paddle.status = PROCESSING
+         paddle.move(direction)
+         try:
+            self.ball.update_collision(paddle)
+         except:
+            logger.error("Paddle cannot move due to collision.")
+            paddle.move(-direction)
+      paddle.status = LISTENING
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
 
    async def update_game(self):
