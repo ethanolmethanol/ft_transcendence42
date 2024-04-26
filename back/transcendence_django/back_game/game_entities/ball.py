@@ -10,13 +10,16 @@ logger = logging.getLogger(__name__)
 random_ball_speeds = [
    {
    Vector(-INITIAL_SPEEDX, 0),
-   Vector(-INITIAL_SPEEDX, -INITIAL_SPEEDY),
-   Vector(-INITIAL_SPEEDX, INITIAL_SPEEDY),
+   Vector(-INITIAL_SPEEDX, -INITIAL_SPEEDY / 2),
+   Vector(-INITIAL_SPEEDX, INITIAL_SPEEDY / 2),
+   Vector(-INITIAL_SPEEDX, INITIAL_SPEEDY / 3),
+   Vector(-INITIAL_SPEEDX, -INITIAL_SPEEDY / 3),
    },
    {
    Vector(INITIAL_SPEEDX, 0),
-   Vector(INITIAL_SPEEDX, -INITIAL_SPEEDY),
-   Vector(INITIAL_SPEEDX, INITIAL_SPEEDY)
+   Vector(INITIAL_SPEEDX, -INITIAL_SPEEDY / 2),
+   Vector(INITIAL_SPEEDX, INITIAL_SPEEDY / 2),
+   Vector(INITIAL_SPEEDX, -INITIAL_SPEEDY / 3)
    }
 ]
 
