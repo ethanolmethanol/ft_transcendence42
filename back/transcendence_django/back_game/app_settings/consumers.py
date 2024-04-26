@@ -43,6 +43,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.join(message)
         elif message_type == 'leave':
             await self.leave(message)
+        elif message_type == 'rematch':
+            await self.rematch(message)
         else:
             log.warning(f"Unknown message type: {message_type}")
 
@@ -77,6 +79,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({"paddle": paddle_data})
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
+    async def rematch(self):
+        if not self.joined:
+            log.error("Attempt to rematch without joining.")
+            return
+        self.arena.rematch(self.username)
+        await self.send_message(f"{self.username} asked for a rematch.")
 
     async def send_game_over(self, game_over_message):
         await self.channel_layer.group_send(

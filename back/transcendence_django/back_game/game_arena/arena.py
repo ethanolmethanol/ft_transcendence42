@@ -46,7 +46,7 @@ class Arena:
       return len(self.players) == 0
 
    def is_full(self):
-      return len(self.players) == self.nbPlayers
+      return len(self.players) == self.nbPlayers or all(player.status == ENABLED for player in self.players)
 
    def enter_arena(self, username):
       if self.mode == LOCAL_MODE:
@@ -76,6 +76,19 @@ class Arena:
 
    def end_of_game(self):
       self.status = OVER
+      # disable all players when game is over
+
+   def rematch(self, username):
+      if username not in self.players:
+         raise KeyError("This user is unknown")
+      if self.status == OVER:
+         self.status = WAITING
+         for player in self.players:
+            player.score = 0
+            # status should be already set to DISABLED at this step
+      self.players[username].status = ENABLED
+      if self.is_full():
+         self.start_game()
 
    def get_winner(self):
       winner = max(self.players, key=lambda player: player.score)
