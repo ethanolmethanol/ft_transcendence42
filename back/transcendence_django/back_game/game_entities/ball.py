@@ -2,17 +2,32 @@ from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BAL
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 import math
+import random
 
 import logging
 logger = logging.getLogger(__name__)
 
+random_ball_speeds = [
+   {
+   Vector(-INITIAL_SPEEDX, 0),
+   Vector(-INITIAL_SPEEDX, -INITIAL_SPEEDY / 2),
+   Vector(-INITIAL_SPEEDX, INITIAL_SPEEDY / 2),
+   },
+   {
+   Vector(INITIAL_SPEEDX, 0),
+   Vector(INITIAL_SPEEDX, -INITIAL_SPEEDY / 2),
+   Vector(INITIAL_SPEEDX, INITIAL_SPEEDY /2)
+   }
+]
+
 class Ball:
    def __init__(self, paddles):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
-      self.speed = Vector(INITIAL_SPEEDX, INITIAL_SPEEDY)
       self.radius = BALL_RADIUS
       self.paddles = paddles
-      self.hasCollided = {paddle.slot : False for paddle in paddles}
+      self.player_turn = 0
+      self.__set_random_speed()
+
 
    def update(self, newPosition, newSpeed, newRadius):
       self.position.setCoordinates(newPosition.x, newPosition.y)
@@ -119,4 +134,9 @@ class Ball:
 
    def reset(self):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
-      self.speed = Vector(INITIAL_SPEEDX, INITIAL_SPEEDY)
+      self.__set_random_speed()
+
+   def __set_random_speed(self):
+      chosen_set = random_ball_speeds[self.player_turn]
+      self.speed = random.choice(list(chosen_set))
+      self.player_turn = (self.player_turn + 1) % 2
