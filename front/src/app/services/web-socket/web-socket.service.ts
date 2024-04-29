@@ -8,6 +8,7 @@ export class WebSocketService {
   private socket?: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
+  private lastArenaID: string = '';
 
   constructor() {
     this.socket = null;
@@ -74,12 +75,15 @@ export class WebSocketService {
     console.log('Rematching');
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('rematch', {});
+      this.leave();
+      this.join(this.lastArenaID);
     } else {
       console.log('WebSocket is not open when trying to rematch');
     }
   }
 
   public join(arenaID: string): void {
+    this.lastArenaID = arenaID;
     console.log(`Join ${arenaID}`);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('join', {"username": "Player_name", "arenaID": arenaID});
