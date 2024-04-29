@@ -82,6 +82,13 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"{self.username} gave up")
         await self.send_message(f"{self.username} has given up.")
 
+    async def rematch(self):
+        if not self.joined:
+            log.error("Attempt to rematch without joining.")
+            return
+        self.arena.rematch(self.username)
+        await self.send_message(f"{self.username} asked for a rematch.")    
+
     async def move_paddle(self, message: dict):
         if not self.joined:
             log.error("Attempt to move paddle without joining.")

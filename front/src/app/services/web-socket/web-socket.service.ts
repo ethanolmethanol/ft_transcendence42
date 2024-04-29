@@ -70,6 +70,15 @@ export class WebSocketService {
     }
   }
 
+  public rematch(): void {
+    console.log('Rematching');
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.send('rematch', {});
+    } else {
+      console.log('WebSocket is not open when trying to rematch');
+    }
+  }
+
   public join(arenaID: string): void {
     console.log(`Join ${arenaID}`);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
