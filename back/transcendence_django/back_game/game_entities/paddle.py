@@ -99,10 +99,10 @@ class Paddle:
       # elif self.slot == RIGHT_SLOT:
       #    speed_component_x = -self.distance_from_center
       # speed_component_y = collision_point.y - self.convexity_center.y
-      speed_component_x = (-1) * (self.position.x - collision_point.x)
+      speed_component_x = self.position.x + collision_point.x
       if (speed_component_x > 0):
-         speed_component_x += + BALL_REFLEXION_BALANCE
+         speed_component_x += BALL_REFLEXION_BALANCE
       else:
-         speed_component_x -= + BALL_REFLEXION_BALANCE
+         speed_component_x -= BALL_REFLEXION_BALANCE
       speed_component_y = collision_point.y - self.position.y
       return Vector(speed_component_x, speed_component_y)
