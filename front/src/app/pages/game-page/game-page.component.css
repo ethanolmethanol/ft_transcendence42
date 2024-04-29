@@ -10,15 +10,6 @@ body {
   background-color: #2b669a;
 }
 
-.game-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #aaaaaa;
-  scale: 120%;
-  padding: 5px;
-}
-
 button {
   margin: 50px;
   position: absolute;

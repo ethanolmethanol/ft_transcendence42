@@ -2,6 +2,7 @@ import {Component, HostListener, ElementRef, OnInit, AfterViewInit} from '@angul
 import {PaddleComponent} from "../../components/paddle/paddle.component";
 import {Router, RouterLink} from "@angular/router";
 import {GameComponent} from "../../components/game/game.component";
+import { WebSocketService } from '../../services/web-socket/web-socket.service';
 
 @Component({
   selector: 'app-game-page',
@@ -16,7 +17,7 @@ import {GameComponent} from "../../components/game/game.component";
 })
 export class GamePageComponent implements OnInit, AfterViewInit {
 
-  constructor(private elementRef: ElementRef, private router: Router) {}
+  constructor(private elementRef: ElementRef, private router: Router, private webSocketService: WebSocketService) {}
 
   @HostListener('window:resize', ['$event'])
   private onResize(event: Event) {
@@ -40,6 +41,7 @@ export class GamePageComponent implements OnInit, AfterViewInit {
   confirmGiveUp() {
     if (confirm('Are you sure you want to give up?')) {
       this.router.navigate(['/home']);
+      this.webSocketService.giveUp();
     }
   }
 }

@@ -1,10 +1,13 @@
-<div class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
-  <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
-  <div class="score-display">
-    <div class="score-player1">{{ player1Score }}</div>
-    <div class="score-player2">{{ player2Score }}</div>
+<div class="game-container">
+  <div class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
+    <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
+    <div class="score-display">
+      <div class="score-player1">{{ player1Score }}</div>
+      <div class="score-player2">{{ player2Score }}</div>
+    </div>
+    <app-ball></app-ball>
+    <app-paddle [id]="1"></app-paddle>
+    <app-paddle [id]="2"></app-paddle>
   </div>
-  <app-ball></app-ball>
-  <app-paddle [id]="1"></app-paddle>
-  <app-paddle [id]="2"></app-paddle>
 </div>
+<app-gameover></app-gameover>

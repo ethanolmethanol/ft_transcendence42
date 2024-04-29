@@ -13,7 +13,7 @@ class Arena:
       self.status = WAITING
       self.players = {}
       self.paddles = {f'{i + 1}': Paddle(i + 1, self.nbPlayers) for i in range(self.nbPlayers)}  # Initialize paddles dictionary
-      self.ball = Ball(self.paddles.values())
+      self.ball = Ball(self.paddles.values(), self.ball_hit_wall)
       self.map = Map() # depends on the number of players
 
    def __fill_player_specs(self, playerSpecs):
@@ -43,7 +43,7 @@ class Arena:
       }
 
    def is_empty(self):
-      return len(self.players) == 0
+      return len(self.players) == 0 or not any(player.status != LEFT for player in self.players)
 
    def is_full(self):
       return len(self.players) == self.nbPlayers or all(player.status == ENABLED for player in self.players)
@@ -64,11 +64,17 @@ class Arena:
          self.__register_player("Player2")
 
    def disable_player(self, username):
+      self.__change_player_status(username, DISABLED)
+
+   def player_gave_up(self, username):
+      self.__change_player_status(username, GIVEN_UP)
+
+   def __change_player_status(self, username, status):
       if self.mode == LOCAL_MODE:
          for player in self.players.values():
-            player.status = DISABLED
+            player.status = status
       else:
-         self.players[username].status = DISABLED
+         self.players[username].status = status
 
    def start_game(self):
       self.status = STARTED
@@ -90,8 +96,25 @@ class Arena:
       if self.is_full():
          self.start_game()
 
+   def ball_hit_wall(self, which):
+      logger.info(f"hello")
+
+      if self.mode == LOCAL_MODE:
+         playername = "Player2" if which else "Player1"
+         player = self.players[playername]
+         player.score += 1
+         logger.info(f"Point was scored for {playername}. Their score is {player.score}")
+         if player.score == 10:
+            self.end_of_game()
+         return {"score": {"username": playername}}
+      else:
+         raise NotImplementedError() # TODO
+
    def get_winner(self):
-      winner = max(self.players, key=lambda player: player.score)
+      logger.info(f"Out of {len(self.players)} players, the winner?")
+      for player in self.players.values():
+         logger.info(f"Username {player.username}, score {player.score}")
+      winner = max(self.players.values(), key=lambda player: player.score)
       return winner.username
 
    def move_paddle(self, username, direction):
@@ -109,6 +132,5 @@ class Arena:
       paddle.status = LISTENING
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
 
-   async def update_game(self):
-      self.ball.move()
-      return {"ball": {"position": self.ball.position.to_dict()}}
+   def update_game(self):
+      return self.ball.move()

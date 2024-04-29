@@ -1,0 +1,7 @@
+<div *ngIf="show" class="gameover">
+  <div class="message"><h3>{{message}}</h3></div>
+  <div class="choices">
+    <button (click)="backToHomePage()">Back to homepage</button>
+    <button (click)="reMatch()">Rematch?</button>
+  </div>
+</div>

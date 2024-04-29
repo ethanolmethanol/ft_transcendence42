@@ -66,21 +66,25 @@ class Monitor:
             elif (arena.status == STARTED and len(arena.players) == 1):
                 # make the only one player win and set the status to over
                 pass
-            elif (arena.status == STARTED and arena.is_empty())\
-                or arena.status == OVER:
+            elif (arena.status == STARTED and arena.is_empty()):
+                arena.status = DEAD
+            elif arena.status == OVER:
                 await self.gameOver(arena)
 
     async def run_game_loop(self, channelID, arenas):
         while any(arena.status != DEAD for arena in arenas):
             for arena in arenas:
                 if arena.status == STARTED:
-                    update_message = await arena.update_game()
+                    update_message = arena.update_game()
                     await arena.game_update_callback(update_message)
             await asyncio.sleep(GAME_REFRESH_RATE)
 
     async def gameOver(self, arena):
-        arena.end_of_game()
         if hasattr(arena, 'game_over_callback'):
             await arena.game_over_callback('Game Over! Thank you for playing.')
+        # timeout ?
+        # arena.status = DYING
+        # sleep(10)
+        arena.status = DEAD
 
 monitor = Monitor()
