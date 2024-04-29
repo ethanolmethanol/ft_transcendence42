@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
+import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
 import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS} from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
@@ -42,7 +42,7 @@ interface VariableMapping {
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit {
+export class GameComponent implements AfterViewInit, OnDestroy {
   gameWidth = GAME_WIDTH;
   gameHeight = GAME_HEIGHT;
   readonly lineThickness = LINE_THICKNESS;
@@ -82,6 +82,8 @@ export class GameComponent implements AfterViewInit {
     this.ball.first.ballSize = 2 * arena.ball.radius;
     this.gameHeight = arena.map.height;
     this.gameWidth = arena.map.width;
+    this.player1Score = arena.scores[0];
+    this.player2Score = arena.scores[1];
   }
 
   private handleGameUpdate(gameState: any) {
@@ -158,5 +160,9 @@ export class GameComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this));
     this.gameLoop();
+  }
+
+  ngOnDestroy() {
+    this.connection.ngOnDestroy();
   }
 }

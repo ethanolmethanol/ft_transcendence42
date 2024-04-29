@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import {NgIf} from "@angular/common";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-gameover',
@@ -15,15 +16,17 @@ export class GameOverComponent {
   @Input() show: boolean = false;
   @Input() message: string = "";
 
-  constructor (private webSocketService: WebSocketService) {
+  constructor (private webSocketService: WebSocketService, private router: Router) {
 
   }
 
   backToHomePage() {
     this.webSocketService.giveUp();
+    this.router.navigate(['/home']);
   }
 
   reMatch() {
-
+    this.webSocketService.rematch();
+    this.show = false;
   }
 }

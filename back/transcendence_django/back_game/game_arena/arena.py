@@ -32,21 +32,26 @@ class Arena:
          self.start_game()
 
    def to_dict(self):
+
+      if self.players == {}:
+         scores = [0 for _ in range(self.nbPlayers)]
+      else:
+         scores = [player.score for player in self.players.values()]
       return {
          "id": self.id,
          "status": self.status,
          "players": [player.username for player in self.players.values()],
-         "scores": [player.score for player in self.players.values()],
+         "scores": scores,
          "ball": self.ball.to_dict(),
          "paddles": [paddle.to_dict() for paddle in self.paddles.values()],
          "map": self.map.to_dict()
       }
 
    def is_empty(self):
-      return len(self.players) == 0 or not any(player.status != LEFT for player in self.players)
+      return all(player.status == GIVEN_UP for player in self.players.values())
 
    def is_full(self):
-      return len(self.players) == self.nbPlayers
+      return len(self.players) == self.nbPlayers or all(player.status == ENABLED for player in self.players.values())
 
    def enter_arena(self, username):
       if self.mode == LOCAL_MODE:
@@ -66,6 +71,9 @@ class Arena:
    def disable_player(self, username):
       self.__change_player_status(username, DISABLED)
 
+   def enable_player(self, username):
+      self.__change_player_status(username, ENABLED)
+
    def player_gave_up(self, username):
       self.__change_player_status(username, GIVEN_UP)
 
@@ -82,22 +90,33 @@ class Arena:
 
    def end_of_game(self):
       self.status = OVER
+      for player in self.players.values():
+         self.disable_player(player.username)
 
    def rematch(self, username):
-      if username not in self.players:
+      if not self.__is_player_in_game(username):
          raise KeyError("This user is unknown")
       if self.status == OVER:
          self.status = WAITING
-         for player in self.players:
-            player.score = 0
-            # status should be already set to DISABLED at this step
-      self.players[username].status = ENABLED
+      self.enable_player(username)
       if self.is_full():
+         self.__reset()
          self.start_game()
 
-   def ball_hit_wall(self, which):
-      logger.info(f"hello")
+   def __reset(self):
+      for player in self.players.values():
+         player.reset()
+      for paddle in self.paddles.values():
+         paddle.reset()
+      self.ball.reset()
 
+   def __is_player_in_game(self, username):
+      if self.mode == LOCAL_MODE:
+         return True
+      else:
+         return username in self.players.keys()
+
+   def ball_hit_wall(self, which):
       if self.mode == LOCAL_MODE:
          playername = "Player2" if which else "Player1"
          player = self.players[playername]

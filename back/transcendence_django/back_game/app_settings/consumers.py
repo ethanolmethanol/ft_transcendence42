@@ -28,7 +28,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.leave()
+        await self.leave(None)
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -42,12 +42,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             'move_paddle': self.move_paddle,
             'join': self.join,
             'leave': self.leave,
-            'give_up': self.give_up
+            'give_up': self.give_up,
+            'rematch': self.rematch
         }
         try:
             await message_binding[message_type](message)
-        except:
+        except KeyError as e:
             log.warning(f"Unknown message type: {message_type}")
+            log.warning(f"Error: {e}")
 
     async def join(self, message: dict):
         self.username = message["username"]
@@ -61,7 +63,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.send_message(f"{self.username} has joined the game.")
         self.send_update({"player_list": self.arena.players})
 
-    async def leave(self):
+    async def leave(self, _):
         if not self.joined:
             log.error("Attempt to leave without joining.")
             return
@@ -70,7 +72,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"{self.username} leaving game")
         await self.send_message(f"{self.username} has left the game.")
 
-    async def give_up(self):
+    async def give_up(self, _):
         if not self.joined:
             log.error("Attempt to give up without joining.")
             return
@@ -82,12 +84,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"{self.username} gave up")
         await self.send_message(f"{self.username} has given up.")
 
-    async def rematch(self):
+    async def rematch(self, _):
         if not self.joined:
             log.error("Attempt to rematch without joining.")
             return
         self.arena.rematch(self.username)
-        await self.send_message(f"{self.username} asked for a rematch.")    
+        await self.send_message(f"{self.username} asked for a rematch.")
 
     async def move_paddle(self, message: dict):
         if not self.joined:
@@ -107,9 +109,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 'message': game_over_message
                 }
             })
-        # remove the arena
-        # check dans le front qui a gagne
-        # close the connection ? (back or front?)
 
     async def game_message(self, event):
         message = event['message']

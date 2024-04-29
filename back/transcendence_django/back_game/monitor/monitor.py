@@ -60,9 +60,6 @@ class Monitor:
         for arena in arenas:
             if arena.status == DEAD:
                 del arenas[arena.id]
-            elif (arena.status == STARTED and len(arena.players) == 1):
-                # make the only one player win and set the status to over
-                pass
             elif (arena.status == STARTED and arena.is_empty()):
                 arena.status = DEAD
             elif arena.status == OVER:
@@ -83,5 +80,6 @@ class Monitor:
         # arena.status = DYING
         # sleep(10)
         arena.status = DEAD
+
 
 monitor = Monitor()

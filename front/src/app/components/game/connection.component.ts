@@ -8,7 +8,7 @@ import { Subscription } from "rxjs";
 })
 export class ConnectionComponent implements OnDestroy {
     private postData = JSON.stringify({
-        "username": "placeholder",
+        "username": "Player_name",
         "playerSpecs": {"nbPlayers": 2, "mode": 0}
     })
     private connectionOpenedSubscription?: Subscription;

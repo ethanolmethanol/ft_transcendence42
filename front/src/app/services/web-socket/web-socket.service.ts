@@ -82,7 +82,7 @@ export class WebSocketService {
   public join(arenaID: string): void {
     console.log(`Join ${arenaID}`);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"username": "Player", "arenaID": arenaID});
+      this.send('join', {"username": "Player_name", "arenaID": arenaID});
     } else {
       console.log('WebSocket is not open when trying to join arena');
     }

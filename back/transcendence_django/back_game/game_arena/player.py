@@ -7,3 +7,6 @@ class Player:
 		self.username = username
 		self.score = 0
 		self.status = ENABLED
+
+	def reset(self):
+		self.score = 0
