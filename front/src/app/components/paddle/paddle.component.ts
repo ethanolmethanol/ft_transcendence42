@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_X_OFFSET, PADDLE_SPEED} from '../../constants';
-import {Position} from '../../services/monitor/monitor.service';
+import {Position} from '../../interfaces/position.interface';
 
 @Component({
   selector: 'app-paddle',

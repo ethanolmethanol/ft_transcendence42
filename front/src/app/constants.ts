@@ -13,3 +13,9 @@ export const PADDLE_WIDTH = 20;
 export const PADDLE_SPEED = 20;
 export const PADDLE_X_OFFSET = 60;
 export const BALL_RADIUS = 10;
+// Game status
+export const WAITING = 0
+export const STARTED = 1
+export const OVER = 2
+export const DYING = 3
+export const DEAD = 4

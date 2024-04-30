@@ -102,6 +102,8 @@ class Arena:
       if self.is_full():
          self.__reset()
          self.start_game()
+         return self.to_dict()
+      return None
 
    def __reset(self):
       for player in self.players.values():
@@ -144,4 +146,7 @@ class Arena:
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
 
    def update_game(self):
-      return self.ball.move()
+      update_dict = {}
+      update_dict['ball'] = self.ball.move()
+
+      return {self.ball.move(), {"status": self.status}}

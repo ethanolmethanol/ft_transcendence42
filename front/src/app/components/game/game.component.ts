@@ -1,11 +1,12 @@
 import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS} from "../../constants";
+import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, WAITING, STARTED, OVER, DYING, DEAD} from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
-import { ArenaResponse, MonitorService } from "../../services/monitor/monitor.service";
+import { MonitorService } from "../../services/monitor/monitor.service";
 import { ConnectionComponent } from "./connection.component";
-import { Position } from "../../services/monitor/monitor.service";
+import { ArenaResponse } from "../../interfaces/arena-response.interface";
+import { Position } from "../../interfaces/position.interface";
 import { VariableBinding } from '@angular/compiler';
 import { GameOverComponent } from '../gameover/gameover.component';
 
@@ -84,6 +85,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
+    this.overlay.first.show = (arena.status != STARTED)
   }
 
   private handleGameUpdate(gameState: any) {
@@ -91,7 +93,9 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
-        'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) }
+        'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) },
+        'arena': (value: ArenaResponse) => { this.setArena(value) },
+        'status': (value: number) => { this.overlay.first.show = (value != STARTED) },
     };
 
     for (const variable in gameState) {

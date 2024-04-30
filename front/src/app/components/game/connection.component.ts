@@ -1,6 +1,7 @@
 import { OnDestroy, Injectable } from '@angular/core';
 import { WebSocketService } from "../../services/web-socket/web-socket.service";
-import { ArenaResponse, MonitorService } from "../../services/monitor/monitor.service";
+import { MonitorService } from "../../services/monitor/monitor.service";
+import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Subscription } from "rxjs";
 
 @Injectable({

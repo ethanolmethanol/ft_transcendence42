@@ -76,7 +76,6 @@ class Monitor:
     async def gameOver(self, arena):
         if hasattr(arena, 'game_over_callback'):
             await arena.game_over_callback('Game Over! Thank you for playing.')
-        # timeout ?
         arena.status = DYING
         await asyncio.sleep(10)
         if arena.status == DYING:

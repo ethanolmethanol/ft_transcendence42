@@ -59,7 +59,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.arena.game_over_callback = self.send_game_over
         self.arena.enter_arena(self.username)
         self.joined = True
-        log.info(f"{self.username} joined game")
         self.send_message(f"{self.username} has joined the game.")
         self.send_update({"player_list": self.arena.players})
 
@@ -69,7 +68,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             return
         self.arena.disable_player(self.username)
         self.joined = False
-        log.info(f"{self.username} leaving game")
         await self.send_message(f"{self.username} has left the game.")
 
     async def give_up(self, _):
@@ -81,15 +79,17 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.arena.player_gave_up(self.username)
         monitor.userGameTable.pop(self.username)
         self.joined = False
-        log.info(f"{self.username} gave up")
         await self.send_message(f"{self.username} has given up.")
 
     async def rematch(self, _):
         if not self.joined:
             log.error("Attempt to rematch without joining.")
             return
-        self.arena.rematch(self.username)
-        await self.send_message(f"{self.username} asked for a rematch.")
+        arena_data = self.arena.rematch(self.username)
+        if arena_data is None:
+            await self.send_message(f"{self.username} asked for a rematch.")
+        else:
+            await self.send_update({"arena": arena_data})
 
     async def move_paddle(self, message: dict):
         if not self.joined:
@@ -125,12 +125,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         }))
 
     async def send_update(self, update):
+        log.info(f"Sending update: {update}")
         await self.send_data({
             "type": "game_update",
             'update': update
         })
 
     async def send_message(self, message):
+        log.info(f"Sending message: {message}")
         await self.send_data({
             "type": "game_message",
             'message': message

@@ -75,8 +75,6 @@ export class WebSocketService {
     console.log('Rematching');
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('rematch', {});
-      this.leave();
-      this.join(this.lastArenaID);
     } else {
       console.log('WebSocket is not open when trying to rematch');
     }
