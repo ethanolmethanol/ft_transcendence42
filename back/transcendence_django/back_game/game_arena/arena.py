@@ -24,15 +24,14 @@ class Arena:
       if self.mode not in (LOCAL_MODE, ONLINE_MODE):
          raise ValueError("The mode is invalid.")
 
-   def __register_player(self, username):
-      player = Player(username)
+   def __register_player(self, owner_name, username):
+      player = Player(owner_name, username)
       self.players[username] = player
       self.paddles[username] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
       if self.is_full():
          self.start_game()
 
    def to_dict(self):
-
       if self.players == {}:
          scores = [0 for _ in range(self.nbPlayers)]
       else:
@@ -53,20 +52,20 @@ class Arena:
    def is_full(self):
       return len(self.players) == self.nbPlayers or all(player.status == ENABLED for player in self.players.values())
 
-   def enter_arena(self, username):
+   def enter_arena(self, owner_name):
       if self.mode == LOCAL_MODE:
-         self.__enter_local_mode()
-      elif username in self.players:
-         self.players[username].status = ENABLED
+         self.__enter_local_mode(owner_name)
+      elif owner_name in self.players:
+         self.players[owner_name].status = ENABLED
       elif self.is_full():
          raise ValueError("The arena is full.")
       else:
-         self.__register_player(username)
+         self.__register_player(owner_name, owner_name)
 
-   def __enter_local_mode(self):
+   def __enter_local_mode(self, owner_name):
       if self.is_empty():
-         self.__register_player("Player1")
-         self.__register_player("Player2")
+         self.__register_player(owner_name, "Player1")
+         self.__register_player(owner_name, "Player2")
 
    def disable_player(self, username):
       self.__change_player_status(username, DISABLED)
@@ -146,7 +145,7 @@ class Arena:
       return {"slot": paddle.slot, "position": paddle.position.to_dict()}
 
    def update_game(self):
-      update_dict = {}
-      update_dict['ball'] = self.ball.move()
-
-      return {self.ball.move(), {"status": self.status}}
+      ball_update = self.ball.move()
+      game_status = {"status": self.status}
+      update_dict = {**ball_update, **game_status}
+      return update_dict

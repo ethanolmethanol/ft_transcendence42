@@ -125,7 +125,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         }))
 
     async def send_update(self, update):
-        log.info(f"Sending update: {update}")
+        # log.info(f"Sending update: {update}")
         await self.send_data({
             "type": "game_update",
             'update': update

@@ -36,7 +36,8 @@ class Ball:
          self.position.x + self.speed.x,
          self.position.y + self.speed.y)
       update = self.update_position(new_position)
-      return update if update is not None else {"ball": {"position": self.position.to_dict()}}
+      ball_position_update = {"ball": {"position": self.position.to_dict()}}
+      return {**update, **ball_position_update} if update is not None else ball_position_update
 
    def update_collision(self, paddle):
       if self.is_paddle_collision(self.position, paddle):
