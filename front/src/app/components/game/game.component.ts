@@ -56,6 +56,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   // players!: string[];
   player1Score = 0;
   player2Score = 0;
+  status = WAITING
 
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -111,6 +112,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     if (status == STARTED) {
       this.overlay.first.show = false;
     }
+    this.status = status
     // this.overlay.first.show = (status == WAITING || status == DYING)
     // if (status == STARTED) {
     //   this.overlay.first.time = 10;
@@ -181,7 +183,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this));
+    if (this.status != DEAD)
+      this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this));
     this.gameLoop();
   }
 
