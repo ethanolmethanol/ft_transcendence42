@@ -9,6 +9,7 @@ import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { VariableBinding } from '@angular/compiler';
 import { GameOverComponent } from '../gameover/gameover.component';
+import { Router } from '@angular/router';
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -62,7 +63,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   ];
   private pressedKeys = new Set<string>();
 
-  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService) {
+  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router) {
     this.connection = new ConnectionComponent(monitorService, webSocketService);
     this.connection.establishConnection(this.setArena.bind(this));
   }
@@ -140,6 +141,12 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.overlay.first.time = info.time
     this.overlay.first.show = true
     // for online mode, use info.winner to update the user score db?
+    
+    if (info.time === 0) {
+      this.router.navigate(['home']);
+      this.webSocketService.giveUp();
+    }
+
   }
 
   @HostListener('window:keydown', ['$event'])
