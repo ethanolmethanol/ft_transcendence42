@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 })
 export class GameOverComponent {
   @Input() show: boolean = false;
+  @Input() time: number = 10;
   @Input() message: string = "";
 
   constructor (private webSocketService: WebSocketService, private router: Router) {

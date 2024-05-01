@@ -25,6 +25,7 @@ interface ScoreUpdateResponse {
 
 interface GameOverUpdateResponse {
   winner: string;
+  time: number;
   message: string;
 }
 
@@ -95,7 +96,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
         'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
-        'status': (value: number) => { this.overlay.first.show = (value != STARTED) },
+        'status': (value: number) => { this.updateStatus(value) }
     };
 
     for (const variable in gameState) {
@@ -103,6 +104,16 @@ export class GameComponent implements AfterViewInit, OnDestroy {
             variableMapping[variable](gameState[variable]);
         }
     }
+  }
+
+  private updateStatus(status: number) {
+    if (status == STARTED) {
+      this.overlay.first.show = false;
+    }
+    // this.overlay.first.show = (status == WAITING || status == DYING)
+    // if (status == STARTED) {
+    //   this.overlay.first.time = 10;
+    // }
   }
 
   private updatePaddle(paddle: PaddleUpdateResponse) {
@@ -126,6 +137,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private gameOver(info: GameOverUpdateResponse) {
     this.overlay.first.message = info.winner + " won! " + info.message
+    this.overlay.first.time = info.time
     this.overlay.first.show = true
     // for online mode, use info.winner to update the user score db?
   }

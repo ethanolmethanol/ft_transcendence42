@@ -32,8 +32,8 @@ class Monitor:
         newArena = Arena(playerSpecs)
         channelID = self.generateRandomID(10)
         self.channels[channelID] = {newArena.id: newArena}
-        asyncio.create_task(self.monitor_arenas_loop(channelID, self.channels[channelID]))
-        asyncio.create_task(self.run_game_loop(channelID, self.channels[channelID].values()))
+        asyncio.create_task(self.monitor_arenas_loop(self.channels[channelID]))
+        asyncio.create_task(self.run_game_loop(self.channels[channelID].values()))
         self.userGameTable[username] = {"channelID": channelID, "arena": newArena.to_dict()}
         return self.userGameTable[username]
 
@@ -58,37 +58,40 @@ class Monitor:
         logger.info(f"Deleting arena {arenaID}")
         logger.info(f"userGameTable: {self.userGameTable}")
 
-    async def monitor_arenas_loop(self, channelID, arenas):
+    async def monitor_arenas_loop(self, arenas):
         while True:
             await self.update_game_states(arenas)
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.5)
 
     async def update_game_states(self, arenas):
-        arenas_values_copy = list(self.arenas.values())
-        for arena in arenas_values_copy:
+        for arena in arenas.values():
             logger.info(f"Status of arena {arena.id} is {arena.status}")
             if arena.status == DEAD:
                 logger.info(f"Deleting arena {arena.id}")
                 self.deleteArena(arenas, arena.id)
+                break
             elif (arena.status == STARTED and arena.is_empty()):
                 arena.status = DEAD
             elif arena.status == OVER:
                 logger.info(f"Game over in arena {arena.id}")
                 await self.gameOver(arena)
 
-    async def run_game_loop(self, channelID, arenas):
+    async def run_game_loop(self, arenas):
         while any(arena.status != DEAD for arena in arenas):
             for arena in arenas:
                 if arena.status == STARTED:
                     update_message = arena.update_game()
                     await arena.game_update_callback(update_message)
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.001)
 
     async def gameOver(self, arena):
-        if hasattr(arena, 'game_over_callback'):
-            await arena.game_over_callback('Game Over! Thank you for playing.')
         arena.status = DYING
-        await asyncio.sleep(10)
+        time = 10
+        while arena.status == DYING and time > 0:
+            time -= 1
+            if hasattr(arena, 'game_over_callback'):
+                await arena.game_over_callback('Game Over! Thank you for playing.', time)
+            await asyncio.sleep(1)
         if arena.status == DYING:
             arena.status = DEAD
         logger.info(f"Status of arena {arena.id} is {arena.status}")

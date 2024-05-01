@@ -102,10 +102,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
 
-    async def send_game_over(self, game_over_message):
+    async def send_game_over(self, game_over_message, time):
         await self.send_update({
             "gameover": {
                 'winner': f'{self.arena.get_winner()}',
+                'time': time,
                 'message': game_over_message
                 }
             })
