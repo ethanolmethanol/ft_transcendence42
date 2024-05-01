@@ -95,8 +95,7 @@ class Arena:
    def rematch(self, username):
       if not self.__is_player_in_game(username):
          raise KeyError("This user is unknown")
-      if self.status == OVER:
-         self.status = WAITING
+      self.status = WAITING
       self.enable_player(username)
       if self.is_full():
          self.__reset()

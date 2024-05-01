@@ -21,7 +21,7 @@ export class GameOverComponent {
 
   }
 
-  backToHomePage() {
+  public backToHomePage() {
     this.webSocketService.giveUp();
     this.router.navigate(['/home']);
   }
