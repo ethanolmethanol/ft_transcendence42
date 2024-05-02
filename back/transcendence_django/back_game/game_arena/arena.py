@@ -50,7 +50,7 @@ class Arena:
       return all(player.status == GIVEN_UP for player in self.players.values())
 
    def is_full(self):
-      return len(self.players) == self.nbPlayers or all(player.status == ENABLED for player in self.players.values())
+      return len(self.players) == self.nbPlayers and all(player.status == ENABLED for player in self.players.values())
 
    def enter_arena(self, owner_name):
       if self.mode == LOCAL_MODE:
@@ -85,7 +85,7 @@ class Arena:
 
    def start_game(self):
       self.status = STARTED
-      logger.info("Game started.")
+      logger.info(f"Game started. {self.id}")
 
    def end_of_game(self):
       self.status = OVER
@@ -129,9 +129,8 @@ class Arena:
          raise NotImplementedError() # TODO
 
    def get_winner(self):
-      logger.info(f"Out of {len(self.players)} players, the winner?")
-      for player in self.players.values():
-         logger.info(f"Username {player.username}, score {player.score}")
+      # for player in self.players.values():
+      #    logger.info(f"Username {player.username}, player.score}")
       winner = max(self.players.values(), key=lambda player: player.score)
       return winner.username
 

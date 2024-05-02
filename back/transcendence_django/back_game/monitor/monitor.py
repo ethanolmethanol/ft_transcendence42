@@ -48,12 +48,17 @@ class Monitor:
         return channel
 
     def deleteArena(self, arenas, arenaID):
-        player_list = arenas.pop(arenaID).players
+        player_list = arenas[arenaID].players
         for player in player_list.values():
-            try:
-                self.userGameTable.pop(player.owner_name)
-            except KeyError:
-                pass
+            self.deleteUser(player.owner_name)
+        arenas.pop(arenaID)
+
+    def deleteUser(self, username):
+        try:
+            self.userGameTable.pop(username)
+            logger.info(f"User {username} deleted from userGameTable")
+        except KeyError:
+            pass
 
     async def monitor_arenas_loop(self, channelID, arenas):
         while len(arenas) > 0:
@@ -64,10 +69,10 @@ class Monitor:
     async def update_game_states(self, arenas):
         for arena in arenas.values():
             logger.info(f"Status of arena {arena.id} is {arena.status}")
-            if (arena.status == STARTED and arena.is_empty()):
-                self.deleteArena(arenas, arena.id)
-                break
-            elif arena.status == OVER:
+            # if (arena.status == STARTED and arena.is_empty()):
+            #     self.deleteArena(arenas, arena.id)
+            #     break
+            if arena.status == OVER:
                 logger.info(f"Game over in arena {arena.id}")
                 await self.gameOver(arenas, arena)
                 break
@@ -85,11 +90,10 @@ class Monitor:
         time = 10
         while arena.status == DYING and time > 0:
             time -= 1
-            if hasattr(arena, 'game_over_callback'):
-                await arena.game_over_callback('Game Over! Thank you for playing.', time)
+            await arena.game_over_callback('Game Over! Thank you for playing.', time)
             await asyncio.sleep(1)
-            logger.info(f"time remaining: {time}")
         if arena.status == DYING:
+            arena.status = DEAD
             self.deleteArena(arenas, arena.id)
         logger.info(f"Status of arena {arena.id} is {arena.status}")
 

@@ -8,7 +8,6 @@ export class WebSocketService {
   private socket?: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
-  private lastArenaID: string = '';
 
   constructor() {
     this.socket = null;
@@ -81,7 +80,6 @@ export class WebSocketService {
   }
 
   public join(arenaID: string): void {
-    this.lastArenaID = arenaID;
     console.log(`Join ${arenaID}`);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('join', {"username": "Player_name", "arenaID": arenaID});

@@ -87,7 +87,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
-    this.overlay.first.show = (arena.status != STARTED)
+    // this.overlay.first.show = (arena.status != STARTED)
   }
 
   private handleGameUpdate(gameState: any) {
@@ -108,8 +108,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateStatus(status: number) {
-    if (status == STARTED) {
+    if (status == WAITING || status == DYING) {
       this.overlay.first.show = false;
+    } else if (status == DEAD) {
+      this.ngOnDestroy();
     }
     // this.overlay.first.show = (status == WAITING || status == DYING)
     // if (status == STARTED) {

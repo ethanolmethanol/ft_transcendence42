@@ -59,8 +59,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.arena.game_over_callback = self.send_game_over
         self.arena.enter_arena(self.username)
         self.joined = True
-        self.send_message(f"{self.username} has joined the game.")
-        self.send_update({"player_list": self.arena.players})
+        log.info(f"{self.username} has joined the game.")
+        await self.send_message(f"{self.username} has joined the game.")
 
     async def leave(self, _):
         if not self.joined:
@@ -77,7 +77,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if self.arena.mode == LOCAL_MODE:
             self.arena.end_of_game()
         self.arena.player_gave_up(self.username)
-        monitor.userGameTable.pop(self.username)
+        monitor.deleteUser(self.username)
         self.joined = False
         await self.send_message(f"{self.username} has given up.")
 
@@ -101,8 +101,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({"paddle": paddle_data})
         log.info(f"{self.username} moved paddle to {paddle_data['position']}.")
 
-
     async def send_game_over(self, game_over_message, time):
+        log.info(f"Game over: {self.arena.get_winner()} wins. {time} seconds left.")
         await self.send_update({
             "gameover": {
                 'winner': f'{self.arena.get_winner()}',
