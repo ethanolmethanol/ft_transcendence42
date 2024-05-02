@@ -109,14 +109,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private updateStatus(status: number) {
     if (status == WAITING || status == DYING) {
-      this.overlay.first.show = false;
+      this.overlay.first.show = true;
     } else if (status == DEAD) {
-      this.ngOnDestroy();
+      this.overlay.first.redirectToHome();
     }
-    // this.overlay.first.show = (status == WAITING || status == DYING)
-    // if (status == STARTED) {
-    //   this.overlay.first.time = 10;
-    // }
   }
 
   private updatePaddle(paddle: PaddleUpdateResponse) {

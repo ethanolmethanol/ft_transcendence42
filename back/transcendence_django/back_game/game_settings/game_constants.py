@@ -30,3 +30,9 @@ OVER = 2
 # When all arenas are DEAD, the corresponding channel can be deleted
 DYING = 3
 DEAD = 4
+
+# Game loop parameters
+MONITOR_LOOP_INTERVAL = 0.5
+RUN_LOOP_INTERVAL = 0.001
+TIMEOUT_GAME_OVER = 5
+TIMEOUT_INTERVAL = 1

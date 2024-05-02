@@ -74,8 +74,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             log.error("Attempt to give up without joining.")
             return
-        if self.arena.mode == LOCAL_MODE:
-            self.arena.end_of_game()
+        # if self.arena.mode == LOCAL_MODE:
+        #     self.arena.end_of_game()
         self.arena.player_gave_up(self.username)
         monitor.deleteUser(self.username)
         self.joined = False

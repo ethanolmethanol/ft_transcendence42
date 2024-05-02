@@ -52,7 +52,7 @@ export class ConnectionComponent implements OnDestroy {
     }
 
     private endConnection() {
-        console.log('WebSocket connection closed');
         this.webSocketService.disconnect();
+        console.log('WebSocket connection closed');
     }
 }
