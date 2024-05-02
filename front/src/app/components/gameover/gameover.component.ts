@@ -23,6 +23,10 @@ export class GameOverComponent {
 
   public backToHomePage() {
     this.webSocketService.giveUp();
+    this.redirectToHome();
+  }
+
+  public redirectToHome() {
     this.router.navigate(['/home']);
   }
 

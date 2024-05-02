@@ -95,7 +95,5 @@ class Monitor:
         if arena.status == DYING:
             arena.status = DEAD
             self.deleteArena(arenas, arena.id)
-        logger.info(f"Status of arena {arena.id} is {arena.status}")
-
 
 monitor = Monitor()

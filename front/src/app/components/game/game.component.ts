@@ -145,7 +145,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     // for online mode, use info.winner to update the user score db?
 
     if (info.time === 0) {
-      this.overlay.first.backToHomePage();
+      this.overlay.first.redirectToHome();
     }
   }
 

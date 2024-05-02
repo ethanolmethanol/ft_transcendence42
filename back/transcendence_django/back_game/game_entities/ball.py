@@ -56,7 +56,6 @@ class Ball:
             elif side == "left" or side == "right":
                # Ball hits the left or right side of the paddle
                self.speed.x *= -1
-            logger.info(f"Ball collided with paddle {paddle.slot} on the {side} side.")
             new_position = self.position
             break
             # return # Exit the function after handling the collision
@@ -123,7 +122,6 @@ class Ball:
          if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:
             self.speed.x *= -1
             which = new_position.x <= self.radius
-            logger.info(f"Ball collided with wall {which}.")
             self.position.setCoordinates(GAME_WIDTH / 2, GAME_HEIGHT / 2)
             new_position.x = GAME_WIDTH / 2
             new_position.y = GAME_HEIGHT / 2
