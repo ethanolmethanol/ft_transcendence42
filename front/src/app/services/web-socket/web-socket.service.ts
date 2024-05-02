@@ -47,7 +47,6 @@ export class WebSocketService {
 
   public disconnect(): void {
     // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
-    this.leave();
     this.socket?.close(1000, "Client disconnect.");
     this.socket = null;
 }

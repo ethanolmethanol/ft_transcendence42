@@ -3,6 +3,7 @@ import { WebSocketService } from "../../services/web-socket/web-socket.service";
 import { MonitorService } from "../../services/monitor/monitor.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Subscription } from "rxjs";
+import { ErrorResponse } from "../../interfaces/error-response.interface";
 
 @Injectable({
     providedIn: 'root'
@@ -25,12 +26,14 @@ export class ConnectionComponent implements OnDestroy {
         this.WebSocketMessagesSubscription?.unsubscribe();
     }
 
-    public listenToWebSocketMessages(handleGameUpdate: (response: string) => void) {
+    public listenToWebSocketMessages(handleGameUpdate: (response: string) => void, handleGameError: (response: ErrorResponse) => void) {
         this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
             console.log('Received WebSocket message:', message);
             const data = JSON.parse(message);
             if (data.type === 'game_update') {
                 handleGameUpdate(data.update);
+            } else if (data.type === 'game_error') {
+                handleGameError(data.error);
             }
         });
     }

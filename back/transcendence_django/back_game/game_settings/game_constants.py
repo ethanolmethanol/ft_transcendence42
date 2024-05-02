@@ -1,3 +1,8 @@
+# Channels errors
+NOT_JOINED = 1
+INVALID_ARENA = 2
+INVALID_CHANNEL = 3
+
 # Game area dimensions
 GAME_HEIGHT = 500
 GAME_WIDTH = 700

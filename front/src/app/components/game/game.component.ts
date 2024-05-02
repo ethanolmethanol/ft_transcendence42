@@ -1,5 +1,5 @@
 import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, WAITING, STARTED, OVER, DYING, DEAD} from "../../constants";
+import { NOT_JOINED, INVALID_ARENA, GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, WAITING, DYING, DEAD } from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
@@ -7,6 +7,7 @@ import { MonitorService } from "../../services/monitor/monitor.service";
 import { ConnectionComponent } from "./connection.component";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
+import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { VariableBinding } from '@angular/compiler';
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
@@ -32,6 +33,10 @@ interface GameOverUpdateResponse {
 
 interface VariableMapping {
   [key: string]: (value: any) => void;
+}
+
+interface ErrorMapping {
+  [key: number]: (value: ErrorResponse) => void;
 }
 
 @Component({
@@ -61,6 +66,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
   ];
+  private readonly errorMapping: ErrorMapping = {
+    [NOT_JOINED]: this.redirectToHome.bind(this),
+    [INVALID_ARENA]: this.redirectToHome.bind(this),
+  };
   private pressedKeys = new Set<string>();
 
   constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router) {
@@ -87,7 +96,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
-    // this.overlay.first.show = (arena.status != STARTED)
   }
 
   private handleGameUpdate(gameState: any) {
@@ -107,11 +115,18 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  private handleGameError(error: ErrorResponse) {
+    console.error('Game error:', error);
+    if (error.code in this.errorMapping) {
+      this.errorMapping[error.code](error);
+    }
+  }
+
   private updateStatus(status: number) {
     if (status == WAITING || status == DYING) {
       this.overlay.first.show = true;
     } else if (status == DEAD) {
-      this.overlay.first.redirectToHome();
+      this.redirectToHome();
     }
   }
 
@@ -141,8 +156,12 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     // for online mode, use info.winner to update the user score db?
 
     if (info.time === 0) {
-      this.overlay.first.redirectToHome();
+      this.redirectToHome();
     }
+  }
+
+  private redirectToHome() {
+    this.overlay.first.redirectToHome();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -177,7 +196,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this));
+    this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.gameLoop();
   }
 
