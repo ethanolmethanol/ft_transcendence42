@@ -25,4 +25,8 @@ export class HomePageComponent implements OnInit {
       this.welcome = `Welcome, ${data.username}!`;
     });
  }
+
+ public getLocalGameUrl(): string {
+    return '/local-game/1/1';
+ }
 }

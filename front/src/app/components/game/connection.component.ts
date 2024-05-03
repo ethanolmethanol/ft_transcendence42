@@ -4,6 +4,7 @@ import { MonitorService } from "../../services/monitor/monitor.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Subscription } from "rxjs";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
+import { Router } from "@angular/router";
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +18,7 @@ export class ConnectionComponent implements OnDestroy {
     private WebSocketSubscription?: Subscription;
     private WebSocketMessagesSubscription?: Subscription;
 
-    constructor(private monitorService: MonitorService, private webSocketService: WebSocketService) {}
+    constructor(private router: Router, private monitorService: MonitorService, private webSocketService: WebSocketService) {}
 
     public ngOnDestroy() {
         this.endConnection();
@@ -38,11 +39,18 @@ export class ConnectionComponent implements OnDestroy {
         });
     }
 
+    public getGameUrl(channelID: string, arenaID: string): string {
+        return `/local-game/${channelID}/${arenaID}`;
+    }
+
     public establishConnection(arenaSetter: (response: ArenaResponse) => void) {
         this.WebSocketSubscription = this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
             console.log(response);
             this.webSocketService.connect(response.channelID);
             this.handleWebSocketConnection(response.arena, arenaSetter);
+            const gameUrl = this.getGameUrl(response.channelID, response.arena.id);
+            console.log('Game URL:', gameUrl);
+            this.router.navigateByUrl(gameUrl);
         });
     }
 

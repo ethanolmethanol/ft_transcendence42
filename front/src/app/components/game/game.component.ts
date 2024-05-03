@@ -73,7 +73,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private pressedKeys = new Set<string>();
 
   constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router) {
-    this.connection = new ConnectionComponent(monitorService, webSocketService);
+    this.connection = new ConnectionComponent(router, monitorService, webSocketService);
     this.connection.establishConnection(this.setArena.bind(this));
   }
 
