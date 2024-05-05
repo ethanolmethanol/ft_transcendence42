@@ -1,4 +1,5 @@
-<div class="game-container">
+<app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
+<div class="game-container" [class.hidden]="!dataLoaded">
   <div class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
     <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
     <div class="score-display">
