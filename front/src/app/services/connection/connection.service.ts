@@ -43,9 +43,11 @@ export class ConnectionService {
   public establishConnection(arenaSetter: (response: ArenaResponse) => void, channelID?: string, arenaID?: string) {
     if (this.webSocketService.socket && this.webSocketService.socket.readyState !== WebSocket.CLOSED) {
       // If a connection is currently open, close it and wait a bit before opening a new one
+      console.log('Open WebSocket connection detected, closing it...');
       this.endConnection();
       setTimeout(() => this.connectAndJoin(arenaSetter, channelID, arenaID), 1000);  // Wait for 1 second
     } else {
+      console.log('No open WebSocket connection detected, opening a new one...');
       // If no connection is currently open, just open a new one
       this.connectAndJoin(arenaSetter, channelID, arenaID);
     }

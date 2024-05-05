@@ -55,9 +55,20 @@ export class WebSocketService {
   }
 
   public disconnect(): void {
-    // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
-    this.socket?.close(1000, "Client disconnect.");
-    this.socket = null;
+    if (this.socket) {
+      // Remove event listeners
+      this.socket.onopen = null;
+      this.socket.onmessage = null;
+      this.socket.onerror = null;
+      this.socket.onclose = null;
+
+      // Close the WebSocket connection if it's open
+      if (this.socket.readyState === WebSocket.OPEN) {
+        this.socket.close(1000, "Client disconnect.");
+      }
+
+      this.socket = null;
+    }
   }
 
   public sendPaddleMovement(playerName: string, direction: number): void {
