@@ -27,6 +27,6 @@ export class HomePageComponent implements OnInit {
  }
 
  public getLocalGameUrl(): string {
-    return '/local-game/1/1';
+    return '/local-game';
  }
 }

@@ -1,8 +1,9 @@
-import {Component, HostListener, ElementRef, OnInit, AfterViewInit} from '@angular/core';
+import {Component, HostListener, ElementRef, OnInit, AfterViewInit, ViewChildren, QueryList} from '@angular/core';
 import {PaddleComponent} from "../../components/paddle/paddle.component";
-import {Router, RouterLink} from "@angular/router";
+import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {GameComponent} from "../../components/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
+import {ConnectionComponent} from "../../components/game/connection.component";
 
 @Component({
   selector: 'app-game-page',
@@ -17,12 +18,19 @@ import { WebSocketService } from '../../services/web-socket/web-socket.service';
 })
 export class GamePageComponent implements OnInit, AfterViewInit {
 
-  constructor(private elementRef: ElementRef, private router: Router, private webSocketService: WebSocketService) {}
-
+  @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
   private onResize(event: Event) {
     this.updateGameContainerScale();
   }
+
+  constructor(
+    private elementRef: ElementRef,
+    private router: Router,
+    private webSocketService: WebSocketService,
+    private route: ActivatedRoute,  // Inject ActivatedRoute
+    private connection: ConnectionComponent  // Inject ConnectionComponent
+  ) {}
 
   ngOnInit() {
     this.updateGameContainerScale();
@@ -30,6 +38,12 @@ export class GamePageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.updateGameContainerScale();
+    this.route.params.subscribe(params => {
+      const channelID = params['channelID'];
+      const arenaID = params['arenaID'];
+      console.log('Channel ID:', channelID);
+      this.connection.establishConnection(this.game.first.setArena.bind(this), channelID, arenaID);
+    });
   }
 
   private updateGameContainerScale() {

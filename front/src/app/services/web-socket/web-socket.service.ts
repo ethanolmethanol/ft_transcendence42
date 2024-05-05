@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import {ArenaResponse} from "../../interfaces/arena-response.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -78,13 +79,21 @@ export class WebSocketService {
     }
   }
 
-  public join(arenaID: string): void {
+  public join(arenaID: string): Observable<ArenaResponse> {
     console.log(`Join ${arenaID}`);
+    const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('join', {"username": "Player_name", "arenaID": arenaID});
+      this.getMessages().subscribe(message => {
+        const data = JSON.parse(message);
+        if (data.type === 'arena') {
+          subject.next(data.arena);
+        }
+      });
     } else {
       console.log('WebSocket is not open when trying to join arena');
     }
+    return subject.asObservable();
   }
 
   public leave(): void {

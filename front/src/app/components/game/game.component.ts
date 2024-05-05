@@ -57,7 +57,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
-  private connection!: ConnectionComponent;
   // players!: string[];
   player1Score = 0;
   player2Score = 0;
@@ -72,12 +71,16 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   };
   private pressedKeys = new Set<string>();
 
-  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router) {
-    this.connection = new ConnectionComponent(router, monitorService, webSocketService);
-    this.connection.establishConnection(this.setArena.bind(this));
+  // constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router) {
+  //   this.connection = new ConnectionComponent(router, monitorService, webSocketService);
+  //   this.connection.establishConnection(this.setArena.bind(this));
+  // }
+
+  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connection: ConnectionComponent) {
+    // this.connection.establishConnection(this.setArena.bind(this)); // Remove this line
   }
 
-  private setArena(arena: ArenaResponse) {
+  public setArena(arena: ArenaResponse) {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
