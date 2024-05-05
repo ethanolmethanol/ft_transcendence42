@@ -3,6 +3,7 @@ import {RouterLink} from "@angular/router";
 import {BannerComponent} from "../../components/banner/banner.component";
 import {LeaderboardComponent} from "../../components/leaderboard/leaderboard.component";
 import { UserService } from '../../services/user/user.service';
+import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
 
 @Component({
   selector: 'app-home-page',
@@ -11,6 +12,7 @@ import { UserService } from '../../services/user/user.service';
     RouterLink,
     BannerComponent,
     LeaderboardComponent,
+    LoadingSpinnerComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'

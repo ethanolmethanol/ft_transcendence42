@@ -6,7 +6,7 @@ import {ArenaResponse} from "../../interfaces/arena-response.interface";
   providedIn: 'root'
 })
 export class WebSocketService {
-  private socket?: WebSocket | null;
+  socket?: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
 
@@ -15,28 +15,34 @@ export class WebSocketService {
   }
 
   public connect(channelID: string): void {
+    if (this.socket) {
+      console.log('WebSocket connection already open');
+      return;
+    }
+
     console.log('Connecting to WebSocket -> ', channelID);
     const url = `wss://localhost:8001/ws/game/${channelID}/`;
-    this.socket = new WebSocket(url);
 
-    this.socket.onopen = (event) => {
+    const socket = new WebSocket(url);
+
+    socket.onopen = (event) => {
       console.log('WebSocket connection opened:', event);
       this.connectionOpened.next();
     };
 
-    this.socket.onmessage = (event) => this.messages.next(event.data);
+    socket.onmessage = (event) => this.messages.next(event.data);
 
-    this.socket.onerror = (event) => {
+    socket.onerror = (event) => {
       console.error('WebSocket error observed:', event);
-      if (this.socket) {
-        console.error('WebSocket state:', this.socket.readyState);
+      if (socket) {
+        console.error('WebSocket state:', socket.readyState);
       }
     };
 
-    this.socket.onclose = (event) => {
+    socket.onclose = (event) => {
       console.log('WebSocket connection closed:', event);
-      if (this.socket) {
-        console.log('WebSocket state:', this.socket.readyState);
+      if (socket) {
+        console.log('WebSocket state:', socket.readyState);
         console.log('Close event code:', event.code);
         console.log('Close event reason:', event.reason);
         console.log('Close event wasClean:', event.wasClean);
@@ -44,13 +50,15 @@ export class WebSocketService {
         console.log('WebSocket was null');
       }
     };
+
+    this.socket = socket;
   }
 
   public disconnect(): void {
     // https://datatracker.ietf.org/doc/html/rfc6455#section-7.4
     this.socket?.close(1000, "Client disconnect.");
     this.socket = null;
-}
+  }
 
   public sendPaddleMovement(playerName: string, direction: number): void {
     console.log('Sending paddle movement:', { playerName, direction });

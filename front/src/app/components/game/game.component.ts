@@ -4,13 +4,15 @@ import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
 import { MonitorService } from "../../services/monitor/monitor.service";
-import { ConnectionComponent } from "./connection.component";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { VariableBinding } from '@angular/compiler';
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
+import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
+import {NgIf} from "@angular/common";
+import {ConnectionService} from "../../services/connection/connection.service";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -45,7 +47,9 @@ interface ErrorMapping {
   imports: [
     PaddleComponent,
     BallComponent,
-    GameOverComponent
+    GameOverComponent,
+    LoadingSpinnerComponent,
+    NgIf
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -57,9 +61,9 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
-  // players!: string[];
   player1Score = 0;
   player2Score = 0;
+  dataLoaded = false;
 
   private paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -70,15 +74,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [INVALID_ARENA]: this.redirectToHome.bind(this),
   };
   private pressedKeys = new Set<string>();
-
-  // constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router) {
-  //   this.connection = new ConnectionComponent(router, monitorService, webSocketService);
-  //   this.connection.establishConnection(this.setArena.bind(this));
-  // }
-
-  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connection: ConnectionComponent) {
-    // this.connection.establishConnection(this.setArena.bind(this)); // Remove this line
-  }
+  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
 
   public setArena(arena: ArenaResponse) {
     this.paddles.forEach(paddle => {
@@ -99,6 +95,9 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
+    this.updateStatus(arena.status)
+    console.log('data loaded')
+    this.dataLoaded = true;
   }
 
   private handleGameUpdate(gameState: any) {
@@ -130,6 +129,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       this.overlay.first.show = true;
     } else if (status == DEAD) {
       this.redirectToHome();
+    } else {
+      this.overlay.first.show = false;
     }
   }
 
@@ -199,12 +200,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.connection.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
+    this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.gameLoop();
   }
 
   ngOnDestroy() {
-    this.connection.ngOnDestroy();
     console.log('GameComponent destroyed');
   }
 }
