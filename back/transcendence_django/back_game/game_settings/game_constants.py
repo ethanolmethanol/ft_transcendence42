@@ -2,6 +2,7 @@
 NOT_JOINED = 1
 INVALID_ARENA = 2
 INVALID_CHANNEL = 3
+NOT_ENTERED = 4
 
 # Game area dimensions
 GAME_HEIGHT = 500

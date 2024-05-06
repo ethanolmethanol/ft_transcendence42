@@ -13,6 +13,7 @@ export const API_GAME = 'https://localhost:8001/game';
 export const NOT_JOINED = 1
 export const INVALID_ARENA = 2
 export const INVALID_CHANNEL = 3
+export const NOT_ENTERED = 4
 
 // Game status
 export const WAITING = 0

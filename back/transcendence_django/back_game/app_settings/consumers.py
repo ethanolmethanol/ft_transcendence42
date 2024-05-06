@@ -70,7 +70,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             raise ChannelError(INVALID_ARENA, "Unknown arenaID")
         self.arena.game_update_callback = self.send_update
         self.arena.game_over_callback = self.send_game_over
-        self.arena.enter_arena(self.username)
+        try:
+            self.arena.enter_arena(self.username)
+        except (KeyError, ValueError) as e:
+            log.error(f"Error: {e}")
+            raise ChannelError(NOT_ENTERED, "User cannot join this arena.")
         self.joined = True
         await self.send_message(f"{self.username} has joined the game.")
         await self.send_update({"arena": self.arena.to_dict()})
@@ -89,6 +93,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         monitor.deleteUser(self.username)
         self.joined = False
         await self.send_message(f"{self.username} has given up.")
+        self.disconnect(1000)
 
     async def rematch(self, _):
         if not self.joined:

@@ -53,12 +53,14 @@ class Arena:
       return len(self.players) == self.nbPlayers and all(player.status == ENABLED for player in self.players.values())
 
    def enter_arena(self, owner_name):
-      if self.mode == LOCAL_MODE:
+      if self.did_player_give_up(owner_name):
+         raise ValueError("The player has given up.")
+      elif self.is_full():
+         raise ValueError("The arena is full.")
+      elif self.mode == LOCAL_MODE:
          self.__enter_local_mode(owner_name)
       elif owner_name in self.players:
          self.players[owner_name].status = ENABLED
-      elif self.is_full():
-         raise ValueError("The arena is full.")
       else:
          self.__register_player(owner_name, owner_name)
 
@@ -66,6 +68,16 @@ class Arena:
       if self.is_empty():
          self.__register_player(owner_name, "Player1")
          self.__register_player(owner_name, "Player2")
+
+   def did_player_give_up(self, owner_name):
+      try:
+         if self.mode == LOCAL_MODE:
+            return self.players and all(player.status == GIVEN_UP for player in self.players.values())
+         for player in self.players.values():
+            if player.owner_name == owner_name:
+               return player.status == GIVEN_UP
+      except KeyError:
+         return False
 
    def disable_player(self, username):
       self.__change_player_status(username, DISABLED)
@@ -112,9 +124,9 @@ class Arena:
 
    def __is_player_in_game(self, username):
       if self.mode == LOCAL_MODE:
-         return True
+         return self.players and all(player.status != GIVEN_UP for player in self.players.values())
       else:
-         return username in self.players.keys()
+         return username in self.players and self.players[username].status != GIVEN_UP
 
    def ball_hit_wall(self, which):
       if self.mode == LOCAL_MODE:
@@ -129,8 +141,6 @@ class Arena:
          raise NotImplementedError() # TODO
 
    def get_winner(self):
-      # for player in self.players.values():
-      #    logger.info(f"Username {player.username}, player.score}")
       winner = max(self.players.values(), key=lambda player: player.score)
       return winner.username
 

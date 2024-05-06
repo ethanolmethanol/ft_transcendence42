@@ -1,5 +1,16 @@
 import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
-import { NOT_JOINED, INVALID_ARENA, GAME_HEIGHT, GAME_WIDTH, LINE_THICKNESS, WAITING, DYING, DEAD } from "../../constants";
+import {
+  NOT_JOINED,
+  INVALID_ARENA,
+  INVALID_CHANNEL,
+  NOT_ENTERED,
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  LINE_THICKNESS,
+  WAITING,
+  DYING,
+  DEAD,
+} from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
@@ -72,6 +83,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private readonly errorMapping: ErrorMapping = {
     [NOT_JOINED]: this.redirectToHome.bind(this),
     [INVALID_ARENA]: this.redirectToHome.bind(this),
+    [INVALID_CHANNEL]: this.redirectToHome.bind(this),
+    [NOT_ENTERED]: this.redirectToHome.bind(this),
   };
   private pressedKeys = new Set<string>();
   constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}

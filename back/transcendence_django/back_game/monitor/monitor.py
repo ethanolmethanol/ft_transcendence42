@@ -63,6 +63,8 @@ class Monitor:
     async def update_game_states(self, arenas):
         for arena in arenas.values():
             logger.info(f"Status of arena {arena.id} is {arena.status}")
+            if arena.status == STARTED and arena.is_empty():
+                arena.end_of_game()
             if arena.status == OVER:
                 logger.info(f"Game over in arena {arena.id}")
                 await self.gameOver(arenas, arena)
@@ -82,7 +84,7 @@ class Monitor:
         while arena.status == DYING and time > 0:
             time -= TIMEOUT_INTERVAL
             await arena.game_over_callback('Game Over! Thank you for playing.', time)
-            if (time == 0):
+            if time == 0:
                 arena.status = DEAD
                 self.deleteArena(arenas, arena.id)
             else:
