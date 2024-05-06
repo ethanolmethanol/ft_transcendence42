@@ -36,39 +36,16 @@ export class ConnectionService {
     });
   }
 
-  public getGameUrl(channelID: string, arenaID: string): string {
-    return `/local-game/${channelID}/${arenaID}`;
-  }
-
   public establishConnection(arenaSetter: (response: ArenaResponse) => void, channelID?: string, arenaID?: string) {
-    if (this.webSocketService.socket && this.webSocketService.socket.readyState !== WebSocket.CLOSED) {
-      // If a connection is currently open, close it and wait a bit before opening a new one
-      console.log('Open WebSocket connection detected, closing it...');
-      this.endConnection();
-      setTimeout(() => this.connectAndJoin(arenaSetter, channelID, arenaID), 1000);  // Wait for 1 second
-    } else {
-      console.log('No open WebSocket connection detected, opening a new one...');
-      // If no connection is currently open, just open a new one
-      this.connectAndJoin(arenaSetter, channelID, arenaID);
-    }
-  }
-
-  private connectAndJoin(arenaSetter: (response: ArenaResponse) => void, channelID?: string, arenaID?: string) {
     if (channelID && arenaID) {
       // Connect to the existing arena
       this.accessArena(channelID, arenaID, arenaSetter)
-    } else {
-      // Request a new arena
-      this.WebSocketSubscription = this.monitorService.getWebSocketUrl(this.postData).subscribe(response => {
-        this.accessArena(response.channelID, response.arena.id, arenaSetter);
-      });
     }
   }
+
   private accessArena(channelID: string, arenaID: string, arenaSetter: (response: ArenaResponse) => void) {
     this.webSocketService.connect(channelID);
     this.handleWebSocketConnection(arenaID, arenaSetter);
-    const gameUrl = this.getGameUrl(channelID, arenaID);
-    this.router.navigateByUrl(gameUrl);
   }
 
   private handleWebSocketConnection(arenaID: string, arenaSetter: (response: ArenaResponse) => void){

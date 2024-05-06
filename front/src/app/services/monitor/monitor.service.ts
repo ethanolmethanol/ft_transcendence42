@@ -15,3 +15,4 @@ export class MonitorService {
     return this.http.post<WebSocketUrlResponse>(`${API_GAME}/get_channel_id/`, postData);
   }
 }
+
