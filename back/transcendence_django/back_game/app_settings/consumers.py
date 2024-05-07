@@ -65,15 +65,15 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.username = message["username"]
         arenaID = message["arenaID"]
         try:
-            if not monitor.is_user_in_game(self.username, self.channelID, arenaID):
-                raise ChannelError(INVALID_ARENA, "User is already in another arena.")
             self.arena = monitor.channels[self.channelID][arenaID]
+            self.arena.game_update_callback = self.send_update
+            self.arena.game_over_callback = self.send_game_over
         except KeyError:
             raise ChannelError(INVALID_ARENA, "Unknown arenaID")
-        self.arena.game_update_callback = self.send_update
-        self.arena.game_over_callback = self.send_game_over
         try:
             self.arena.enter_arena(self.username)
+            if not monitor.is_user_in_game(self.username, self.channelID, arenaID):
+                monitor.addUser(self.username, self.channelID, arenaID)
         except (KeyError, ValueError) as e:
             log.error(f"Error: {e}")
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.")

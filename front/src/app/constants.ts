@@ -14,6 +14,7 @@ export const NOT_JOINED = 1
 export const INVALID_ARENA = 2
 export const INVALID_CHANNEL = 3
 export const NOT_ENTERED = 4
+export const GIVEN_UP = 5
 
 // Game status
 export const WAITING = 0

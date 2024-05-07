@@ -123,9 +123,7 @@ class Arena:
       try:
          if self.mode == LOCAL_MODE:
             return self.players and all(player.status == GIVEN_UP for player in self.players.values())
-         for player in self.players.values():
-            if player.owner_name == owner_name:
-               return player.status == GIVEN_UP
+         return self.players[owner_name].status == GIVEN_UP
       except KeyError:
          return False
 

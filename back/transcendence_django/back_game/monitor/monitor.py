@@ -47,6 +47,9 @@ class Monitor:
             self.deleteUser(player.owner_name)
         arenas.pop(arenaID)
 
+    def addUser(self, username, channelID, arenaID):
+        self.userGameTable[username] = {"channelID": channelID, "arena": self.channels[channelID][arenaID].to_dict()}
+
     def deleteUser(self, username):
         try:
             self.userGameTable.pop(username)
@@ -65,7 +68,7 @@ class Monitor:
 
     async def update_game_states(self, arenas):
         for arena in arenas.values():
-            logger.info(f"Status of arena {arena.id} is {arena.status}")
+            logger.info(f"Arena : {arena.to_dict()}")
             if arena.status == STARTED and arena.is_empty():
                 arena.end_of_game()
             if arena.status == OVER:

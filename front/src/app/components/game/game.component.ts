@@ -10,6 +10,7 @@ import {
   WAITING,
   DYING,
   DEAD,
+  GIVEN_UP,
 } from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
@@ -85,6 +86,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [INVALID_ARENA]: this.redirectToHome.bind(this),
     [INVALID_CHANNEL]: this.redirectToHome.bind(this),
     [NOT_ENTERED]: this.redirectToHome.bind(this),
+    [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private pressedKeys = new Set<string>();
   constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
