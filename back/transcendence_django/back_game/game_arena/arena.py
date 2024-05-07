@@ -55,7 +55,7 @@ class Arena:
    def enter_arena(self, owner_name):
       if self.did_player_give_up(owner_name):
          raise ValueError("The player has given up.")
-      elif self.is_full():
+      elif not self.__is_player_in_game(owner_name) and self.is_full():
          raise ValueError("The arena is full.")
       elif self.mode == LOCAL_MODE:
          self.__enter_local_mode(owner_name)
@@ -68,16 +68,6 @@ class Arena:
       if self.is_empty():
          self.__register_player(owner_name, "Player1")
          self.__register_player(owner_name, "Player2")
-
-   def did_player_give_up(self, owner_name):
-      try:
-         if self.mode == LOCAL_MODE:
-            return self.players and all(player.status == GIVEN_UP for player in self.players.values())
-         for player in self.players.values():
-            if player.owner_name == owner_name:
-               return player.status == GIVEN_UP
-      except KeyError:
-         return False
 
    def disable_player(self, username):
       self.__change_player_status(username, DISABLED)
@@ -102,7 +92,8 @@ class Arena:
    def end_of_game(self):
       self.status = OVER
       for player in self.players.values():
-         self.disable_player(player.username)
+        if player.status != GIVEN_UP:
+            self.disable_player(player.username)
 
    def rematch(self, username):
       if not self.__is_player_in_game(username):
@@ -127,6 +118,16 @@ class Arena:
          return self.players and all(player.status != GIVEN_UP for player in self.players.values())
       else:
          return username in self.players and self.players[username].status != GIVEN_UP
+
+   def did_player_give_up(self, owner_name):
+      try:
+         if self.mode == LOCAL_MODE:
+            return self.players and all(player.status == GIVEN_UP for player in self.players.values())
+         for player in self.players.values():
+            if player.owner_name == owner_name:
+               return player.status == GIVEN_UP
+      except KeyError:
+         return False
 
    def ball_hit_wall(self, which):
       if self.mode == LOCAL_MODE:

@@ -120,7 +120,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
         'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
-        'status': (value: number) => { this.updateStatus(value) }
+        'status': (value: number) => { this.updateStatus(value) },
+        'give_up': (value: string) => { this.giveUp(value) }
     };
 
     for (const variable in gameState) {
@@ -135,6 +136,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     if (error.code in this.errorMapping) {
       this.errorMapping[error.code](error);
     }
+  }
+
+  private giveUp(player: string) {
+    if (player == "Player_name")
+      this.redirectToHome();
   }
 
   private updateStatus(status: number) {

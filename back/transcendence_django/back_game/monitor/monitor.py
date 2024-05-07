@@ -54,6 +54,9 @@ class Monitor:
         except KeyError:
             pass
 
+    def is_user_in_game(self, username, channelID, arenaID):
+        return self.userGameTable.get(username) == {"channelID": channelID, "arena": arenaID}
+
     async def monitor_arenas_loop(self, channelID, arenas):
         while len(arenas) > 0:
             await self.update_game_states(arenas)
