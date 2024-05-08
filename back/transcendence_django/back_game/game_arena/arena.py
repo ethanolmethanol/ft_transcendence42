@@ -79,11 +79,13 @@ class Arena:
       self.__change_player_status(username, GIVEN_UP)
 
    def __change_player_status(self, username, status):
-      if self.mode == LOCAL_MODE:
-         for player in self.players.values():
-            player.status = status
-      else:
-         self.players[username].status = status
+      logger.info(f"Changing status of {username} to {status}")
+      if not self.did_player_give_up(username):
+         if self.mode == LOCAL_MODE:
+            for player in self.players.values():
+               player.status = status
+         else:
+            self.players[username].status = status
 
    def start_game(self):
       self.status = STARTED
@@ -92,8 +94,7 @@ class Arena:
    def end_of_game(self):
       self.status = OVER
       for player in self.players.values():
-        if player.status != GIVEN_UP:
-            self.disable_player(player.username)
+         self.disable_player(player.username)
 
    def rematch(self, username):
       if not self.__is_player_in_game(username):
@@ -122,6 +123,7 @@ class Arena:
    def did_player_give_up(self, owner_name):
       try:
          if self.mode == LOCAL_MODE:
+            logger.info(f"Did player give up? {owner_name}; Players: {[player.status for player in self.players.values()]}")
             return self.players and all(player.status == GIVEN_UP for player in self.players.values())
          return self.players[owner_name].status == GIVEN_UP
       except KeyError:
