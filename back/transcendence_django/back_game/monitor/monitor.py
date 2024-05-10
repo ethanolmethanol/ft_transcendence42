@@ -64,7 +64,7 @@ class Monitor:
         del self.channels[channelID]
 
     async def monitor_arenas_loop(self, channelID, arenas):
-        while len(arenas) > 0:
+        while arenas:
             await self.update_game_states(arenas)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
         self.deleteChannel(channelID)
@@ -79,7 +79,7 @@ class Monitor:
                 break
 
     async def run_game_loop(self, arenas):
-        while len(arenas) > 0:
+        while arenas:
             for arena in arenas:
                 if arena.status == STARTED:
                     update_message = arena.update_game()

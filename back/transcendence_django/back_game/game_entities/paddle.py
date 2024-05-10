@@ -84,7 +84,6 @@ class Paddle:
       self.__update_position()
 
    def update(self, config):
-      # self.speed.setCoordinates(config['x'], config['y'])
       self.width = config['width']
       self.height = config['height']
 

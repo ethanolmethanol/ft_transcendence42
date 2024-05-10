@@ -81,19 +81,18 @@ class Arena:
    def did_player_give_up(self, owner_name):
       try:
          if self.mode == LOCAL_MODE:
-            logger.info(f"Did player give up? {owner_name}; Players: {[player.status for player in self.players.values()]}")
             return self.players and all(player.status == GIVEN_UP for player in self.players.values())
          return self.players[owner_name].status == GIVEN_UP
       except KeyError:
          return False
 
-   def ball_hit_wall(self, which):
+   def ball_hit_wall(self, player_slot):
       if self.mode == LOCAL_MODE:
-         playername = "Player2" if which else "Player1"
+         playername = "Player2" if player_slot else "Player1"
          player = self.players[playername]
          player.score += 1
          logger.info(f"Point was scored for {playername}. Their score is {player.score}")
-         if player.score == 10:
+         if player.score == MAXIMUM_SCORE:
             self.conclude_game()
          return {"score": {"username": playername}}
       else:
