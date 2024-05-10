@@ -110,7 +110,7 @@ export class WebSocketService implements OnInit {
     console.log(`Join ${arenaID}`);
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"username": this.userService.getUsername(), "arenaID": arenaID});
+      this.send('join', {"user_id": this.userService.getUserID(), "arenaID": arenaID});
       this.getMessages().subscribe(message => {
         const data = JSON.parse(message);
         if (data.type === 'arena') {

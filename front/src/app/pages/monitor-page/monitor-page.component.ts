@@ -23,7 +23,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   async ngOnInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     const postData = JSON.stringify({
-      "username": this.userService.getUsername(),
+      "user_id": this.userService.getUserID(),
       "playerSpecs": {"nbPlayers": 2, "mode": 0}
     });
     this.webSocketSubscription = this.monitorService.getWebSocketUrl(postData).subscribe(response => {

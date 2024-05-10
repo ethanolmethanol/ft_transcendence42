@@ -16,23 +16,23 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def getChannel(self, username, playerSpecs):
-        channel = self.get_channel_from_username(username)
+    async def getChannel(self, user_id, playerSpecs):
+        channel = self.get_channel_from_user_id(user_id)
         if channel is None:
-            return await self.getNewChannel(username, playerSpecs)
+            return await self.getNewChannel(user_id, playerSpecs)
         return channel
 
-    async def getNewChannel(self, username, playerSpecs):
+    async def getNewChannel(self, user_id, playerSpecs):
         newArena = Arena(playerSpecs)
         channelID = self.generateRandomID(10)
         self.channels[channelID] = {newArena.id: newArena}
         asyncio.create_task(self.monitor_arenas_loop(channelID, self.channels[channelID]))
         asyncio.create_task(self.run_game_loop(self.channels[channelID].values()))
-        self.userGameTable[username] = {"channelID": channelID, "arena": newArena.to_dict()}
-        return self.userGameTable[username]
+        self.userGameTable[user_id] = {"channelID": channelID, "arena": newArena.to_dict()}
+        return self.userGameTable[user_id]
 
-    def get_channel_from_username(self, username):
-        channel = self.userGameTable.get(username)
+    def get_channel_from_user_id(self, user_id):
+        channel = self.userGameTable.get(user_id)
         if channel is None:
             return None
         channelID = channel["channelID"]
@@ -44,21 +44,21 @@ class Monitor:
     def deleteArena(self, arenas, arenaID):
         player_list = arenas[arenaID].players
         for player in player_list.values():
-            self.deleteUser(player.owner_name)
+            self.deleteUser(player.user_id)
         arenas.pop(arenaID)
 
-    def addUser(self, username, channelID, arenaID):
-        self.userGameTable[username] = {"channelID": channelID, "arena": self.channels[channelID][arenaID].to_dict()}
+    def addUser(self, user_id, channelID, arenaID):
+        self.userGameTable[user_id] = {"channelID": channelID, "arena": self.channels[channelID][arenaID].to_dict()}
 
-    def deleteUser(self, username):
+    def deleteUser(self, user_id):
         try:
-            self.userGameTable.pop(username)
-            logger.info(f"User {username} deleted from userGameTable")
+            self.userGameTable.pop(user_id)
+            logger.info(f"User {user_id} deleted from userGameTable")
         except KeyError:
             pass
 
-    def is_user_in_game(self, username, channelID, arenaID):
-        return self.userGameTable.get(username) == {"channelID": channelID, "arena": arenaID}
+    def is_user_in_game(self, user_id, channelID, arenaID):
+        return self.userGameTable.get(user_id) == {"channelID": channelID, "arena": arenaID}
 
     def deleteChannel(self, channelID):
         del self.channels[channelID]

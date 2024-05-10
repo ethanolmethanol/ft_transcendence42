@@ -20,7 +20,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.arena = None
         self.room_group_name = None
         self.joined = False
-        self.username = None
+        self.user_id = None
 
     async def connect(self):
         self.channelID = self.scope['url_route']['kwargs']['channelID']
@@ -65,7 +65,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.send_error({"code": e.code, "message": e.message})
 
     async def join(self, message: dict):
-        self.username = message["username"]
+        self.user_id = message["user_id"]
         arenaID = message["arenaID"]
         try:
             self.arena = monitor.channels[self.channelID][arenaID]
@@ -74,38 +74,38 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         except KeyError:
             raise ChannelError(INVALID_ARENA, "Unknown arenaID")
         try:
-            self.arena.enter_arena(self.username)
-            if not monitor.is_user_in_game(self.username, self.channelID, arenaID):
-                monitor.addUser(self.username, self.channelID, arenaID)
+            self.arena.enter_arena(self.user_id)
+            if not monitor.is_user_in_game(self.user_id, self.channelID, arenaID):
+                monitor.addUser(self.user_id, self.channelID, arenaID)
         except (KeyError, ValueError) as e:
             log.error(f"Error: {e}")
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.")
         self.joined = True
-        await self.send_message(f"{self.username} has joined the game.")
+        await self.send_message(f"{self.user_id} has joined the game.")
         await self.send_update({"arena": self.arena.to_dict()})
 
     async def leave(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to leave without joining.")
-        self.arena.disable_player(self.username)
+        self.arena.disable_player(self.user_id)
         self.joined = False
-        await self.send_message(f"{self.username} has left the game.")
+        await self.send_message(f"{self.user_id} has left the game.")
 
     async def give_up(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to give up without joining.")
-        self.arena.player_gave_up(self.username)
-        monitor.deleteUser(self.username)
+        self.arena.player_gave_up(self.user_id)
+        monitor.deleteUser(self.user_id)
         self.joined = False
-        await self.send_message(f"{self.username} has given up.")
-        await self.send_update({"give_up": self.username})
+        await self.send_message(f"{self.user_id} has given up.")
+        await self.send_update({"give_up": self.user_id})
 
     async def rematch(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        arena_data = self.arena.rematch(self.username)
+        arena_data = self.arena.rematch(self.user_id)
         if arena_data is None:
-            await self.send_message(f"{self.username} asked for a rematch.")
+            await self.send_message(f"{self.user_id} asked for a rematch.")
         else:
             await self.send_update({"arena": arena_data})
 

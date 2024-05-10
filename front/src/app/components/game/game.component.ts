@@ -37,7 +37,7 @@ interface BallUpdateResponse {
 }
 
 interface ScoreUpdateResponse {
-  username: string;
+  playername: string;
 }
 
 interface GameOverUpdateResponse {
@@ -141,7 +141,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private giveUp(player: string) {
-    if (player == this.userService.getUsername()) {
+    if (player == this.userService.getUserID()) {
       this.redirectToHome();
     }
   }
@@ -169,7 +169,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private updateScore(score: ScoreUpdateResponse) {
     if (this.paddles.length == 2) {
-      if (score.username == "Player1")
+      if (score.playername == "Player1")
         this.player1Score += 1;
       else this.player2Score += 1;
     }

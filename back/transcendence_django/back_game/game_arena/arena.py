@@ -24,7 +24,7 @@ class Arena:
       return {
          "id": self.id,
          "status": self.status,
-         "players": [player.username for player in self.players.values()],
+         "players": [player.player_name for player in self.players.values()],
          "scores": scores,
          "ball": self.ball.to_dict(),
          "paddles": [paddle.to_dict() for paddle in self.paddles.values()],
@@ -37,26 +37,26 @@ class Arena:
    def is_full(self):
       return len(self.players) == self.nbPlayers
 
-   def enter_arena(self, owner_name):
-      if self.did_player_give_up(owner_name):
+   def enter_arena(self, user_id):
+      if self.did_player_give_up(user_id):
          raise ValueError("The player has given up.")
-      elif not self.__is_player_in_game(owner_name) and self.is_full():
+      elif not self.__is_player_in_game(user_id) and self.is_full():
          raise ValueError("The arena is full.")
       elif self.mode == LOCAL_MODE:
-         self.__enter_local_mode(owner_name)
-      elif owner_name in self.players:
-         self.players[owner_name].status = ENABLED
+         self.__enter_local_mode(user_id)
+      elif user_id in self.players:
+         self.players[user_id].status = ENABLED
       else:
-         self.__register_player(owner_name, owner_name)
+         self.__register_player(user_id, user_id)
 
-   def disable_player(self, username):
-      self.__change_player_status(username, DISABLED)
+   def disable_player(self, user_id):
+      self.__change_player_status(user_id, DISABLED)
 
-   def enable_player(self, username):
-      self.__change_player_status(username, ENABLED)
+   def enable_player(self, user_id):
+      self.__change_player_status(user_id, ENABLED)
 
-   def player_gave_up(self, username):
-      self.__change_player_status(username, GIVEN_UP)
+   def player_gave_up(self, user_id):
+      self.__change_player_status(user_id, GIVEN_UP)
 
    def start_game(self):
       self.__reset()
@@ -66,46 +66,48 @@ class Arena:
    def conclude_game(self):
       self.status = OVER
       for player in self.players.values():
-         self.disable_player(player.username)
+         self.disable_player(player.user_id)
 
-   def rematch(self, username):
-      if not self.__is_player_in_game(username):
+   def rematch(self, user_id):
+      if not self.__is_player_in_game(user_id):
          raise KeyError("This user is unknown")
       self.status = WAITING
-      self.enable_player(username)
+      self.enable_player(user_id)
       if self.__are_all_players_ready():
          self.start_game()
          return self.to_dict()
       return None
 
-   def did_player_give_up(self, owner_name):
+   def did_player_give_up(self, user_id):
       try:
          if self.mode == LOCAL_MODE:
             return self.players and all(player.status == GIVEN_UP for player in self.players.values())
-         return self.players[owner_name].status == GIVEN_UP
+         return self.players[user_id].status == GIVEN_UP
       except KeyError:
          return False
 
+# improve syntax
    def ball_hit_wall(self, player_slot):
       if self.mode == LOCAL_MODE:
          playername = "Player2" if player_slot else "Player1"
+         logger.info(f"Point was scored for {playername}. slot: {player_slot}")
          player = self.players[playername]
          player.score += 1
          logger.info(f"Point was scored for {playername}. Their score is {player.score}")
          if player.score == MAXIMUM_SCORE:
             self.conclude_game()
-         return {"score": {"username": playername}}
+         return {"score": {"playername": playername}}
       else:
          raise NotImplementedError() # TODO
 
    def get_winner(self):
       winner = max(self.players.values(), key=lambda player: player.score)
-      return winner.username
+      return winner.player_name
 
-   def move_paddle(self, username, direction):
+   def move_paddle(self, player_name, direction):
       if (direction not in [-1, 1]):
          raise ValueError("Direction is invalid. It should be -1 or 1.")
-      paddle = self.paddles[username]
+      paddle = self.paddles[player_name]
       if paddle.status == LISTENING:
          paddle.status = PROCESSING
          paddle.move(direction)
@@ -131,18 +133,18 @@ class Arena:
       if self.mode not in (LOCAL_MODE, ONLINE_MODE):
          raise ValueError("The mode is invalid.")
 
-   def __register_player(self, owner_name, username):
-      player = Player(owner_name, username)
-      self.players[username] = player
-      self.paddles[username] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
+   def __register_player(self, user_id, player_name):
+      player = Player(user_id, player_name)
+      self.players[player_name] = player
+      self.paddles[player_name] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
       if self.is_full():
          self.start_game()
 
-   def __is_player_in_game(self, owner_name):
+   def __is_player_in_game(self, user_id):
       if self.mode == LOCAL_MODE:
-         return self.players and any(player.owner_name == owner_name for player in self.players.values())
+         return self.players and any(player.user_id == user_id for player in self.players.values())
       else:
-         return owner_name in self.players and self.players[owner_name].status != GIVEN_UP
+         return user_id in self.players and self.players[user_id].status != GIVEN_UP
 
    def __reset(self):
       for player in self.players.values():
@@ -151,18 +153,18 @@ class Arena:
          paddle.reset()
       self.ball.reset()
 
-   def __change_player_status(self, username, status):
-      if not self.did_player_give_up(username):
+   def __change_player_status(self, user_id, status):
+      if not self.did_player_give_up(user_id):
          if self.mode == LOCAL_MODE:
             for player in self.players.values():
                player.status = status
          else:
-            self.players[username].status = status
+            self.players[user_id].status = status
 
-   def __enter_local_mode(self, owner_name):
+   def __enter_local_mode(self, user_id):
       if self.is_empty():
-         self.__register_player(owner_name, "Player1")
-         self.__register_player(owner_name, "Player2")
+         self.__register_player(user_id, "Player1")
+         self.__register_player(user_id, "Player2")
 
    def __are_all_players_ready(self):
       return self.is_full and all(player.status == ENABLED for player in self.players.values())

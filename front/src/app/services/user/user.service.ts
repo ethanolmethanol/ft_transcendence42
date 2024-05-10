@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import {API_USER} from "../../constants";
 
 interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
 }
@@ -37,5 +37,9 @@ export class UserService {
 
   public getUsername(): string {
     return this.getUserData().username;
+  }
+
+  public getUserID(): string {
+    return this.getUserData().id;
   }
 }
