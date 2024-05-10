@@ -24,16 +24,19 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         self.channelID = self.scope['url_route']['kwargs']['channelID']
-        # if monitor.channels.get([self.channelID]) == None:
-        #     raise ChannelError(INVALID_CHANNEL, "Unknown channelID")
-        # close the connection on the consumer side
+        await self.accept()
+        if monitor.channels.get(self.channelID) == None:
+            await self.send_error({"code": INVALID_CHANNEL, "message": "Unknown channelID"})
+        else:
+            await self.add_user_to_channel_group()
+
+    async def add_user_to_channel_group(self):
         self.room_group_name = f'game_{self.channelID}'
         log.info(f"User Connected to {self.room_group_name}")
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-        await self.accept()
 
     async def disconnect(self, close_code):
         try:
@@ -145,12 +148,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             'update': message
         }))
 
-    # async def send_error(self, error):
-    #     log.info(f"Sending error: {error["code"]}: {error["message"]}")
-    #     await self.send_data({
-    #         "type": "game_error",
-    #         "error": error
-    #     })
 
     async def send_error(self, error):
         log.info(f"Sending error: {error['code']}: {error['message']}")

@@ -28,8 +28,7 @@ N				= \033[0m    # RESET
 
 TEST-ENGINE-TAGS = passed monitor paddle ball
 
-# gen-cert 
-${NAME}: up health
+${NAME}: gen-cert up health
 	$(call printname)
 
 # ${ENV_FILE}

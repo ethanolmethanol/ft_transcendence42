@@ -16,21 +16,6 @@ class Arena:
       self.ball = Ball(self.paddles.values(), self.ball_hit_wall)
       self.map = Map() # depends on the number of players
 
-   def __fill_player_specs(self, playerSpecs):
-      self.nbPlayers = playerSpecs['nbPlayers']
-      if self.nbPlayers not in range (MIN_PLAYER, MAX_PLAYER):
-         raise ValueError("The number of players is out of allowed range.")
-      self.mode = playerSpecs['mode']
-      if self.mode not in (LOCAL_MODE, ONLINE_MODE):
-         raise ValueError("The mode is invalid.")
-
-   def __register_player(self, owner_name, username):
-      player = Player(owner_name, username)
-      self.players[username] = player
-      self.paddles[username] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
-      if self.is_full():
-         self.start_game()
-
    def to_dict(self):
       if self.players == {}:
          scores = [0 for _ in range(self.nbPlayers)]
@@ -52,9 +37,6 @@ class Arena:
    def is_full(self):
       return len(self.players) == self.nbPlayers
 
-   def are_all_players_ready(self):
-      return self.is_full and all(player.status == ENABLED for player in self.players.values())
-
    def enter_arena(self, owner_name):
       if self.did_player_give_up(owner_name):
          raise ValueError("The player has given up.")
@@ -67,11 +49,6 @@ class Arena:
       else:
          self.__register_player(owner_name, owner_name)
 
-   def __enter_local_mode(self, owner_name):
-      if self.is_empty():
-         self.__register_player(owner_name, "Player1")
-         self.__register_player(owner_name, "Player2")
-
    def disable_player(self, username):
       self.__change_player_status(username, DISABLED)
 
@@ -81,19 +58,12 @@ class Arena:
    def player_gave_up(self, username):
       self.__change_player_status(username, GIVEN_UP)
 
-   def __change_player_status(self, username, status):
-      if not self.did_player_give_up(username):
-         if self.mode == LOCAL_MODE:
-            for player in self.players.values():
-               player.status = status
-         else:
-            self.players[username].status = status
-
    def start_game(self):
+      self.__reset()
       self.status = STARTED
       logger.info(f"Game started. {self.id}")
 
-   def end_of_game(self):
+   def conclude_game(self):
       self.status = OVER
       for player in self.players.values():
          self.disable_player(player.username)
@@ -103,24 +73,10 @@ class Arena:
          raise KeyError("This user is unknown")
       self.status = WAITING
       self.enable_player(username)
-      if self.are_all_players_ready():
-         self.__reset()
+      if self.__are_all_players_ready():
          self.start_game()
          return self.to_dict()
       return None
-
-   def __reset(self):
-      for player in self.players.values():
-         player.reset()
-      for paddle in self.paddles.values():
-         paddle.reset()
-      self.ball.reset()
-
-   def __is_player_in_game(self, owner_name):
-      if self.mode == LOCAL_MODE:
-         return self.players and any(player.owner_name == owner_name for player in self.players.values())
-      else:
-         return owner_name in self.players and self.players[owner_name].status != GIVEN_UP
 
    def did_player_give_up(self, owner_name):
       try:
@@ -138,7 +94,7 @@ class Arena:
          player.score += 1
          logger.info(f"Point was scored for {playername}. Their score is {player.score}")
          if player.score == 10:
-            self.end_of_game()
+            self.conclude_game()
          return {"score": {"username": playername}}
       else:
          raise NotImplementedError() # TODO
@@ -167,3 +123,47 @@ class Arena:
       game_status = {"status": self.status}
       update_dict = {**ball_update, **game_status}
       return update_dict
+
+   def __fill_player_specs(self, playerSpecs):
+      self.nbPlayers = playerSpecs['nbPlayers']
+      if self.nbPlayers not in range (MIN_PLAYER, MAX_PLAYER):
+         raise ValueError("The number of players is out of allowed range.")
+      self.mode = playerSpecs['mode']
+      if self.mode not in (LOCAL_MODE, ONLINE_MODE):
+         raise ValueError("The mode is invalid.")
+
+   def __register_player(self, owner_name, username):
+      player = Player(owner_name, username)
+      self.players[username] = player
+      self.paddles[username] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
+      if self.is_full():
+         self.start_game()
+
+   def __is_player_in_game(self, owner_name):
+      if self.mode == LOCAL_MODE:
+         return self.players and any(player.owner_name == owner_name for player in self.players.values())
+      else:
+         return owner_name in self.players and self.players[owner_name].status != GIVEN_UP
+
+   def __reset(self):
+      for player in self.players.values():
+         player.reset()
+      for paddle in self.paddles.values():
+         paddle.reset()
+      self.ball.reset()
+
+   def __change_player_status(self, username, status):
+      if not self.did_player_give_up(username):
+         if self.mode == LOCAL_MODE:
+            for player in self.players.values():
+               player.status = status
+         else:
+            self.players[username].status = status
+
+   def __enter_local_mode(self, owner_name):
+      if self.is_empty():
+         self.__register_player(owner_name, "Player1")
+         self.__register_player(owner_name, "Player2")
+
+   def __are_all_players_ready(self):
+      return self.is_full and all(player.status == ENABLED for player in self.players.values())

@@ -72,7 +72,7 @@ class Monitor:
     async def update_game_states(self, arenas):
         for arena in arenas.values():
             if arena.status == STARTED and arena.is_empty():
-                arena.end_of_game()
+                arena.conclude_game()
             if arena.status == OVER:
                 logger.info(f"Game over in arena {arena.id}")
                 await self.gameOver(arenas, arena)
