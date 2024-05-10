@@ -75,12 +75,6 @@ services:
         restart: unless-stopped
         healthcheck:
             test: 'python3 manage.py health_check'
-        # healthcheck:
-        #     test: ["CMD", "curl", "-kfsSL", "https://localhost:443/health/"]
-        #     interval: 5s
-        #     timeout: 1s
-        #     retries: 10
-        #     start_period: 5s
 
     front:
         image: front
@@ -94,11 +88,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        # depends_on:
-            # back_auth:
-            #     condition: service_healthy
-            # back_game:
-            #     condition: service_healthy
         healthcheck:
             test: 'curl -kfsSL https://localhost:443/'
             interval: 5s

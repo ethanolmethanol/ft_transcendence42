@@ -60,15 +60,17 @@ class Monitor:
     def is_user_in_game(self, username, channelID, arenaID):
         return self.userGameTable.get(username) == {"channelID": channelID, "arena": arenaID}
 
+    def deleteChannel(self, channelID):
+        del self.channels[channelID]
+
     async def monitor_arenas_loop(self, channelID, arenas):
         while len(arenas) > 0:
             await self.update_game_states(arenas)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        del self.channels[channelID]
+        self.deleteChannel(channelID)
 
     async def update_game_states(self, arenas):
         for arena in arenas.values():
-            logger.info(f"Arena : {arena.to_dict()}")
             if arena.status == STARTED and arena.is_empty():
                 arena.end_of_game()
             if arena.status == OVER:

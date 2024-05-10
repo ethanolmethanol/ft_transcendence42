@@ -1,23 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameComponent } from './game.component';
-import {By} from "@angular/platform-browser";
 import {PaddleComponent} from "../paddle/paddle.component";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { WebSocketService } from '../../services/web-socket/web-socket.service';
 
 describe('GameComponent', () => {
   let component: GameComponent;
   let fixture: ComponentFixture<GameComponent>;
+  let webSocketService: WebSocketService;
+  let sendPaddleMovementSpy: jasmine.Spy;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GameComponent]
-    })
-    .compileComponents();
+      await TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule, GameComponent, PaddleComponent],
+        providers: [WebSocketService]
+      }).compileComponents();
 
-    fixture = TestBed.createComponent(GameComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+      fixture = TestBed.createComponent(GameComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      webSocketService = TestBed.inject(WebSocketService);
+      sendPaddleMovementSpy = spyOn(webSocketService, 'sendPaddleMovement').and.callThrough();
   });
+
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -43,26 +49,19 @@ describe('GameComponent', () => {
     expect(component['pressedKeys'].has('w')).toBeFalse();
   });
 
-  it('should move paddle up or down based on pressed keys', () => {
-    const paddle = fixture.debugElement.query(By.directive(PaddleComponent)).injector.get(PaddleComponent);
-    spyOn(paddle, 'moveUp');
-    spyOn(paddle, 'moveDown');
+  it('should move paddle up on pressed keys', () => {
+    const event = new KeyboardEvent('keydown', { key: 'w' });
+    window.dispatchEvent(event);
+    component['gameLoop']();
+    expect(sendPaddleMovementSpy).toHaveBeenCalledWith("Player1", -1);
+ });
 
-    component['pressedKeys'].add('w');
-    component['pressedKeys'].add('s');
-    component['movePaddle'](paddle, { upKey: 'w', downKey: 's' });
-    expect(paddle.moveUp).not.toHaveBeenCalled();
-    expect(paddle.moveDown).not.toHaveBeenCalled();
-    component['pressedKeys'].delete('s');
-    component['movePaddle'](paddle, { upKey: 'w', downKey: 's' });
-    expect(paddle.moveUp).toHaveBeenCalled();
-    expect(paddle.moveDown).not.toHaveBeenCalled();
-
-    component['pressedKeys'].delete('w');
-    component['pressedKeys'].add('s');
-    component['movePaddle'](paddle, { upKey: 'w', downKey: 's' });
-    expect(paddle.moveDown).toHaveBeenCalled();
-  });
+ it('should move paddle down on pressed keys', () => {
+    const event = new KeyboardEvent('keydown', { key: 's' });
+    window.dispatchEvent(event);
+    component['gameLoop']();
+    expect(sendPaddleMovementSpy).toHaveBeenCalledWith("Player1", 1);
+ });
 
   it('should call movePaddle for each paddle in gameLoop', () => {
     spyOn(component as any, 'movePaddle');
