@@ -112,7 +112,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
     this.updateStatus(arena.status)
-    console.log('data loaded')
     this.dataLoaded = true;
   }
 

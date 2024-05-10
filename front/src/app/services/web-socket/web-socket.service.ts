@@ -123,15 +123,6 @@ export class WebSocketService implements OnInit {
     return subject.asObservable();
   }
 
-  public leave(): void {
-    console.log('Leave');
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('leave', {});
-    } else {
-      console.log('WebSocket is not open when trying to leave arena');
-    }
-  }
-
   public send(type: string, message: Object): void {
     if (this.socket) {
       this.socket.send(JSON.stringify({
