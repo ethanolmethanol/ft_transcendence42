@@ -2,6 +2,7 @@ import {Component, OnDestroy} from '@angular/core';
 import {Subscription} from "rxjs";
 import {MonitorService} from "../../services/monitor/monitor.service";
 import {Router} from "@angular/router";
+import {UserService} from "../../services/user/user.service";
 
 @Component({
   selector: 'app-monitor-page',
@@ -11,14 +12,14 @@ import {Router} from "@angular/router";
   styleUrl: './monitor-page.component.css'
 })
 export class MonitorPageComponent implements OnDestroy {
-  private postData = JSON.stringify({
-    "username": "Player_name",
-    "playerSpecs": {"nbPlayers": 2, "mode": 0}
-  })
   webSocketSubscription?: Subscription;
 
-  constructor(private router: Router, private monitorService: MonitorService) {
-    this.webSocketSubscription = monitorService.getWebSocketUrl(this.postData).subscribe(response => {
+  constructor(private userService: UserService, private router: Router, private monitorService: MonitorService) {
+    const postData = JSON.stringify({
+      "username": this.userService.getUsername(),
+      "playerSpecs": {"nbPlayers": 2, "mode": 0}
+    });
+    this.webSocketSubscription = monitorService.getWebSocketUrl(postData).subscribe(response => {
       const gameUrl = this.getGameUrl(response.channelID, response.arena.id);
       this.router.navigateByUrl(gameUrl);
   })}

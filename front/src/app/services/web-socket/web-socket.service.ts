@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import {ArenaResponse} from "../../interfaces/arena-response.interface";
+import {UserService} from "../user/user.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class WebSocketService {
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
 
-  constructor() {
+  constructor(private userService: UserService) {
     this.socket = null;
   }
 
@@ -102,7 +103,7 @@ export class WebSocketService {
     console.log(`Join ${arenaID}`);
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"username": "Player_name", "arenaID": arenaID});
+      this.send('join', {"username": this.userService.getUsername(), "arenaID": arenaID});
       this.getMessages().subscribe(message => {
         const data = JSON.parse(message);
         if (data.type === 'arena') {

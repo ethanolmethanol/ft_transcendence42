@@ -50,7 +50,10 @@ class Arena:
       return all(player.status == GIVEN_UP for player in self.players.values())
 
    def is_full(self):
-      return len(self.players) == self.nbPlayers and all(player.status == ENABLED for player in self.players.values())
+      return len(self.players) == self.nbPlayers
+
+   def are_all_players_ready(self):
+      return self.is_full and all(player.status == ENABLED for player in self.players.values())
 
    def enter_arena(self, owner_name):
       if self.did_player_give_up(owner_name):
@@ -79,7 +82,6 @@ class Arena:
       self.__change_player_status(username, GIVEN_UP)
 
    def __change_player_status(self, username, status):
-      logger.info(f"Changing status of {username} to {status}")
       if not self.did_player_give_up(username):
          if self.mode == LOCAL_MODE:
             for player in self.players.values():
@@ -101,7 +103,7 @@ class Arena:
          raise KeyError("This user is unknown")
       self.status = WAITING
       self.enable_player(username)
-      if self.is_full():
+      if self.are_all_players_ready():
          self.__reset()
          self.start_game()
          return self.to_dict()

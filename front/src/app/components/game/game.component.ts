@@ -25,6 +25,7 @@ import { Router } from '@angular/router';
 import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
 import {NgIf} from "@angular/common";
 import {ConnectionService} from "../../services/connection/connection.service";
+import {UserService} from "../../services/user/user.service";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -89,7 +90,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private pressedKeys = new Set<string>();
-  constructor (private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
+  constructor (private userService: UserService, private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
 
   public setArena(arena: ArenaResponse) {
     this.paddles.forEach(paddle => {
@@ -141,8 +142,9 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private giveUp(player: string) {
-    if (player == "Player_name")
+    if (player == this.userService.getUsername()) {
       this.redirectToHome();
+    }
   }
 
   private updateStatus(status: number) {

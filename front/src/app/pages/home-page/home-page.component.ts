@@ -22,10 +22,9 @@ export class HomePageComponent implements OnInit {
 
   constructor(private userService: UserService) { }
 
-  ngOnInit(): void {
-    this.userService.getUsername().subscribe(data => {
-      this.welcome = `Welcome, ${data.username}!`;
-    });
+  async ngOnInit(): Promise<void> {
+    await this.userService.whenUserDataLoaded();
+    this.welcome = `Welcome, ${this.userService.getUsername()}`;
  }
 
  public getLocalGameUrl(): string {

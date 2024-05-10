@@ -11,10 +11,6 @@ import {ArenaResponse} from "../../interfaces/arena-response.interface";
 })
 export class ConnectionService {
 
-  private postData = JSON.stringify({
-    "username": "Player_name",
-    "playerSpecs": {"nbPlayers": 2, "mode": 0}
-  })
   private connectionOpenedSubscription?: Subscription;
   private WebSocketSubscription?: Subscription;
   private WebSocketMessagesSubscription?: Subscription;
