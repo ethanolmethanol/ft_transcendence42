@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import {ArenaResponse} from "../../interfaces/arena-response.interface";
 import {UserService} from "../user/user.service";
+import { OnInit } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
-export class WebSocketService {
+export class WebSocketService implements OnInit {
   socket?: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
@@ -14,8 +15,14 @@ export class WebSocketService {
   constructor(private userService: UserService) {
     this.socket = null;
   }
-
+  
   public connect(channelID: string): void {
+    this.userService.whenUserDataLoaded().then(() => {
+      this.attemptToConnect(channelID);
+    });
+  }
+
+  private attemptToConnect(channelID: string): void {
     if (this.socket) {
       console.log('WebSocket connection already open');
       return;
@@ -139,5 +146,9 @@ export class WebSocketService {
 
   public getMessages(): Observable<string> {
     return this.messages.asObservable();
+  }
+
+  async ngOnInit() : Promise<void> {
+    await this.userService.whenUserDataLoaded();
   }
 }

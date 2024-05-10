@@ -222,7 +222,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() : Promise<void> {
+    await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.gameLoop();
   }
@@ -231,3 +232,4 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     console.log('GameComponent destroyed');
   }
 }
+
