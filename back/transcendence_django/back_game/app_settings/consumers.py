@@ -145,12 +145,19 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             'update': message
         }))
 
+    # async def send_error(self, error):
+    #     log.info(f"Sending error: {error["code"]}: {error["message"]}")
+    #     await self.send_data({
+    #         "type": "game_error",
+    #         "error": error
+    #     })
+
     async def send_error(self, error):
-        log.info(f"Sending error: {error["code"]}: {error["message"]}")
-        await self.send_data({
+        log.info(f"Sending error: {error['code']}: {error['message']}")
+        await self.send(text_data=json.dumps({
             "type": "game_error",
             "error": error
-        })
+        }))
 
     async def send_update(self, update):
         log.info(f"Sending update: {update}")
@@ -170,3 +177,4 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_send(
             self.room_group_name, data
         )
+

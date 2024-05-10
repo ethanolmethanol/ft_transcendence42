@@ -15,7 +15,7 @@ export class WebSocketService implements OnInit {
   constructor(private userService: UserService) {
     this.socket = null;
   }
-  
+
   public connect(channelID: string): void {
     this.userService.whenUserDataLoaded().then(() => {
       this.attemptToConnect(channelID);

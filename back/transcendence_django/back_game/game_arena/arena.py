@@ -116,11 +116,11 @@ class Arena:
          paddle.reset()
       self.ball.reset()
 
-   def __is_player_in_game(self, username):
+   def __is_player_in_game(self, owner_name):
       if self.mode == LOCAL_MODE:
-         return self.players and all(player.status != GIVEN_UP for player in self.players.values())
+         return self.players and any(player.owner_name == owner_name for player in self.players.values())
       else:
-         return username in self.players and self.players[username].status != GIVEN_UP
+         return owner_name in self.players and self.players[owner_name].status != GIVEN_UP
 
    def did_player_give_up(self, owner_name):
       try:
