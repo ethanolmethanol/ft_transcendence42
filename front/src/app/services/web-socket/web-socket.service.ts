@@ -13,6 +13,7 @@ export class WebSocketService implements OnInit {
   private messages: Subject<string> = new Subject<string>();
 
   constructor(private userService: UserService) {
+    console.log('WebSocketService created');
     this.socket = null;
   }
 

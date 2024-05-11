@@ -13,10 +13,10 @@ interface User {
 })
 export class UserService {
   private userData: any;
-  private userDataLoaded: Promise<void>;
+  private userDataLoaded: Promise<void> | null;
 
   constructor(private http: HttpClient) {
-    this.userDataLoaded = this.loadUserData();
+    this.userDataLoaded = null;
   }
 
   private async loadUserData(): Promise<void> {
@@ -28,6 +28,9 @@ export class UserService {
   }
 
   public whenUserDataLoaded(): Promise<void> {
+    if (!this.userDataLoaded) {
+      this.userDataLoaded = this.loadUserData();
+    }
     return this.userDataLoaded;
   }
 
@@ -41,5 +44,10 @@ export class UserService {
 
   public getUserID(): string {
     return this.getUserData().id;
+  }
+
+  public clearUserData(): void {
+    this.userData = null;
+    this.userDataLoaded = null;
   }
 }
