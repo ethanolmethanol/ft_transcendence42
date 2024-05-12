@@ -43,10 +43,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.leave(None)
         except:
             pass
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        if self.room_group_name is not None:
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
         log.info(f"Disconnect with code: {close_code}")
 
     async def receive(self, text_data=None, bytes_data=None):

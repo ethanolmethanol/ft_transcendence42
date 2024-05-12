@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import {ArenaResponse} from "../../interfaces/arena-response.interface";
 import {UserService} from "../user/user.service";
@@ -7,14 +7,25 @@ import { OnInit } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class WebSocketService implements OnInit {
+export class WebSocketService implements OnInit, OnDestroy {
   socket?: WebSocket | null;
   private connectionOpened: Subject<void> = new Subject<void>();
   private messages: Subject<string> = new Subject<string>();
+  private logoutChannel: BroadcastChannel;
 
   constructor(private userService: UserService) {
     console.log('WebSocketService created');
     this.socket = null;
+
+    // Initialize the BroadcastChannel
+    this.logoutChannel = new BroadcastChannel('logoutChannel');
+
+    // Listen for messages on the BroadcastChannel
+    this.logoutChannel.onmessage = (message) => {
+      if (message.data === 'logout') {
+        this.giveUp();
+      }
+    };
   }
 
   public connect(channelID: string): void {
@@ -142,5 +153,10 @@ export class WebSocketService implements OnInit {
 
   async ngOnInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
+  }
+
+  ngOnDestroy(): void {
+    this.disconnect();
+    this.logoutChannel.close();
   }
 }
