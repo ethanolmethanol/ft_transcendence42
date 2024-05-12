@@ -46,6 +46,11 @@ interface GameOverUpdateResponse {
   message: string;
 }
 
+interface AFKResponse {
+  user_id: string;
+  time_left: number;
+}
+
 interface VariableMapping {
   [key: string]: (value: any) => void;
 }
@@ -123,7 +128,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
-        'give_up': (value: string) => { this.giveUp(value) }
+        'give_up': (value: string) => { this.giveUp(value) },
+        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
     };
 
     for (const variable in gameState) {
@@ -131,6 +137,19 @@ export class GameComponent implements AfterViewInit, OnDestroy {
             variableMapping[variable](gameState[variable]);
         }
     }
+  }
+
+  private updateInactivity(kicked_players: Array<AFKResponse>) {
+    kicked_players.forEach((afkResponse) => {
+      if (afkResponse.user_id === this.userService.getUserID()) {
+        if (afkResponse.time_left <= 0) {
+          console.log('You were kicked due to inactivity.');
+          this.redirectToHome();
+        } else {
+          console.log("Warning: You will be kicked in " + Math.round(afkResponse.time_left) + " seconds.");
+        }
+      }
+    });
   }
 
   private handleGameError(error: ErrorResponse) {

@@ -3,8 +3,8 @@ from back_game.game_entities.paddle import Paddle
 from back_game.game_arena.map import Map
 from back_game.game_arena.player import *
 from back_game.game_settings.game_constants import *
-
 import logging
+
 logger = logging.getLogger(__name__)
 class Arena:
    def __init__(self, playerSpecs):
@@ -15,6 +15,7 @@ class Arena:
       self.paddles = {f'{i + 1}': Paddle(i + 1, self.nbPlayers) for i in range(self.nbPlayers)}  # Initialize paddles dictionary
       self.ball = Ball(self.paddles.values(), self.ball_hit_wall)
       self.map = Map() # depends on the number of players
+      self.last_kick_check = time.time()
 
    def to_dict(self):
       if self.players == {}:
@@ -110,6 +111,8 @@ class Arena:
       paddle = self.paddles[player_name]
       if paddle.status == LISTENING:
          paddle.status = PROCESSING
+         player = self.players[player_name]
+         player.update_activity_time()
          paddle.move(direction)
          try:
             self.ball.update_collision(paddle)
@@ -123,7 +126,24 @@ class Arena:
       ball_update = self.ball.move()
       game_status = {"status": self.status}
       update_dict = {**ball_update, **game_status}
+      if time.time() - self.last_kick_check >= 1:
+        kicked_players = self.kick_afk_players()
+        if kicked_players:
+           update_dict["kicked_players"] = kicked_players
+        self.last_kick_check = time.time()
       return update_dict
+
+   def kick_afk_players(self):
+      current_time = time.time()
+      kicked_players = []
+      for player in self.players.values():
+         time_left = player.last_activity_time + AFK_TIMEOUT - current_time
+         if time_left <= AFK_WARNING_THRESHOLD:
+            kicked_players.append({"user_id": player.user_id, "time_left": round(time_left)})
+            logger.info(f"Player {player.user_id} was kicked due to inactivity.")
+         if time_left <= 0:
+            self.player_gave_up(player.user_id)
+      return kicked_players
 
    def __fill_player_specs(self, playerSpecs):
       self.nbPlayers = playerSpecs['nbPlayers']
