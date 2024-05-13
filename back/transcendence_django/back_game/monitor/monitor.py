@@ -16,14 +16,14 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def getChannel(self, user_id, playerSpecs):
+    async def getChannel(self, user_id, players_pecs):
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
-            return await self.getNewChannel(user_id, playerSpecs)
+            return await self.getNewChannel(user_id, players_pecs)
         return channel
 
-    async def getNewChannel(self, user_id, playerSpecs):
-        newArena = Arena(playerSpecs)
+    async def getNewChannel(self, user_id, players_pecs):
+        newArena = Arena(players_pecs)
         channelID = self.generateRandomID(10)
         self.channels[channelID] = {newArena.id: newArena}
         asyncio.create_task(self.monitor_arenas_loop(channelID, self.channels[channelID]))

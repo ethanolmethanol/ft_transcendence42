@@ -1,14 +1,15 @@
 from back_game.game_physics.position import Position
 import math
 
+
 class Vector(Position):
 
-   def __init__(self, x=0, y=0):
-      super().__init__(x, y)
+    def __init__(self, x=0, y=0):
+        super().__init__(x, y)
 
-   def magnitude(self):
-    return math.sqrt(self.x**2 + self.y**2)
-   
-   def unit_vector(self):
-     magnitude_value = self.magnitude()
-     return Vector(self.x / magnitude_value, self.y / magnitude_value)
+    def magnitude(self):
+        return math.sqrt(self.x**2 + self.y**2)
+
+    def unit_vector(self):
+        magnitude_value = self.magnitude()
+        return Vector(self.x / magnitude_value, self.y / magnitude_value)
