@@ -47,7 +47,7 @@ interface GameOverUpdateResponse {
 }
 
 interface AFKResponse {
-  user_id: string;
+  player_name: string;
   time_left: number;
 }
 
@@ -101,6 +101,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
+        paddle.playername = "Player" + paddle.id;
         paddle.positionX = paddleData.position.x;
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
@@ -128,7 +129,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
-        'give_up': (value: string) => { this.giveUp(value) },
+        'give_up': (value: number) => { this.giveUp(value) },
         'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
     };
 
@@ -141,12 +142,17 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
     kicked_players.forEach((afkResponse) => {
-      if (afkResponse.user_id === this.userService.getUserID()) {
+      if (afkResponse.player_name === "Player1" || afkResponse.player_name === "Player2") {
         if (afkResponse.time_left <= 0) {
           console.log('You were kicked due to inactivity.');
           this.redirectToHome();
         } else {
-          console.log("Warning: You will be kicked in " + Math.round(afkResponse.time_left) + " seconds.");
+          const left_time = Math.round(afkResponse.time_left);
+          console.log("Warning: You will be kicked in " + left_time + " seconds.");
+          const paddle = this.paddles.find(p => p.playername === afkResponse.player_name);
+          if (paddle) {
+            paddle.afkLeftTime = Math.round(left_time);
+          }
         }
       }
     });
@@ -159,8 +165,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private giveUp(player: string) {
-    if (player == this.userService.getUserID()) {
+  private giveUp(user_id: number) {
+    if (user_id == this.userService.getUserID()) {
       this.redirectToHome();
     }
   }
@@ -178,6 +184,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   private updatePaddle(paddle: PaddleUpdateResponse) {
     const paddleComponent = this.paddles.find(p => p.id === paddle.slot);
     if (paddleComponent) {
+      paddleComponent.afkLeftTime = null;
       paddleComponent.updatePaddlePosition(paddle.position);
     }
   }

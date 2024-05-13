@@ -139,8 +139,8 @@ class Arena:
       for player in self.players.values():
          time_left = player.last_activity_time + AFK_TIMEOUT - current_time
          if time_left <= AFK_WARNING_THRESHOLD:
-            kicked_players.append({"user_id": player.user_id, "time_left": round(time_left)})
-            logger.info(f"Player {player.user_id} was kicked due to inactivity.")
+            kicked_players.append({"player_name": player.player_name, "time_left": round(time_left)})
+            logger.info(f"Player {player.player_name} was kicked due to inactivity.")
          if time_left <= 0:
             self.player_gave_up(player.user_id)
       return kicked_players
