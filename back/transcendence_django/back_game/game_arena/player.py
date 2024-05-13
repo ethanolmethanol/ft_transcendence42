@@ -17,3 +17,4 @@ class Player:
 
 	def reset(self):
 		self.score = 0
+		self.update_activity_time()

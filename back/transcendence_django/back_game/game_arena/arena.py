@@ -90,14 +90,14 @@ class Arena:
 # improve syntax
    def ball_hit_wall(self, player_slot):
       if self.mode == LOCAL_MODE:
-         playername = "Player2" if player_slot else "Player1"
-         logger.info(f"Point was scored for {playername}. slot: {player_slot}")
-         player = self.players[playername]
+         player_name = "Player2" if player_slot else "Player1"
+         logger.info(f"Point was scored for {player_name}. slot: {player_slot}")
+         player = self.players[player_name]
          player.score += 1
-         logger.info(f"Point was scored for {playername}. Their score is {player.score}")
+         logger.info(f"Point was scored for {player_name}. Their score is {player.score}")
          if player.score == MAXIMUM_SCORE:
             self.conclude_game()
-         return {"score": {"player_name": playername}}
+         return {"score": {"player_name": player_name}}
       else:
          raise NotImplementedError() # TODO
 

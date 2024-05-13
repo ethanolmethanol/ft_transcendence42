@@ -14,7 +14,7 @@ import {NgIf} from "@angular/common";
 })
 export class PaddleComponent implements OnInit {
   @Input() id: number = 0;
-  playername: string = '';
+  playerName: string = '';
   width = PADDLE_WIDTH;
   height = PADDLE_HEIGHT;
   offset = this.height / 2;

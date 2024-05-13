@@ -101,7 +101,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
-        paddle.playername = "Player" + paddle.id;
+        paddle.playerName = "Player" + paddle.id;
         paddle.positionX = paddleData.position.x;
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
@@ -149,7 +149,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         } else {
           const left_time = afkResponse.time_left;
           console.log("Warning: You will be kicked in " + left_time + " seconds.");
-          const paddle = this.paddles.find(p => p.playername === afkResponse.player_name);
+          const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
           if (paddle) {
             paddle.afkLeftTime = left_time;
           }
