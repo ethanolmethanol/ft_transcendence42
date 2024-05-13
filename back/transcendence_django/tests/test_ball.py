@@ -13,7 +13,7 @@ def test_ball_initialization():
     assert hasattr(ball, 'position'), "Ball instance should have a 'position' attribute"
     assert hasattr(ball, 'speed'), "Ball instance should have a 'speed' attribute"
     assert ball.position.to_dict() == {'x': round(GAME_WIDTH / 2), 'y': round(GAME_HEIGHT / 2)}, "Ball position should be initialized to the default value"
-    assert ball.speed.to_dict() == {'x': INITIAL_SPEEDX, 'y': INITIAL_SPEEDY}, "Ball speed should be initialized to the default value"
+    assert ball.speed.to_dict() == {'x': INITIAL_SPEED_X, 'y': INITIAL_SPEED_Y}, "Ball speed should be initialized to the default value"
 
 @pytest.mark.passed
 @pytest.mark.ball
@@ -30,7 +30,7 @@ def test_to_dict():
     ball = Ball([])
     assert ball.to_dict() == {
         'position': {'x': round(GAME_WIDTH / 2), 'y': round(GAME_HEIGHT / 2)},
-        'speed': {'x': INITIAL_SPEEDX, 'y': INITIAL_SPEEDY},
+        'speed': {'x': INITIAL_SPEED_X, 'y': INITIAL_SPEED_Y},
         'radius': BALL_RADIUS
     }
 
@@ -50,6 +50,6 @@ def test_move():
     initial_position = ball.position.to_dict()
     ball.move()
     assert ball.position.to_dict() == {
-        'x': initial_position['x'] + INITIAL_SPEEDX,
-        'y': initial_position['y'] + INITIAL_SPEEDY
+        'x': initial_position['x'] + INITIAL_SPEED_X,
+        'y': initial_position['y'] + INITIAL_SPEED_Y
     }

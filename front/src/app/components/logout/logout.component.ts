@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {AuthService} from "../../services/auth/auth.service";
+import { UserService } from '../../services/user/user.service';
+import { WebSocketService } from '../../services/web-socket/web-socket.service';
 
 @Component({
   selector: 'app-logout',
@@ -10,9 +12,13 @@ import {AuthService} from "../../services/auth/auth.service";
 })
 export class LogoutComponent {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private userService: UserService) {}
 
   public logOut() {
     this.authService.logout();
+    this.userService.clearUserData();
+    const logoutChannel = new BroadcastChannel('logoutChannel');
+    logoutChannel.postMessage('logout');
+    logoutChannel.close();
   }
 }

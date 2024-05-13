@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH} from "../../constants";
-import {Position} from "../../services/monitor/monitor.service";
+import {Position} from "../../interfaces/position.interface";
 
 @Component({
   selector: 'app-ball',

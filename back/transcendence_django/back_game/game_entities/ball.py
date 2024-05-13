@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, INITIAL_SPEEDX, INITIAL_SPEEDY, RIGHT_SLOT, LEFT_SLOT
+from back_game.game_settings.game_constants import  GAME_WIDTH, GAME_HEIGHT, BALL_RADIUS, INITIAL_SPEED_X, INITIAL_SPEED_Y, RIGHT_SLOT, LEFT_SLOT
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 import math
@@ -9,25 +9,26 @@ logger = logging.getLogger(__name__)
 
 random_ball_speeds = [
    {
-   Vector(-INITIAL_SPEEDX, 0),
-   Vector(-INITIAL_SPEEDX, -INITIAL_SPEEDY / 2),
-   Vector(-INITIAL_SPEEDX, INITIAL_SPEEDY / 2),
-   Vector(-INITIAL_SPEEDX, INITIAL_SPEEDY / 3),
-   Vector(-INITIAL_SPEEDX, -INITIAL_SPEEDY / 3),
+   Vector(-INITIAL_SPEED_X, 0),
+   Vector(-INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
+   Vector(-INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
+   Vector(-INITIAL_SPEED_X, INITIAL_SPEED_Y / 3),
+   Vector(-INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3),
    },
    {
-   Vector(INITIAL_SPEEDX, 0),
-   Vector(INITIAL_SPEEDX, -INITIAL_SPEEDY / 2),
-   Vector(INITIAL_SPEEDX, INITIAL_SPEEDY / 2),
-   Vector(INITIAL_SPEEDX, -INITIAL_SPEEDY / 3)
+   Vector(INITIAL_SPEED_X, 0),
+   Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
+   Vector(INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
+   Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3)
    }
 ]
 
 class Ball:
-   def __init__(self, paddles):
+   def __init__(self, paddles, hit_wall_func):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
       self.radius = BALL_RADIUS
       self.paddles = paddles
+      self.hit_wall = hit_wall_func
       self.player_turn = 0
       self.__set_random_speed()
 
@@ -57,7 +58,9 @@ class Ball:
       new_position = Position(
          self.position.x + self.speed.x,
          self.position.y + self.speed.y)
-      self.update_position(new_position)
+      update = self.update_position(new_position)
+      ball_position_update = {"ball": {"position": self.position.to_dict()}}
+      return {**update, **ball_position_update} if update is not None else ball_position_update
 
    def update_collision(self, paddle):
       if self.is_paddle_collision(self.position, paddle):
@@ -70,8 +73,9 @@ class Ball:
             collision_point = self.get_collision_point(paddle)
             self.speed = paddle.get_speed_after_collision(collision_point)
             logger.info(f"New speed is: ({self.speed.x}, {self.speed.y})")
-            break
-      self.__update_wall_collision(new_position)
+            return
+      score = self.__update_wall_collision(new_position)
+      return score
 
    def get_collision_point(self, paddle):
       closest_x = max(min(self.position.x, paddle.right), paddle.left)
@@ -129,11 +133,14 @@ class Ball:
 
    def __update_wall_collision(self, new_position):
       if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:
+         player_slot = new_position.x <= self.radius
          self.reset()
+         return self.hit_wall(player_slot)
       elif new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
          self.speed.y *= -1
       else:
          self.position = new_position
+      return None
 
    def reset(self):
       self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)

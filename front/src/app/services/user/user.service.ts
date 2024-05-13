@@ -1,18 +1,53 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import {catchError, map, Observable, of} from 'rxjs';
-import { Router } from "@angular/router";
 import {API_USER} from "../../constants";
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class UserService {
-  constructor(private http: HttpClient) {}
+  private userData: any;
+  private userDataLoaded: Promise<void> | null;
 
-  public getUsername(): Observable<any> {
-    return this.http.get<any>(`${API_USER}/username/`);
+  constructor(private http: HttpClient) {
+    this.userDataLoaded = null;
   }
 
+  private async loadUserData(): Promise<void> {
+    try {
+      this.userData = await this.http.get<User>(`${API_USER}/user_data/`).toPromise();
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    }
+  }
+
+  public whenUserDataLoaded(): Promise<void> {
+    if (!this.userDataLoaded) {
+      this.userDataLoaded = this.loadUserData();
+    }
+    return this.userDataLoaded;
+  }
+
+  private getUserData(): User {
+    return this.userData;
+  }
+
+  public getUsername(): string {
+    return this.getUserData().username;
+  }
+
+  public getUserID(): number {
+    return this.getUserData().id;
+  }
+
+  public clearUserData(): void {
+    this.userData = null;
+    this.userDataLoaded = null;
+  }
 }

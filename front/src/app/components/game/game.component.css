@@ -8,6 +8,19 @@
   justify-content: flex-start;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
+.game-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #aaaaaa;
+  scale: 120%;
+  padding: 5px;
+}
+
 .score-display {
   position: absolute;
   color: rgba(220, 220, 220, 0.5);

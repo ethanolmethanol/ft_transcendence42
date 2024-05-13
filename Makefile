@@ -11,7 +11,7 @@ ENV_FILE		= .env
 
 BROWSER			= firefox
 
-SHELL			= /bin/bash
+SHELL			= bash
 
 CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis
 
@@ -169,10 +169,10 @@ test:
 	cd front/; npm run test
 
 install-mkcert:
-	@$(SHELL) ./scripts/install_mkcert.sh
+	@./scripts/install_mkcert.sh
 
 gen-cert: install-mkcert
-	@$(SHELL) ./scripts/gen_cert.sh
+	@./scripts/gen_cert.sh
 
 clean:
 	@${COMPOSE} down -v

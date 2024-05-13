@@ -2,47 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_GAME } from "../../constants";
-
-export interface Position {
-  x: number;
-  y: number;
-}
-
-interface Vector extends Position {}
-
-interface Ball {
-  position: Position;
-  speed: Vector;
-  radius: number;
-}
-
-interface Paddle {
-  slot: number;
-  position: Position;
-  speed: number;
-  width: number;
-  height: number;
-}
-
-interface Map {
-  width: number;
-  height: number;
-}
-
-export interface ArenaResponse {
-  id: string;
-  status: number;
-  players: number[];
-  scores: number[];
-  ball: Ball;
-  paddles: Paddle[];
-  map: Map;
-}
-
-export interface WebSocketUrlResponse {
-  channelID: string;
-  arena: ArenaResponse;
-}
+import { WebSocketUrlResponse } from "../../interfaces/web-socket-url-response.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -55,3 +15,4 @@ export class MonitorService {
     return this.http.post<WebSocketUrlResponse>(`${API_GAME}/get_channel_id/`, postData);
   }
 }
+

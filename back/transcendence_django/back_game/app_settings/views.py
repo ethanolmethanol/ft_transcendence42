@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 async def getChannelID(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
-        username = data['username']
+        user_id = data['user_id']
         playerSpecs = data['playerSpecs']
-        channel = await monitor.getChannel(username, playerSpecs)
+        channel = await monitor.getChannel(user_id, playerSpecs)
         return JsonResponse(channel, status=200)
     except Exception as e:
         logger.error(e)

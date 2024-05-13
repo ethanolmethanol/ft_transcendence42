@@ -88,9 +88,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        depends_on:
-            back_game:
-                condition: service_healthy
         healthcheck:
             test: 'curl -kfsSL https://localhost:443/'
             interval: 5s
