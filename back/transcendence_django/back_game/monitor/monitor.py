@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class Monitor:
 
     def __init__(self):
-        self.channels = {} # key: channelID, value: dict [key: arenaID, value: arena]
+        self.channels = {}  # key: channelID, value: dict [key: arenaID, value: arena]
         self.userGameTable = {}
 
     def generateRandomID(self, length):
@@ -26,9 +26,14 @@ class Monitor:
         newArena = Arena(players_pecs)
         channelID = self.generateRandomID(10)
         self.channels[channelID] = {newArena.id: newArena}
-        asyncio.create_task(self.monitor_arenas_loop(channelID, self.channels[channelID]))
+        asyncio.create_task(
+            self.monitor_arenas_loop(channelID, self.channels[channelID])
+        )
         asyncio.create_task(self.run_game_loop(self.channels[channelID].values()))
-        self.userGameTable[user_id] = {"channelID": channelID, "arena": newArena.to_dict()}
+        self.userGameTable[user_id] = {
+            "channelID": channelID,
+            "arena": newArena.to_dict()
+        }
         return self.userGameTable[user_id]
 
     def get_channel_from_user_id(self, user_id):
@@ -48,7 +53,10 @@ class Monitor:
         arenas.pop(arenaID)
 
     def addUser(self, user_id, channelID, arenaID):
-        self.userGameTable[user_id] = {"channelID": channelID, "arena": self.channels[channelID][arenaID].to_dict()}
+        self.userGameTable[user_id] = {
+            "channelID": channelID,
+            "arena": self.channels[channelID][arenaID].to_dict()
+        }
 
     def deleteUser(self, user_id):
         try:
@@ -58,7 +66,10 @@ class Monitor:
             pass
 
     def is_user_in_game(self, user_id, channelID, arenaID):
-        return self.userGameTable.get(user_id) == {"channelID": channelID, "arena": arenaID}
+        return self.userGameTable.get(user_id) == {
+            "channelID": channelID,
+            "arena": arenaID
+        }
 
     def deleteChannel(self, channelID):
         del self.channels[channelID]
@@ -97,5 +108,6 @@ class Monitor:
                 self.deleteArena(arenas, arena.id)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
+
 
 monitor = Monitor()

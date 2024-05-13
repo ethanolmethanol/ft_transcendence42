@@ -36,7 +36,7 @@ class Paddle:
 
     def __calculate_axis_2_players(self):
         demi_height = self.height / 2
-        if (self.slot == 1):
+        if self.slot == 1:
             start = Position(PADDLE_OFFSET, demi_height)
             end = Position(PADDLE_OFFSET, GAME_HEIGHT - demi_height)
         else:
@@ -45,23 +45,25 @@ class Paddle:
         return {"start": start.round(), "end": end.round()}
 
     def __calculate_regular_axis(self, num_players):
-        angle =  2 * math.pi * (self.slot - 1) / num_players
+        angle = 2 * math.pi * (self.slot - 1) / num_players
 
         start = Position(
             GAME_HEIGHT / 2 + GAME_HEIGHT / 2 * math.sin(angle),
-            GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle)
+            GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle),
         )
         end = Position(
             GAME_HEIGHT / 2 + GAME_HEIGHT / 2 * math.sin(angle + math.pi),
-            GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle + math.pi)
+            GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle + math.pi),
         )
-        log.info(f"Slot: {self.slot}, Angle: {angle}, Start: {start.to_dict()}, End: {end.to_dict()}")
+        log.info(
+            f"Slot: {self.slot}, Angle: {angle}, Start: {start.to_dict()}, End: {end.to_dict()}"
+        )
         return {"start": start.round(), "end": end.round()}
 
     def __convert_rate_to_position(self, rate):
         return Position(
             self.axis["start"].x + (self.axis["end"].x - self.axis["start"].x) * rate,
-            self.axis["start"].y + (self.axis["end"].y - self.axis["start"].y) * rate
+            self.axis["start"].y + (self.axis["end"].y - self.axis["start"].y) * rate,
         ).round()
 
     def __get_convexity_center(self):
@@ -96,7 +98,9 @@ class Paddle:
     def get_speed_after_collision(self, collision_point):
         speed_component = self.get_speed_direction(collision_point)
         u_speed = speed_component.unit_vector()
-        return Vector(INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y)
+        return Vector(
+            INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y
+        )
 
     def get_speed_direction(self, collision_point):
         if self.slot == LEFT_SLOT:
