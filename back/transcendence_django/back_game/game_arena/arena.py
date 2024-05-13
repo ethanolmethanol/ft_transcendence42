@@ -97,7 +97,7 @@ class Arena:
          logger.info(f"Point was scored for {playername}. Their score is {player.score}")
          if player.score == MAXIMUM_SCORE:
             self.conclude_game()
-         return {"score": {"playername": playername}}
+         return {"score": {"player_name": playername}}
       else:
          raise NotImplementedError() # TODO
 

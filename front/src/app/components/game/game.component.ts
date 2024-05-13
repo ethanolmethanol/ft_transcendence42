@@ -37,7 +37,7 @@ interface BallUpdateResponse {
 }
 
 interface ScoreUpdateResponse {
-  playername: string;
+  player_name: string;
 }
 
 interface GameOverUpdateResponse {
@@ -195,7 +195,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private updateScore(score: ScoreUpdateResponse) {
     if (this.paddles.length == 2) {
-      if (score.playername == "Player1")
+      if (score.player_name == "Player1")
         this.player1Score += 1;
       else this.player2Score += 1;
     }
