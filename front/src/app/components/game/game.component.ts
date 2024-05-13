@@ -147,11 +147,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
           console.log('You were kicked due to inactivity.');
           this.redirectToHome();
         } else {
-          const left_time = Math.round(afkResponse.time_left);
+          const left_time = afkResponse.time_left;
           console.log("Warning: You will be kicked in " + left_time + " seconds.");
           const paddle = this.paddles.find(p => p.playername === afkResponse.player_name);
           if (paddle) {
-            paddle.afkLeftTime = Math.round(left_time);
+            paddle.afkLeftTime = left_time;
           }
         }
       }
