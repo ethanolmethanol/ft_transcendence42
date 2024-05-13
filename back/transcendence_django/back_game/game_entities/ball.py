@@ -40,9 +40,9 @@ class Ball:
 
    def to_dict(self):
       return {
-         'position': self.position.to_dict(),
-         'speed': self.speed.to_dict(),
-         'radius': self.radius
+         "position": self.position.to_dict(),
+         "speed": self.speed.to_dict(),
+         "radius": self.radius
       }
 
    def set_position(self, position):

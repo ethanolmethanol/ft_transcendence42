@@ -14,6 +14,6 @@ class Position:
 
    def to_dict(self):
       return {
-         'x': self.x,
-         'y': self.y
+         "x": self.x,
+         "y": self.y
       }

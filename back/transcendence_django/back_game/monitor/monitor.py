@@ -14,7 +14,7 @@ class Monitor:
 
     def generateRandomID(self, length):
         letters_and_digits = string.ascii_letters + string.digits
-        return ''.join(random.choice(letters_and_digits) for _ in range(length))
+        return "".join(random.choice(letters_and_digits) for _ in range(length))
 
     async def getChannel(self, user_id, playerSpecs):
         channel = self.get_channel_from_user_id(user_id)
@@ -91,7 +91,7 @@ class Monitor:
         time = TIMEOUT_GAME_OVER + 1
         while arena.status == DYING and time > 0:
             time -= TIMEOUT_INTERVAL
-            await arena.game_over_callback('Game Over! Thank you for playing.', time)
+            await arena.game_over_callback("Game Over! Thank you for playing.", time)
             if time == 0:
                 arena.status = DEAD
                 self.deleteArena(arenas, arena.id)

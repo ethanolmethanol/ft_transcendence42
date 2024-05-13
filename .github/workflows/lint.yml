@@ -43,4 +43,12 @@ jobs:
           cp -r venv /home/runner/work/_temp/_github_workflow
       - name: Super-linter
         uses: super-linter/super-linter@v6.3.0  # x-release-please-version
-        env_file: .github/super-linter.env
+        with:
+          envFile: '.github/super-linter.env'
+          expand: 'true'
+          # To report GitHub Actions status checks
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # VALIDATE_TYPESCRIPT_STANDARD: false
+          # PYTHON_PYLINT_CONFIG_FILE: .pylintrc
+          # PYTHONPATH: "/github/workspace/:\
+          #   /github/workflow/venv/lib/python3.12/site-packages"

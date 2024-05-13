@@ -146,7 +146,7 @@ class Arena:
       return kicked_players
 
    def __fill_player_specs(self, playerSpecs):
-      self.nbPlayers = playerSpecs['nbPlayers']
+      self.nbPlayers = playerSpecs["nbPlayers"]
       if self.nbPlayers not in range (MIN_PLAYER, MAX_PLAYER):
          raise ValueError("The number of players is out of allowed range.")
       self.mode = playerSpecs['mode']
@@ -156,7 +156,7 @@ class Arena:
    def __register_player(self, user_id, player_name):
       player = Player(user_id, player_name)
       self.players[player_name] = player
-      self.paddles[player_name] = self.paddles.pop(f'{len(self.players)}')  # Update the key in the paddles dictionary
+      self.paddles[player_name] = self.paddles.pop(f"{len(self.players)}")  # Update the key in the paddles dictionary
       if self.is_full():
          self.start_game()
 

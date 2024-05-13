@@ -23,7 +23,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.user_id = None
 
     async def connect(self):
-        self.channelID = self.scope['url_route']['kwargs']['channelID']
+        self.channelID = self.scope["url_route"]["kwargs"]["channelID"]
         await self.accept()
         if monitor.channels.get(self.channelID) == None:
             await self.send_error({"code": INVALID_CHANNEL, "message": "Unknown channelID"})
@@ -31,7 +31,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.add_user_to_channel_group()
 
     async def add_user_to_channel_group(self):
-        self.room_group_name = f'game_{self.channelID}'
+        self.room_group_name = f"game_{self.channelID}"
         log.info(f"User Connected to {self.room_group_name}")
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -52,13 +52,13 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive(self, text_data=None, bytes_data=None):
         content = json.loads(text_data)
-        message_type, message = content['type'], content['message']
+        message_type, message = content["type"], content["message"]
         message_binding = {
-            'move_paddle': self.move_paddle,
-            'join': self.join,
-            'leave': self.leave,
-            'give_up': self.give_up,
-            'rematch': self.rematch
+            "move_paddle": self.move_paddle,
+            "join": self.join,
+            "leave": self.leave,
+            "give_up": self.give_up,
+            "rematch": self.rematch
         }
         try:
             await message_binding[message_type](message)
@@ -113,8 +113,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def move_paddle(self, message: dict):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
-        player_name = message['player']
-        direction = message['direction']
+        player_name = message["player"]
+        direction = message["direction"]
         paddle_data = self.arena.move_paddle(player_name, direction)
         await self.send_update({"paddle": paddle_data})
 
@@ -122,36 +122,36 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"Game over: {self.arena.get_winner()} wins. {time} seconds left.")
         await self.send_update({
             "gameover": {
-                'winner': f'{self.arena.get_winner()}',
-                'time': time,
-                'message': game_over_message
+                "winner": f"{self.arena.get_winner()}",
+                "time": time,
+                "message": game_over_message
                 }
             })
 
     async def game_message(self, event):
-        message = event['message']
+        message = event["message"]
         await self.send(text_data=json.dumps({
-            'type': "game_message",
-            'message': message
+            "type": "game_message",
+            "message": message
         }))
 
     async def game_error(self, event):
-        error = event['error']
+        error = event["error"]
         await self.send(text_data=json.dumps({
-            'type': "game_error",
-            'error': error
+            "type": "game_error",
+            "error": error
         }))
 
     async def game_update(self, event):
-        message = event['update']
+        message = event["update"]
         await self.send(text_data=json.dumps({
-            'type': "game_update",
-            'update': message
+            "type": "game_update",
+            "update": message
         }))
 
 
     async def send_error(self, error):
-        log.info(f"Sending error: {error['code']}: {error['message']}")
+        log.info(f"Sending error: {error["code"]}: {error["message"]}")
         await self.send(text_data=json.dumps({
             "type": "game_error",
             "error": error
@@ -161,14 +161,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info(f"Sending update: {update}")
         await self.send_data({
             "type": "game_update",
-            'update': update
+            "update": update
         })
 
     async def send_message(self, message):
         log.info(f"Sending message: {message}")
         await self.send_data({
             "type": "game_message",
-            'message': message
+            "message": message
         })
 
     async def send_data(self, data):

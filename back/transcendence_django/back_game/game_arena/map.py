@@ -11,6 +11,6 @@ class Map:
 
    def to_dict(self):
       return {
-         'width': self.width,
-         'height': self.height
+         "width": self.width,
+         "height": self.height
       }

@@ -39,7 +39,7 @@ class Paddle:
       else:
          start = Position(GAME_WIDTH - PADDLE_OFFSET, demi_height)
          end = Position(GAME_WIDTH - PADDLE_OFFSET, GAME_HEIGHT - demi_height)
-      return {'start': start.round(), 'end': end.round()}
+      return {"start": start.round(), "end": end.round()}
 
    def __calculate_regular_axis(self, num_players):
       angle =  2 * math.pi * (self.slot - 1) / num_players
@@ -53,12 +53,12 @@ class Paddle:
          GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle + math.pi)
       )
       log.info(f"Slot: {self.slot}, Angle: {angle}, Start: {start.to_dict()}, End: {end.to_dict()}")
-      return {'start': start.round(), 'end': end.round()}
+      return {"start": start.round(), "end": end.round()}
 
    def __convert_rate_to_position(self, rate):
       return Position(
-         self.axis['start'].x + (self.axis['end'].x - self.axis['start'].x) * rate,
-         self.axis['start'].y + (self.axis['end'].y - self.axis['start'].y) * rate
+         self.axis["start"].x + (self.axis["end"].x - self.axis["start"].x) * rate,
+         self.axis["start"].y + (self.axis["end"].y - self.axis["start"].y) * rate
       ).round()
 
    def __get_convexity_center(self):
@@ -71,11 +71,11 @@ class Paddle:
 
    def to_dict(self):
       return {
-         'slot': self.slot,
-         'position': self.position.to_dict(),
-         'speed': self.speed,
-         'width': self.width,
-         'height': self.height,
+         "slot": self.slot,
+         "position": self.position.to_dict(),
+         "speed": self.speed,
+         "width": self.width,
+         "height": self.height,
       }
 
    def reset(self):
@@ -83,8 +83,8 @@ class Paddle:
       self.__update_position()
 
    def update(self, config):
-      self.width = config['width']
-      self.height = config['height']
+      self.width = config["width"]
+      self.height = config["height"]
 
    def move(self, direction):
       self.rate = min(max(self.rate + self.speed * direction, 0), 1)
