@@ -23,6 +23,7 @@ from back_game.game_settings.game_constants import (
 
 logger = logging.getLogger(__name__)
 
+
 class Arena:
     def __init__(self, players_pecs):
         self.__fill_player_specs(players_pecs)

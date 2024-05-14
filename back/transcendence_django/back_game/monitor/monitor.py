@@ -1,7 +1,7 @@
-import string
-import random
-import logging
 import asyncio
+import logging
+import random
+import string
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     MONITOR_LOOP_INTERVAL,
