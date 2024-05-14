@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_TYPESCRIPT_STANDARD: false
           PYTHON_PYLINT_CONFIG_FILE: ".pylintrc"
-          LINTER_RULES_PATH: /github/workspace/.github/linters
+          LINTER_RULES_PATH: .github/linters
           PYTHONPATH: "/github/workspace/:\
             /github/workflow/venv/lib/python3.12/site-packages"
           HADOLINT_IGNORE: "DL3013 DL3018 DL3042"
