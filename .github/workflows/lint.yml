@@ -45,5 +45,5 @@ jobs:
           PYTHON_PYLINT_CONFIG_FILE: .pylintrc
           PYTHONPATH: "/github/workspace/:\
             /github/workflow/venv/lib/python3.12/site-packages"
-          HADOLINT_IGNORE: "DL3013 DL3018 DL3042"
+          HADOLINT_IGNORE: "DL3013 DL3018 DL3042 C0114 C0115"
           FILTER_REGEX_EXCLUDE: "back/transcendence_django/old_tests/*|back/transcendence_django/tests/*"
