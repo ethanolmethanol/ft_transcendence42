@@ -3,7 +3,7 @@ class Position:
         self.x = x
         self.y = y
 
-    def setCoordinates(self, x, y):
+    def set_coordinates(self, x, y):
         self.x = x
         self.y = y
 

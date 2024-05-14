@@ -2,7 +2,7 @@ import json
 import logging
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from ..monitor.monitor import monitor
+from back_game.monitor.monitor import monitor
 
 logger = logging.getLogger(__name__)
 

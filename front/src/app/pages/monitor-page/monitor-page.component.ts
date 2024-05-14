@@ -16,8 +16,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
 
   constructor(private userService: UserService, private router: Router, private monitorService: MonitorService) {}
 
-  private getGameUrl(channelID: string, arenaID: string): string {
-    return `/local-game/${channelID}/${arenaID}`;
+  private getGameUrl(channel_id: string, arena_id: string): string {
+    return `/local-game/${channel_id}/${arena_id}`;
   }
 
   async ngOnInit() : Promise<void> {
@@ -27,7 +27,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       "players_specs": {"nb_players": 2, "mode": 0}
     });
     this.webSocketSubscription = this.monitorService.getWebSocketUrl(postData).subscribe(response => {
-      const gameUrl = this.getGameUrl(response.channelID, response.arena.id);
+      const gameUrl = this.getGameUrl(response.channel_id, response.arena.id);
       this.router.navigateByUrl(gameUrl);
     })}
 

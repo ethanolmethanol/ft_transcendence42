@@ -1,6 +1,6 @@
 import { ArenaResponse } from './arena-response.interface';
 
 export interface WebSocketUrlResponse {
-  channelID: string;
+  channel_id: string;
   arena: ArenaResponse;
 }

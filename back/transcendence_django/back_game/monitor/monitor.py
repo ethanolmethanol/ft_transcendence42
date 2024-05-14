@@ -1,6 +1,15 @@
 import asyncio
 from back_game.game_arena.arena import Arena
-from back_game.game_settings.game_constants import *
+from back_game.game_settings.game_constants import (
+    MONITOR_LOOP_INTERVAL,
+    STARTED,
+    OVER,
+    RUN_LOOP_INTERVAL,
+    DYING,
+    DEAD,
+    TIMEOUT_INTERVAL,
+    TIMEOUT_GAME_OVER
+)
 import logging
 import random
 import string
@@ -9,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Monitor:
 
     def __init__(self):
-        self.channels = {}  # key: channelID, value: dict [key: arenaID, value: arena]
+        self.channels = {}  # key: channel_id, value: dict [key: arena_id, value: arena]
         self.userGameTable = {}
 
     def generateRandomID(self, length):
@@ -24,15 +33,15 @@ class Monitor:
 
     async def getNewChannel(self, user_id, players_pecs):
         newArena = Arena(players_pecs)
-        channelID = self.generateRandomID(10)
-        self.channels[channelID] = {newArena.id: newArena}
+        channel_id = self.generateRandomID(10)
+        self.channels[channel_id] = {newArena.id: newArena}
         asyncio.create_task(
-            self.monitor_arenas_loop(channelID, self.channels[channelID])
+            self.monitor_arenas_loop(channel_id, self.channels[channel_id])
         )
-        asyncio.create_task(self.run_game_loop(self.channels[channelID].values()))
+        asyncio.create_task(self.run_game_loop(self.channels[channel_id].values()))
         self.userGameTable[user_id] = {
-            "channelID": channelID,
-            "arena": newArena.to_dict(),
+            "channel_id": channel_id,
+            "arena": newArena.to_dict()
         }
         return self.userGameTable[user_id]
 
@@ -40,22 +49,22 @@ class Monitor:
         channel = self.userGameTable.get(user_id)
         if channel is None:
             return None
-        channelID = channel["channelID"]
-        arenaID = channel["arena"]["id"]
-        arena = self.channels[channelID][arenaID]
-        channel = {"channelID": channelID, "arena": arena.to_dict()}
+        channel_id = channel["channel_id"]
+        arena_id = channel["arena"]["id"]
+        arena = self.channels[channel_id][arena_id]
+        channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
 
-    def deleteArena(self, arenas, arenaID):
-        player_list = arenas[arenaID].players
+    def deleteArena(self, arenas, arena_id):
+        player_list = arenas[arena_id].players
         for player in player_list.values():
             self.deleteUser(player.user_id)
-        arenas.pop(arenaID)
+        arenas.pop(arena_id)
 
-    def addUser(self, user_id, channelID, arenaID):
+    def addUser(self, user_id, channel_id, arena_id):
         self.userGameTable[user_id] = {
-            "channelID": channelID,
-            "arena": self.channels[channelID][arenaID].to_dict(),
+            "channel_id": channel_id,
+            "arena": self.channels[channel_id][arena_id].to_dict()
         }
 
     def deleteUser(self, user_id):
@@ -65,20 +74,20 @@ class Monitor:
         except KeyError:
             pass
 
-    def is_user_in_game(self, user_id, channelID, arenaID):
+    def is_user_in_game(self, user_id, channel_id, arena_id):
         return self.userGameTable.get(user_id) == {
-            "channelID": channelID,
-            "arena": arenaID,
+            "channel_id": channel_id,
+            "arena": arena_id
         }
 
-    def deleteChannel(self, channelID):
-        del self.channels[channelID]
+    def deleteChannel(self, channel_id):
+        del self.channels[channel_id]
 
-    async def monitor_arenas_loop(self, channelID, arenas):
+    async def monitor_arenas_loop(self, channel_id, arenas):
         while arenas:
             await self.update_game_states(arenas)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        self.deleteChannel(channelID)
+        self.deleteChannel(channel_id)
 
     async def update_game_states(self, arenas):
         for arena in arenas.values():

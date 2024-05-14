@@ -32,22 +32,22 @@ export class ConnectionService {
     });
   }
 
-  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channelID?: string, arenaID?: string) {
-    if (channelID && arenaID) {
+  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id?: string) {
+    if (channel_id && arena_id) {
       // Connect to the existing arena
-      this.accessArena(channelID, arenaID, arenaSetter)
+      this.accessArena(channel_id, arena_id, arenaSetter)
     }
   }
 
-  private accessArena(channelID: string, arenaID: string, arenaSetter: (response: ArenaResponse) => void) {
-    this.webSocketService.connect(channelID);
-    this.handleWebSocketConnection(arenaID, arenaSetter);
+  private accessArena(channel_id: string, arena_id: string, arenaSetter: (response: ArenaResponse) => void) {
+    this.webSocketService.connect(channel_id);
+    this.handleWebSocketConnection(arena_id, arenaSetter);
   }
 
-  private handleWebSocketConnection(arenaID: string, arenaSetter: (response: ArenaResponse) => void){
+  private handleWebSocketConnection(arena_id: string, arenaSetter: (response: ArenaResponse) => void){
     this.connectionOpenedSubscription = this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
       console.log('WebSocket connection opened');
-      this.joinSubscription = this.webSocketService.join(arenaID).subscribe((arena: ArenaResponse) => {
+      this.joinSubscription = this.webSocketService.join(arena_id).subscribe((arena: ArenaResponse) => {
         console.log('Joined arena:', arena);
         arenaSetter(arena);
       });
