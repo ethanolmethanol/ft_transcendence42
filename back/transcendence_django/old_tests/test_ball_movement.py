@@ -4,7 +4,6 @@
 # from game.game_entities.ball import Ball
 
 
-
 # @pytest.mark.middle
 # @pytest.mark.ball
 # def test_ball_initialization(game_config):

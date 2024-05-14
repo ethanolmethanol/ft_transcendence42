@@ -5,6 +5,7 @@ from back_game.game_physics.vector import Vector
 
 
 import logging
+
 log = logging.getLogger(__name__)
 
 
@@ -29,7 +30,7 @@ class Paddle:
         self.convexity_center = self.__get_convexity_center()
 
     def __calculate_axis(self, num_players):
-        if (num_players == 2):
+        if num_players == 2:
             return self.__calculate_axis_2_players()
         else:
             return self.__calculate_regular_axis(num_players)

@@ -18,7 +18,7 @@
 #     # Setup Chrome options
 #     chrome_options = Options()
 #     chrome_options.add_argument("--headless")  # Run in headless mode for testing environments
-    
+
 #     # Initialize the WebDriver (make sure to specify the path to your ChromeDriver)
 #     driver = webdriver.Chrome(options=chrome_options)
 

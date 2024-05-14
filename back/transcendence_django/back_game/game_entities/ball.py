@@ -26,8 +26,8 @@ random_ball_speeds = [
         Vector(INITIAL_SPEED_X, 0),
         Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
         Vector(INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
-        Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3)
-    }
+        Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3),
+    },
 ]
 
 class Ball:
@@ -39,7 +39,6 @@ class Ball:
         self.hit_wall = hit_wall_func
         self.player_turn = 0
         self.__set_random_speed()
-
 
     def update(self, newPosition, newSpeed, newRadius):
         self.position.setCoordinates(newPosition.x, newPosition.y)
@@ -64,11 +63,15 @@ class Ball:
 
     def move(self):
         new_position = Position(
-            self.position.x + self.speed.x,
-            self.position.y + self.speed.y)
+            self.position.x + self.speed.x, self.position.y + self.speed.y
+        )
         update = self.update_position(new_position)
         ball_position_update = {"ball": {"position": self.position.to_dict()}}
-        return {**update, **ball_position_update} if update is not None else ball_position_update
+        return (
+            {**update, **ball_position_update}
+            if update is not None
+            else ball_position_update
+		)
 
     def update_collision(self, paddle):
         if self.is_paddle_collision(self.position, paddle):
@@ -140,11 +143,13 @@ class Ball:
                 return "top"
 
     def __update_wall_collision(self, new_position):
-        if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:
+        collide_x = new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius
+        collide_y = new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
+        if collide_x:
             player_slot = new_position.x <= self.radius
             self.reset()
             return self.hit_wall(player_slot)
-        elif new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius:
+        elif collide_y:
             self.speed.y *= -1
         else:
             self.position = new_position
