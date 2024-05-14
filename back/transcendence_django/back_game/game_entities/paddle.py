@@ -1,5 +1,7 @@
 import logging
 import math
+from back_game.game_physics.position import Position
+from back_game.game_physics.vector import Vector
 from back_game.game_settings.game_constants import (
     LISTENING,
     PADDLE_INITIAL_SPEED_RATE,
@@ -11,10 +13,8 @@ from back_game.game_settings.game_constants import (
     CONVEXITY,
     LEFT_SLOT,
     RIGHT_SLOT,
-    INITIAL_BALL_SPEED_COEFF
+    INITIAL_BALL_SPEED_COEFF,
 )
-from back_game.game_physics.position import Position
-from back_game.game_physics.vector import Vector
 
 log = logging.getLogger(__name__)
 
@@ -68,7 +68,10 @@ class Paddle:
         )
         log.info(
             "Slot: %s, Angle: %s, Start: %s, End: %s",
-            self.slot, angle, start.to_dict(), end.to_dict()
+            self.slot,
+            angle,
+            start.to_dict(),
+            end.to_dict(),
         )
         return {"start": start.round(), "end": end.round()}
 

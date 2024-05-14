@@ -1,6 +1,8 @@
+import logging
 import math
 import random
-import logging
+from back_game.game_physics.position import Position
+from back_game.game_physics.vector import Vector
 from back_game.game_settings.game_constants import (
     GAME_WIDTH,
     GAME_HEIGHT,
@@ -8,8 +10,6 @@ from back_game.game_settings.game_constants import (
     INITIAL_SPEED_X,
     INITIAL_SPEED_Y,
 )
-from back_game.game_physics.position import Position
-from back_game.game_physics.vector import Vector
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class Ball:
         return {
             "position": self.position.to_dict(),
             "speed": self.speed.to_dict(),
-            "radius": self.radius
+            "radius": self.radius,
         }
 
     def set_position(self, position):
@@ -142,8 +142,12 @@ class Ball:
         return "top"
 
     def __update_wall_collision(self, new_position):
-        collide_x = new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius
-        collide_y = new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius
+        collide_x = (
+            new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius
+		)
+        collide_y = (
+            new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius
+		)
         if collide_x:
             player_slot = new_position.x <= self.radius
             self.reset()

@@ -11,7 +11,7 @@ from back_game.game_settings.game_constants import (
     DYING,
     DEAD,
     TIMEOUT_INTERVAL,
-    TIMEOUT_GAME_OVER
+    TIMEOUT_GAME_OVER,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ class Monitor:
         asyncio.create_task(self.run_game_loop(self.channels[channel_id].values()))
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
-            "arena": new_arena.to_dict()
+            "arena": new_arena.to_dict(),
         }
         return self.user_game_table[user_id]
 
@@ -66,7 +66,7 @@ class Monitor:
     def add_user(self, user_id, channel_id, arena_id):
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
-            "arena": self.channels[channel_id][arena_id].to_dict()
+            "arena": self.channels[channel_id][arena_id].to_dict(),
         }
 
     def delete_user(self, user_id):

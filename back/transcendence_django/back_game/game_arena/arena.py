@@ -1,10 +1,9 @@
 import logging
 import time
+from back_game.game_arena.map import Map
+from back_game.game_arena.player import Player, ENABLED, DISABLED
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
-from back_game.game_arena.map import Map
-from back_game.game_arena.player import Player
-from back_game.game_arena.player import ENABLED, DISABLED
 from back_game.game_settings.game_constants import (
     GIVEN_UP,
     LOCAL_MODE,

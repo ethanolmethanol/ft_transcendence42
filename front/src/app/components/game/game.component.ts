@@ -108,6 +108,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         paddle.height = paddleData.height;
         paddle.gameHeight = arena.map.height;
         paddle.gameWidth = arena.map.width;
+		paddle.afkLeftTime = null;
       }
     });
     this.ball.first.positionX = arena.ball.position.x;

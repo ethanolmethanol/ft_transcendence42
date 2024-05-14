@@ -84,10 +84,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "transcendence_django.wsgi.application"
 ASGI_APPLICATION = "transcendence_django.asgi.application"
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('redis', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
         },
     },
 }

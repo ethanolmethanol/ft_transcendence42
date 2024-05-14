@@ -1,4 +1,4 @@
-from back_game.game_settings.game_constants import GAME_WIDTH, GAME_HEIGHT
+from back_game.game_settings.game_constants import GAME_HEIGHT, GAME_WIDTH
 
 
 class Map:
