@@ -63,7 +63,7 @@ class Arena:
             raise ValueError("The player has given up.")
         if not self.__is_player_in_game(user_id) and self.is_full():
             raise ValueError("The arena is full.")
-        elif self.mode == LOCAL_MODE:
+        if self.mode == LOCAL_MODE:
             self.__enter_local_mode(user_id)
         elif user_id in self.players:
             self.players[user_id].status = ENABLED

@@ -2,7 +2,6 @@ import json
 import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from back_game.monitor.monitor import monitor
-from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     INVALID_CHANNEL, 
     INVALID_ARENA, 
@@ -55,7 +54,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             )
         log.info("Disconnect with code: %s", close_code)
 
-    async def receive(self, text_data=None, bytes_data=None):
+    async def receive(self, text_data=None):
         content = json.loads(text_data)
         message_type, message = content["type"], content["message"]
         message_binding = {
@@ -72,20 +71,20 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def join(self, message: dict):
         self.user_id = message["user_id"]
-        arenaID = message["arenaID"]
+        arena_id = message["arena_id"]
         try:
-            self.arena = monitor.channels[self.channel_id][arenaID]
+            self.arena = monitor.channels[self.channel_id][arena_id]
             self.arena.game_update_callback = self.send_update
             self.arena.game_over_callback = self.send_game_over
-        except KeyError:
-            raise ChannelError(INVALID_ARENA, "Unknown arenaID")
+        except KeyError as e:
+            raise ChannelError(INVALID_ARENA, "Unknown arena_id") from e
         try:
             self.arena.enter_arena(self.user_id)
-            if not monitor.is_user_in_game(self.user_id, self.channel_id, arenaID):
-                monitor.addUser(self.user_id, self.channel_id, arenaID)
+            if not monitor.is_user_in_game(self.user_id, self.channel_id, arena_id):
+                monitor.addUser(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)
-            raise ChannelError(NOT_ENTERED, "User cannot join this arena.")
+            raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
         self.joined = True
         await self.send_message(f"{self.user_id} has joined the game.")
         await self.send_update({"arena": self.arena.to_dict()})

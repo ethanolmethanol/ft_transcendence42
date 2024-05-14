@@ -1,6 +1,15 @@
 import asyncio
 from back_game.game_arena.arena import Arena
-from back_game.game_settings.game_constants import *
+from back_game.game_settings.game_constants import (
+    MONITOR_LOOP_INTERVAL,
+    STARTED,
+    OVER,
+    RUN_LOOP_INTERVAL,
+    DYING,
+    DEAD,
+    TIMEOUT_INTERVAL,
+    TIMEOUT_GAME_OVER
+)
 import logging
 import random
 import string
@@ -9,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Monitor:
 
     def __init__(self):
-        self.channels = {}  # key: channel_id, value: dict [key: arenaID, value: arena]
+        self.channels = {}  # key: channel_id, value: dict [key: arena_id, value: arena]
         self.userGameTable = {}
 
     def generateRandomID(self, length):
@@ -41,21 +50,21 @@ class Monitor:
         if channel is None:
             return None
         channel_id = channel["channel_id"]
-        arenaID = channel["arena"]["id"]
-        arena = self.channels[channel_id][arenaID]
+        arena_id = channel["arena"]["id"]
+        arena = self.channels[channel_id][arena_id]
         channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
 
-    def deleteArena(self, arenas, arenaID):
-        player_list = arenas[arenaID].players
+    def deleteArena(self, arenas, arena_id):
+        player_list = arenas[arena_id].players
         for player in player_list.values():
             self.deleteUser(player.user_id)
-        arenas.pop(arenaID)
+        arenas.pop(arena_id)
 
-    def addUser(self, user_id, channel_id, arenaID):
+    def addUser(self, user_id, channel_id, arena_id):
         self.userGameTable[user_id] = {
             "channel_id": channel_id,
-            "arena": self.channels[channel_id][arenaID].to_dict()
+            "arena": self.channels[channel_id][arena_id].to_dict()
         }
 
     def deleteUser(self, user_id):
@@ -65,10 +74,10 @@ class Monitor:
         except KeyError:
             pass
 
-    def is_user_in_game(self, user_id, channel_id, arenaID):
+    def is_user_in_game(self, user_id, channel_id, arena_id):
         return self.userGameTable.get(user_id) == {
             "channel_id": channel_id,
-            "arena": arenaID
+            "arena": arena_id
         }
 
     def deleteChannel(self, channel_id):

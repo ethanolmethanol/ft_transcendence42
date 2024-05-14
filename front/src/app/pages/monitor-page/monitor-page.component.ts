@@ -16,8 +16,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
 
   constructor(private userService: UserService, private router: Router, private monitorService: MonitorService) {}
 
-  private getGameUrl(channel_id: string, arenaID: string): string {
-    return `/local-game/${channel_id}/${arenaID}`;
+  private getGameUrl(channel_id: string, arena_id: string): string {
+    return `/local-game/${channel_id}/${arena_id}`;
   }
 
   async ngOnInit() : Promise<void> {

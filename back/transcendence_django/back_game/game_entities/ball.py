@@ -37,6 +37,7 @@ class Ball:
         self.paddles = paddles
         self.hit_wall = hit_wall_func
         self.player_turn = 0
+        self.speed = None
         self.__set_random_speed()
 
 
@@ -117,7 +118,8 @@ class Ball:
 
     def get_collision_side(self, position, paddle):
         """
-        Determines which side of the paddle the ball collides with, accurately considering the ball's radius.
+        Determines which side of the paddle the ball collides with, 
+        accurately considering the ball's radius.
         """
         closest_x = max(min(position.x, paddle.right), paddle.left)
         closest_y = max(min(position.y, paddle.bottom), paddle.top)
@@ -131,10 +133,9 @@ class Ball:
             if distance_x > paddle.position.x - position.x:
                 return "right"
             return "left"
-        else:
-            if distance_y > paddle.position.y - position.y:
-                return "bottom"
-            return "top"
+        if distance_y > paddle.position.y - position.y:
+            return "bottom"
+        return "top"
 
     def __update_wall_collision(self, new_position):
         if new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius:

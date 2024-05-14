@@ -118,11 +118,11 @@ export class WebSocketService implements OnInit, OnDestroy {
     }
   }
 
-  public join(arenaID: string): Observable<ArenaResponse> {
-    console.log(`Join ${arenaID}`);
+  public join(arena_id: string): Observable<ArenaResponse> {
+    console.log(`Join ${arena_id}`);
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"user_id": this.userService.getUserID(), "arenaID": arenaID});
+      this.send('join', {"user_id": this.userService.getUserID(), "arena_id": arena_id});
       this.getMessages().subscribe(message => {
         const data = JSON.parse(message);
         if (data.type === 'arena') {

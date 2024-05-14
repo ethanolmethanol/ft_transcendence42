@@ -52,9 +52,9 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     // Now you can safely access this.game.first
     this.route.params.subscribe(params => {
       const channel_id = params['channel_id'];
-      const arenaID = params['arenaID'];
+      const arena_id = params['arena_id'];
       console.log('Channel ID:', channel_id);
-      this.connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arenaID);
+      this.connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
     });
   }
 

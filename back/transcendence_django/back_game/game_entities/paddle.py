@@ -26,6 +26,7 @@ class Paddle:
         self.width = PADDLE_WIDTH
         self.height = PADDLE_HEIGHT
         self.rate = 0.5
+        self.distance_from_center = None
         self.axis = self.__calculate_axis(num_players)
         self.__update_position()
         log.info("Paddle created at %s", self.position.to_dict())
@@ -39,7 +40,7 @@ class Paddle:
         self.convexity_center = self.__get_convexity_center()
 
     def __calculate_axis(self, num_players):
-        if (num_players == 2):
+        if num_players == 2:
             return self.__calculate_axis_2_players()
         return self.__calculate_regular_axis(num_players)
 
