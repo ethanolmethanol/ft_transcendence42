@@ -48,4 +48,3 @@ jobs:
           HADOLINT_IGNORE: "DL3013 DL3018 DL3042"
           FILTER_REGEX_EXCLUDE: "back/transcendence_django/old_tests/*|back/transcendence_django/tests/*"
           VALIDATE_PYTHON_PYLINT: true
-          PYTHON_PYLINT_DISABLE: 'C0114,C0115,C0116'

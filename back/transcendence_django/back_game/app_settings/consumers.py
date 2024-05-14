@@ -3,15 +3,12 @@ import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from back_game.monitor.monitor import monitor
 from back_game.game_settings.game_constants import (
-    INVALID_CHANNEL, 
-    INVALID_ARENA, 
-    NOT_ENTERED, 
-    NOT_JOINED
-)
+    INVALID_CHANNEL, INVALID_ARENA, NOT_ENTERED, NOT_JOINED)
 
 log = logging.getLogger(__name__)
 
 class ChannelError(Exception):
+
     def __init__(self, code, message):
         self.code = code
         self.message = message

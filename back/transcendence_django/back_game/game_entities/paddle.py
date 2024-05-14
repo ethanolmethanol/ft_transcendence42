@@ -16,9 +16,6 @@ from back_game.game_settings.game_constants import (
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 
-
-import logging
-
 log = logging.getLogger(__name__)
 
 class Paddle:
@@ -120,6 +117,6 @@ class Paddle:
         if self.slot == LEFT_SLOT:
             speed_component_x = self.distance_from_center
         elif self.slot == RIGHT_SLOT:
-            speed_component_x = -self.distance_from_center
+            speed_component_x = (-1) * self.distance_from_center
         speed_component_y = collision_point.y - self.convexity_center.y
         return Vector(speed_component_x, speed_component_y)
