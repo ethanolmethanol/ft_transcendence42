@@ -16,7 +16,7 @@ describe('GameComponent', () => {
         imports: [HttpClientTestingModule, GameComponent, PaddleComponent],
         providers: [WebSocketService]
       }).compileComponents();
-
+zz
       fixture = TestBed.createComponent(GameComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();

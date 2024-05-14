@@ -9,11 +9,11 @@
 # 		"username": "TestUser",
 # 		"playerMode": {"nbPlayers": 2, "mode": 0}
 # 	}
-# 	channel = await monitor.getChannel(request)
+# 	channel = await monitor.get_channel(request)
 # 	# logging.debug(monitor.arenas)
 # 	assert(channel == monitor.channels[channel["channel_id"]])
-# 	monitor.deleteArena(channel["channel_id"], channel["arena"]["id"])
-# 	monitor.deleteChannel(channel)
+# 	monitor.delete_arena(channel["channel_id"], channel["arena"]["id"])
+# 	monitor.delete_channel(channel)
 # 	assert(0 == len(monitor.channels))
 
 # # @pytest.mark.passed

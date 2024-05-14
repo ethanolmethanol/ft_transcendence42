@@ -126,7 +126,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
-        'gameover': (value: GameOverUpdateResponse) => { this.gameOver(value) },
+        'game_over': (value: GameOverUpdateResponse) => { this.gameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
         'give_up': (value: number) => { this.giveUp(value) },

@@ -13,7 +13,7 @@ async def get_channel_id(request):
         data = json.loads(request.body.decode("utf-8"))
         user_id = data["user_id"]
         players_specs = data["players_specs"]
-        channel = await monitor.getChannel(user_id, players_specs)
+        channel = await monitor.get_channel(user_id, players_specs)
         return JsonResponse(channel, status=200)
     except Exception as e:
         logger.error(e)

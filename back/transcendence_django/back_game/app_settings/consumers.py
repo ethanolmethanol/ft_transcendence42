@@ -81,7 +81,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         try:
             self.arena.enter_arena(self.user_id)
             if not monitor.is_user_in_game(self.user_id, self.channel_id, arena_id):
-                monitor.addUser(self.user_id, self.channel_id, arena_id)
+                monitor.add_user(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
@@ -100,7 +100,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to give up without joining.")
         self.arena.player_gave_up(self.user_id)
-        monitor.deleteUser(self.user_id)
+        monitor.delete_user(self.user_id)
         self.joined = False
         await self.send_message(f"{self.user_id} has given up.")
         await self.send_update({"give_up": self.user_id})
@@ -125,7 +125,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def send_game_over(self, game_over_message, time):
         log.info("Game over: %s wins. %s seconds left.", self.arena.get_winner(), time)
         await self.send_update({
-            "gameover": {
+            "game_over": {
                 "winner": f"{self.arena.get_winner()}",
                 "time": time,
                 "message": game_over_message
