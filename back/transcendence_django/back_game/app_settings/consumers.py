@@ -131,7 +131,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 "game_over": {
                     "winner": f"{self.arena.get_winner()}",
                     "time": time,
-                    "message": game_over_message
+                    "message": game_over_message,
                 }
             }
         )
