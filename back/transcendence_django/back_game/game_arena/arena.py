@@ -139,7 +139,7 @@ class Arena:
             paddle.move(direction)
             try:
                 self.ball.update_collision(paddle)
-            except:
+            except ValueError :
                 logger.error("Paddle cannot move due to collision.")
                 paddle.move(-direction)
             paddle.status = LISTENING
