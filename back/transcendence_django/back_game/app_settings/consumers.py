@@ -3,7 +3,12 @@ import logging
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from back_game.monitor.monitor import monitor
 from back_game.game_arena.arena import Arena
-from back_game.game_settings.game_constants import *
+from back_game.game_settings.game_constants import (
+    INVALID_CHANNEL, 
+    INVALID_ARENA, 
+    NOT_ENTERED, 
+    NOT_JOINED
+)
 
 log = logging.getLogger(__name__)
 
@@ -16,23 +21,23 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.channelID = None
+        self.channel_id = None
         self.arena = None
         self.room_group_name = None
         self.joined = False
         self.user_id = None
 
     async def connect(self):
-        self.channelID = self.scope["url_route"]["kwargs"]["channelID"]
+        self.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
         await self.accept()
-        if monitor.channels.get(self.channelID) == None:
-            await self.send_error({"code": INVALID_CHANNEL, "message": "Unknown channelID"})
+        if monitor.channels.get(self.channel_id) is None:
+            await self.send_error({"code": INVALID_CHANNEL, "message": "Unknown channel_id"})
         else:
             await self.add_user_to_channel_group()
 
     async def add_user_to_channel_group(self):
-        self.room_group_name = f"game_{self.channelID}"
-        log.info(f"User Connected to {self.room_group_name}")
+        self.room_group_name = f"game_{self.channel_id}"
+        log.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -48,7 +53,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 self.room_group_name,
                 self.channel_name
             )
-        log.info(f"Disconnect with code: {close_code}")
+        log.info("Disconnect with code: %s", close_code)
 
     async def receive(self, text_data=None, bytes_data=None):
         content = json.loads(text_data)
@@ -69,17 +74,17 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.user_id = message["user_id"]
         arenaID = message["arenaID"]
         try:
-            self.arena = monitor.channels[self.channelID][arenaID]
+            self.arena = monitor.channels[self.channel_id][arenaID]
             self.arena.game_update_callback = self.send_update
             self.arena.game_over_callback = self.send_game_over
         except KeyError:
             raise ChannelError(INVALID_ARENA, "Unknown arenaID")
         try:
             self.arena.enter_arena(self.user_id)
-            if not monitor.is_user_in_game(self.user_id, self.channelID, arenaID):
-                monitor.addUser(self.user_id, self.channelID, arenaID)
+            if not monitor.is_user_in_game(self.user_id, self.channel_id, arenaID):
+                monitor.addUser(self.user_id, self.channel_id, arenaID)
         except (KeyError, ValueError) as e:
-            log.error(f"Error: {e}")
+            log.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.")
         self.joined = True
         await self.send_message(f"{self.user_id} has joined the game.")
@@ -119,7 +124,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({"paddle": paddle_data})
 
     async def send_game_over(self, game_over_message, time):
-        log.info(f"Game over: {self.arena.get_winner()} wins. {time} seconds left.")
+        log.info("Game over: %s wins. %s seconds left.", self.arena.get_winner(), time)
         await self.send_update({
             "gameover": {
                 "winner": f"{self.arena.get_winner()}",
@@ -151,21 +156,21 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
 
     async def send_error(self, error):
-        log.info(f"Sending error: {error["code"]}: {error["message"]}")
+        log.info("Sending error: %s: %s", error["code"], error["message"])
         await self.send(text_data=json.dumps({
             "type": "game_error",
             "error": error
         }))
 
     async def send_update(self, update):
-        log.info(f"Sending update: {update}")
+        log.info("Sending update: %s", update)
         await self.send_data({
             "type": "game_update",
             "update": update
         })
 
     async def send_message(self, message):
-        log.info(f"Sending message: {message}")
+        log.info("Sending message: %s", message)
         await self.send_data({
             "type": "game_message",
             "message": message
@@ -175,4 +180,3 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_send(
             self.room_group_name, data
         )
-

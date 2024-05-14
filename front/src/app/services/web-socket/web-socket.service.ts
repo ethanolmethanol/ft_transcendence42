@@ -28,20 +28,20 @@ export class WebSocketService implements OnInit, OnDestroy {
     };
   }
 
-  public connect(channelID: string): void {
+  public connect(channel_id: string): void {
     this.userService.whenUserDataLoaded().then(() => {
-      this.attemptToConnect(channelID);
+      this.attemptToConnect(channel_id);
     });
   }
 
-  private attemptToConnect(channelID: string): void {
+  private attemptToConnect(channel_id: string): void {
     if (this.socket) {
       console.log('WebSocket connection already open');
       return;
     }
 
-    console.log('Connecting to WebSocket -> ', channelID);
-    const url = `wss://localhost:8001/ws/game/${channelID}/`;
+    console.log('Connecting to WebSocket -> ', channel_id);
+    const url = `wss://localhost:8001/ws/game/${channel_id}/`;
 
     const socket = new WebSocket(url);
 

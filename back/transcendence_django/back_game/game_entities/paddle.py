@@ -1,12 +1,22 @@
+import logging
 import math
-from back_game.game_settings.game_constants import *
+from back_game.game_settings.game_constants import (
+    LISTENING,
+    PADDLE_INITIAL_SPEED_RATE,
+    PADDLE_WIDTH,
+    PADDLE_HEIGHT,
+    PADDLE_OFFSET,
+    GAME_HEIGHT,
+    GAME_WIDTH,
+    CONVEXITY,
+    LEFT_SLOT,
+    RIGHT_SLOT,
+    INITIAL_BALL_SPEED_COEFF
+)
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 
-
-import logging
 log = logging.getLogger(__name__)
-
 
 class Paddle:
     def __init__(self, slot=1, num_players=2):
@@ -18,7 +28,7 @@ class Paddle:
         self.rate = 0.5
         self.axis = self.__calculate_axis(num_players)
         self.__update_position()
-        log.info(f"Paddle created at {self.position.to_dict()}")
+        log.info("Paddle created at %s", self.position.to_dict())
 
     def __update_position(self):
         self.position = self.__convert_rate_to_position(self.rate)
@@ -31,8 +41,7 @@ class Paddle:
     def __calculate_axis(self, num_players):
         if (num_players == 2):
             return self.__calculate_axis_2_players()
-        else:
-            return self.__calculate_regular_axis(num_players)
+        return self.__calculate_regular_axis(num_players)
 
     def __calculate_axis_2_players(self):
         demi_height = self.height / 2
@@ -56,7 +65,8 @@ class Paddle:
             GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle + math.pi),
         )
         log.info(
-            f"Slot: {self.slot}, Angle: {angle}, Start: {start.to_dict()}, End: {end.to_dict()}"
+            "Slot: %s, Angle: %s, Start: %s, End: %s", 
+            self.slot, angle, start.to_dict(), end.to_dict()
         )
         return {"start": start.round(), "end": end.round()}
 
