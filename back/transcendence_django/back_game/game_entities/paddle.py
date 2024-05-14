@@ -16,6 +16,9 @@ from back_game.game_settings.game_constants import (
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 
+
+import logging
+
 log = logging.getLogger(__name__)
 
 class Paddle:
@@ -66,7 +69,7 @@ class Paddle:
             GAME_WIDTH / 2 + GAME_WIDTH / 2 * math.cos(angle + math.pi),
         )
         log.info(
-            "Slot: %s, Angle: %s, Start: %s, End: %s", 
+            "Slot: %s, Angle: %s, Start: %s, End: %s",
             self.slot, angle, start.to_dict(), end.to_dict()
         )
         return {"start": start.round(), "end": end.round()}

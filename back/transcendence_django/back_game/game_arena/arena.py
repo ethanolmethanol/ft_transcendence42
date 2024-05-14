@@ -18,7 +18,7 @@ from back_game.game_settings.game_constants import (
     AFK_WARNING_THRESHOLD,
     MIN_PLAYER,
     MAX_PLAYER,
-    ONLINE_MODE
+    ONLINE_MODE,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class Arena:
         self.status = WAITING
         self.players = {}
         self.paddles = {
-            f'{i + 1}': Paddle(i + 1, self.nb_players) for i in range(self.nb_players)
+            f"{i + 1}": Paddle(i + 1, self.nb_players) for i in range(self.nb_players)
         }
         self.ball = Ball(self.paddles.values(), self.ball_hit_wall)
         self.map = Map()  # depends on the number of players
@@ -162,10 +162,9 @@ class Arena:
         for player in self.players.values():
             time_left = player.last_activity_time + AFK_TIMEOUT - current_time
             if time_left <= AFK_WARNING_THRESHOLD:
-                kicked_players.append({
-                    "player_name": player.player_name,
-                    "time_left": round(time_left)
-                })
+                kicked_players.append(
+                    {"player_name": player.player_name, "time_left": round(time_left)}
+                )
             logger.info("Player %s was kicked due to inactivity.", player.player_name)
             if time_left <= 0:
                 self.player_gave_up(player.user_id)
@@ -175,16 +174,14 @@ class Arena:
         self.nb_players = players_specs["nb_players"]
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError("The number of players is out of allowed range.")
-        self.mode = players_specs['mode']
+        self.mode = players_specs["mode"]
         if self.mode not in (LOCAL_MODE, ONLINE_MODE):
             raise ValueError("The mode is invalid.")
 
     def __register_player(self, user_id, player_name):
         player = Player(user_id, player_name)
         self.players[player_name] = player
-        self.paddles[player_name] = self.paddles.pop(
-            f"{len(self.players)}"
-        )
+        self.paddles[player_name] = self.paddles.pop(f"{len(self.players)}")
         if self.is_full():
             self.start_game()
 

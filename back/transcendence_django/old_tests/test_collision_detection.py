@@ -16,7 +16,7 @@
 # def test_ball_paddle_collision(ball_velocity, steps, paddle_delta, expected_collision):
 #     ball = Ball()
 #     paddle = Paddle(LEFT)
-    
+
 #     # Simulate the ball's movement to the desired starting position
 #     for _ in range(steps):
 #         ball.update_velocity(ball_velocity)
@@ -73,4 +73,3 @@
 #     assert game.ball_velocity['x'] > 0 and game.ball_velocity['y'] > 0, "Ball did not bounce off the corner correctly."
 
 #     # Add more scenarios as needed, such as edge of paddle collisions, to fully test your collision logic.
-

@@ -26,8 +26,8 @@
 #         'paddle_positions': {'left': 1, 'right': 1},
 #     }
 #     response = authenticated_client.patch(
-#         f'/api/game/{unauthorized_game.id}/update/', 
-#         data=json.dumps(data), 
+#         f'/api/game/{unauthorized_game.id}/update/',
+#         data=json.dumps(data),
 #         content_type='application/json'
 #     )
 #     assert response.status_code == 403
@@ -39,15 +39,15 @@
 #         'ball_position': {'x': 100, 'y': 100},
 #     }
 #     response = authenticated_client.patch(
-#         f'/api/game/{game.id}/update/', 
-#         data=json.dumps(data), 
+#         f'/api/game/{game.id}/update/',
+#         data=json.dumps(data),
 #         content_type='application/json'
 #     )
 #     assert response.status_code == 400
 #     data = "This is not JSON"
 #     response = authenticated_client.patch(
-#         f'/api/game/{game.id}/update/', 
-#         data=data, 
+#         f'/api/game/{game.id}/update/',
+#         data=data,
 #         content_type='application/json'
 #     )
 #     assert response.status_code == 400
@@ -60,8 +60,8 @@
 #         # Missing 'ball_velocity' and 'paddle_positions'
 #     }
 #     response = authenticated_client.patch(
-#         f'/api/game/{game.id}/update/', 
-#         data=json.dumps(data), 
+#         f'/api/game/{game.id}/update/',
+#         data=json.dumps(data),
 #         content_type='application/json'
 #     )
 #     assert response.status_code == 400
