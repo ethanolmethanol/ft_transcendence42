@@ -18,6 +18,7 @@ from back_game.game_physics.vector import Vector
 
 log = logging.getLogger(__name__)
 
+
 class Paddle:
     def __init__(self, slot=1, num_players=2):
         self.slot = slot

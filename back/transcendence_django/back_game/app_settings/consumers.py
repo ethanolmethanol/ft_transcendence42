@@ -7,11 +7,13 @@ from back_game.game_settings.game_constants import (
 
 log = logging.getLogger(__name__)
 
+
 class ChannelError(Exception):
 
     def __init__(self, code, message):
         self.code = code
         self.message = message
+
 
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
@@ -42,7 +44,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, close_code):
         try:
             await self.leave(None)
-        except:
+        except ChannelError:
             pass
         if self.room_group_name is not None:
             await self.channel_layer.group_discard(
@@ -149,7 +151,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             "type": "game_update",
             "update": message
         }))
-
 
     async def send_error(self, error):
         log.info("Sending error: %s: %s", error["code"], error["message"])

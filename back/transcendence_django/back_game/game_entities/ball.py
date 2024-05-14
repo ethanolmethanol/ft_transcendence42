@@ -29,6 +29,7 @@ random_ball_speeds = [
     },
 ]
 
+
 class Ball:
 
     def __init__(self, paddles, hit_wall_func):
@@ -39,7 +40,6 @@ class Ball:
         self.player_turn = 0
         self.speed = None
         self.__set_random_speed()
-
 
     def update(self, new_position, new_speed, new_radius):
         self.position.set_coordinates(new_position.x, new_position.y)
@@ -72,7 +72,7 @@ class Ball:
             {**update, **ball_position_update}
             if update is not None
             else ball_position_update
-		)
+        )
 
     def update_collision(self, paddle):
         if self.is_paddle_collision(self.position, paddle):
