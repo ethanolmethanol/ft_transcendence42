@@ -144,10 +144,10 @@ class Ball:
     def __update_wall_collision(self, new_position):
         collide_x = (
             new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius
-		)
+        )
         collide_y = (
             new_position.y <= self.radius or new_position.y >= GAME_HEIGHT - self.radius
-		)
+        )
         if collide_x:
             player_slot = new_position.x <= self.radius
             self.reset()

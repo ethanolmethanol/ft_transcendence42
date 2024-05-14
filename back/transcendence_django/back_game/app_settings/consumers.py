@@ -127,11 +127,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info("Game over: %s wins. %s seconds left.", self.arena.get_winner(), time)
         await self.send_update(
             {
-            "game_over": {
-                "winner": f"{self.arena.get_winner()}",
-                "time": time,
-                "message": game_over_message
-                }
+                "game_over": {
+                    "winner": f"{self.arena.get_winner()}",
+                    "time": time,
+                    "message": game_over_message
+                    }
             }
         )
 

@@ -4,14 +4,14 @@ import random
 import string
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
+    DEAD,
+    DYING,
     MONITOR_LOOP_INTERVAL,
-    STARTED,
     OVER,
     RUN_LOOP_INTERVAL,
-    DYING,
-    DEAD,
-    TIMEOUT_INTERVAL,
+    STARTED,
     TIMEOUT_GAME_OVER,
+    TIMEOUT_INTERVAL,
 )
 
 logger = logging.getLogger(__name__)
