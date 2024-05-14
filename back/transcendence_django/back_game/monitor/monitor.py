@@ -28,14 +28,14 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def get_channel(self, user_id, players_pecs):
+    async def get_channel(self, user_id, players_specs):
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
-            return await self.get_new_channel(user_id, players_pecs)
+            return await self.get_new_channel(user_id, players_specs)
         return channel
 
-    async def get_new_channel(self, user_id, players_pecs):
-        new_arena = Arena(players_pecs)
+    async def get_new_channel(self, user_id, players_specs):
+        new_arena = Arena(players_specs)
         channel_id = self.generate_random_id(10)
         self.channels[channel_id] = {new_arena.id: new_arena}
         asyncio.create_task(

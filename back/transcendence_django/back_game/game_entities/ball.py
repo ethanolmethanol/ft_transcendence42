@@ -84,28 +84,30 @@ class Ball:
             if self.is_paddle_collision(self.position, paddle):
                 self.__push_ball(paddle)
                 collision_point = self.get_collision_point(paddle)
-                self.speed = paddle.get_speed_after_collision(collision_point)
+                self.speed = paddle.get_ball_speed_after_paddle_collision(collision_point)
                 logger.info("New speed is: (%s, %s)", self.speed.x, self.speed.y)
                 return None
         score = self.__update_wall_collision(new_position)
         return score
 
     def get_collision_point(self, paddle):
-        closest_x = max(min(self.position.x, paddle.right), paddle.left)
-        closest_y = max(min(self.position.y, paddle.bottom), paddle.top)
+        paddle_edges = paddle.get_edges()
+        closest_x = max(min(self.position.x, paddle_edges.right), paddle_edges.left)
+        closest_y = max(min(self.position.y, paddle_edges.bottom), paddle_edges.top)
         return Position(closest_x, closest_y)
 
     def __push_ball(self, paddle):
+        paddle_edges = paddle.get_edges()
         side = self.get_collision_side(self.position, paddle)
         push_position = Position(self.position.x, self.position.y)
         if side == "top":
-            push_position.y = paddle.top - self.radius
+            push_position.y = paddle_edges.top - self.radius
         elif side == "bottom":
-            push_position.y = paddle.bottom + self.radius
+            push_position.y = paddle_edges.bottom + self.radius
         elif side == "left":
-            push_position.x = paddle.left - self.radius
+            push_position.x = paddle_edges.left - self.radius
         elif side == "right":
-            push_position.x = paddle.right + self.radius
+            push_position.x = paddle_edges.right + self.radius
         self.set_position(push_position)
         logger.info("Ball collided with paddle %s on the %s side.", paddle.slot, side)
 
@@ -113,8 +115,9 @@ class Ball:
         """
         Checks if the ball collides with a paddle.
         """
-        closest_x = max(min(position.x, paddle.right), paddle.left)
-        closest_y = max(min(position.y, paddle.bottom), paddle.top)
+        paddle_edges = paddle.get_edges()
+        closest_x = max(min(position.x, paddle_edges.right), paddle_edges.left)
+        closest_y = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
         distance_x = position.x - closest_x
         distance_y = position.y - closest_y
         distance = math.sqrt(distance_x**2 + distance_y**2)
@@ -126,19 +129,20 @@ class Ball:
         Determines which side of the paddle the ball collides with,
         accurately considering the ball's radius.
         """
-        closest_x = max(min(position.x, paddle.right), paddle.left)
-        closest_y = max(min(position.y, paddle.bottom), paddle.top)
+        paddle_edges = paddle.get_edges()
+        closest_x = max(min(position.x, paddle_edges.right), paddle_edges.left)
+        closest_y = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
         distance_x = position.x - closest_x
         distance_y = position.y - closest_y
 
-        return self.__get_side(distance_x, distance_y, position, paddle)
+        return self.__get_side(distance_x, distance_y, position, paddle.get_position())
 
-    def __get_side(self, distance_x, distance_y, position, paddle):
+    def __get_side(self, distance_x, distance_y, position, paddle_position):
         if abs(distance_x) > abs(distance_y):
-            if distance_x > paddle.position.x - position.x:
+            if distance_x > paddle_position.x - position.x:
                 return "right"
             return "left"
-        if distance_y > paddle.position.y - position.y:
+        if distance_y > paddle_position.y - position.y:
             return "bottom"
         return "top"
 

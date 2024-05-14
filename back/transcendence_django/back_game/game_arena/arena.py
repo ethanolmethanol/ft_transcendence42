@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 class Arena:
-    def __init__(self, players_pecs):
-        self.__fill_player_specs(players_pecs)
+    def __init__(self, players_specs):
+        self.__fill_player_specs(players_specs)
         self.id = str(id(self))
         self.status = WAITING
         self.players = {}
@@ -143,7 +143,7 @@ class Arena:
                 logger.error("Paddle cannot move due to collision.")
                 paddle.move(-direction)
             paddle.status = LISTENING
-        return {"slot": paddle.slot, "position": paddle.position.to_dict()}
+        return paddle.get_dict_update()
 
     def update_game(self):
         ball_update = self.ball.move()
