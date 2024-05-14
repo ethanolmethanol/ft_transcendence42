@@ -2,6 +2,7 @@ import asyncio
 import logging
 import random
 import string
+
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     DEAD,
@@ -79,7 +80,7 @@ class Monitor:
     def is_user_in_game(self, user_id, channel_id, arena_id):
         return self.user_game_table.get(user_id) == {
             "channel_id": channel_id,
-            "arena": arena_id
+            "arena": arena_id,
         }
 
     def delete_channel(self, channel_id):

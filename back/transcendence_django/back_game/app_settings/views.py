@@ -1,6 +1,7 @@
 import json
 import logging
 from json import JSONDecodeError
+
 from back_game.monitor.monitor import monitor
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods

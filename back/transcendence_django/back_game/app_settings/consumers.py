@@ -1,13 +1,14 @@
 import json
 import logging
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from back_game.monitor.monitor import monitor
+
 from back_game.game_settings.game_constants import (
     INVALID_ARENA,
     INVALID_CHANNEL,
     NOT_ENTERED,
     NOT_JOINED,
 )
+from back_game.monitor.monitor import monitor
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 log = logging.getLogger(__name__)
 
@@ -131,7 +132,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     "winner": f"{self.arena.get_winner()}",
                     "time": time,
                     "message": game_over_message
-                    }
+                }
             }
         )
 
@@ -143,9 +144,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def game_error(self, event):
         error = event["error"]
-        await self.send(
-            text_data=json.dumps({"type": "game_error", "error": error})
-        )
+        await self.send(text_data=json.dumps({"type": "game_error", "error": error}))
 
     async def game_update(self, event):
         message = event["update"]
@@ -155,9 +154,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_error(self, error):
         log.info("Sending error: %s: %s", error["code"], error["message"])
-        await self.send(
-            text_data=json.dumps({"type": "game_error", "error": error})
-        )
+        await self.send(text_data=json.dumps({"type": "game_error", "error": error}))
 
     async def send_update(self, update):
         log.info("Sending update: %s", update)

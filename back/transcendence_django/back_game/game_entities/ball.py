@@ -1,12 +1,13 @@
 import logging
 import math
 import random
+
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 from back_game.game_settings.game_constants import (
-    GAME_WIDTH,
-    GAME_HEIGHT,
     BALL_RADIUS,
+    GAME_HEIGHT,
+    GAME_WIDTH,
     INITIAL_SPEED_X,
     INITIAL_SPEED_Y,
 )

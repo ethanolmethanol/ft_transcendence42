@@ -1,19 +1,20 @@
 import logging
 import math
+
 from back_game.game_physics.position import Position
 from back_game.game_physics.vector import Vector
 from back_game.game_settings.game_constants import (
-    LISTENING,
-    PADDLE_INITIAL_SPEED_RATE,
-    PADDLE_WIDTH,
-    PADDLE_HEIGHT,
-    PADDLE_OFFSET,
+    CONVEXITY,
     GAME_HEIGHT,
     GAME_WIDTH,
-    CONVEXITY,
-    LEFT_SLOT,
-    RIGHT_SLOT,
     INITIAL_BALL_SPEED_COEFF,
+    LISTENING,
+    LEFT_SLOT,
+    PADDLE_INITIAL_SPEED_RATE,
+    PADDLE_HEIGHT,
+    PADDLE_OFFSET,
+    PADDLE_WIDTH,
+    RIGHT_SLOT,
 )
 
 log = logging.getLogger(__name__)

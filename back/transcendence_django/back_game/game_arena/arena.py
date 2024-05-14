@@ -1,23 +1,24 @@
 import logging
 import time
+
 from back_game.game_arena.map import Map
-from back_game.game_arena.player import Player, ENABLED, DISABLED
+from back_game.game_arena.player import ENABLED, DISABLED, Player
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_settings.game_constants import (
-    GIVEN_UP,
-    LOCAL_MODE,
-    STARTED,
-    OVER,
-    WAITING,
-    MAXIMUM_SCORE,
-    LISTENING,
-    PROCESSING,
     AFK_TIMEOUT,
     AFK_WARNING_THRESHOLD,
-    MIN_PLAYER,
+    GIVEN_UP,
+    LISTENING,
+    LOCAL_MODE,
     MAX_PLAYER,
+    MAXIMUM_SCORE,
+    MIN_PLAYER,
     ONLINE_MODE,
+    OVER,
+    PROCESSING,
+    STARTED,
+    WAITING,
 )
 
 logger = logging.getLogger(__name__)
