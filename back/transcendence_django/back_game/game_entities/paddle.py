@@ -1,8 +1,8 @@
 import logging
 import math
 
-from back_game.game_physics.rectangle import Rectangle
 from back_game.game_physics.position import Position
+from back_game.game_physics.rectangle import Rectangle
 from back_game.game_physics.vector import Vector
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
@@ -10,8 +10,8 @@ from back_game.game_settings.game_constants import (
     INITIAL_BALL_SPEED_COEFF,
     LEFT_SLOT,
     LISTENING,
-    PADDLE_INITIAL_SPEED_RATE,
     PADDLE_HEIGHT,
+    PADDLE_INITIAL_SPEED_RATE,
     PADDLE_OFFSET,
     PADDLE_WIDTH,
     RIGHT_SLOT,
@@ -120,6 +120,6 @@ class Paddle:
         if self.slot == LEFT_SLOT:
             speed_component_x = self.rectangle.distance_from_center
         elif self.slot == RIGHT_SLOT:
-            speed_component_x = -self.rectangle.distance_from_center
+            speed_component_x = (-1) * self.rectangle.distance_from_center
         speed_component_y = collision_point.y - self.rectangle.convexity_center.y
         return Vector(speed_component_x, speed_component_y)
