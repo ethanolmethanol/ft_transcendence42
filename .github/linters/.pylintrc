@@ -437,9 +437,6 @@ disable=raw-checker-failed,
         missing-class-docstring,
         missing-function-docstring,
         too-few-public-methods,
-        C0114,
-        C0115,
-        C0116
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
