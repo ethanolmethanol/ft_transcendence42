@@ -32,8 +32,8 @@ RIGHT_SLOT = 2
 CONVEXITY = 90
 
 # Game mode
-LOCAL_MODE = 0
-ONLINE_MODE = 1
+# LOCAL_MODE = 0
+# ONLINE_MODE = 1
 
 # Game status
 WAITING = 0
