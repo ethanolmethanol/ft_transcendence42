@@ -1,21 +1,10 @@
 import logging
-import time
 
-from back_game.game_arena.map import Map
-from back_game.game_arena.player import DISABLED, ENABLED, Player
-from back_game.game_entities.ball import Ball
-from back_game.game_entities.paddle import Paddle
+from back_game.game_arena.game import Game
+from back_game.game_arena.player import ENABLED
+from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.game_constants import (
-    AFK_TIMEOUT,
-    AFK_WARNING_THRESHOLD,
-    GIVEN_UP,
-    LISTENING,
-    MAX_PLAYER,
     MAXIMUM_SCORE,
-    MIN_PLAYER,
-    OVER,
-    PROCESSING,
-    STARTED,
     WAITING,
 )
 
@@ -217,139 +206,30 @@ logger = logging.getLogger(__name__)
 
 ##############################################################################################################
 
-class Game:
-    def __init__(self):
-        self.status = WAITING
-        self.paddles = {}
-        self.ball = None
-        self.map = None
-
-    def start(self):
-        self.__reset()
-        self.set_status(STARTED)
-        logger.info("Game started. %s", self.id)
-
-    def conclude(self):
-        self.set_status(OVER)
-        for player in self.players.values():
-            self.disable_player(player.user_id)
-
-    def set_status(self, status):
-        self.status = status
-
-    def move_paddle(self, player_name, direction):
-        if direction not in [-1, 1]:
-            raise ValueError("Direction is invalid. It should be -1 or 1.")
-        paddle = self.paddles[player_name]
-        if paddle.status == LISTENING:
-            paddle.status = PROCESSING
-            paddle.move(direction)
-            try:
-                self.ball.update_collision(paddle)
-            except ValueError:
-                logger.error("Paddle cannot move due to collision.")
-                paddle.move(-direction)
-            paddle.status = LISTENING
-        return paddle.get_dict_update()
-
-    def update(self):
-        ball_update = self.ball.move()
-        game_status = {"status": self.status}
-        return {**ball_update, **game_status}
-
-class PlayerManager:
-    def __init__(self, nb_players, is_remote):
-        self.players = {}
-        self.nb_players = nb_players
-        self.is_remote = is_remote
-        self.last_kick_check = time.time()
-
-    def is_empty(self):
-        return all(player.status == GIVEN_UP for player in self.players.values())
-
-    def is_full(self):
-        return len(self.players) == self.nb_players
-
-    def enter_arena(self, user_id):
-        if self.did_player_give_up(user_id):
-            raise ValueError("The player has given up.")
-        if not self.__is_player_in_game(user_id) and self.is_full():
-            raise ValueError("The arena is full.")
-        if not self.is_remote:
-            self.__enter_local_mode(user_id)
-        elif user_id in self.players:
-            self.players[user_id].status = ENABLED
-        else:
-            self.__register_player(user_id, user_id)
-
-    def disable_player(self, user_id):
-        self.__change_player_status(user_id, DISABLED)
-
-    def enable_player(self, user_id):
-        self.__change_player_status(user_id, ENABLED)
-
-    def player_gave_up(self, user_id):
-        self.__change_player_status(user_id, GIVEN_UP)
-
-    def rematch(self, user_id):
-        if not self.__is_player_in_game(user_id):
-            raise KeyError("This user is unknown")
-        self.enable_player(user_id)
-
-    def are_all_players_ready(self):
-        return self.is_full and all(
-            player.status == ENABLED for player in self.players.values()
-        )
-
-    def did_player_give_up(self, user_id):
-        try:
-            if not self.is_remote:
-                return self.players and all(
-                    player.status == GIVEN_UP for player in self.players.values()
-                )
-            return self.players[user_id].status == GIVEN_UP
-        except KeyError:
-            return False
-
-    def get_winner(self):
-        winner = max(self.players.values(), key=lambda player: player.score)
-        return winner.player_name
-
-    def update_activity_time(self, player_name):
-        self.players[player_name].update_activity_time()
-
-    def kick_afk_players(self):
-        kicked_players = []
-        if time.time() - self.last_kick_check >= 1:
-            kicked_players = self.__get_afk_players()
-            self.last_kick_check = time.time()
-        return kicked_players
-
-    def __get_afk_players(self):
-        current_time = time.time()
-        kicked_players = []
-        for player in self.players.values():
-            time_left = player.last_activity_time + AFK_TIMEOUT - current_time
-            if time_left <= AFK_WARNING_THRESHOLD:
-                kicked_players.append(
-                    {"player_name": player.player_name, "time_left": round(time_left)}
-                )
-            logger.info("Player %s was kicked due to inactivity.", player.player_name)
-            if time_left <= 0:
-                self.player_gave_up(player.user_id)
-        return kicked_players
-
 class Arena:
     def __init__(self, players_specs):
-        self.__fill_player_specs(players_specs)
         self.id = str(id(self))
-        self.player_manager = PlayerManager(self.nb_players, self.mode)
+        self.player_manager = PlayerManager(players_specs)
         self.game = Game()
         # self.game_status.paddles = {
         #     f"{i + 1}": Paddle(i + 1, self.nb_players) for i in range(self.nb_players)
         # }
         # self.game_status.ball = Ball(self.game_status.paddles.values(), self.ball_hit_wall)
         # self.game_status.map = Map()  # depends on the number of players
+
+
+############# REWRITE ####################################
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "status": self.game.status,
+            "players": [player.player_name for player in self.player_manager.players.values()],
+            "scores": self.player_manager.get_scores(),
+            "ball": self.game.ball.to_dict(),
+            "paddles": [paddle.to_dict() for paddle in self.game.paddles.values()],
+            "map": self.map.to_dict(),
+        }
+
     def is_empty(self):
         return self.player_manager.is_empty()
 
@@ -357,13 +237,18 @@ class Arena:
         return self.player_manager.is_full()
 
     def enter_arena(self, user_id):
-        return self.player_manager.enter_arena(user_id)
+        self.player_manager.allow_player_enter_arena(user_id)
+        if self.player_manager.is_remote:
+            self.__enter_remote_mode(self, user_id)
+        else:
+            self.__enter_local_mode(self, user_id)
 
     def start_game(self):
-        return self.game.start()
+        self.__reset()
+        self.game.start()
 
     def conclude_game(self):
-        return self.game.conclude()
+        self.game.conclude()
 
     def rematch(self, user_id):
         self.player_manager.rematch(user_id)
@@ -372,6 +257,12 @@ class Arena:
             self.game.start()
             return self.to_dict()
         return None
+
+    def disable_player(self, user_id):
+        self.player_manager.disable_player(user_id)
+
+    def player_gave_up(self, user_id):
+        self.player_manager.player_gave_up(user_id)
 
     def ball_hit_wall(self, player_slot):
         if not self.player_manager.is_remote:
@@ -401,3 +292,27 @@ class Arena:
         if kicked_players:
             update_dict["kicked_players"] = kicked_players
         return update_dict
+    
+    def get_status(self):
+        return self.game.status
+    
+    def __reset(self):
+        self.player_manager.reset()
+        self.game.reset()
+
+    def __enter_local_mode(self, user_id):
+        if self.is_empty():
+            self.__register_player(user_id, "Player1")
+            self.__register_player(user_id, "Player2")
+
+    def __enter_remote_mode(self, user_id):
+        if self.player_manager.is_player_in_game(user_id):
+            self.__register_player(user_id, user_id)
+        else:
+            self.player_manager.change_player_status(ENABLED)
+
+    def __register_player(self, user_id, player_name):
+        self.player_manager.add_player(user_id, player_name)
+        self.game.add_paddle(player_name)
+        if self.is_full():
+            self.start_game()
