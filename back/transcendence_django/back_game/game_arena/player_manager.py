@@ -1,5 +1,5 @@
-import time
 import logging
+import time
 
 from back_game.game_arena.player import DISABLED, ENABLED, Player
 from back_game.game_settings.game_constants import (
@@ -44,6 +44,10 @@ class PlayerManager:
     def player_gave_up(self, user_id):
         self.change_player_status(user_id, GIVEN_UP)
 
+    def disable_all_players(self):
+        for player in self.players.values():
+            self.disable_player(player.user_id)
+
     def is_player_in_game(self, user_id):
         if self.is_remote:
             return user_id in self.players and self.players[user_id].status != GIVEN_UP
@@ -84,11 +88,11 @@ class PlayerManager:
             kicked_players = self.__get_afk_players()
             self.last_kick_check = time.time()
         return kicked_players
-    
+
     def reset(self):
         for player in self.players.values():
             player.reset()
-    
+
     def change_player_status(self, user_id, status):
         if not self.did_player_give_up(user_id):
             if self.is_remote:
@@ -111,15 +115,14 @@ class PlayerManager:
         self.is_remote = players_specs["mode"]
 
     def __get_afk_players(self):
-        current_time = time.time()
         kicked_players = []
         for player in self.players.values():
-            time_left = player.last_activity_time + AFK_TIMEOUT - current_time
-            if time_left <= AFK_WARNING_THRESHOLD:
+            time_left_before_kick = player.get_time_left_before_kick()
+            if time_left_before_kick <= AFK_WARNING_THRESHOLD:
                 kicked_players.append(
-                    {"player_name": player.player_name, "time_left": round(time_left)}
+                    {"player_name": player.player_name, "time_left": round(time_left_before_kick)}
                 )
-            logger.info("Player %s was kicked due to inactivity.", player.player_name)
-            if time_left <= 0:
+            if time_left_before_kick <= 0:
                 self.player_gave_up(player.user_id)
+                logger.info("Player %s was kicked due to inactivity.", player.player_name)
         return kicked_players

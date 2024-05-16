@@ -59,7 +59,7 @@ class Monitor:
         return channel
 
     def delete_arena(self, arenas, arena_id):
-        player_list = arenas[arena_id].players
+        player_list = arenas[arena_id].get_players()
         for player in player_list.values():
             self.delete_user(player.user_id)
         arenas.pop(arena_id)
@@ -94,9 +94,9 @@ class Monitor:
 
     async def update_game_states(self, arenas):
         for arena in arenas.values():
-            if arena.get_status == STARTED and arena.is_empty():
+            if arena.get_status() == STARTED and arena.is_empty():
                 arena.conclude_game()
-            if arena.get_status == OVER:
+            if arena.get_status() == OVER:
                 logger.info("Game over in arena %s", arena.id)
                 await self.game_over(arenas, arena)
                 break
@@ -104,19 +104,19 @@ class Monitor:
     async def run_game_loop(self, arenas):
         while arenas:
             for arena in arenas:
-                if arena.get_status == STARTED:
+                if arena.get_status() == STARTED:
                     update_message = arena.update_game()
                     await arena.game_update_callback(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
     async def game_over(self, arenas, arena):
-        arena.get_status = DYING
+        arena.set_status(DYING)
         time = TIMEOUT_GAME_OVER + 1
-        while arena.get_status == DYING and time > 0:
+        while arena.get_status() == DYING and time > 0:
             time -= TIMEOUT_INTERVAL
             await arena.game_over_callback("Game Over! Thank you for playing.", time)
             if time == 0:
-                arena.get_status = DEAD
+                arena.set_status(DEAD)
                 self.delete_arena(arenas, arena.id)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
