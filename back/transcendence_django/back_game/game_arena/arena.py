@@ -18,7 +18,7 @@ class Arena:
         self.player_manager = PlayerManager(players_specs)
         self.game = Game(self.player_manager.nb_players, self.ball_hit_wall)
 
-    def to_dict(self):
+    def __dict__(self):
         return {
             "id": self.id,
             "status": self.game.status,
@@ -66,7 +66,7 @@ class Arena:
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
             self.start_game()
-            return self.to_dict()
+            return self.__dict__()
         return None
 
     def disable_player(self, user_id):
