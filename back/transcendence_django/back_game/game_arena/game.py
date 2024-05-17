@@ -15,15 +15,15 @@ logger = logging.getLogger(__name__)
 
 
 class Game:
-    def __init__(self, nb_players, ball_hit_wall):
+    def __init__(self, nb_players: int, ball_hit_wall: callable):
         self.status = WAITING
-        self.paddles = {
+        self.paddles: dict[int, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
         }
-        self.ball = Ball(self.paddles.values(), ball_hit_wall)
-        self.map = Map()  # depends on the number of players
+        self.ball: Ball = Ball(self.paddles.values(), ball_hit_wall)
+        self.map: Map = Map()  # depends on the number of players
 
-    def add_paddle(self, player_name, index):
+    def add_paddle(self, player_name: str, index: int):
          self.paddles[player_name] = self.paddles.pop(f"{index}")
 
     def start(self):
@@ -35,7 +35,7 @@ class Game:
     def set_status(self, status):
         self.status = status
 
-    def move_paddle(self, player_name, direction):
+    def move_paddle(self, player_name: str, direction: int) -> dict:
         if direction not in VALID_DIRECTIONS:
             raise ValueError("Direction is invalid. It should be -1 or 1.")
         paddle = self.paddles[player_name]
@@ -50,9 +50,9 @@ class Game:
             paddle.status = LISTENING
         return paddle.get_dict_update()
 
-    def update(self):
-        ball_update = self.ball.move()
-        game_status = {"status": self.status}
+    def update(self) -> dict:
+        ball_update: dict = self.ball.move()
+        game_status: dict = {"status": self.status}
         return {**ball_update, **game_status}
 
     def reset(self):

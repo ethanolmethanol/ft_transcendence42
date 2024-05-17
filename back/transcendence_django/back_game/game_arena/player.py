@@ -24,6 +24,6 @@ class Player:
         self.score = 0
         self.update_activity_time()
 
-    def get_time_left_before_kick(self):
+    def get_time_left_before_kick(self) -> float:
         current_time = time.time()
         return self.last_activity_time + AFK_TIMEOUT - current_time
