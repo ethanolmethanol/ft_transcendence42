@@ -6,14 +6,14 @@ from back_game.game_physics.position import Position
 
 
 class Rectangle:
-    def __init__(self, slot, position, width, height):
-        self.slot = slot
-        self.position = position
-        self.width = width
-        self.height = height
-        self.edges = Edges(position, width, height)
-        self.convexity_center = self.__get_convexity_center()
-        self.distance_from_center = None
+    def __init__(self, slot: int, position: Position, width: int, height: int):
+        self.slot: int = slot
+        self.position: Position = position
+        self.width: int = width
+        self.height: int = height
+        self.edges: Edges = Edges(position, width, height)
+        self.convexity_center: Position = self.__get_convexity_center()
+        self.distance_from_center: int = 0
 
     def to_dict(self):
         return {
@@ -22,12 +22,12 @@ class Rectangle:
             "height": self.height,
         }
 
-    def update_position(self, position):
+    def update_position(self, position: Position):
         self.position = position
         self.edges.update(position, self.width, self.height)
         self.convexity_center = self.__get_convexity_center()
 
-    def __get_convexity_center(self):
+    def __get_convexity_center(self) -> Position:
         self.distance_from_center = self.height / (2 * math.tan(CONVEXITY / 2))
         if self.slot == LEFT_SLOT:
             center_x = self.edges.right - self.distance_from_center
