@@ -2,6 +2,7 @@ import logging
 from back_game.game_entities.ball import Ball
 from back_game.game_arena.map import Map
 from back_game.game_entities.paddle import Paddle
+from typing import Callable
 from back_game.game_settings.game_constants import (
     LISTENING,
     OVER,
@@ -15,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class Game:
-    def __init__(self, nb_players: int, ball_hit_wall: callable):
+    def __init__(self, nb_players: int, ball_hit_wall: Callable[[int], dict[str, str]]):
         self.status = WAITING
-        self.paddles: dict[int, Paddle] = {
+        self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
         }
         self.ball: Ball = Ball(self.paddles.values(), ball_hit_wall)
