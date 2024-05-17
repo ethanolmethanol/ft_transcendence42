@@ -1,8 +1,8 @@
 import logging
+from typing import Callable, Literal, NewType
 from back_game.game_entities.ball import Ball
 from back_game.game_arena.map import Map
 from back_game.game_entities.paddle import Paddle
-from typing import Callable
 from back_game.game_settings.game_constants import (
     LISTENING,
     OVER,
@@ -15,9 +15,12 @@ from back_game.game_settings.game_constants import (
 logger = logging.getLogger(__name__)
 
 
+GameStatus = NewType("GameStatus", [WAITING, STARTED, OVER])
+
+
 class Game:
     def __init__(self, nb_players: int, ball_hit_wall: Callable[[int], dict[str, str]]):
-        self.status = WAITING
+        self.status: GameStatus = WAITING
         self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
         }
@@ -25,7 +28,7 @@ class Game:
         self.map: Map = Map()  # depends on the number of players
 
     def add_paddle(self, player_name: str, index: int):
-         self.paddles[player_name] = self.paddles.pop(f"{index}")
+        self.paddles[player_name] = self.paddles.pop(f"{index}")
 
     def start(self):
         self.set_status(STARTED)

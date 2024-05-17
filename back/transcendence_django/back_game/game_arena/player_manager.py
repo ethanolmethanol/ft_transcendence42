@@ -3,7 +3,6 @@ import time
 
 from back_game.game_arena.player import DISABLED, ENABLED, Player
 from back_game.game_settings.game_constants import (
-    AFK_TIMEOUT,
     AFK_WARNING_THRESHOLD,
     GIVEN_UP,
     MAX_PLAYER,

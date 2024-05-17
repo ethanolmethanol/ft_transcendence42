@@ -44,7 +44,7 @@ class Monitor:
         asyncio.create_task(self.run_game_loop(self.channels[channel_id].values()))
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
-            "arena": new_arena.__dict__(),
+            "arena": new_arena.to_dict(),
         }
         return self.user_game_table[user_id]
 
@@ -67,7 +67,7 @@ class Monitor:
     def add_user(self, user_id, channel_id, arena_id):
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
-            "arena": self.channels[channel_id][arena_id].__dict__(),
+            "arena": self.channels[channel_id][arena_id].to_dict(),
         }
 
     def delete_user(self, user_id):

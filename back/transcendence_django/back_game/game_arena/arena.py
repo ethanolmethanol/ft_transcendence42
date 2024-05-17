@@ -1,6 +1,6 @@
 import logging
 
-from back_game.game_arena.game import Game
+from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.game_constants import (
@@ -10,7 +10,6 @@ from back_game.game_settings.game_constants import (
 
 logger = logging.getLogger(__name__)
 
-
 class Arena:
 
     def __init__(self, players_specs: dict):
@@ -18,7 +17,7 @@ class Arena:
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(self.player_manager.nb_players, self.ball_hit_wall)
 
-    def __dict__(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "status": self.game.status,
@@ -41,7 +40,7 @@ class Arena:
     def get_players(self) -> dict:
         return self.player_manager.players
 
-    def get_status(self):
+    def get_status(self) -> GameStatus:
         return self.game.status
 
     def enter_arena(self, user_id: int):
@@ -66,7 +65,7 @@ class Arena:
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
             self.start_game()
-            return self.__dict__()
+            return self.to_dict()
         return None
 
     def disable_player(self, user_id: int):
@@ -102,7 +101,7 @@ class Arena:
             update_dict["kicked_players"] = kicked_players
         return update_dict
 
-    def set_status(self, status):
+    def set_status(self, status: GameStatus):
         self.game.set_status(status)
 
     def __reset(self):

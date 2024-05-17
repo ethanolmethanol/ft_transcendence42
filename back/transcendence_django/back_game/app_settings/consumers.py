@@ -89,7 +89,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
         self.joined = True
         await self.send_message(f"{self.user_id} has joined the game.")
-        await self.send_update({"arena": self.arena.__dict__()})
+        await self.send_update({"arena": self.arena.to_dict()})
 
     async def leave(self, _):
         if not self.joined:
