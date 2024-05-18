@@ -1,5 +1,6 @@
 # import the logging library
 import logging
+from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_protect
@@ -17,7 +18,7 @@ def user_data_view(request):
         # Extract user ID from session data
         user_id = request.session.get("_auth_user_id")
         if user_id is None:
-            return Response({"detail": "User isn't logged in."}, status=401)
+            return Response({"detail": "User isn't logged in."}, status=HTTPStatus.UNAUTHORIZED)
         # Query the User model for the user with the given ID
         user = get_user_model().objects.get(pk=user_id)
         # Retrieve the user data
@@ -26,6 +27,6 @@ def user_data_view(request):
             "username": user.username,
             "email": user.email,
         }
-        return Response(user_data, status=200)
+        return Response(user_data, status=HTTPStatus.OK)
     except get_user_model().DoesNotExist:
-        return Response({"detail": "User does not exist."}, status=404)
+        return Response({"detail": "User does not exist."}, status=HTTPStatus.NOT_FOUND)
