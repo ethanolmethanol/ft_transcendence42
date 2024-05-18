@@ -25,7 +25,7 @@ class Arena:
             "scores": self.player_manager.get_scores(),
             "ball": self.game.ball.to_dict(),
             "paddles": [paddle.to_dict() for paddle in self.game.paddles.values()],
-            "map": self.game.map.to_dict(),
+            "map": self.game.map.__dict__,
         }
 
     def is_empty(self) -> bool:

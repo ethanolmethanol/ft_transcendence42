@@ -46,6 +46,7 @@ class Monitor:
             "channel_id": channel_id,
             "arena": new_arena.to_dict(),
         }
+        logger.info("New arena: %s", new_arena.to_dict())
         return self.user_game_table[user_id]
 
     def get_channel_from_user_id(self, user_id):

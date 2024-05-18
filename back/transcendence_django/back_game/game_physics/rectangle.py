@@ -17,7 +17,7 @@ class Rectangle:
 
     def to_dict(self):
         return {
-            "position": self.position.to_dict(),
+            "position": self.position.__dict__,
             "width": self.width,
             "height": self.height,
         }

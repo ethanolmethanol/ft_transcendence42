@@ -12,5 +12,3 @@ class Position:
         self.y = round(self.y)
         return self
 
-    def to_dict(self):
-        return {"x": self.x, "y": self.y}

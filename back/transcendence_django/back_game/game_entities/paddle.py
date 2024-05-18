@@ -32,7 +32,7 @@ class Paddle:
         self.rate: float = 0.5
         self.axis: dict[str, Position] = self.__calculate_axis(num_players)
         self.__update_position()
-        log.info("Paddle created at %s", self.rectangle.position.to_dict())
+        log.info("Paddle created at %s", self.rectangle.position.__dict__)
 
     def __update_position(self):
         new_position = self.__convert_rate_to_position(self.rate)
@@ -68,8 +68,8 @@ class Paddle:
             "Slot: %s, Angle: %s, Start: %s, End: %s",
             self.slot,
             angle,
-            start.to_dict(),
-            end.to_dict(),
+            start.__dict__,
+            end.__dict__,
         )
         return {"start": start.round(), "end": end.round()}
 
@@ -82,7 +82,7 @@ class Paddle:
     def to_dict(self) -> dict:
         return {
             "slot": self.slot,
-            "position": self.rectangle.position.to_dict(),
+            "position": self.rectangle.position.__dict__,
             "speed": self.speed,
             "width": self.rectangle.width,
             "height": self.rectangle.height,
@@ -91,7 +91,7 @@ class Paddle:
     def get_dict_update(self) -> dict:
         return {
             "slot": self.slot,
-            "position": self.rectangle.position.to_dict(),
+            "position": self.rectangle.position.__dict__,
         }
 
     def get_edges(self) -> dict[str, Position]:

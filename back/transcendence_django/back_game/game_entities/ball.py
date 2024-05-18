@@ -49,8 +49,8 @@ class Ball:
 
     def to_dict(self):
         return {
-            "position": self.position.to_dict(),
-            "speed": self.speed.to_dict(),
+            "position": self.position.__dict__,
+            "speed": self.speed.__dict__,
             "radius": self.radius,
         }
 
@@ -68,7 +68,7 @@ class Ball:
             self.position.x + self.speed.x, self.position.y + self.speed.y
         )
         update = self.update_position(new_position)
-        ball_position_update = {"ball": {"position": self.position.to_dict()}}
+        ball_position_update = {"ball": {"position": self.position.__dict__}}
         return (
             {**update, **ball_position_update}
             if update is not None
