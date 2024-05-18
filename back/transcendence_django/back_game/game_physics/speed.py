@@ -14,3 +14,6 @@ class Speed(Vector):
         self.x = new_speed.x
         self.y = new_speed.y
         self.absolute_velocity = new_speed.absolute_velocity
+
+    def reverse_y_direction(self):
+        self.y *= -1

@@ -164,7 +164,7 @@ class Ball:
             self.reset()
             return self.hit_wall(player_slot)
         if collide_y:
-            self.__bounce_back()
+            self.speed.reverse_y_direction()
         else:
             self.position = new_position
         return None
@@ -174,5 +174,3 @@ class Ball:
         self.speed = random.choice(list(chosen_set))
         self.player_turn = (self.player_turn + 1) % 2
 
-    def __bounce_back(self):
-        self.speed.y *= -1
