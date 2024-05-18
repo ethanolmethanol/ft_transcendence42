@@ -1,9 +1,9 @@
 class Position:
-    def __init__(self, x=0, y=0):
+    def __init__(self, x:float=0, y:float=0):
         self.x = x
         self.y = y
 
-    def set_coordinates(self, x, y):
+    def set_coordinates(self, x: float, y: float):
         self.x = x
         self.y = y
 

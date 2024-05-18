@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class ChannelError(Exception):
 
-    def __init__(self, code, message):
+    def __init__(self, code: int, message: str):
         self.code = code
         self.message = message
 

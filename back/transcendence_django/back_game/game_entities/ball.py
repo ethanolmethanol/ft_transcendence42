@@ -2,8 +2,9 @@ import logging
 import math
 import random
 
+from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
-from back_game.game_physics.vector import Vector
+from back_game.game_physics.speed import Speed
 from back_game.game_settings.game_constants import (
     BALL_RADIUS,
     GAME_HEIGHT,
@@ -16,17 +17,17 @@ logger = logging.getLogger(__name__)
 
 random_ball_speeds = [
     {
-        Vector(-INITIAL_SPEED_X, 0),
-        Vector(-INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
-        Vector(-INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
-        Vector(-INITIAL_SPEED_X, INITIAL_SPEED_Y / 3),
-        Vector(-INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3),
+        Speed(-INITIAL_SPEED_X, 0),
+        Speed(-INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
+        Speed(-INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
+        Speed(-INITIAL_SPEED_X, INITIAL_SPEED_Y / 3),
+        Speed(-INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3),
     },
     {
-        Vector(INITIAL_SPEED_X, 0),
-        Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
-        Vector(INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
-        Vector(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3),
+        Speed(INITIAL_SPEED_X, 0),
+        Speed(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 2),
+        Speed(INITIAL_SPEED_X, INITIAL_SPEED_Y / 2),
+        Speed(INITIAL_SPEED_X, -INITIAL_SPEED_Y / 3),
     },
 ]
 
@@ -42,12 +43,12 @@ class Ball:
         self.speed = None
         self.__set_random_speed()
 
-    def update(self, new_position, new_speed, new_radius):
+    def update(self, new_position: Position, new_speed: Speed, new_radius: float):
         self.position.set_coordinates(new_position.x, new_position.y)
-        self.speed.set_coordinates(new_speed.x, new_speed.y)
+        self.speed.update(new_speed)
         self.radius = new_radius
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "position": self.position.__dict__,
             "speed": self.speed.__dict__,
@@ -130,11 +131,11 @@ class Ball:
         distance_y = position.y - closest_y
         return self.__get_side(distance_x, distance_y, position, paddle.get_position())
 
-    def __collide_with_paddle(self, paddle):
+    def __collide_with_paddle(self, paddle: Paddle):
         self.__push_ball(paddle)
         collision_point = self.__get_collision_point(paddle)
         self.speed = paddle.get_ball_speed_after_paddle_collision(collision_point)
-        logger.info("New speed is: (%s, %s)", self.speed.x, self.speed.y)
+        logger.info("New speed is: %s", self.speed.__dict__)
 
     def __push_ball(self, paddle):
         paddle_edges = paddle.get_edges()
@@ -163,7 +164,7 @@ class Ball:
             self.reset()
             return self.hit_wall(player_slot)
         if collide_y:
-            self.speed.y *= -1
+            self.__bounce_back()
         else:
             self.position = new_position
         return None
@@ -172,3 +173,6 @@ class Ball:
         chosen_set = random_ball_speeds[self.player_turn]
         self.speed = random.choice(list(chosen_set))
         self.player_turn = (self.player_turn + 1) % 2
+
+    def __bounce_back(self):
+        self.speed.y *= -1

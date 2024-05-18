@@ -4,6 +4,7 @@ import math
 from typing import NewType
 from back_game.game_physics.position import Position
 from back_game.game_physics.rectangle import Rectangle
+from back_game.game_physics.speed import Speed
 from back_game.game_physics.vector import Vector
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
@@ -28,6 +29,7 @@ class Paddle:
         self.slot: int = slot
         self.status: PaddleStatus = LISTENING
         self.speed: float = PADDLE_INITIAL_SPEED_RATE
+        #self.speed = Speed(speed_x, speed_y) --> for multiplayer mode
         self.rectangle: Rectangle = Rectangle(slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT)
         self.rate: float = 0.5
         self.axis: dict[str, Position] = self.__calculate_axis(num_players)
@@ -109,20 +111,20 @@ class Paddle:
         self.rectangle.height = config["height"]
 
     def move(self, direction: int):
-        self.rate = min(max(self.rate + self.speed * direction, 0), 1)
+        self.rate = min(max(self.rate + self.speed * direction, 0), 1) ## new class speed --> update calculation ??
         self.__update_position()
 
-    def get_ball_speed_after_paddle_collision(self, collision_point: Position) -> Vector:
+    def get_ball_speed_after_paddle_collision(self, collision_point: Position) -> Speed:
         speed_component = self.__get_ball_speed_direction(collision_point)
         u_speed = speed_component.unit_vector()
-        return Vector(
+        return Speed(
             INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y
         )
 
-    def __get_ball_speed_direction(self, collision_point: Position) -> Vector:
+    def __get_ball_speed_direction(self, collision_point: Position) -> Speed:
         if self.slot == LEFT_SLOT:
             speed_component_x = self.rectangle.distance_from_center
         elif self.slot == RIGHT_SLOT:
             speed_component_x = (-1) * self.rectangle.distance_from_center
         speed_component_y = collision_point.y - self.rectangle.convexity_center.y
-        return Vector(speed_component_x, speed_component_y)
+        return Speed(speed_component_x, speed_component_y)
