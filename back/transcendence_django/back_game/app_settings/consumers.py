@@ -45,7 +45,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         log.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, close_code: int):
         try:
             await self.leave(None)
         except ChannelError:
@@ -56,7 +56,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             )
         log.info("Disconnect with code: %s", close_code)
 
-    async def receive(self, text_data=None):
+    async def receive(self, text_data:json=None):
         content = json.loads(text_data)
         message_type, message = content["type"], content["message"]
         message_binding = {
@@ -124,7 +124,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         paddle_data = self.arena.move_paddle(player_name, direction)
         await self.send_update({"paddle": paddle_data})
 
-    async def send_game_over(self, game_over_message, time):
+    async def send_game_over(self, game_over_message: str, time: float):
         log.info("Game over: %s wins. %s seconds left.", self.arena.get_winner(), time)
         await self.send_update(
             {
@@ -136,33 +136,33 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-    async def game_message(self, event):
+    async def game_message(self, event: dict):
         message = event["message"]
         await self.send(
             text_data=json.dumps({"type": "game_message", "message": message})
         )
 
-    async def game_error(self, event):
+    async def game_error(self, event: dict):
         error = event["error"]
         await self.send(text_data=json.dumps({"type": "game_error", "error": error}))
 
-    async def game_update(self, event):
+    async def game_update(self, event: dict):
         message = event["update"]
         await self.send(
             text_data=json.dumps({"type": "game_update", "update": message})
         )
 
-    async def send_error(self, error):
+    async def send_error(self, error: dict):
         log.info("Sending error: %s: %s", error["code"], error["message"])
         await self.send(text_data=json.dumps({"type": "game_error", "error": error}))
 
-    async def send_update(self, update):
+    async def send_update(self, update: dict):
         log.info("Sending update: %s", update)
         await self.send_data({"type": "game_update", "update": update})
 
-    async def send_message(self, message):
+    async def send_message(self, message: str):
         log.info("Sending message: %s", message)
         await self.send_data({"type": "game_message", "message": message})
 
-    async def send_data(self, data):
+    async def send_data(self, data: dict):
         await self.channel_layer.group_send(self.room_group_name, data)

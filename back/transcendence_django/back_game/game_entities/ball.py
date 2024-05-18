@@ -1,6 +1,7 @@
 import logging
 import math
 import random
+from typing import Callable
 
 from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
@@ -34,7 +35,7 @@ random_ball_speeds = [
 
 class Ball:
 
-    def __init__(self, paddles, hit_wall_func):
+    def __init__(self, paddles: dict, hit_wall_func: Callable[[int], dict[str, str]]):
         self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.radius = BALL_RADIUS
         self.paddles = paddles
@@ -55,7 +56,7 @@ class Ball:
             "radius": self.radius,
         }
 
-    def set_position(self, position):
+    def set_position(self, position: Position):
         x = position.x
         y = position.y
         if x < self.radius or x > GAME_WIDTH - self.radius:
@@ -64,7 +65,7 @@ class Ball:
             raise ValueError("Ball y-coordinate is out of bounds.")
         self.position.set_coordinates(x, y)
 
-    def move(self):
+    def move(self) -> dict:
         new_position = Position(
             self.position.x + self.speed.x, self.position.y + self.speed.y
         )
@@ -76,11 +77,11 @@ class Ball:
             else ball_position_update
         )
 
-    def update_collision(self, paddle):
+    def update_collision(self, paddle: Paddle):
         if self.is_paddle_collision(self.position, paddle):
             self.update_position(self.position)
 
-    def update_position(self, new_position):
+    def update_position(self, new_position: Position) -> int | None:
         for paddle in self.paddles:
             if self.is_paddle_collision(self.position, paddle):
                 self.__collide_with_paddle(paddle)
@@ -88,7 +89,7 @@ class Ball:
         score = self.__update_wall_collision(new_position)
         return score
 
-    def is_paddle_collision(self, position, paddle):
+    def is_paddle_collision(self, position: Position, paddle: Paddle) -> bool:
         """
         Checks if the ball collides with a paddle.
         """
@@ -104,7 +105,7 @@ class Ball:
         self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.__set_random_speed()
 
-    def __get_side(self, distance_x, distance_y, position, paddle_position):
+    def __get_side(self, distance_x: float, distance_y: float, position: Position, paddle_position: Position) -> str:
         if abs(distance_x) > abs(distance_y):
             if distance_x > paddle_position.x - position.x:
                 return "right"
@@ -113,13 +114,13 @@ class Ball:
             return "bottom"
         return "top"
 
-    def __get_collision_point(self, paddle):
+    def __get_collision_point(self, paddle: Paddle) -> Position:
         paddle_edges = paddle.get_edges()
         closest_x = max(min(self.position.x, paddle_edges.right), paddle_edges.left)
         closest_y = max(min(self.position.y, paddle_edges.bottom), paddle_edges.top)
         return Position(closest_x, closest_y)
 
-    def __get_collision_side(self, position, paddle):
+    def __get_collision_side(self, position: Position, paddle: Paddle) -> str:
         """
         Determines which side of the paddle the ball collides with,
         accurately considering the ball's radius.
@@ -137,7 +138,7 @@ class Ball:
         self.speed = paddle.get_ball_speed_after_paddle_collision(collision_point)
         logger.info("New speed is: %s", self.speed.__dict__)
 
-    def __push_ball(self, paddle):
+    def __push_ball(self, paddle: Paddle):
         paddle_edges = paddle.get_edges()
         side = self.__get_collision_side(self.position, paddle)
         push_position = Position(self.position.x, self.position.y)
@@ -152,7 +153,7 @@ class Ball:
         self.set_position(push_position)
         logger.info("Ball collided with paddle %s on the %s side.", paddle.slot, side)
 
-    def __update_wall_collision(self, new_position):
+    def __update_wall_collision(self, new_position: Position) -> dict[str, str] | None:
         collide_x = (
             new_position.x <= self.radius or new_position.x >= GAME_WIDTH - self.radius
         )

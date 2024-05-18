@@ -7,7 +7,7 @@ class Position:
         self.x = x
         self.y = y
 
-    def round(self):
+    def round(self) -> 'Position':
         self.x = round(self.x)
         self.y = round(self.y)
         return self

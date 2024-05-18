@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @require_http_methods(["POST"])
-async def get_channel_id(request):
+async def get_channel_id(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data["user_id"]

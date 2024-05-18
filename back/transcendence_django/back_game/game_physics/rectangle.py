@@ -15,7 +15,7 @@ class Rectangle:
         self.convexity_center: Position = self.__get_convexity_center()
         self.distance_from_center: int = 0
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "position": self.position.__dict__,
             "width": self.width,
