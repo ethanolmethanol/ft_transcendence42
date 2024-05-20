@@ -142,14 +142,15 @@ class Ball:
         paddle_edges = paddle.get_edges()
         side = self.__get_collision_side(self.position, paddle)
         push_position = Position(self.position.x, self.position.y)
-        if side == "top":
-            push_position.y = paddle_edges.top - self.radius
-        elif side == "bottom":
-            push_position.y = paddle_edges.bottom + self.radius
-        elif side == "left":
-            push_position.x = paddle_edges.left - self.radius
-        elif side == "right":
-            push_position.x = paddle_edges.right + self.radius
+        match side:
+            case "top":
+                push_position.y = paddle_edges.top - self.radius
+            case "bottom":
+                push_position.y = paddle_edges.bottom + self.radius
+            case "left":
+                push_position.x = paddle_edges.left - self.radius
+            case "right":
+                push_position.x = paddle_edges.right + self.radius
         self.set_position(push_position)
         logger.info("Ball collided with paddle %s on the %s side.", paddle.slot, side)
 

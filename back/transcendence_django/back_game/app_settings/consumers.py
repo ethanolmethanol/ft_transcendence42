@@ -8,6 +8,7 @@ from back_game.game_settings.game_constants import (
     NOT_JOINED,
 )
 from back_game.monitor.monitor import monitor
+from back_game.game_arena.arena import Arena
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 log = logging.getLogger(__name__)
@@ -22,13 +23,13 @@ class ChannelError(Exception):
 
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: tuple, **kwargs: dict[str, any]):
         super().__init__(*args, **kwargs)
-        self.channel_id = None
-        self.arena = None
-        self.room_group_name = None
-        self.joined = False
-        self.user_id = None
+        self.channel_id: int | None = None
+        self.arena: Arena | None = None
+        self.room_group_name: str | None = None
+        self.joined: bool = False
+        self.user_id: int | None = None
 
     async def connect(self):
         self.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
@@ -73,7 +74,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def join(self, message: dict):
         self.user_id = message["user_id"]
-        arena_id = message["arena_id"]
+        arena_id: int = message["arena_id"]
         try:
             self.arena = monitor.channels[self.channel_id][arena_id]
             self.arena.game_update_callback = self.send_update
@@ -110,7 +111,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def rematch(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        arena_data = self.arena.rematch(self.user_id)
+        arena_data: dict | None = self.arena.rematch(self.user_id)
         if arena_data is None:
             await self.send_message(f"{self.user_id} asked for a rematch.")
         else:
@@ -119,9 +120,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def move_paddle(self, message: dict):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
-        player_name = message["player"]
-        direction = message["direction"]
-        paddle_data = self.arena.move_paddle(player_name, direction)
+        player_name: str = message["player"]
+        direction: str = message["direction"]
+        paddle_data: dict = self.arena.move_paddle(player_name, direction)
         await self.send_update({"paddle": paddle_data})
 
     async def send_game_over(self, game_over_message: str, time: float):
