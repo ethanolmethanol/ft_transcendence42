@@ -56,7 +56,7 @@ class Monitor:
         channel_id = channel["channel_id"]
         arena_id = channel["arena"]["id"]
         arena = self.channels[channel_id][arena_id]
-        channel = {"channel_id": channel_id, "arena": dict(arena)}
+        channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
 
     def delete_arena(self, arenas: dict, arena_id: int):

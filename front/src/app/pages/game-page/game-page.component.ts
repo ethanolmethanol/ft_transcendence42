@@ -31,7 +31,7 @@ import {LOADING_BUTTON_TIME} from "../../constants";
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  charging = false;
+  charging = true;
   chargeStart = 0;
   chargeTimeout: any;
   chargeTimeRemaining = LOADING_BUTTON_TIME; // 5000 ms = 5 s
@@ -75,13 +75,15 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmGiveUp() {
-    // if (confirm('Are you sure you want to give up?')) {
-      this.router.navigate(['/home']);
-      this.webSocketService.giveUp();
-    // }
+    this.router.navigate(['/home']);
+    this.webSocketService.giveUp();
   }
 
   startCharging() {
+    console.log("Start charging!")
+    if (this.charging == false) {
+      this.chargeTimeRemaining -= Date.now() - this.chargeStart
+    }
     this.charging = true;
     this.chargeStart = Date.now();
     this.chargeTimeout = setTimeout(() => {
@@ -91,8 +93,8 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   stopCharging() {
+    console.log("Stop charging!")
     this.charging = false;
     clearTimeout(this.chargeTimeout);
-    this.chargeTimeRemaining -= Date.now() - this.chargeStart; // Calculate the remaining time
   }
 }
