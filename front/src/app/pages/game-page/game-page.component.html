@@ -1,4 +1,10 @@
 <body>
-  <button (click)="confirmGiveUp()">Give Up</button>
+  <button
+    (mousedown)="startCharging()"
+    (mouseup)="stopCharging()"
+    [class.charging]="charging"
+  >
+    Give Up
+  </button>
   <app-game></app-game>
 </body>

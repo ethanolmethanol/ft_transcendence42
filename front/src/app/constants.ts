@@ -1,5 +1,11 @@
 // constants.ts
 
+////////////////
+// COMPONENTS //
+////////////////
+
+export const LOADING_BUTTON_TIME = 5000; // 5000 ms = 5 s
+
 /////////
 // API //
 /////////

@@ -14,6 +14,7 @@ import {GameComponent} from "../../components/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
 import {ConnectionService} from "../../services/connection/connection.service";
+import {LOADING_BUTTON_TIME} from "../../constants";
 
 @Component({
   selector: 'app-game-page',
@@ -29,6 +30,11 @@ import {ConnectionService} from "../../services/connection/connection.service";
 })
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  charging = false;
+  chargeStart = 0;
+  chargeTimeout: any;
+  chargeTimeRemaining = LOADING_BUTTON_TIME; // 5000 ms = 5 s
 
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
@@ -69,9 +75,24 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmGiveUp() {
-    if (confirm('Are you sure you want to give up?')) {
+    // if (confirm('Are you sure you want to give up?')) {
       this.router.navigate(['/home']);
       this.webSocketService.giveUp();
-    }
+    // }
+  }
+
+  startCharging() {
+    this.charging = true;
+    this.chargeStart = Date.now();
+    this.chargeTimeout = setTimeout(() => {
+      this.confirmGiveUp();
+      this.chargeTimeRemaining = LOADING_BUTTON_TIME; // Reset the remaining time if the button is fully charged
+    }, this.chargeTimeRemaining);
+  }
+
+  stopCharging() {
+    this.charging = false;
+    clearTimeout(this.chargeTimeout);
+    this.chargeTimeRemaining -= Date.now() - this.chargeStart; // Calculate the remaining time
   }
 }
