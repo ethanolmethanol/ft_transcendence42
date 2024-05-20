@@ -32,7 +32,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
-  private onResize(event: Event) {
+  public onResize(event: Event) {
     this.updateGameContainerScale();
   }
 
