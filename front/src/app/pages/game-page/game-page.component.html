@@ -1,10 +1,4 @@
 <body>
-  <button
-    (mousedown)="startCharging()"
-    (mouseup)="stopCharging()"
-    [class.charging]="charging"
-  >
-    Give Up
-  </button>
+  <app-loading-button [callback]="confirmGiveUp" [title]="'Give up'"></app-loading-button>
   <app-game></app-game>
 </body>

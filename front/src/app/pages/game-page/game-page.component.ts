@@ -15,6 +15,7 @@ import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
 import {ConnectionService} from "../../services/connection/connection.service";
 import {LOADING_BUTTON_TIME} from "../../constants";
+import {LoadingButtonComponent} from "../../components/loading-button/loading-button.component";
 
 @Component({
   selector: 'app-game-page',
@@ -23,18 +24,14 @@ import {LOADING_BUTTON_TIME} from "../../constants";
     PaddleComponent,
     RouterLink,
     GameComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    LoadingButtonComponent
   ],
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
 })
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
-
-  charging = true;
-  chargeStart = 0;
-  chargeTimeout: any;
-  chargeTimeRemaining = LOADING_BUTTON_TIME; // 5000 ms = 5 s
 
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
@@ -79,22 +76,4 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webSocketService.giveUp();
   }
 
-  startCharging() {
-    console.log("Start charging!")
-    if (this.charging == false) {
-      this.chargeTimeRemaining -= Date.now() - this.chargeStart
-    }
-    this.charging = true;
-    this.chargeStart = Date.now();
-    this.chargeTimeout = setTimeout(() => {
-      this.confirmGiveUp();
-      this.chargeTimeRemaining = LOADING_BUTTON_TIME; // Reset the remaining time if the button is fully charged
-    }, this.chargeTimeRemaining);
-  }
-
-  stopCharging() {
-    console.log("Stop charging!")
-    this.charging = false;
-    clearTimeout(this.chargeTimeout);
-  }
 }
