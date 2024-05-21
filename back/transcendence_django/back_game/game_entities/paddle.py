@@ -114,17 +114,17 @@ class Paddle:
         self.rate = min(max(self.rate + self.speed * direction, 0), 1) ## new class speed --> update calculation ??
         self.__update_position()
 
-    def get_ball_speed_after_paddle_collision(self, collision_point: Position) -> Speed:
-        speed_component = self.__get_ball_speed_direction(collision_point)
-        u_speed = speed_component.unit_vector()
-        return Speed(
-            INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y
-        )
+    # def get_ball_speed_after_paddle_collision(self, collision_point: Position) -> Speed:
+    #     speed_component = self.__get_ball_speed_direction(collision_point)
+    #     u_speed = speed_component.unit_vector()
+    #     return Speed(
+    #         INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y
+    #     )
 
-    def __get_ball_speed_direction(self, collision_point: Position) -> Speed:
-        if self.slot == LEFT_SLOT:
-            speed_component_x = self.rectangle.distance_from_center
-        elif self.slot == RIGHT_SLOT:
-            speed_component_x = (-1) * self.rectangle.distance_from_center
-        speed_component_y = collision_point.y - self.rectangle.convexity_center.y
-        return Speed(speed_component_x, speed_component_y)
+    # def __get_ball_speed_direction(self, collision_point: Position) -> Speed:
+    #     if self.slot == LEFT_SLOT:
+    #         speed_component_x = self.rectangle.distance_from_center
+    #     elif self.slot == RIGHT_SLOT:
+    #         speed_component_x = (-1) * self.rectangle.distance_from_center
+    #     speed_component_y = collision_point.y - self.rectangle.convexity_center.y
+    #     return Speed(speed_component_x, speed_component_y)

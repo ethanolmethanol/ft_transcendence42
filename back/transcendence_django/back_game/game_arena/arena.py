@@ -7,6 +7,18 @@ from back_game.game_settings.game_constants import (
     MAXIMUM_SCORE,
     WAITING,
 )
+from back_game.game_settings.dict_keys import (
+    ID,
+    STATUS,
+    PLAYERS,
+    SCORES,
+    BALL,
+    PADDLES,
+    MAP,
+    SCORE,
+    PLAYER_NAME,
+    KICKED_PLAYERS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,13 +31,13 @@ class Arena:
 
     def to_dict(self) -> dict:
         return {
-            "id": self.id,
-            "status": self.game.status,
-            "players": [player.player_name for player in self.player_manager.players.values()],
-            "scores": self.player_manager.get_scores(),
-            "ball": self.game.ball.to_dict(),
-            "paddles": [paddle.to_dict() for paddle in self.game.paddles.values()],
-            "map": self.game.map.__dict__,
+            ID: self.id,
+            STATUS: self.game.status,
+            PLAYERS: [player.player_name for player in self.player_manager.players.values()],
+            SCORES: self.player_manager.get_scores(),
+            BALL: self.game.ball.to_dict(),
+            PADDLES: [paddle.to_dict() for paddle in self.game.paddles.values()],
+            MAP: self.game.map.__dict__,
         }
 
     def is_empty(self) -> bool:
@@ -85,7 +97,7 @@ class Arena:
             )
             if player.score == MAXIMUM_SCORE:
                 self.conclude_game()
-            return {"score": {"player_name": player_name}}
+            return {SCORE: {PLAYER_NAME: player_name}}
         raise NotImplementedError()  # TO DO
 
     def move_paddle(self, player_name: str, direction: int) -> dict:
@@ -98,7 +110,7 @@ class Arena:
         logger.info("Updated_dict: %s", update_dict)
         kicked_players = self.player_manager.kick_afk_players()
         if kicked_players:
-            update_dict["kicked_players"] = kicked_players
+            update_dict[KICKED_PLAYERS] = kicked_players
         return update_dict
 
     def set_status(self, status: GameStatus):
