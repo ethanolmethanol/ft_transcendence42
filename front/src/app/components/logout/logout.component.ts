@@ -11,7 +11,6 @@ import { WebSocketService } from '../../services/web-socket/web-socket.service';
   styleUrl: './logout.component.css'
 })
 export class LogoutComponent {
-
   constructor(private authService: AuthService, private userService: UserService) {}
 
   public logOut() {

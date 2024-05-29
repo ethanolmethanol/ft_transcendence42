@@ -12,30 +12,30 @@ interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private userData: any;
-  private userDataLoaded: Promise<void> | null;
+  private _userData: any;
+  private _userDataLoaded: Promise<void> | null;
 
   constructor(private http: HttpClient) {
-    this.userDataLoaded = null;
+    this._userDataLoaded = null;
   }
 
   private async loadUserData(): Promise<void> {
     try {
-      this.userData = await this.http.get<User>(`${API_USER}/user_data/`).toPromise();
+      this._userData = await this.http.get<User>(`${API_USER}/user_data/`).toPromise();
     } catch (error) {
       console.error('Error loading user data:', error);
     }
   }
 
   public whenUserDataLoaded(): Promise<void> {
-    if (!this.userDataLoaded) {
-      this.userDataLoaded = this.loadUserData();
+    if (!this._userDataLoaded) {
+      this._userDataLoaded = this.loadUserData();
     }
-    return this.userDataLoaded;
+    return this._userDataLoaded;
   }
 
   private getUserData(): User {
-    return this.userData;
+    return this._userData;
   }
 
   public getUsername(): string {
@@ -47,7 +47,7 @@ export class UserService {
   }
 
   public clearUserData(): void {
-    this.userData = null;
-    this.userDataLoaded = null;
+    this._userData = null;
+    this._userDataLoaded = null;
   }
 }

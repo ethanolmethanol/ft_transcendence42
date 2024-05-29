@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {RouterLink} from "@angular/router";
-import {BannerComponent} from "../../components/banner/banner.component";
+import {HeaderComponent} from "../../components/header/./header.component";
 import {LeaderboardComponent} from "../../components/leaderboard/leaderboard.component";
 import { UserService } from '../../services/user/user.service';
 import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
@@ -10,7 +10,7 @@ import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-
   standalone: true,
   imports: [
     RouterLink,
-    BannerComponent,
+    HeaderComponent,
     LeaderboardComponent,
     LoadingSpinnerComponent,
   ],

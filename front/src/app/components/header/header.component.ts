@@ -3,15 +3,15 @@ import {RouterLink} from "@angular/router";
 import {LogoutComponent} from "../logout/logout.component";
 
 @Component({
-  selector: 'app-banner',
+  selector: 'app-header',
   standalone: true,
   imports: [
     RouterLink,
     LogoutComponent
   ],
-  templateUrl: './banner.component.html',
-  styleUrl: './banner.component.css'
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.css'
 })
-export class BannerComponent {
+export class HeaderComponent {
 
 }

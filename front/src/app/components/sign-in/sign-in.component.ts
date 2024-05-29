@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NgIf} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
 import { AuthService } from '../../services/auth/auth.service';
 import {ErrorMessageComponent} from "../error-message/error-message.component";
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
@@ -19,10 +18,9 @@ import { Subscription } from 'rxjs';
   styleUrl: './sign-in.component.css'
 })
 
-export class SignInComponent implements OnInit, OnDestroy {
+export class SignInComponent implements OnInit {
   signInForm!: FormGroup;
   errorMessage: string = "";
-  private authSubscription?: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -39,12 +37,12 @@ export class SignInComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (this.signInForm.valid) {
       const {login, password} = this.signInForm.value;
-      this.authSubscription = this.authService.signIn(login, password).subscribe(
-        response => {
+      this.authService.signIn(login, password).subscribe({
+        next: response => {
           console.log("Valid authentication : ", response);
           this.router.navigate(['home']);
         },
-        error => {
+        error: error => {
           console.error("Authentication failed: ", error);
           // Assuming the backend sends back an error object with a message property
           if (error.status === 401) {
@@ -53,18 +51,11 @@ export class SignInComponent implements OnInit, OnDestroy {
             this.errorMessage = "An error occurred while authenticating";
           }
         }
-      );
+      });
     }
   }
 
   hasAuthenticationFailed(): boolean {
     return this.errorMessage !== "";
-  }
-
-  ngOnDestroy(): void {
-    if (this.authSubscription) {
-      this.authSubscription.unsubscribe();
-      console.log("Unsubscribed from authentication service");
-    }
   }
 }

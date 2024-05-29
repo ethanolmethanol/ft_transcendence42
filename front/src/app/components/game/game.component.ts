@@ -19,7 +19,6 @@ import { MonitorService } from "../../services/monitor/monitor.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
-import { VariableBinding } from '@angular/compiler';
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
 import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
@@ -73,9 +72,9 @@ interface ErrorMapping {
   styleUrl: './game.component.css'
 })
 export class GameComponent implements AfterViewInit, OnDestroy {
+  readonly lineThickness = LINE_THICKNESS;
   gameWidth = GAME_WIDTH;
   gameHeight = GAME_HEIGHT;
-  readonly lineThickness = LINE_THICKNESS;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
@@ -83,18 +82,18 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   player2Score = 0;
   dataLoaded = false;
 
-  private paddleBinding = [
+  private _paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
   ];
-  private readonly errorMapping: ErrorMapping = {
+  private readonly _errorMapping: ErrorMapping = {
     [NOT_JOINED]: this.redirectToHome.bind(this),
     [INVALID_ARENA]: this.redirectToHome.bind(this),
     [INVALID_CHANNEL]: this.redirectToHome.bind(this),
     [NOT_ENTERED]: this.redirectToHome.bind(this),
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
-  private pressedKeys = new Set<string>();
+  private _pressedKeys = new Set<string>();
   constructor (private userService: UserService, private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
 
   public setArena(arena: ArenaResponse) {
@@ -106,8 +105,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
-        paddle.gameHeight = arena.map.height;
-        paddle.gameWidth = arena.map.width;
 		paddle.afkLeftTime = null;
       }
     });
@@ -161,8 +158,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private handleGameError(error: ErrorResponse) {
     console.error('Game error:', error);
-    if (error.code in this.errorMapping) {
-      this.errorMapping[error.code](error);
+    if (error.code in this._errorMapping) {
+      this._errorMapping[error.code](error);
     }
   }
 
@@ -219,18 +216,18 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   private onKeyDown(event: KeyboardEvent) {
-    this.pressedKeys.add(event.key);
+    this._pressedKeys.add(event.key);
   }
 
   @HostListener('window:keyup', ['$event'])
   private onKeyUp(event: KeyboardEvent) {
-    this.pressedKeys.delete(event.key);
+    this._pressedKeys.delete(event.key);
   }
   private gameLoop() {
-    this.paddleBinding.forEach(paddleBinding => {
-      const paddle = this.paddles.find(p => p.id === paddleBinding.id);
+    this._paddleBinding.forEach(_paddleBinding => {
+      const paddle = this.paddles.find(p => p.id === _paddleBinding.id);
       if (paddle) {
-        this.movePaddle(paddle, paddleBinding)
+        this.movePaddle(paddle, _paddleBinding)
       }
     });
 
@@ -239,8 +236,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private movePaddle(paddle: PaddleComponent, binding: { upKey: string; downKey: string }) {
-    const isMovingUp = this.pressedKeys.has(binding.upKey) && !this.pressedKeys.has(binding.downKey);
-    const isMovingDown = this.pressedKeys.has(binding.downKey) && !this.pressedKeys.has(binding.upKey);
+    const isMovingUp = this._pressedKeys.has(binding.upKey) && !this._pressedKeys.has(binding.downKey);
+    const isMovingDown = this._pressedKeys.has(binding.downKey) && !this._pressedKeys.has(binding.upKey);
     const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;
     if (direction !== 0) {
       const playerName = paddle.id === 1 ? "Player1" : "Player2";

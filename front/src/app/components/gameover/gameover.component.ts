@@ -17,9 +17,7 @@ export class GameOverComponent {
   message: string = "";
   show: boolean = false;
 
-  constructor (private webSocketService: WebSocketService, private router: Router) {
-
-  }
+  constructor (private webSocketService: WebSocketService, private router: Router) {}
 
   public backToHomePage() {
     this.webSocketService.giveUp();
