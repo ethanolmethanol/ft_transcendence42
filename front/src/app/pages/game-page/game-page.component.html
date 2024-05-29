@@ -1,4 +1,4 @@
 <body>
-  <app-loading-button [callback]="confirmGiveUp.bind(this)" [title]="'Give up'"></app-loading-button>
+  <button (click)="confirmGiveUp()">Give up</button>
   <app-game></app-game>
 </body>

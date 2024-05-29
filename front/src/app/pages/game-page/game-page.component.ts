@@ -14,7 +14,6 @@ import {GameComponent} from "../../components/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
 import {ConnectionService} from "../../services/connection/connection.service";
-import {LoadingButtonComponent} from "../../components/loading-button/loading-button.component";
 
 @Component({
   selector: 'app-game-page',
@@ -24,7 +23,6 @@ import {LoadingButtonComponent} from "../../components/loading-button/loading-bu
     RouterLink,
     GameComponent,
     LoadingSpinnerComponent,
-    LoadingButtonComponent
   ],
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
@@ -71,7 +69,6 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmGiveUp() {
-    console.log("Router ->" + this.router)
     this.router.navigate(['/home']);
     this.webSocketService.giveUp();
   }
