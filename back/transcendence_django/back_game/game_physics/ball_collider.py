@@ -17,7 +17,7 @@ from back_game.game_settings.dict_keys import (
 )
 logger = logging.getLogger(__name__)
 
-class BallCollisionHandler:
+class BallCollider:
 
     @staticmethod
     def ball_collide_with_wall(new_position: Position, ball: Ball) -> dict[str, str] | None:
@@ -58,12 +58,12 @@ class BallCollisionHandler:
         closest_y = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
         distance_x = position.x - closest_x
         distance_y = position.y - closest_y
-        return BallCollisionHandler.get_side(distance_x, distance_y, position, paddle.get_position())
+        return BallCollider.get_side(distance_x, distance_y, position, paddle.get_position())
 
     @staticmethod
     def push_ball(ball: Ball, paddle: Paddle):
         paddle_edges = paddle.get_edges()
-        side = BallCollisionHandler.get_collision_side(ball.position, paddle)
+        side = BallCollider.get_collision_side(ball.position, paddle)
         push_position = Position(ball.position.x, ball.position.y)
         match side:
             case "top":

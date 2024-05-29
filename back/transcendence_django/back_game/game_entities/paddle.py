@@ -114,5 +114,5 @@ class Paddle:
         self.rectangle.height = config[HEIGHT]
 
     def move(self, direction: int):
-        self.rate = min(max(self.rate + self.speed * direction, 0), 1)
+        self.rate = min(max(self.rate + self.speed_rate * direction, 0), 1)
         self.__update_position()

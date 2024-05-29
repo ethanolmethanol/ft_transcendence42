@@ -9,4 +9,3 @@ class Map:
     def update(self, new_width: int, new_height: int):
         self.width = new_width
         self.height = new_height
-

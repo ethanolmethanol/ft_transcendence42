@@ -17,18 +17,19 @@ from back_game.game_settings.dict_keys import (
     BALL_X_OUT_OF_BOUNDS,
     BALL_Y_OUT_OF_BOUNDS,
 )
+
 logger = logging.getLogger(__name__)
 
 
 class Ball:
 
     def __init__(self, paddles: dict, hit_wall_func: Callable[[int], dict[str, str]]):
-        self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
-        self.radius = BALL_RADIUS
-        self.paddles = paddles
-        self.hit_wall = hit_wall_func
-        self.player_turn = 0
-        self.speed = None
+        self.position: Position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
+        self.radius: float = BALL_RADIUS
+        self.paddles: dict = paddles
+        self.hit_wall: Callable[[int], dict[str, str]] = hit_wall_func
+        self.player_turn: int = 0
+        self.speed: Speed = None
         self.__set_random_speed()
 
     def update(self, new_position: Position, new_speed: Speed, new_radius: float):
@@ -72,6 +73,5 @@ class Ball:
     def __set_random_speed(self):
         self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
         self.player_turn = (self.player_turn + 1) % 2
-
 
 from back_game.game_physics.collision import Collision

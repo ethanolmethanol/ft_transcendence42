@@ -4,8 +4,8 @@ import math
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
-from back_game.game_physics.ball_collision_handler import BallCollisionHandler
-from back_game.game_physics.paddle_collision_handler import PaddleCollisionHandler
+from back_game.game_physics.ball_collider import BallCollider
+from back_game.game_physics.paddle_collider import PaddleCollider
 from back_game.game_settings.dict_keys import (
     POSITION,
     BALL
@@ -30,9 +30,9 @@ class Collision:
 
     @staticmethod
     def collide_with_paddle(ball: Ball, paddle: Paddle):
-        BallCollisionHandler.push_ball(ball, paddle)
-        collision_point = PaddleCollisionHandler.get_collision_point(ball, paddle)
-        ball.speed = PaddleCollisionHandler.get_ball_speed_after_paddle_collision(paddle, collision_point)
+        BallCollider.push_ball(ball, paddle)
+        collision_point = PaddleCollider.get_collision_point(ball, paddle)
+        ball.speed = PaddleCollider.get_ball_speed_after_paddle_collision(paddle, collision_point)
         logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
@@ -41,7 +41,7 @@ class Collision:
             if Collision.is_paddle_collision(ball, paddle):
                 Collision.collide_with_paddle(ball, paddle)
                 return None
-        score_update = BallCollisionHandler.ball_collide_with_wall(new_position, ball)
+        score_update = BallCollider.ball_collide_with_wall(new_position, ball)
         return score_update
 
     @staticmethod

@@ -1,5 +1,4 @@
 import logging
-import math
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
@@ -13,7 +12,7 @@ from back_game.game_settings.game_constants import (
 
 logger = logging.getLogger(__name__)
 
-class PaddleCollisionHandler:
+class PaddleCollider:
     
     @staticmethod
     def get_collision_point(ball: Ball, paddle: Paddle) -> Position:
@@ -24,7 +23,7 @@ class PaddleCollisionHandler:
 
     @staticmethod
     def get_ball_speed_after_paddle_collision(paddle: Paddle, collision_point: Position) -> Speed:
-        speed_component = PaddleCollisionHandler.get_ball_speed_direction(paddle, collision_point)
+        speed_component = PaddleCollider.get_ball_speed_direction(paddle, collision_point)
         u_speed = speed_component.unit_vector()
         return Speed(
             INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y

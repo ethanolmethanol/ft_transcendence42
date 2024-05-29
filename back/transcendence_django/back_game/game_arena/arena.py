@@ -19,10 +19,11 @@ from back_game.game_settings.dict_keys import (
     PLAYER_NAME,
     KICKED_PLAYERS,
     PLAYER1,
-    PLAYER2
+    PLAYER2,
 )
 
 logger = logging.getLogger(__name__)
+
 
 class Arena:
 
@@ -35,7 +36,9 @@ class Arena:
         return {
             ID: self.id,
             STATUS: self.game.status,
-            PLAYERS: [player.player_name for player in self.player_manager.players.values()],
+            PLAYERS: [
+                player.player_name for player in self.player_manager.players.values()
+            ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),
             PADDLES: [paddle.to_dict() for paddle in self.game.paddles.values()],
