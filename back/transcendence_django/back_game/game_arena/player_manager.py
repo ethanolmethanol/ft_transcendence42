@@ -7,7 +7,16 @@ from back_game.game_settings.game_constants import (
     MAX_PLAYER,
     MIN_PLAYER,
 )
-
+from back_game.game_settings.dict_keys import (
+    PLAYER_NAME,
+    PLAYER_GAVE_UP,
+    ARENA_FULL,
+    UNKNOWN_USER,
+    INVALID_NB_PLAYERS,
+    NB_PLAYERS,
+    MODE,
+    TIME_LEFT,
+)
 logger = logging.getLogger(__name__)
 
 
@@ -29,9 +38,9 @@ class PlayerManager:
 
     def allow_player_enter_arena(self, user_id: int):
         if self.did_player_give_up(user_id):
-            raise ValueError("The player has given up.")
+            raise ValueError(PLAYER_GAVE_UP)
         if not self.is_player_in_game(user_id) and self.is_full():
-            raise ValueError("The arena is full.")
+            raise ValueError(ARENA_FULL)
 
     def disable_player(self, user_id: int):
         self.change_player_status(user_id, DISABLED)
@@ -55,7 +64,7 @@ class PlayerManager:
 
     def rematch(self, user_id : int):
         if not self.is_player_in_game(user_id):
-            raise KeyError("This user is unknown")
+            raise KeyError(UNKNOWN_USER)
         self.enable_player(user_id)
 
     def are_all_players_ready(self) -> bool:
@@ -107,10 +116,10 @@ class PlayerManager:
         return scores
 
     def __fill_player_specs(self, players_specs: dict):
-        self.nb_players = players_specs["nb_players"]
+        self.nb_players = players_specs[NB_PLAYERS]
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
-            raise ValueError("The number of players is out of allowed range.")
-        self.is_remote = players_specs["mode"]
+            raise ValueError(INVALID_NB_PLAYERS)
+        self.is_remote = players_specs[MODE]
 
     def __get_afk_players(self) -> list:
         kicked_players: list = []
@@ -118,7 +127,7 @@ class PlayerManager:
             time_left_before_kick = player.get_time_left_before_kick()
             if time_left_before_kick <= AFK_WARNING_THRESHOLD:
                 kicked_players.append(
-                    {"player_name": player.player_name, "time_left": round(time_left_before_kick)}
+                    {PLAYER_NAME: player.player_name, TIME_LEFT: round(time_left_before_kick)}
                 )
             if time_left_before_kick <= 0:
                 self.player_gave_up(player.user_id)

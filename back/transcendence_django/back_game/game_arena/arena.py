@@ -18,6 +18,8 @@ from back_game.game_settings.dict_keys import (
     SCORE,
     PLAYER_NAME,
     KICKED_PLAYERS,
+    PLAYER1,
+    PLAYER2
 )
 
 logger = logging.getLogger(__name__)
@@ -88,7 +90,7 @@ class Arena:
 
     def ball_hit_wall(self, player_slot: int) -> dict:
         if not self.player_manager.is_remote:
-            player_name = "Player2" if player_slot else "Player1"
+            player_name = PLAYER2 if player_slot else PLAYER1
             logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
             player = self.player_manager.players[player_name]
             player.score += 1
@@ -122,8 +124,8 @@ class Arena:
 
     def __enter_local_mode(self, user_id: int):
         if self.is_empty():
-            self.__register_player(user_id, "Player1")
-            self.__register_player(user_id, "Player2")
+            self.__register_player(user_id, PLAYER1)
+            self.__register_player(user_id, PLAYER2)
 
     def __enter_remote_mode(self, user_id: int):
         if self.player_manager.is_player_in_game(user_id):

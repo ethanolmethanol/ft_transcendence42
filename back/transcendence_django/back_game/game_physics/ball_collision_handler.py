@@ -9,7 +9,12 @@ from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,
 )
-
+from back_game.game_settings.dict_keys import (
+    RIGHT,
+    LEFT,
+    TOP,
+    BOTTOM
+)
 logger = logging.getLogger(__name__)
 
 class BallCollisionHandler:
@@ -36,11 +41,11 @@ class BallCollisionHandler:
     def get_side(distance_x: float, distance_y: float, position: Position, paddle_position: Position) -> str:
         if abs(distance_x) > abs(distance_y):
             if distance_x > paddle_position.x - position.x:
-                return "right"
-            return "left"
+                return RIGHT
+            return LEFT
         if distance_y > paddle_position.y - position.y:
-            return "bottom"
-        return "top"
+            return BOTTOM
+        return TOP
 
     @staticmethod
     def get_collision_side(position: Position, paddle: Paddle) -> str:
