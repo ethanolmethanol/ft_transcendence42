@@ -2,10 +2,10 @@ import logging
 import time
 
 from back_game.game_arena.player import (
-    DISABLED, 
-    ENABLED, 
-    GIVEN_UP, 
-    Player, 
+    DISABLED,
+    ENABLED,
+    GIVEN_UP,
+    Player,
     PlayerStatus,
 )
 from back_game.game_settings.game_constants import (
@@ -136,7 +136,7 @@ class PlayerManager:
                 kicked_players.append(
                     {
                         PLAYER_NAME: player.player_name, 
-                        TIME_LEFT: round(time_left_before_kick)
+                        TIME_LEFT: round(time_left_before_kick),
                     }
                 )
             if time_left_before_kick <= 0:

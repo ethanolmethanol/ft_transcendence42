@@ -11,4 +11,3 @@ class Position:
         self.x = round(self.x)
         self.y = round(self.y)
         return self
-

@@ -41,7 +41,7 @@ class BallCollider:
         distance_x: float, 
         distance_y: float, 
         position: Position, 
-        paddle_position: Position
+        paddle_position: Position,
     ) -> str:
         if abs(distance_x) > abs(distance_y):
             if distance_x > paddle_position.x - position.x:

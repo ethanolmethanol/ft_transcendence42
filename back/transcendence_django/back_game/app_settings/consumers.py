@@ -83,7 +83,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             )
         log.info("Disconnect with code: %s", close_code)
 
-    async def receive(self, text_data:json = None):
+    async def receive(self, text_data: json = None):
         content = json.loads(text_data)
         message_type, message = content[TYPE], content[MESSAGE]
         message_binding = {

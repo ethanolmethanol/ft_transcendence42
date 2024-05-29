@@ -86,9 +86,7 @@ def logout_view(request):
 def is_logged_view(request):
     try:
         get_session_from_request(request)
-        return Response(
-            {"detail": "User is logged in."}, status=status.HTTP_200_OK
-        )
+        return Response({"detail": "User is logged in."}, status=status.HTTP_200_OK)
     except ValueError as e:
         return Response(
             {"detail": "User isn't logged in: " + str(e)},

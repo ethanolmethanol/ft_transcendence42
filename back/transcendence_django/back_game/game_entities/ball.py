@@ -74,4 +74,5 @@ class Ball:
         self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
         self.player_turn = (self.player_turn + 1) % 2
 
+
 from back_game.game_physics.collision import Collision
