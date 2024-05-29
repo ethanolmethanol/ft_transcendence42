@@ -1,7 +1,13 @@
 import logging
 import time
 
-from back_game.game_arena.player import DISABLED, ENABLED, GIVEN_UP, Player, PlayerStatus
+from back_game.game_arena.player import (
+    DISABLED, 
+    ENABLED, 
+    GIVEN_UP, 
+    Player, 
+    PlayerStatus,
+)
 from back_game.game_settings.game_constants import (
     AFK_WARNING_THRESHOLD,
     MAX_PLAYER,
@@ -17,6 +23,7 @@ from back_game.game_settings.dict_keys import (
     MODE,
     TIME_LEFT,
 )
+
 logger = logging.getLogger(__name__)
 
 
@@ -62,7 +69,7 @@ class PlayerManager:
             player.user_id == user_id for player in self.players.values()
         )
 
-    def rematch(self, user_id : int):
+    def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
             raise KeyError(UNKNOWN_USER)
         self.enable_player(user_id)
@@ -127,9 +134,14 @@ class PlayerManager:
             time_left_before_kick = player.get_time_left_before_kick()
             if time_left_before_kick <= AFK_WARNING_THRESHOLD:
                 kicked_players.append(
-                    {PLAYER_NAME: player.player_name, TIME_LEFT: round(time_left_before_kick)}
+                    {
+                        PLAYER_NAME: player.player_name, 
+                        TIME_LEFT: round(time_left_before_kick)
+                    }
                 )
             if time_left_before_kick <= 0:
                 self.player_gave_up(player.user_id)
-                logger.info("Player %s was kicked due to inactivity.", player.player_name)
+                logger.info(
+                    "Player %s was kicked due to inactivity.", player.player_name
+                )
         return kicked_players

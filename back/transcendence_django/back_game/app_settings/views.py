@@ -1,7 +1,7 @@
 import json
+from json import JSONDecodeError
 import logging
 from http import HTTPStatus
-from json import JSONDecodeError
 
 from back_game.monitor.monitor import monitor
 from django.http import JsonResponse

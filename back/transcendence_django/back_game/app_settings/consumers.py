@@ -83,7 +83,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             )
         log.info("Disconnect with code: %s", close_code)
 
-    async def receive(self, text_data:json=None):
+    async def receive(self, text_data:json = None):
         content = json.loads(text_data)
         message_type, message = content[TYPE], content[MESSAGE]
         message_binding = {
@@ -165,9 +165,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def game_message(self, event: dict):
         message = event[MESSAGE]
-        await self.send(
-            text_data=json.dumps({TYPE: GAME_MESSAGE, MESSAGE: message})
-        )
+        await self.send(text_data=json.dumps({TYPE: GAME_MESSAGE, MESSAGE: message}))
 
     async def game_error(self, event: dict):
         error = event[ERROR]
@@ -175,9 +173,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def game_update(self, event: dict):
         message = event[UPDATE]
-        await self.send(
-            text_data=json.dumps({TYPE: GAME_UPDATE, UPDATE: message})
-        )
+        await self.send(text_data=json.dumps({TYPE: GAME_UPDATE, UPDATE: message}))
 
     async def send_error(self, error: dict):
         log.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])

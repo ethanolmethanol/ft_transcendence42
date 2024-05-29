@@ -9,6 +9,7 @@ from back_game.game_settings.dict_keys import (
     HEIGHT,
 )
 
+
 class Rectangle:
     def __init__(self, slot: int, position: Position, width: int, height: int):
         self.slot: int = slot

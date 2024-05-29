@@ -28,12 +28,15 @@ log = logging.getLogger(__name__)
 
 PaddleStatus = NewType("PaddleStatus", [LISTENING, PROCESSING])
 
+
 class Paddle:
     def __init__(self, slot: int, num_players: int):
         self.slot: int = slot
         self.status: PaddleStatus = LISTENING
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
-        self.rectangle: Rectangle = Rectangle(slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT)
+        self.rectangle: Rectangle = Rectangle(
+            slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT
+        )
         self.rate: float = 0.5
         self.axis: dict[str, Position] = self.__calculate_axis(num_players)
         self.__update_position()

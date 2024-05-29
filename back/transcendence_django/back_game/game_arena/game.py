@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Literal, NewType
+from typing import Callable, NewType
 from back_game.game_entities.ball import Ball
 from back_game.game_arena.map import Map
 from back_game.game_entities.paddle import Paddle

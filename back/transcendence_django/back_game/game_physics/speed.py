@@ -10,7 +10,7 @@ class Speed(Vector):
         self.y = speed_y
         self.absolute_velocity = self.magnitude()
 
-    def update(self, new_speed: 'Speed'):
+    def update(self, new_speed: "Speed"):
         self.x = new_speed.x
         self.y = new_speed.y
         self.absolute_velocity = new_speed.absolute_velocity
