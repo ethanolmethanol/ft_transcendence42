@@ -3,11 +3,8 @@ import logging
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
-from back_game.game_settings.game_constants import (
-    GAME_HEIGHT,
-    GAME_WIDTH,
-)
 from back_game.game_settings.dict_keys import RIGHT, LEFT, TOP, BOTTOM
+from back_game.game_settings.game_constants import GAME_HEIGHT, GAME_WIDTH
 
 logger = logging.getLogger(__name__)
 

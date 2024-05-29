@@ -1,40 +1,40 @@
 import json
 import logging
 
+from back_game.game_arena.arena import Arena
+from back_game.game_settings.dict_keys import (
+    ARENA,
+    ARENA_ID,
+    CHANNEL_ERROR_CODE,
+    DIRECTION,
+    ERROR,
+    GAME_ERROR,
+    GAME_MESSAGE,
+    GAME_OVER,
+    GAME_UPDATE,
+    GIVE_UP,
+    JOIN,
+    LEAVE,
+    MESSAGE,
+    MOVE_PADDLE,
+    PADDLE,
+    PLAYER,
+    REMATCH,
+    TIME,
+    TYPE,
+    UPDATE,
+    USER_ID,
+    WINNER,
+)
 from back_game.game_settings.game_constants import (
     INVALID_ARENA,
     INVALID_CHANNEL,
     NOT_ENTERED,
     NOT_JOINED,
-    UNKNOWN_CHANNEL_ID,
     UNKNOWN_ARENA_ID,
-)
-from back_game.game_settings.dict_keys import (
-    CHANNEL_ERROR_CODE,
-    MESSAGE,
-    TYPE,
-    MOVE_PADDLE,
-    JOIN,
-    LEAVE,
-    GIVE_UP,
-    REMATCH,
-    USER_ID,
-    ARENA_ID,
-    ARENA,
-    PLAYER,
-    DIRECTION,
-    PADDLE,
-    GAME_OVER,
-    WINNER,
-    TIME,
-    GAME_MESSAGE,
-    ERROR,
-    GAME_ERROR,
-    GAME_UPDATE,
-    UPDATE,
+    UNKNOWN_CHANNEL_ID,
 )
 from back_game.monitor.monitor import monitor
-from back_game.game_arena.arena import Arena
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 log = logging.getLogger(__name__)

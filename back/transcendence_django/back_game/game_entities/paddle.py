@@ -1,9 +1,18 @@
 import logging
 import math
-
 from typing import NewType
+
 from back_game.game_physics.position import Position
 from back_game.game_physics.rectangle import Rectangle
+from back_game.game_settings.dict_keys import (
+    END,
+    HEIGHT,
+    POSITION,
+    SLOT,
+    SPEED,
+    START,
+    WIDTH,
+)
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,
@@ -13,15 +22,6 @@ from back_game.game_settings.game_constants import (
     PADDLE_OFFSET,
     PADDLE_WIDTH,
     PROCESSING,
-)
-from back_game.game_settings.dict_keys import (
-    POSITION,
-    START,
-    END,
-    SLOT,
-    SPEED,
-    WIDTH,
-    HEIGHT,
 )
 
 log = logging.getLogger(__name__)

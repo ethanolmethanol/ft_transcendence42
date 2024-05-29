@@ -8,11 +8,6 @@ from back_game.game_arena.player import (
     Player,
     PlayerStatus,
 )
-from back_game.game_settings.game_constants import (
-    AFK_WARNING_THRESHOLD,
-    MAX_PLAYER,
-    MIN_PLAYER,
-)
 from back_game.game_settings.dict_keys import (
     PLAYER_NAME,
     PLAYER_GAVE_UP,
@@ -22,6 +17,11 @@ from back_game.game_settings.dict_keys import (
     NB_PLAYERS,
     MODE,
     TIME_LEFT,
+)
+from back_game.game_settings.game_constants import (
+    AFK_WARNING_THRESHOLD,
+    MAX_PLAYER,
+    MIN_PLAYER,
 )
 
 logger = logging.getLogger(__name__)

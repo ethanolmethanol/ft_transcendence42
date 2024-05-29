@@ -2,10 +2,7 @@ import logging
 import random
 
 from back_game.game_physics.speed import Speed
-from back_game.game_settings.game_constants import (
-    INITIAL_SPEED_X,
-    INITIAL_SPEED_Y,
-)
+from back_game.game_settings.game_constants import INITIAL_SPEED_X, INITIAL_SPEED_Y
 
 logger = logging.getLogger(__name__)
 

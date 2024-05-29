@@ -3,6 +3,7 @@ from typing import Callable, NewType
 from back_game.game_entities.ball import Ball
 from back_game.game_arena.map import Map
 from back_game.game_entities.paddle import Paddle
+from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (
     LISTENING,
     OVER,
@@ -10,9 +11,6 @@ from back_game.game_settings.game_constants import (
     STARTED,
     VALID_DIRECTIONS,
     WAITING,
-)
-from back_game.game_settings.dict_keys import (
-    STATUS,
 )
 
 logger = logging.getLogger(__name__)

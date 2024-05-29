@@ -1,9 +1,7 @@
 import time
 
 from typing import NewType
-from back_game.game_settings.game_constants import (
-    AFK_TIMEOUT,
-)
+from back_game.game_settings.game_constants import AFK_TIMEOUT
 
 ENABLED = 0
 DISABLED = 1

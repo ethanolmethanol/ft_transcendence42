@@ -1,11 +1,7 @@
 from back_game.game_physics.edges import Edges
-from back_game.game_settings.game_constants import TANGENT_FACTOR, LEFT_SLOT, RIGHT_SLOT
 from back_game.game_physics.position import Position
-from back_game.game_settings.dict_keys import (
-    POSITION,
-    WIDTH,
-    HEIGHT,
-)
+from back_game.game_settings.dict_keys import HEIGHT, POSITION, WIDTH
+from back_game.game_settings.game_constants import LEFT_SLOT, RIGHT_SLOT, TANGENT_FACTOR
 
 
 class Rectangle:
