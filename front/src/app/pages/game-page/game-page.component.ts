@@ -37,11 +37,11 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(
-    private elementRef: ElementRef,
-    private router: Router,
-    private webSocketService: WebSocketService,
-    private route: ActivatedRoute,  // Inject ActivatedRoute
-    private connectionService: ConnectionService  // Inject connectionServiceComponent
+    private _elementRef: ElementRef,
+    private _router: Router,
+    private _webSocketService: WebSocketService,
+    private _route: ActivatedRoute,  // Inject ActivatedRoute
+    private _connectionService: ConnectionService  // Inject connectionServiceComponent
   ) {}
 
   ngOnInit() {
@@ -50,26 +50,26 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     // Now you can safely access this.game.first
-    this.route.params.subscribe(params => {
+    this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
       console.log('Channel ID:', channel_id);
-      this.connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
+      this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
     });
   }
 
   ngOnDestroy() {
-    this.connectionService.endConnection();
+    this._connectionService.endConnection();
   }
 
   private updateGameContainerScale() {
-    const gameContainer = this.elementRef.nativeElement.querySelector('.game-container');
+    const gameContainer = this._elementRef.nativeElement.querySelector('.game-container');
     const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
     gameContainer.style.transform = `scale(${scale})`;
   }
 
   confirmGiveUp() {
-    this.router.navigate(['/home']);
-    this.webSocketService.giveUp();
+    this._router.navigate(['/home']);
+    this._webSocketService.giveUp();
   }
 }

@@ -12,26 +12,14 @@ import {NgIf} from "@angular/common";
   templateUrl: './paddle.component.html',
   styleUrl: './paddle.component.css'
 })
-export class PaddleComponent implements OnInit {
+export class PaddleComponent {
   @Input() id: number = 0;
   playerName: string = '';
   width = PADDLE_WIDTH;
   height = PADDLE_HEIGHT;
-  offset = this.height / 2;
-  gameWidth = GAME_WIDTH;
-  gameHeight = GAME_HEIGHT;
-  speed = PADDLE_SPEED;
   positionX = 0;
-  positionY = (this.gameHeight - PADDLE_HEIGHT) / 2;
+  positionY = 0;
   afkLeftTime : number | null = null;
-  ngOnInit() {
-    if (this.id == 1) {
-      this.positionX = PADDLE_X_OFFSET;
-    } else if (this.id == 2) {
-      this.positionX = this.gameWidth - this.width - PADDLE_X_OFFSET;
-    }
-    console.log(`Paddle ${this.id} initialized:`, this.positionX, this.positionY);
-  }
 
   public updatePaddlePosition(position: Position) {
     this.positionX = position.x;

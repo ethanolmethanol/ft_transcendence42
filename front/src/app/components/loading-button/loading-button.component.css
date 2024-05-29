@@ -1,0 +1,36 @@
+@keyframes charge {
+  0% {
+    background-size: 0 100%;
+  }
+  100% {
+    background-size: 100% 100%;
+  }
+}
+button.charging {
+  animation: charge 5s linear forwards;
+}
+
+button {
+  position: absolute;
+  background-color: #ff0000;
+  overflow: hidden;
+  top: 2%;
+  left: 3%;
+  z-index: 1;
+  margin: 50px;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: #aa0000;
+  transition: width 5s linear;
+}
+
+button.charging::after {
+  width: 100%;
+}

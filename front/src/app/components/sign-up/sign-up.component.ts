@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidatorFn} from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router, RouterLink} from "@angular/router";
@@ -32,12 +32,12 @@ export class SignUpComponent implements OnInit {
   errorMessage: string = "";
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router) {}
+    private _formBuilder: FormBuilder,
+    private _authService: AuthService,
+    private _router: Router) {}
 
   ngOnInit() {
-    this.signupForm = this.formBuilder.group({
+    this.signupForm = this._formBuilder.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), usernameValidator()]],
       email: ['', [Validators.required, Validators.email, emailValidator()]],
       password: ['', [Validators.required, Validators.minLength(8), matchValidator('c_password', true)]],
@@ -56,7 +56,7 @@ export class SignUpComponent implements OnInit {
   private signUp() {
     const { username, email, password } = this.signupForm.value;
 
-    this.authService.signUp(username, email, password).subscribe({
+    this._authService.signUp(username, email, password).subscribe({
       next: (response) => {
         console.log("Account created: ", response);
         this.signIn();
@@ -66,7 +66,7 @@ export class SignUpComponent implements OnInit {
   }
 
   private signIn() {
-    this.router.navigate(['/sign-in']);
+    this._router.navigate(['/sign-in']);
   }
 
   private handleSignUpError(signUpError: any) {

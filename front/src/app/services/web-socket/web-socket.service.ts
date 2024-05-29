@@ -9,19 +9,19 @@ import { OnInit } from '@angular/core';
 })
 export class WebSocketService implements OnInit, OnDestroy {
   socket?: WebSocket | null;
-  private connectionOpened: Subject<void> = new Subject<void>();
-  private messages: Subject<string> = new Subject<string>();
-  private logoutChannel: BroadcastChannel;
+  private _connectionOpened: Subject<void> = new Subject<void>();
+  private _messages: Subject<string> = new Subject<string>();
+  private _logoutChannel: BroadcastChannel;
 
   constructor(private userService: UserService) {
     console.log('WebSocketService created');
     this.socket = null;
 
     // Initialize the BroadcastChannel
-    this.logoutChannel = new BroadcastChannel('logoutChannel');
+    this._logoutChannel = new BroadcastChannel('_logoutChannel');
 
     // Listen for messages on the BroadcastChannel
-    this.logoutChannel.onmessage = (message) => {
+    this._logoutChannel.onmessage = (message) => {
       if (message.data === 'logout') {
         this.giveUp();
       }
@@ -47,10 +47,10 @@ export class WebSocketService implements OnInit, OnDestroy {
 
     socket.onopen = (event) => {
       console.log('WebSocket connection opened:', event);
-      this.connectionOpened.next();
+      this._connectionOpened.next();
     };
 
-    socket.onmessage = (event) => this.messages.next(event.data);
+    socket.onmessage = (event) => this._messages.next(event.data);
 
     socket.onerror = (event) => {
       console.error('WebSocket error observed:', event);
@@ -144,11 +144,11 @@ export class WebSocketService implements OnInit, OnDestroy {
   }
 
   public getConnectionOpenedEvent(): Observable<void> {
-    return this.connectionOpened.asObservable();
+    return this._connectionOpened.asObservable();
   }
 
   public getMessages(): Observable<string> {
-    return this.messages.asObservable();
+    return this._messages.asObservable();
   }
 
   async ngOnInit() : Promise<void> {
@@ -157,6 +157,6 @@ export class WebSocketService implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.disconnect();
-    this.logoutChannel.close();
+    this._logoutChannel.close();
   }
 }
