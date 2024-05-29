@@ -1,26 +1,20 @@
 import logging
-import math
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
-from back_game.game_physics.speed import Speed
-from back_game.game_settings.game_constants import (
-    GAME_HEIGHT,
-    GAME_WIDTH,
-)
-from back_game.game_settings.dict_keys import (
-    RIGHT,
-    LEFT,
-    TOP,
-    BOTTOM
-)
+from back_game.game_settings.dict_keys import RIGHT, LEFT, TOP, BOTTOM
+from back_game.game_settings.game_constants import GAME_HEIGHT, GAME_WIDTH
+
 logger = logging.getLogger(__name__)
+
 
 class BallCollider:
 
     @staticmethod
-    def ball_collide_with_wall(new_position: Position, ball: Ball) -> dict[str, str] | None:
+    def ball_collide_with_wall(
+        new_position: Position, ball: Ball
+    ) -> dict[str, str] | None:
         collide_x = (
             new_position.x <= ball.radius or new_position.x >= GAME_WIDTH - ball.radius
         )
@@ -38,7 +32,12 @@ class BallCollider:
         return None
 
     @staticmethod
-    def get_side(distance_x: float, distance_y: float, position: Position, paddle_position: Position) -> str:
+    def get_side(
+        distance_x: float,
+        distance_y: float,
+        position: Position,
+        paddle_position: Position,
+    ) -> str:
         if abs(distance_x) > abs(distance_y):
             if distance_x > paddle_position.x - position.x:
                 return RIGHT
@@ -58,7 +57,9 @@ class BallCollider:
         closest_y = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
         distance_x = position.x - closest_x
         distance_y = position.y - closest_y
-        return BallCollider.get_side(distance_x, distance_y, position, paddle.get_position())
+        return BallCollider.get_side(
+            distance_x, distance_y, position, paddle.get_position()
+        )
 
     @staticmethod
     def push_ball(ball: Ball, paddle: Paddle):

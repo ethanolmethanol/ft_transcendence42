@@ -3,24 +3,21 @@ import logging
 from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED
 from back_game.game_arena.player_manager import PlayerManager
-from back_game.game_settings.game_constants import (
-    MAXIMUM_SCORE,
-    WAITING,
-)
 from back_game.game_settings.dict_keys import (
-    ID,
-    STATUS,
-    PLAYERS,
-    SCORES,
     BALL,
-    PADDLES,
-    MAP,
-    SCORE,
-    PLAYER_NAME,
+    ID,
     KICKED_PLAYERS,
+    MAP,
+    PADDLES,
     PLAYER1,
     PLAYER2,
+    PLAYER_NAME,
+    PLAYERS,
+    SCORE,
+    SCORES,
+    STATUS,
 )
+from back_game.game_settings.game_constants import MAXIMUM_SCORE, WAITING
 
 logger = logging.getLogger(__name__)
 

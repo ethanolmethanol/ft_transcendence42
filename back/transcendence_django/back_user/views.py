@@ -18,7 +18,9 @@ def user_data_view(request):
         # Extract user ID from session data
         user_id = request.session.get("_auth_user_id")
         if user_id is None:
-            return Response({"detail": "User isn't logged in."}, status=HTTPStatus.UNAUTHORIZED)
+            return Response(
+                {"detail": "User isn't logged in."}, status=HTTPStatus.UNAUTHORIZED
+            )
         # Query the User model for the user with the given ID
         user = get_user_model().objects.get(pk=user_id)
         # Retrieve the user data

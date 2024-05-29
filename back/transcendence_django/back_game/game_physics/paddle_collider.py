@@ -12,8 +12,9 @@ from back_game.game_settings.game_constants import (
 
 logger = logging.getLogger(__name__)
 
+
 class PaddleCollider:
-    
+
     @staticmethod
     def get_collision_point(ball: Ball, paddle: Paddle) -> Position:
         paddle_edges = paddle.get_edges()
@@ -22,8 +23,12 @@ class PaddleCollider:
         return Position(closest_x, closest_y)
 
     @staticmethod
-    def get_ball_speed_after_paddle_collision(paddle: Paddle, collision_point: Position) -> Speed:
-        speed_component = PaddleCollider.get_ball_speed_direction(paddle, collision_point)
+    def get_ball_speed_after_paddle_collision(
+        paddle: Paddle, collision_point: Position
+    ) -> Speed:
+        speed_component = PaddleCollider.get_ball_speed_direction(
+            paddle, collision_point
+        )
         u_speed = speed_component.unit_vector()
         return Speed(
             INITIAL_BALL_SPEED_COEFF * u_speed.x, INITIAL_BALL_SPEED_COEFF * u_speed.y

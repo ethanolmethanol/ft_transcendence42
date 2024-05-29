@@ -1,9 +1,18 @@
 import logging
 import math
-
 from typing import NewType
+
 from back_game.game_physics.position import Position
 from back_game.game_physics.rectangle import Rectangle
+from back_game.game_settings.dict_keys import (
+    END,
+    HEIGHT,
+    POSITION,
+    SLOT,
+    SPEED,
+    START,
+    WIDTH,
+)
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,
@@ -14,26 +23,20 @@ from back_game.game_settings.game_constants import (
     PADDLE_WIDTH,
     PROCESSING,
 )
-from back_game.game_settings.dict_keys import (
-    POSITION,
-    START,
-    END,
-    SLOT,
-    SPEED,
-    WIDTH,
-    HEIGHT,
-)
 
 log = logging.getLogger(__name__)
 
 PaddleStatus = NewType("PaddleStatus", [LISTENING, PROCESSING])
+
 
 class Paddle:
     def __init__(self, slot: int, num_players: int):
         self.slot: int = slot
         self.status: PaddleStatus = LISTENING
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
-        self.rectangle: Rectangle = Rectangle(slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT)
+        self.rectangle: Rectangle = Rectangle(
+            slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT
+        )
         self.rate: float = 0.5
         self.axis: dict[str, Position] = self.__calculate_axis(num_players)
         self.__update_position()

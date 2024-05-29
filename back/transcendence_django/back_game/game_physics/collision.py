@@ -3,15 +3,13 @@ import math
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
-from back_game.game_physics.position import Position
 from back_game.game_physics.ball_collider import BallCollider
 from back_game.game_physics.paddle_collider import PaddleCollider
-from back_game.game_settings.dict_keys import (
-    POSITION,
-    BALL
-)
+from back_game.game_physics.position import Position
+from back_game.game_settings.dict_keys import POSITION, BALL
 
 logger = logging.getLogger(__name__)
+
 
 class Collision:
 
@@ -32,7 +30,9 @@ class Collision:
     def collide_with_paddle(ball: Ball, paddle: Paddle):
         BallCollider.push_ball(ball, paddle)
         collision_point = PaddleCollider.get_collision_point(ball, paddle)
-        ball.speed = PaddleCollider.get_ball_speed_after_paddle_collision(paddle, collision_point)
+        ball.speed = PaddleCollider.get_ball_speed_after_paddle_collision(
+            paddle, collision_point
+        )
         logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
