@@ -9,10 +9,15 @@ from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,
 )
-
+from back_game.game_settings.dict_keys import (
+    RIGHT,
+    LEFT,
+    TOP,
+    BOTTOM
+)
 logger = logging.getLogger(__name__)
 
-class BallCollisionHandler:
+class BallCollider:
 
     @staticmethod
     def ball_collide_with_wall(new_position: Position, ball: Ball) -> dict[str, str] | None:
@@ -36,11 +41,11 @@ class BallCollisionHandler:
     def get_side(distance_x: float, distance_y: float, position: Position, paddle_position: Position) -> str:
         if abs(distance_x) > abs(distance_y):
             if distance_x > paddle_position.x - position.x:
-                return "right"
-            return "left"
+                return RIGHT
+            return LEFT
         if distance_y > paddle_position.y - position.y:
-            return "bottom"
-        return "top"
+            return BOTTOM
+        return TOP
 
     @staticmethod
     def get_collision_side(position: Position, paddle: Paddle) -> str:
@@ -53,12 +58,12 @@ class BallCollisionHandler:
         closest_y = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
         distance_x = position.x - closest_x
         distance_y = position.y - closest_y
-        return BallCollisionHandler.get_side(distance_x, distance_y, position, paddle.get_position())
+        return BallCollider.get_side(distance_x, distance_y, position, paddle.get_position())
 
     @staticmethod
     def push_ball(ball: Ball, paddle: Paddle):
         paddle_edges = paddle.get_edges()
-        side = BallCollisionHandler.get_collision_side(ball.position, paddle)
+        side = BallCollider.get_collision_side(ball.position, paddle)
         push_position = Position(ball.position.x, ball.position.y)
         match side:
             case "top":

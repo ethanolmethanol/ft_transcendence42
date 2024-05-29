@@ -55,3 +55,6 @@ AFK_WARNING_THRESHOLD = 10  # seconds
 # Paddle status
 LISTENING = 1
 PROCESSING = 2
+
+# Rectangle
+TANGENT_FACTOR = 1 / (2 * math.tan(CONVEXITY / 2))

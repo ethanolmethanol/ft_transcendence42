@@ -1,9 +1,13 @@
 import math
 
 from back_game.game_physics.edges import Edges
-from back_game.game_settings.game_constants import CONVEXITY, LEFT_SLOT, RIGHT_SLOT
+from back_game.game_settings.game_constants import TANGENT_FACTOR, LEFT_SLOT, RIGHT_SLOT
 from back_game.game_physics.position import Position
-
+from back_game.game_settings.dict_keys import (
+    POSITION,
+    WIDTH,
+    HEIGHT,
+)
 
 class Rectangle:
     def __init__(self, slot: int, position: Position, width: int, height: int):
@@ -17,9 +21,9 @@ class Rectangle:
 
     def to_dict(self) -> dict:
         return {
-            "position": self.position.__dict__,
-            "width": self.width,
-            "height": self.height,
+            POSITION: self.position.__dict__,
+            WIDTH: self.width,
+            HEIGHT: self.height,
         }
 
     def update_position(self, position: Position):
@@ -28,7 +32,7 @@ class Rectangle:
         self.convexity_center = self.__get_convexity_center()
 
     def __get_convexity_center(self) -> Position:
-        self.distance_from_center = self.height / (2 * math.tan(CONVEXITY / 2))
+        self.distance_from_center = self.height * TANGENT_FACTOR
         if self.slot == LEFT_SLOT:
             center_x = self.edges.right - self.distance_from_center
         elif self.slot == RIGHT_SLOT:

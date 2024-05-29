@@ -1,7 +1,7 @@
 class Position:
     def __init__(self, x:float=0, y:float=0):
-        self.x = x
-        self.y = y
+        self.x: float = x
+        self.y: float = y
 
     def set_coordinates(self, x: float, y: float):
         self.x = x

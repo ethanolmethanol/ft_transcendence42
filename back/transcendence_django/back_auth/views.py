@@ -69,9 +69,13 @@ def logout_view(request):
         get_session_from_request(request)
         # user_id = get_user_id(session) # be sure to uncomment the import when uncommenting this
         perform_logout(request)
-        return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
+        )
     except ValueError as e:
-        return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 # Is logged

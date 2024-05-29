@@ -11,6 +11,9 @@ from back_game.game_settings.game_constants import (
     VALID_DIRECTIONS,
     WAITING,
 )
+from back_game.game_settings.dict_keys import (
+    STATUS,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +59,7 @@ class Game:
 
     def update(self) -> dict:
         ball_update: dict = self.ball.move()
-        game_status: dict = {"status": self.status}
+        game_status: dict = {STATUS: self.status}
         return {**ball_update, **game_status}
 
     def reset(self):
