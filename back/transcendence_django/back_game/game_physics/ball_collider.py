@@ -1,10 +1,8 @@
 import logging
-import math
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
-from back_game.game_physics.speed import Speed
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,

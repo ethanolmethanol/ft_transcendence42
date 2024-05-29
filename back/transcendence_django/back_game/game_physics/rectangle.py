@@ -1,5 +1,3 @@
-import math
-
 from back_game.game_physics.edges import Edges
 from back_game.game_settings.game_constants import TANGENT_FACTOR, LEFT_SLOT, RIGHT_SLOT
 from back_game.game_physics.position import Position
