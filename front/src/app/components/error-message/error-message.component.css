@@ -10,8 +10,8 @@
 }
 
 .error-message-container {
-  height: 40px; /* Adjust this value based on the height of your error message */
-  overflow: hidden; /* Hide the content that exceeds the container's height */
+  max-height: 100px; /* Adjust based on your needs */
+  overflow-y: auto; /* Enable vertical scrolling if the content exceeds the container's height */
 }
 
 .error-message {
@@ -23,4 +23,7 @@
   color: #721c24; /* Dark red text */
   border: 1px solid #f5c6cb; /* Light red border */
   animation: fade-in 1s ease-out;
+  max-width: 90%; /* Ensure the message doesn't stretch too far */
+  word-wrap: break-word; /* Allow words to break and wrap onto the next line */
 }
+
