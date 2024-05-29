@@ -38,9 +38,9 @@ class BallCollider:
 
     @staticmethod
     def get_side(
-        distance_x: float, 
-        distance_y: float, 
-        position: Position, 
+        distance_x: float,
+        distance_y: float,
+        position: Position,
         paddle_position: Position,
     ) -> str:
         if abs(distance_x) > abs(distance_y):

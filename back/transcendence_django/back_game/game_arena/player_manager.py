@@ -135,7 +135,7 @@ class PlayerManager:
             if time_left_before_kick <= AFK_WARNING_THRESHOLD:
                 kicked_players.append(
                     {
-                        PLAYER_NAME: player.player_name, 
+                        PLAYER_NAME: player.player_name,
                         TIME_LEFT: round(time_left_before_kick),
                     }
                 )
