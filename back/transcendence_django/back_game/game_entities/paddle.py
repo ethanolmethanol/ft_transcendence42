@@ -1,6 +1,5 @@
 import logging
 import math
-
 from typing import NewType
 from back_game.game_physics.position import Position
 from back_game.game_physics.rectangle import Rectangle

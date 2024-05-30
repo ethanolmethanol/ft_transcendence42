@@ -13,8 +13,8 @@ from back_game.game_settings.dict_keys import (
     INVALID_NB_PLAYERS,
     MODE,
     NB_PLAYERS,
-    PLAYER_NAME,
     PLAYER_GAVE_UP,
+    PLAYER_NAME,
     TIME_LEFT,
     UNKNOWN_USER,
 )
