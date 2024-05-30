@@ -1,9 +1,9 @@
 import json
-from json import JSONDecodeError
 import logging
 from http import HTTPStatus
+from json import JSONDecodeError
 
-from back_game.game_settings.dict_keys import USER_ID, ERROR, PLAYER_SPECS
+from back_game.game_settings.dict_keys import ERROR, PLAYER_SPECS, USER_ID
 from back_game.monitor.monitor import monitor
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods

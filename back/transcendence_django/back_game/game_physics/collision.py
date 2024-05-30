@@ -6,7 +6,7 @@ from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.ball_collider import BallCollider
 from back_game.game_physics.paddle_collider import PaddleCollider
 from back_game.game_physics.position import Position
-from back_game.game_settings.dict_keys import POSITION, BALL
+from back_game.game_settings.dict_keys import BALL, POSITION
 
 logger = logging.getLogger(__name__)
 

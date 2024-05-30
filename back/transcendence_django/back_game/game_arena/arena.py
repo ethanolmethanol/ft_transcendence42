@@ -131,7 +131,7 @@ class Arena:
         if self.player_manager.is_player_in_game(user_id):
             self.__register_player(user_id, user_id)
         else:
-            self.player_manager.change_player_status(ENABLED)
+            self.player_manager.change_player_status(user_id, ENABLED)
 
     def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)

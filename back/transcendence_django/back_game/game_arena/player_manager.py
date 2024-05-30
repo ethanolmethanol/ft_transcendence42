@@ -9,14 +9,14 @@ from back_game.game_arena.player import (
     PlayerStatus,
 )
 from back_game.game_settings.dict_keys import (
+    ARENA_FULL,
+    INVALID_NB_PLAYERS,
+    MODE,
+    NB_PLAYERS,
     PLAYER_NAME,
     PLAYER_GAVE_UP,
-    ARENA_FULL,
-    UNKNOWN_USER,
-    INVALID_NB_PLAYERS,
-    NB_PLAYERS,
-    MODE,
     TIME_LEFT,
+    UNKNOWN_USER,
 )
 from back_game.game_settings.game_constants import (
     AFK_WARNING_THRESHOLD,

@@ -1,8 +1,8 @@
 import logging
 from typing import Callable
 
-from back_game.game_entities.paddle import Paddle
 from back_game.game_entities.ball_speed_randomizer import BallSpeedRandomizer
+from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.position import Position
 from back_game.game_physics.speed import Speed
 from back_game.game_settings.dict_keys import (
