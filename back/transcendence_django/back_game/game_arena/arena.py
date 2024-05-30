@@ -1,7 +1,8 @@
 import logging
+from typing import Any
 
 from back_game.game_arena.game import Game, GameStatus
-from back_game.game_arena.player import ENABLED
+from back_game.game_arena.player import ENABLED, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.dict_keys import (
     BALL,
@@ -24,12 +25,14 @@ logger = logging.getLogger(__name__)
 
 class Arena:
 
-    def __init__(self, players_specs: dict):
+    def __init__(self, players_specs: dict[str, int]):
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(self.player_manager.nb_players, self.ball_hit_wall)
+        self.game_over_callback = None
+        self.game_update_callback = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             ID: self.id,
             STATUS: self.game.status,
@@ -51,7 +54,7 @@ class Arena:
     def get_winner(self) -> str:
         return self.player_manager.get_winner()
 
-    def get_players(self) -> dict:
+    def get_players(self) -> dict[str, Any]:
         return self.player_manager.players
 
     def get_status(self) -> GameStatus:
@@ -74,7 +77,7 @@ class Arena:
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
-    def rematch(self, user_id: int) -> dict | None:
+    def rematch(self, user_id: int) -> dict[str, Any] | None:
         self.player_manager.rematch(user_id)
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
@@ -88,7 +91,7 @@ class Arena:
     def player_gave_up(self, user_id: int):
         self.player_manager.player_gave_up(user_id)
 
-    def ball_hit_wall(self, player_slot: int) -> dict:
+    def ball_hit_wall(self, player_slot: int) -> dict[str, Any]:
         if not self.player_manager.is_remote:
             player_name = PLAYER2 if player_slot else PLAYER1
             logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
@@ -102,13 +105,13 @@ class Arena:
             return {SCORE: {PLAYER_NAME: player_name}}
         raise NotImplementedError()  # TO DO
 
-    def move_paddle(self, player_name: str, direction: int) -> dict:
-        paddle_dict: dict = self.game.move_paddle(player_name, direction)
+    def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
+        paddle_dict: dict[str, Any] = self.game.move_paddle(player_name, direction)
         self.player_manager.update_activity_time(player_name)
         return paddle_dict
 
-    def update_game(self) -> dict:
-        update_dict: dict = self.game.update()
+    def update_game(self) -> dict[str, Any]:
+        update_dict: dict[str, Any] = self.game.update()
         logger.info("Updated_dict: %s", update_dict)
         kicked_players = self.player_manager.kick_afk_players()
         if kicked_players:
@@ -129,9 +132,9 @@ class Arena:
 
     def __enter_remote_mode(self, user_id: int):
         if self.player_manager.is_player_in_game(user_id):
-            self.__register_player(user_id, user_id)
+            self.__register_player(user_id, str(user_id))
         else:
-            self.player_manager.change_player_status(user_id, ENABLED)
+            self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
 
     def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)

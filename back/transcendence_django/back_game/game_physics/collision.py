@@ -39,7 +39,7 @@ class Collision:
 
     @staticmethod
     def handle_collision(new_position: Position, ball: Ball):
-        for paddle in ball.paddles:
+        for paddle in ball.paddles.values():
             if Collision.is_paddle_collision(ball, paddle):
                 Collision.collide_with_paddle(ball, paddle)
                 return None

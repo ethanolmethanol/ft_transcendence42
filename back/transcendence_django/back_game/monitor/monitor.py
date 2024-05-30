@@ -2,8 +2,10 @@ import asyncio
 import logging
 import random
 import string
+from typing import Any
 
 from back_game.game_arena.arena import Arena
+from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
     DEAD,
     DYING,
@@ -28,13 +30,13 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def get_channel(self, user_id: str, players_specs: dict) -> dict:
+    async def get_channel(self, user_id: str, players_specs: dict[str, int]) -> dict[str, Any]:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
             return await self.get_new_channel(user_id, players_specs)
         return channel
 
-    async def get_new_channel(self, user_id: str, players_specs: dict) -> dict:
+    async def get_new_channel(self, user_id: str, players_specs: dict[str, int]) -> dict[str, Any]:
         new_arena = Arena(players_specs)
         channel_id = self.generate_random_id(10)
         self.channels[channel_id] = {new_arena.id: new_arena}
@@ -49,7 +51,7 @@ class Monitor:
         logger.info("New arena: %s", new_arena.to_dict())
         return self.user_game_table[user_id]
 
-    def get_channel_from_user_id(self, user_id: str) -> dict:
+    def get_channel_from_user_id(self, user_id: str) -> dict[str, Any]:
         channel = self.user_game_table.get(user_id)
         if channel is None:
             return None
@@ -59,7 +61,7 @@ class Monitor:
         channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
 
-    def delete_arena(self, arenas: dict, arena_id: int):
+    def delete_arena(self, arenas: dict[str, Any], arena_id: str):
         player_list = arenas[arena_id].get_players()
         for player in player_list.values():
             self.delete_user(player.user_id)
@@ -78,7 +80,7 @@ class Monitor:
         except KeyError:
             pass
 
-    def is_user_in_game(self, user_id: str, channel_id: str, arena_id: int) -> dict:
+    def is_user_in_game(self, user_id: str, channel_id: str, arena_id: int) -> dict[str, Any]:
         return self.user_game_table.get(user_id) == {
             "channel_id": channel_id,
             "arena": arena_id,
@@ -87,37 +89,37 @@ class Monitor:
     def delete_channel(self, channel_id: str):
         del self.channels[channel_id]
 
-    async def monitor_arenas_loop(self, channel_id: str, arenas: dict):
+    async def monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Any]):
         while arenas:
             await self.update_game_states(arenas)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
         self.delete_channel(channel_id)
 
-    async def update_game_states(self, arenas: dict):
+    async def update_game_states(self, arenas: dict[str, Any]):
         for arena in arenas.values():
-            if arena.get_status() == STARTED and arena.is_empty():
+            if arena.get_status() == GameStatus(STARTED) and arena.is_empty():
                 arena.conclude_game()
-            if arena.get_status() == OVER:
+            if arena.get_status() == GameStatus(OVER):
                 logger.info("Game over in arena %s", arena.id)
                 await self.game_over(arenas, arena)
                 break
 
-    async def run_game_loop(self, arenas: dict):
+    async def run_game_loop(self, arenas: dict[str, Any]):
         while arenas:
             for arena in arenas:
-                if arena.get_status() == STARTED:
+                if arena.get_status() == GameStatus(STARTED):
                     update_message = arena.update_game()
                     await arena.game_update_callback(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
-    async def game_over(self, arenas: dict, arena: Arena):
-        arena.set_status(DYING)
+    async def game_over(self, arenas: dict[str, Any], arena: Arena):
+        arena.set_status(GameStatus(DYING))
         time = TIMEOUT_GAME_OVER + 1
-        while arena.get_status() == DYING and time > 0:
+        while arena.get_status() == GameStatus(DYING) and time > 0:
             time -= TIMEOUT_INTERVAL
             await arena.game_over_callback("Game Over! Thank you for playing.", time)
             if time == 0:
-                arena.set_status(DEAD)
+                arena.set_status(GameStatus(DEAD))
                 self.delete_arena(arenas, arena.id)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)

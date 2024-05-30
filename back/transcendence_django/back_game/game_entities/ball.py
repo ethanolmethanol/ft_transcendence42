@@ -24,9 +24,8 @@ class Ball:
         self.radius: float = BALL_RADIUS
         self.paddles: dict[str, Paddle] = paddles
         self.hit_wall: Callable[[int], dict[str, str]] = hit_wall_func
-        self.player_turn: int = 0
-        self.speed: Speed | None = None
-        self.__set_random_speed()
+        self.player_turn = 0
+        self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
 
     def update(self, new_position: Position, new_speed: Speed, new_radius: float):
         self.position.set_coordinates(new_position.x, new_position.y)
