@@ -34,7 +34,7 @@ class PlayerManager:
         self.last_kick_check: float = time.time()
 
     def is_empty(self) -> bool:
-        return all(player.status == GIVEN_UP for player in self.players.values())
+        return all(player.status == PlayerStatus(GIVEN_UP) for player in self.players.values())
 
     def is_full(self) -> bool:
         return len(self.players) == self.nb_players
@@ -50,13 +50,13 @@ class PlayerManager:
             raise ValueError(ARENA_FULL)
 
     def disable_player(self, user_id: int):
-        self.change_player_status(user_id, DISABLED)
+        self.change_player_status(user_id, PlayerStatus(DISABLED))
 
     def enable_player(self, user_id: int):
-        self.change_player_status(user_id, ENABLED)
+        self.change_player_status(user_id, PlayerStatus(ENABLED))
 
     def player_gave_up(self, user_id: int):
-        self.change_player_status(user_id, GIVEN_UP)
+        self.change_player_status(user_id, PlayerStatus(GIVEN_UP))
 
     def disable_all_players(self):
         for player in self.players.values():
@@ -64,7 +64,7 @@ class PlayerManager:
 
     def is_player_in_game(self, user_id: int) -> bool:
         if self.is_remote:
-            return user_id in self.players and self.players[user_id].status != GIVEN_UP
+            return user_id in self.players and self.players[user_id].status != PlayerStatus(GIVEN_UP)
         return self.players and any(
             player.user_id == user_id for player in self.players.values()
         )
@@ -76,16 +76,16 @@ class PlayerManager:
 
     def are_all_players_ready(self) -> bool:
         return self.is_full() and all(
-            player.status == ENABLED for player in self.players.values()
+            player.status == PlayerStatus(ENABLED) for player in self.players.values()
         )
 
     def did_player_give_up(self, user_id: int) -> bool:
         try:
             if not self.is_remote:
                 return self.players and all(
-                    player.status == GIVEN_UP for player in self.players.values()
+                    player.status == PlayerStatus(GIVEN_UP) for player in self.players.values()
                 )
-            return self.players[user_id].status == GIVEN_UP
+            return self.players[user_id].status == PlayerStatus(GIVEN_UP)
         except KeyError:
             return False
 

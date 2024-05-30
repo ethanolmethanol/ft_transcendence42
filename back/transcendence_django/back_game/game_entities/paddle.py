@@ -33,7 +33,7 @@ PaddleStatus = NewType("PaddleStatus", int)
 class Paddle:
     def __init__(self, slot: int, num_players: int):
         self.slot: int = slot
-        self.status: PaddleStatus = LISTENING
+        self.status: PaddleStatus = PaddleStatus(LISTENING)
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
         self.rectangle: Rectangle = Rectangle(
             slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT

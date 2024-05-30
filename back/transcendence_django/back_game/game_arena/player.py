@@ -15,7 +15,7 @@ class Player:
         self.user_id: int = user_id
         self.player_name: str = player_name
         self.score: int = 0
-        self.status: PlayerStatus = ENABLED
+        self.status: PlayerStatus = PlayerStatus(ENABLED)
         self.last_activity_time: float = time.time()
 
     def update_activity_time(self):

@@ -3,7 +3,7 @@ from typing import Any, Callable, NewType
 
 from back_game.game_arena.map import Map
 from back_game.game_entities.ball import Ball
-from back_game.game_entities.paddle import Paddle
+from back_game.game_entities.paddle import Paddle, PaddleStatus
 from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (
     LISTENING,
@@ -22,7 +22,7 @@ GameStatus = NewType("GameStatus", int)
 
 class Game:
     def __init__(self, nb_players: int, ball_hit_wall: Callable[[int], dict[str, str]]):
-        self.status: GameStatus = WAITING
+        self.status: GameStatus = GameStatus(WAITING)
         self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
         }
@@ -33,10 +33,10 @@ class Game:
         self.paddles[player_name] = self.paddles.pop(f"{index}")
 
     def start(self):
-        self.set_status(STARTED)
+        self.set_status(GameStatus(STARTED))
 
     def conclude(self):
-        self.set_status(OVER)
+        self.set_status(GameStatus(OVER))
 
     def set_status(self, status):
         self.status = status
@@ -45,15 +45,15 @@ class Game:
         if direction not in VALID_DIRECTIONS:
             raise ValueError("Direction is invalid. It should be -1 or 1.")
         paddle = self.paddles[player_name]
-        if paddle.status == LISTENING:
-            paddle.status = PROCESSING
+        if paddle.status == PaddleStatus(LISTENING):
+            paddle.status = PaddleStatus(PROCESSING)
             paddle.move(direction)
             try:
                 self.ball.update_collision(paddle)
             except ValueError:
                 logger.error("Paddle cannot move due to collision.")
                 paddle.move(-direction)
-            paddle.status = LISTENING
+            paddle.status = PaddleStatus(LISTENING)
         return paddle.get_dict_update()
 
     def update(self) -> dict[str, Any]:
