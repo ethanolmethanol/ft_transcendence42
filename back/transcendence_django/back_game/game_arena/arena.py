@@ -33,7 +33,7 @@ class Arena:
             [dict[str, Any]], Coroutine[Any, Any, None]
         ] = None
         self.game_over_callback: Callable[
-            [dict[str, float]], Coroutine[Any, Any, None]
+            [str, float], Coroutine[Any, Any, None]
         ] = None
 
     def to_dict(self) -> dict[str, Any]:

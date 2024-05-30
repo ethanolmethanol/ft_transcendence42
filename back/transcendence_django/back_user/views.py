@@ -25,7 +25,7 @@ def user_data_view(request):
         user = User.objects.get(pk=user_id)
         # Retrieve the user data
         user_data = {
-            "id": user.id,
+            "id": user_id,
             "username": user.username,
             "email": user.email,
         }
