@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, NewType
+from typing import Any, Callable, NewType
 
 from back_game.game_arena.map import Map
 from back_game.game_entities.ball import Ball
@@ -41,7 +41,7 @@ class Game:
     def set_status(self, status):
         self.status = status
 
-    def move_paddle(self, player_name: str, direction: int) -> dict[str, any]:
+    def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
         if direction not in VALID_DIRECTIONS:
             raise ValueError("Direction is invalid. It should be -1 or 1.")
         paddle = self.paddles[player_name]
@@ -56,9 +56,9 @@ class Game:
             paddle.status = LISTENING
         return paddle.get_dict_update()
 
-    def update(self) -> dict[str, any]:
-        ball_update: dict[str, any] = self.ball.move()
-        game_status: dict[str, any] = {STATUS: self.status}
+    def update(self) -> dict[str, Any]:
+        ball_update: dict[str, Any] = self.ball.move()
+        game_status: dict[str, Any] = {STATUS: self.status}
         return {**ball_update, **game_status}
 
     def reset(self):

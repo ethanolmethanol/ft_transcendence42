@@ -1,5 +1,5 @@
 import logging
-from typing import Callable
+from typing import Any, Callable
 
 from back_game.game_entities.ball_speed_randomizer import BallSpeedRandomizer
 from back_game.game_entities.paddle import Paddle
@@ -33,7 +33,7 @@ class Ball:
         self.speed.update(new_speed)
         self.radius = new_radius
 
-    def to_dict(self) -> dict[str, any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             POSITION: self.position.__dict__,
             SPEED: self.speed.__dict__,
@@ -49,7 +49,7 @@ class Ball:
             raise ValueError(BALL_Y_OUT_OF_BOUNDS)
         self.position.set_coordinates(x, y)
 
-    def move(self) -> dict[str, any]:
+    def move(self) -> dict[str, Any]:
         new_position = Position(
             self.position.x + self.speed.x, self.position.y + self.speed.y
         )

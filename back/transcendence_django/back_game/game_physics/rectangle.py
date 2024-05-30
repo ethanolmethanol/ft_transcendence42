@@ -1,3 +1,5 @@
+from typing import Any
+
 from back_game.game_physics.edges import Edges
 from back_game.game_physics.position import Position
 from back_game.game_settings.dict_keys import HEIGHT, POSITION, WIDTH
@@ -14,7 +16,7 @@ class Rectangle:
         self.convexity_center: Position = self.__get_convexity_center()
         self.distance_from_center: float = 0
 
-    def to_dict(self) -> dict[str, any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             POSITION: self.position.__dict__,
             WIDTH: self.width,

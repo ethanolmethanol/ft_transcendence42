@@ -1,5 +1,6 @@
 import logging
 import math
+from typing import Any
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
@@ -46,7 +47,7 @@ class Collision:
         return score_update
 
     @staticmethod
-    def detect_collision(new_position: Position, ball: Ball) -> dict[str, any]:
+    def detect_collision(new_position: Position, ball: Ball) -> dict[str, Any]:
         update = Collision.handle_collision(new_position, ball)
         ball_position_update = {BALL: {POSITION: ball.position.__dict__}}
         return (

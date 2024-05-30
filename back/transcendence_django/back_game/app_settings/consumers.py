@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Any
 
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.dict_keys import (
@@ -49,7 +50,7 @@ class ChannelError(Exception):
 
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
-    def __init__(self, *args: tuple, **kwargs: dict[str, any]):
+    def __init__(self, *args: tuple, **kwargs: dict[str, Any]):
         super().__init__(*args, **kwargs)
         self.channel_id: int | None = None
         self.arena: Arena | None = None

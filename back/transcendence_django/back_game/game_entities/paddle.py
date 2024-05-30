@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import NewType
+from typing import Any, NewType
 
 from back_game.game_physics.edges import Edges
 from back_game.game_physics.position import Position
@@ -88,7 +88,7 @@ class Paddle:
             self.axis[START].y + (self.axis[END].y - self.axis[START].y) * rate,
         ).round()
 
-    def to_dict(self) -> dict[str, any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             SLOT: self.slot,
             POSITION: self.rectangle.position.__dict__,
@@ -97,7 +97,7 @@ class Paddle:
             HEIGHT: self.rectangle.height,
         }
 
-    def get_dict_update(self) -> dict[str, any]:
+    def get_dict_update(self) -> dict[str, Any]:
         return {
             SLOT: self.slot,
             POSITION: self.rectangle.position.__dict__,
@@ -113,7 +113,7 @@ class Paddle:
         self.rate = 0.5
         self.__update_position()
 
-    def update(self, config: dict[str, any]):
+    def update(self, config: dict[str, Any]):
         self.rectangle.width = config[WIDTH]
         self.rectangle.height = config[HEIGHT]
 
