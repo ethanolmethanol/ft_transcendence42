@@ -7,7 +7,7 @@ ENABLED = 0
 DISABLED = 1
 GIVEN_UP = 2
 
-PlayerStatus = NewType("PlayerStatus", [ENABLED, DISABLED, GIVEN_UP])
+PlayerStatus = NewType("PlayerStatus", int)
 
 
 class Player:

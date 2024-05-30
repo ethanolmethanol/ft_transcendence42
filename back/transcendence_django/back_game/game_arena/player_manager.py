@@ -28,9 +28,9 @@ logger = logging.getLogger(__name__)
 
 
 class PlayerManager:
-    def __init__(self, player_specs: dict):
+    def __init__(self, player_specs: dict[str, int]):
         self.__fill_player_specs(player_specs)
-        self.players: dict = {}
+        self.players: dict[str, Player] = {}
         self.last_kick_check: float = time.time()
 
     def is_empty(self) -> bool:
@@ -75,7 +75,7 @@ class PlayerManager:
         self.enable_player(user_id)
 
     def are_all_players_ready(self) -> bool:
-        return self.is_full and all(
+        return self.is_full() and all(
             player.status == ENABLED for player in self.players.values()
         )
 
@@ -96,8 +96,8 @@ class PlayerManager:
     def update_activity_time(self, player_name: str):
         self.players[player_name].update_activity_time()
 
-    def kick_afk_players(self) -> list:
-        kicked_players: list = []
+    def kick_afk_players(self) -> list[str, float]:
+        kicked_players: list[str, float] = []
         if time.time() - self.last_kick_check >= 1:
             kicked_players = self.__get_afk_players()
             self.last_kick_check = time.time()
@@ -122,14 +122,14 @@ class PlayerManager:
             scores = [player.score for player in self.players.values()]
         return scores
 
-    def __fill_player_specs(self, players_specs: dict):
+    def __fill_player_specs(self, players_specs: dict[str, int]):
         self.nb_players = players_specs[NB_PLAYERS]
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
         self.is_remote = players_specs[MODE]
 
-    def __get_afk_players(self) -> list:
-        kicked_players: list = []
+    def __get_afk_players(self) -> list[str, float]:
+        kicked_players: list[str, float] = []
         for player in self.players.values():
             time_left_before_kick = player.get_time_left_before_kick()
             if time_left_before_kick <= AFK_WARNING_THRESHOLD:

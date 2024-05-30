@@ -2,6 +2,7 @@ import logging
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
+from back_game.game_physics.edges import Edges
 from back_game.game_physics.position import Position
 from back_game.game_settings.dict_keys import BOTTOM, LEFT, RIGHT, TOP
 from back_game.game_settings.game_constants import GAME_HEIGHT, GAME_WIDTH
@@ -52,11 +53,11 @@ class BallCollider:
         Determines which side of the paddle the ball collides with,
         accurately considering the ball's radius.
         """
-        paddle_edges = paddle.get_edges()
-        closest_x = max(min(position.x, paddle_edges.right), paddle_edges.left)
-        closest_y = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
-        distance_x = position.x - closest_x
-        distance_y = position.y - closest_y
+        paddle_edges: Edges = paddle.get_edges()
+        closest_x: float = max(min(position.x, paddle_edges.right), paddle_edges.left)
+        closest_y: float = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
+        distance_x: float = position.x - closest_x
+        distance_y: float = position.y - closest_y
         return BallCollider.get_side(
             distance_x, distance_y, position, paddle.get_position()
         )

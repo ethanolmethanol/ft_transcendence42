@@ -12,9 +12,9 @@ class Rectangle:
         self.height: int = height
         self.edges: Edges = Edges(position, width, height)
         self.convexity_center: Position = self.__get_convexity_center()
-        self.distance_from_center: int = 0
+        self.distance_from_center: float = 0
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, any]:
         return {
             POSITION: self.position.__dict__,
             WIDTH: self.width,

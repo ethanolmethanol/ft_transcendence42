@@ -17,7 +17,7 @@ from back_game.game_settings.game_constants import (
 logger = logging.getLogger(__name__)
 
 
-GameStatus = NewType("GameStatus", [WAITING, STARTED, OVER])
+GameStatus = NewType("GameStatus", int)
 
 
 class Game:
@@ -41,7 +41,7 @@ class Game:
     def set_status(self, status):
         self.status = status
 
-    def move_paddle(self, player_name: str, direction: int) -> dict:
+    def move_paddle(self, player_name: str, direction: int) -> dict[str, any]:
         if direction not in VALID_DIRECTIONS:
             raise ValueError("Direction is invalid. It should be -1 or 1.")
         paddle = self.paddles[player_name]
@@ -56,9 +56,9 @@ class Game:
             paddle.status = LISTENING
         return paddle.get_dict_update()
 
-    def update(self) -> dict:
-        ball_update: dict = self.ball.move()
-        game_status: dict = {STATUS: self.status}
+    def update(self) -> dict[str, any]:
+        ball_update: dict[str, any] = self.ball.move()
+        game_status: dict[str, any] = {STATUS: self.status}
         return {**ball_update, **game_status}
 
     def reset(self):

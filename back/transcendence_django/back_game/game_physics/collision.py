@@ -4,6 +4,7 @@ import math
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.ball_collider import BallCollider
+from back_game.game_physics.edges import Edges
 from back_game.game_physics.paddle_collider import PaddleCollider
 from back_game.game_physics.position import Position
 from back_game.game_settings.dict_keys import BALL, POSITION
@@ -18,12 +19,12 @@ class Collision:
         """
         Checks if the ball collides with a paddle.
         """
-        paddle_edges = paddle.get_edges()
-        closest_x = max(min(ball.position.x, paddle_edges.right), paddle_edges.left)
-        closest_y = max(min(ball.position.y, paddle_edges.bottom), paddle_edges.top)
-        distance_x = ball.position.x - closest_x
-        distance_y = ball.position.y - closest_y
-        distance = math.sqrt(distance_x**2 + distance_y**2)
+        paddle_edges: Edges = paddle.get_edges()
+        closest_x: float = max(min(ball.position.x, paddle_edges.right), paddle_edges.left)
+        closest_y: float = max(min(ball.position.y, paddle_edges.bottom), paddle_edges.top)
+        distance_x: float = ball.position.x - closest_x
+        distance_y:float  = ball.position.y - closest_y
+        distance: float = math.sqrt(distance_x**2 + distance_y**2)
         return distance < ball.radius
 
     @staticmethod
@@ -45,7 +46,7 @@ class Collision:
         return score_update
 
     @staticmethod
-    def detect_collision(new_position: Position, ball: Ball) -> dict:
+    def detect_collision(new_position: Position, ball: Ball) -> dict[str, any]:
         update = Collision.handle_collision(new_position, ball)
         ball_position_update = {BALL: {POSITION: ball.position.__dict__}}
         return (

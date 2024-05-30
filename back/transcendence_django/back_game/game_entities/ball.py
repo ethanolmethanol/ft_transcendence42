@@ -19,13 +19,13 @@ logger = logging.getLogger(__name__)
 
 class Ball:
 
-    def __init__(self, paddles: dict, hit_wall_func: Callable[[int], dict[str, str]]):
+    def __init__(self, paddles: dict[str, Paddle], hit_wall_func: Callable[[int], dict[str, str]]):
         self.position: Position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.radius: float = BALL_RADIUS
-        self.paddles: dict = paddles
+        self.paddles: dict[str, Paddle] = paddles
         self.hit_wall: Callable[[int], dict[str, str]] = hit_wall_func
         self.player_turn: int = 0
-        self.speed: Speed = None
+        self.speed: Speed | None = None
         self.__set_random_speed()
 
     def update(self, new_position: Position, new_speed: Speed, new_radius: float):
@@ -33,7 +33,7 @@ class Ball:
         self.speed.update(new_speed)
         self.radius = new_radius
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, any]:
         return {
             POSITION: self.position.__dict__,
             SPEED: self.speed.__dict__,
@@ -49,7 +49,7 @@ class Ball:
             raise ValueError(BALL_Y_OUT_OF_BOUNDS)
         self.position.set_coordinates(x, y)
 
-    def move(self) -> dict:
+    def move(self) -> dict[str, any]:
         new_position = Position(
             self.position.x + self.speed.x, self.position.y + self.speed.y
         )
