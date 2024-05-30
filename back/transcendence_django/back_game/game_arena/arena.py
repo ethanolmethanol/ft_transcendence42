@@ -1,8 +1,8 @@
 import logging
-from typing import Any
+from typing import Any, Callable, Coroutine
 
 from back_game.game_arena.game import Game, GameStatus
-from back_game.game_arena.player import ENABLED, PlayerStatus
+from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.dict_keys import (
     BALL,
@@ -29,8 +29,8 @@ class Arena:
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(self.player_manager.nb_players, self.ball_hit_wall)
-        self.game_over_callback = None
-        self.game_update_callback = None
+        self.game_update_callback: Callable[[dict[str, str], Coroutine[Any, Any, Any]]] = None
+        self.game_over_callback: Callable[[dict[str, float], Coroutine[Any, Any, Any]]] = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -54,7 +54,7 @@ class Arena:
     def get_winner(self) -> str:
         return self.player_manager.get_winner()
 
-    def get_players(self) -> dict[str, Any]:
+    def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
 
     def get_status(self) -> GameStatus:

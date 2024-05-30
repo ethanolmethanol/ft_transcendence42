@@ -16,6 +16,7 @@ from back_game.game_settings.game_constants import (
     TIMEOUT_GAME_OVER,
     TIMEOUT_INTERVAL,
 )
+from back_game.game_arena.player import Player
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class Monitor:
         asyncio.create_task(
             self.monitor_arenas_loop(channel_id, self.channels[channel_id])
         )
-        asyncio.create_task(self.run_game_loop(self.channels[channel_id].values()))
+        asyncio.create_task(self.run_game_loop(self.channels[channel_id]))
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
             "arena": new_arena.to_dict(),
@@ -62,7 +63,7 @@ class Monitor:
         return channel
 
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
-        player_list = arenas[arena_id].get_players()
+        player_list: dict[str, Player] = arenas[arena_id].get_players()
         for player in player_list.values():
             self.delete_user(player.user_id)
         arenas.pop(arena_id)
@@ -80,7 +81,7 @@ class Monitor:
         except KeyError:
             pass
 
-    def is_user_in_game(self, user_id: str, channel_id: str, arena_id: int) -> bool:
+    def is_user_in_game(self, user_id: int, channel_id: str, arena_id: int) -> bool:
         return self.user_game_table.get(user_id) == {
             "channel_id": channel_id,
             "arena": arena_id,
@@ -106,7 +107,7 @@ class Monitor:
 
     async def run_game_loop(self, arenas: dict[str, Arena]):
         while arenas:
-            for arena in arenas:
+            for arena in arenas.values():
                 if arena.get_status() == GameStatus(STARTED):
                     update_message = arena.update_game()
                     if arena.game_update_callback is not None:

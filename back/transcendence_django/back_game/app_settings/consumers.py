@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any
+from typing import Any, Callable, Coroutine
 
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.dict_keys import (
@@ -84,10 +84,10 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             )
         log.info("Disconnect with code: %s", close_code)
 
-    async def receive(self, text_data: str | None = None):
+    async def receive(self, text_data: str):
         content = json.loads(text_data)
         message_type, message = content[TYPE], content[MESSAGE]
-        message_binding = {
+        message_binding: dict[str, Callable[[dict[str, Any]], Coroutine[Any, Any, Any]]] = {
             MOVE_PADDLE: self.move_paddle,
             JOIN: self.join,
             LEAVE: self.leave,
@@ -100,7 +100,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
 
     async def join(self, message: dict[str, int]):
-        self.user_id: int = message[USER_ID]
+        self.user_id = message[USER_ID]
         arena_id: int = message[ARENA_ID]
         try:
             self.arena = monitor.channels[self.channel_id][arena_id]
@@ -146,11 +146,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         else:
             await self.send_update({ARENA: arena_data})
 
-    async def move_paddle(self, message: dict[str, str]):
+    async def move_paddle(self, message: dict[str, Any]):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
         player_name: str = message[PLAYER]
-        direction: str = message[DIRECTION]
+        direction: int = message[DIRECTION]
         paddle_data: dict[str, Any] = self.arena.move_paddle(player_name, direction)
         await self.send_update({PADDLE: paddle_data})
 
@@ -178,11 +178,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         message = event[UPDATE]
         await self.send(text_data=json.dumps({TYPE: GAME_UPDATE, UPDATE: message}))
 
-    async def send_error(self, error: dict[str, str]):
+    async def send_error(self, error: dict[str, Any]):
         log.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
         await self.send(text_data=json.dumps({TYPE: GAME_ERROR, ERROR: error}))
 
-    async def send_update(self, update: dict[str, str]):
+    async def send_update(self, update: dict[str, Any]):
         log.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
