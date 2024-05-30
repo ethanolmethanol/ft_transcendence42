@@ -2,7 +2,7 @@
 import logging
 from http import HTTPStatus
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,7 +22,7 @@ def user_data_view(request):
                 {"detail": "User isn't logged in."}, status=HTTPStatus.UNAUTHORIZED
             )
         # Query the User model for the user with the given ID
-        user = get_user_model().objects.get(pk=user_id)
+        user = User.objects.get(pk=user_id)
         # Retrieve the user data
         user_data = {
             "id": user.id,
@@ -30,5 +30,5 @@ def user_data_view(request):
             "email": user.email,
         }
         return Response(user_data, status=HTTPStatus.OK)
-    except get_user_model().DoesNotExist:
+    except User.DoesNotExist:
         return Response({"detail": "User does not exist."}, status=HTTPStatus.NOT_FOUND)
