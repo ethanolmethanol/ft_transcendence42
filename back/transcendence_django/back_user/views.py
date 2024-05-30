@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 @api_view(["GET"])
 @csrf_protect
 def user_data_view(request):
+    # pylint: disable=no-member
     try:
         # Extract user ID from session data
         user_id = request.session.get("_auth_user_id")
