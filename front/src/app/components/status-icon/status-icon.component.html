@@ -1,6 +1,6 @@
-<div class="test-status" (mouseover)="onMouseOver()" (mouseout)="onMouseOut()">
+<section class="test-status" (mouseover)="onMouseOver()" (mouseout)="onMouseOut()">
   <image [ngStyle]="{'color': testPassed ? 'green' : 'red'}" class="material-icons">
     {{ testPassed ? 'check_circle' : 'error' }}
   </image>
   <p *ngIf="!testPassed && showError" class="window-error-message">{{ errorMessage }}</p>
-</div>
+</section>
