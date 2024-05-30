@@ -20,15 +20,9 @@ class Collision:
         """
         Checks if the ball collides with a paddle.
         """
-        paddle_edges: Edges = paddle.get_edges()
-        closest_x: float = max(
-            min(ball.position.x, paddle_edges.right), paddle_edges.left
-        )
-        closest_y: float = max(
-            min(ball.position.y, paddle_edges.bottom), paddle_edges.top
-        )
-        distance_x: float = ball.position.x - closest_x
-        distance_y: float  = ball.position.y - closest_y
+        collision_point: Position = PaddleCollider.get_collision_point(ball, paddle)
+        distance_x: float = ball.position.x - collision_point.x
+        distance_y: float = ball.position.y - collision_point.y
         distance: float = math.sqrt(distance_x**2 + distance_y**2)
         return distance < ball.radius
 

@@ -22,7 +22,6 @@ from back_game.game_settings.game_constants import (
     PADDLE_INITIAL_SPEED_RATE,
     PADDLE_OFFSET,
     PADDLE_WIDTH,
-    PROCESSING,
 )
 
 log = logging.getLogger(__name__)
