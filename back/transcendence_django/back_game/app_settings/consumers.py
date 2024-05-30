@@ -50,7 +50,7 @@ class ChannelError(Exception):
 
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
-    def __init__(self, *args: tuple, **kwargs: dict[str, Any]):
+    def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]):
         super().__init__(*args, **kwargs)
         self.channel_id: str = ""
         self.arena: Arena
@@ -87,7 +87,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data: str):
         content = json.loads(text_data)
         message_type, message = content[TYPE], content[MESSAGE]
-        message_binding: dict[str, Callable[[dict[str, Any]], Coroutine[Any, Any, Any]]] = {
+        message_binding: dict[
+            str, Callable[[dict[str, Any]], Coroutine[Any, Any, Any]]
+        ] = {
             MOVE_PADDLE: self.move_paddle,
             JOIN: self.join,
             LEAVE: self.leave,

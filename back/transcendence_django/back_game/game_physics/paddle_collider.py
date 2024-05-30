@@ -1,8 +1,8 @@
 import logging
 
-from back_game.game_physics.edges import Edges
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
+from back_game.game_physics.edges import Edges
 from back_game.game_physics.position import Position
 from back_game.game_physics.speed import Speed
 from back_game.game_settings.game_constants import (
@@ -19,8 +19,12 @@ class PaddleCollider:
     @staticmethod
     def get_collision_point(ball: Ball, paddle: Paddle) -> Position:
         paddle_edges: Edges = paddle.get_edges()
-        closest_x: float = max(min(ball.position.x, paddle_edges.right), paddle_edges.left)
-        closest_y: float = max(min(ball.position.y, paddle_edges.bottom), paddle_edges.top)
+        closest_x: float = max(
+            min(ball.position.x, paddle_edges.right), paddle_edges.left
+        )
+        closest_y: float = max(
+            min(ball.position.y, paddle_edges.bottom), paddle_edges.top
+        )
         return Position(closest_x, closest_y)
 
     @staticmethod

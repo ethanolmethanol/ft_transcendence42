@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 
 class Ball:
 
-    def __init__(self, paddles: dict[str, Paddle], hit_wall_func: Callable[[int], dict[str, str]]):
+    def __init__(
+        self, paddles: dict[str, Paddle], hit_wall_func: Callable[[int], dict[str, str]]
+    ):
         self.position: Position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.radius: float = BALL_RADIUS
         self.paddles: dict[str, Paddle] = paddles

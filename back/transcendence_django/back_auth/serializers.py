@@ -1,10 +1,11 @@
 # from .models import User
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer[AbstractUser]):
     email = serializers.EmailField(
         validators=[
             UniqueValidator(
@@ -19,6 +20,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "password")
         extra_kwargs = {"password": {"write_only": True}}
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, str]) -> AbstractUser:
         user = get_user_model().objects.create_user(**validated_data)
         return user

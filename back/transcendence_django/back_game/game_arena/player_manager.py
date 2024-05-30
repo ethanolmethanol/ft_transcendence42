@@ -35,7 +35,9 @@ class PlayerManager:
         self.last_kick_check: float = time.time()
 
     def is_empty(self) -> bool:
-        return all(player.status == PlayerStatus(GIVEN_UP) for player in self.players.values())
+        return all(
+            player.status == PlayerStatus(GIVEN_UP) for player in self.players.values()
+        )
 
     def is_full(self) -> bool:
         return len(self.players) == self.nb_players
@@ -65,10 +67,11 @@ class PlayerManager:
 
     def is_player_in_game(self, user_id: int) -> bool:
         if self.is_remote:
-            return any(player.user_id == user_id and player.status != PlayerStatus(GIVEN_UP) for player in self.players.values())
-        return any(
-            player.user_id == user_id for player in self.players.values()
-        )
+            return any(
+                player.user_id == user_id and player.status != PlayerStatus(GIVEN_UP)
+                for player in self.players.values()
+            )
+        return any(player.user_id == user_id for player in self.players.values())
 
     def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
@@ -84,7 +87,8 @@ class PlayerManager:
         try:
             if not self.is_remote:
                 return len(self.players) > 0 and all(
-                    player.status == PlayerStatus(GIVEN_UP) for player in self.players.values()
+                    player.status == PlayerStatus(GIVEN_UP)
+                    for player in self.players.values()
                 )
             player = self.__get_player_from_user_id(user_id)
             return player.status == PlayerStatus(GIVEN_UP)

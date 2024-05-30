@@ -6,6 +6,7 @@ from typing import Any
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
+from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import (
     DEAD,
     DYING,
@@ -16,7 +17,6 @@ from back_game.game_settings.game_constants import (
     TIMEOUT_GAME_OVER,
     TIMEOUT_INTERVAL,
 )
-from back_game.game_arena.player import Player
 
 logger = logging.getLogger(__name__)
 
@@ -24,20 +24,24 @@ logger = logging.getLogger(__name__)
 class Monitor:
 
     def __init__(self):
-        self.channels: dict[str, Any] = {}  # key: channel_id, value: dict [key: arena_id, value: arena]
+        self.channels: dict[str, Any] = {}
         self.user_game_table: dict[int, Any] = {}
 
     def generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def get_channel(self, user_id: int, players_specs: dict[str, int]) -> dict[str, Any]:
+    async def get_channel(
+        self, user_id: int, players_specs: dict[str, int]
+    ) -> dict[str, Any]:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
             return await self.get_new_channel(user_id, players_specs)
         return channel
 
-    async def get_new_channel(self, user_id: int, players_specs: dict[str, int]) -> dict[str, Any]:
+    async def get_new_channel(
+        self, user_id: int, players_specs: dict[str, int]
+    ) -> dict[str, Any]:
         new_arena = Arena(players_specs)
         channel_id = self.generate_random_id(10)
         self.channels[channel_id] = {new_arena.id: new_arena}
@@ -120,7 +124,9 @@ class Monitor:
         while arena.get_status() == GameStatus(DYING) and time > 0:
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:
-                await arena.game_over_callback("Game Over! Thank you for playing.", time)
+                await arena.game_over_callback(
+                    "Game Over! Thank you for playing.", time
+                )
             if time == 0:
                 arena.set_status(GameStatus(DEAD))
                 self.delete_arena(arenas, arena.id)

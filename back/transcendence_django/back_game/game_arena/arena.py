@@ -29,8 +29,12 @@ class Arena:
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(self.player_manager.nb_players, self.ball_hit_wall)
-        self.game_update_callback: Callable[[dict[str, str], Coroutine[Any, Any, Any]]] = None
-        self.game_over_callback: Callable[[dict[str, float], Coroutine[Any, Any, Any]]] = None
+        self.game_update_callback: Callable[
+            [dict[str, Any], Coroutine[Any, Any, None]]
+        ] = None
+        self.game_over_callback: Callable[
+            [dict[str, float], Coroutine[Any, Any, None]]
+        ] = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
