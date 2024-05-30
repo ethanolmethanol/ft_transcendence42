@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Any
 
 from back_game.game_arena.player import (
     DISABLED,
@@ -65,7 +66,7 @@ class PlayerManager:
     def is_player_in_game(self, user_id: int) -> bool:
         if self.is_remote:
             return any(player.user_id == user_id and player.status != PlayerStatus(GIVEN_UP) for player in self.players.values())
-        return self.players and any(
+        return any(
             player.user_id == user_id for player in self.players.values()
         )
 
@@ -97,8 +98,8 @@ class PlayerManager:
     def update_activity_time(self, player_name: str):
         self.players[player_name].update_activity_time()
 
-    def kick_afk_players(self) -> list[dict[str, float]]:
-        kicked_players: list[dict[str, float]] = []
+    def kick_afk_players(self) -> list[dict[str, Any]]:
+        kicked_players: list[dict[str, Any]] = []
         if time.time() - self.last_kick_check >= 1:
             kicked_players = self.__get_afk_players()
             self.last_kick_check = time.time()
@@ -130,8 +131,8 @@ class PlayerManager:
             raise ValueError(INVALID_NB_PLAYERS)
         self.is_remote = players_specs[MODE]
 
-    def __get_afk_players(self) -> list[dict[str, float]]:
-        kicked_players: list[dict[str, float]] = []
+    def __get_afk_players(self) -> list[dict[str, Any]]:
+        kicked_players: list[dict[str, Any]] = []
         for player in self.players.values():
             time_left_before_kick = player.get_time_left_before_kick()
             if time_left_before_kick <= AFK_WARNING_THRESHOLD:
