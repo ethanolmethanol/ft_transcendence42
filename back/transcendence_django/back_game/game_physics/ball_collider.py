@@ -15,7 +15,7 @@ class BallCollider:
     @staticmethod
     def ball_collide_with_wall(
         new_position: Position, ball: Ball
-    ) -> dict[str, str] | None:
+    ) -> int | None:
         collide_x = (
             new_position.x <= ball.radius or new_position.x >= GAME_WIDTH - ball.radius
         )
@@ -23,9 +23,9 @@ class BallCollider:
             new_position.y <= ball.radius or new_position.y >= GAME_HEIGHT - ball.radius
         )
         if collide_x:
-            player_slot = new_position.x <= ball.radius
+            player_slot: int = int(new_position.x <= ball.radius)
             ball.reset()
-            return ball.hit_wall(player_slot)
+            return player_slot
         if collide_y:
             ball.speed.reverse_y_direction()
         else:

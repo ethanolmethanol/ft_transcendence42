@@ -7,7 +7,7 @@ from back_game.game_entities.paddle import Paddle
 from back_game.game_physics.ball_collider import BallCollider
 from back_game.game_physics.paddle_collider import PaddleCollider
 from back_game.game_physics.position import Position
-from back_game.game_settings.dict_keys import BALL, POSITION
+from back_game.game_settings.dict_keys import BALL, COLLIDED_SLOT, POSITION
 
 logger = logging.getLogger(__name__)
 
@@ -35,20 +35,20 @@ class Collision:
         logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
-    def handle_collision(new_position: Position, ball: Ball):
+    def handle_collision(new_position: Position, ball: Ball) -> dict[str, int] | None:
         for paddle in ball.paddles.values():
             if Collision.is_paddle_collision(ball, paddle):
                 Collision.collide_with_paddle(ball, paddle)
                 return None
-        score_update = BallCollider.ball_collide_with_wall(new_position, ball)
-        return score_update
+        collided_slot: int | None = BallCollider.ball_collide_with_wall(new_position, ball)
+        return {COLLIDED_SLOT: collided_slot} if collided_slot is not None else None
 
     @staticmethod
     def detect_collision(new_position: Position, ball: Ball) -> dict[str, Any]:
-        update = Collision.handle_collision(new_position, ball)
+        collided_slot = Collision.handle_collision(new_position, ball)
         ball_position_update = {BALL: {POSITION: ball.position.__dict__}}
         return (
-            {**update, **ball_position_update}
-            if update is not None
+            {**collided_slot, **ball_position_update}
+            if collided_slot is not None
             else ball_position_update
         )

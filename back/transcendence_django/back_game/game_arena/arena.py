@@ -6,6 +6,7 @@ from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.dict_keys import (
     BALL,
+    COLLIDED_SLOT,
     ID,
     KICKED_PLAYERS,
     MAP,
@@ -28,7 +29,7 @@ class Arena:
     def __init__(self, players_specs: dict[str, int]):
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
-        self.game: Game = Game(self.player_manager.nb_players, self.ball_hit_wall)
+        self.game: Game = Game(self.player_manager.nb_players)
         self.game_update_callback: Optional[
             Callable[[dict[str, Any]], Coroutine[Any, Any, None]]
         ] = None
@@ -95,7 +96,26 @@ class Arena:
     def player_gave_up(self, user_id: int):
         self.player_manager.player_gave_up(user_id)
 
-    def ball_hit_wall(self, player_slot: int) -> dict[str, Any]:
+    def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
+        paddle_dict: dict[str, Any] = self.game.move_paddle(player_name, direction)
+        self.player_manager.update_activity_time(player_name)
+        return paddle_dict
+
+    def update_game(self) -> dict[str, Any]:
+        update_dict: dict[str, Any] = self.game.update()
+        logger.info("Updated_dict: %s", update_dict)
+        collided_slot: int | None = update_dict.get(COLLIDED_SLOT)
+        if collided_slot is not None:
+            self.__update_scores(collided_slot)
+        kicked_players = self.player_manager.kick_afk_players()
+        if kicked_players:
+            update_dict[KICKED_PLAYERS] = kicked_players
+        return update_dict
+
+    def set_status(self, status: GameStatus):
+        self.game.set_status(status)
+
+    def __update_scores(self, player_slot: int):
         if not self.player_manager.is_remote:
             player_name = PLAYER2 if player_slot else PLAYER1
             logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
@@ -108,22 +128,6 @@ class Arena:
                 self.conclude_game()
             return {SCORE: {PLAYER_NAME: player_name}}
         raise NotImplementedError()  # TO DO
-
-    def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
-        paddle_dict: dict[str, Any] = self.game.move_paddle(player_name, direction)
-        self.player_manager.update_activity_time(player_name)
-        return paddle_dict
-
-    def update_game(self) -> dict[str, Any]:
-        update_dict: dict[str, Any] = self.game.update()
-        logger.info("Updated_dict: %s", update_dict)
-        kicked_players = self.player_manager.kick_afk_players()
-        if kicked_players:
-            update_dict[KICKED_PLAYERS] = kicked_players
-        return update_dict
-
-    def set_status(self, status: GameStatus):
-        self.game.set_status(status)
 
     def __reset(self):
         self.player_manager.reset()

@@ -20,12 +20,11 @@ logger = logging.getLogger(__name__)
 class Ball:
 
     def __init__(
-        self, paddles: dict[str, Paddle], hit_wall_func: Callable[[int], dict[str, str]]
+        self, paddles: dict[str, Paddle]
     ):
         self.position: Position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.radius: float = BALL_RADIUS
         self.paddles: dict[str, Paddle] = paddles
-        self.hit_wall: Callable[[int], dict[str, str]] = hit_wall_func
         self.player_turn = 0
         self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
 

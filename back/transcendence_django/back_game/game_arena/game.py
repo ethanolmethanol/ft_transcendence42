@@ -21,12 +21,12 @@ GameStatus = NewType("GameStatus", int)
 
 
 class Game:
-    def __init__(self, nb_players: int, ball_hit_wall: Callable[[int], dict[str, str]]):
+    def __init__(self, nb_players: int):
         self.status: GameStatus = GameStatus(WAITING)
         self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
         }
-        self.ball: Ball = Ball(self.paddles, ball_hit_wall)
+        self.ball: Ball = Ball(self.paddles)
         self.map: Map = Map()  # depends on the number of players
 
     def add_paddle(self, player_name: str, index: int):
