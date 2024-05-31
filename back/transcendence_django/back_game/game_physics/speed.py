@@ -1,4 +1,4 @@
-from back_game.game_physics.vector import Vector
+from back_game.game_geometry.vector import Vector
 
 
 class Speed(Vector):

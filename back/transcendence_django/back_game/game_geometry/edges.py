@@ -1,4 +1,4 @@
-from back_game.game_physics.position import Position
+from back_game.game_geometry.position import Position
 
 
 class Edges:

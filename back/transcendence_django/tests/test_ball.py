@@ -1,8 +1,8 @@
 # import pytest
 
 # from back_game.game_entities.ball import Ball
-# from back_game.game_physics.position import Position
-# from back_game.game_physics.vector import Vector
+# from back_game.game_geometry.position import Position
+# from back_game.game_geometry.vector import Vector
 # from back_game.game_settings.game_constants import *
 
 # @pytest.mark.passed

@@ -3,7 +3,7 @@ from typing import Any
 
 from back_game.game_entities.ball_speed_randomizer import BallSpeedRandomizer
 from back_game.game_entities.paddle import Paddle
-from back_game.game_physics.position import Position
+from back_game.game_geometry.position import Position
 from back_game.game_physics.speed import Speed
 from back_game.game_settings.dict_keys import (
     BALL_X_OUT_OF_BOUNDS,
@@ -47,16 +47,10 @@ class Ball:
             raise ValueError(BALL_Y_OUT_OF_BOUNDS)
         self.position.set_coordinates(x, y)
 
-    def move(self) -> dict[str, Any]:
-        new_position = Position(
+    def get_next_position(self) -> Position:
+        return Position(
             self.position.x + self.speed.x, self.position.y + self.speed.y
         )
-        update = Collision.detect_collision(new_position, self)
-        return update
-
-    def update_collision(self, paddle: Paddle):
-        if Collision.is_paddle_collision(self, paddle):
-            Collision.handle_collision(self.position, self)
 
     def reset(self):
         self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
@@ -65,6 +59,3 @@ class Ball:
     def __set_random_speed(self):
         self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
         self.player_turn = (self.player_turn + 1) % 2
-
-
-from back_game.game_physics.collision import Collision

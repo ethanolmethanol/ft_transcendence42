@@ -2,9 +2,9 @@ import logging
 import math
 from typing import Any, NewType
 
-from back_game.game_physics.edges import Edges
-from back_game.game_physics.position import Position
-from back_game.game_physics.rectangle import Rectangle
+from back_game.game_geometry.edges import Edges
+from back_game.game_geometry.position import Position
+from back_game.game_geometry.rectangle import Rectangle
 from back_game.game_settings.dict_keys import (
     END,
     HEIGHT,

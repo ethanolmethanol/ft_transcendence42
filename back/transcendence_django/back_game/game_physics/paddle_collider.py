@@ -2,8 +2,8 @@ import logging
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
-from back_game.game_physics.edges import Edges
-from back_game.game_physics.position import Position
+from back_game.game_geometry.edges import Edges
+from back_game.game_geometry.position import Position
 from back_game.game_physics.speed import Speed
 from back_game.game_settings.game_constants import (
     INITIAL_BALL_SPEED_COEFF,
@@ -31,7 +31,7 @@ class PaddleCollider:
     def get_ball_speed_after_paddle_collision(
         paddle: Paddle, collision_point: Position
     ) -> Speed:
-        speed_component = PaddleCollider.get_ball_speed_direction(
+        speed_component = PaddleCollider.__get_ball_speed_direction(
             paddle, collision_point
         )
         u_speed = speed_component.unit_vector()
@@ -40,7 +40,7 @@ class PaddleCollider:
         )
 
     @staticmethod
-    def get_ball_speed_direction(paddle: Paddle, collision_point: Position) -> Speed:
+    def __get_ball_speed_direction(paddle: Paddle, collision_point: Position) -> Speed:
         if paddle.slot == LEFT_SLOT:
             speed_component_x = paddle.rectangle.distance_from_center
         elif paddle.slot == RIGHT_SLOT:

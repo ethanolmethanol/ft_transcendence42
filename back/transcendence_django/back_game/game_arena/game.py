@@ -4,6 +4,8 @@ from typing import Any, NewType
 from back_game.game_arena.map import Map
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle, PaddleStatus
+from back_game.game_geometry.position import Position
+from back_game.game_physics.collision import Collision
 from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (
     LISTENING,
@@ -49,7 +51,7 @@ class Game:
             paddle.status = PaddleStatus(PROCESSING)
             paddle.move(direction)
             try:
-                self.ball.update_collision(paddle)
+                Collision.update_ball_collision(self.ball, paddle)
             except ValueError:
                 logger.error("Paddle cannot move due to collision.")
                 paddle.move(-direction)
@@ -57,7 +59,7 @@ class Game:
         return paddle.get_dict_update()
 
     def update(self) -> dict[str, Any]:
-        ball_update: dict[str, Any] = self.ball.move()
+        ball_update: dict[str, Any] = Collision.resolve_collision(self.ball)
         game_status: dict[str, Any] = {STATUS: self.status}
         return {**ball_update, **game_status}
 

@@ -2,8 +2,8 @@ import logging
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
-from back_game.game_physics.edges import Edges
-from back_game.game_physics.position import Position
+from back_game.game_geometry.edges import Edges
+from back_game.game_geometry.position import Position
 from back_game.game_settings.dict_keys import BOTTOM, LEFT, RIGHT, TOP
 from back_game.game_settings.game_constants import GAME_HEIGHT, GAME_WIDTH
 
@@ -31,7 +31,24 @@ class BallCollider:
         return None
 
     @staticmethod
-    def get_side(
+    def push_ball(ball: Ball, paddle: Paddle):
+        paddle_edges = paddle.get_edges()
+        side = BallCollider.__get_collision_side(ball.position, paddle)
+        push_position = Position(ball.position.x, ball.position.y)
+        match side:
+            case "top":
+                push_position.y = paddle_edges.top - ball.radius
+            case "bottom":
+                push_position.y = paddle_edges.bottom + ball.radius
+            case "left":
+                push_position.x = paddle_edges.left - ball.radius
+            case "right":
+                push_position.x = paddle_edges.right + ball.radius
+        ball.set_position(push_position)
+        logger.info("Ball collided with paddle %s on the %s side.", paddle.slot, side)
+
+    @staticmethod
+    def __get_side(
         distance_x: float,
         distance_y: float,
         position: Position,
@@ -46,7 +63,7 @@ class BallCollider:
         return TOP
 
     @staticmethod
-    def get_collision_side(position: Position, paddle: Paddle) -> str:
+    def __get_collision_side(position: Position, paddle: Paddle) -> str:
         """
         Determines which side of the paddle the ball collides with,
         accurately considering the ball's radius.
@@ -56,23 +73,6 @@ class BallCollider:
         closest_y: float = max(min(position.y, paddle_edges.bottom), paddle_edges.top)
         distance_x: float = position.x - closest_x
         distance_y: float = position.y - closest_y
-        return BallCollider.get_side(
+        return BallCollider.__get_side(
             distance_x, distance_y, position, paddle.get_position()
         )
-
-    @staticmethod
-    def push_ball(ball: Ball, paddle: Paddle):
-        paddle_edges = paddle.get_edges()
-        side = BallCollider.get_collision_side(ball.position, paddle)
-        push_position = Position(ball.position.x, ball.position.y)
-        match side:
-            case "top":
-                push_position.y = paddle_edges.top - ball.radius
-            case "bottom":
-                push_position.y = paddle_edges.bottom + ball.radius
-            case "left":
-                push_position.x = paddle_edges.left - ball.radius
-            case "right":
-                push_position.x = paddle_edges.right + ball.radius
-        ball.set_position(push_position)
-        logger.info("Ball collided with paddle %s on the %s side.", paddle.slot, side)
