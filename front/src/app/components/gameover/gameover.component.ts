@@ -28,7 +28,7 @@ export class GameOverComponent {
     this.router.navigate(['/home']);
   }
 
-  reMatch() {
+  public reMatch() {
     this.webSocketService.rematch();
     this.show = false;
   }

@@ -15,10 +15,10 @@ import {NgIf} from "@angular/common";
 export class PaddleComponent {
   @Input() id: number = 0;
   playerName: string = '';
-  width = PADDLE_WIDTH;
-  height = PADDLE_HEIGHT;
-  positionX = 0;
-  positionY = 0;
+  width: number = PADDLE_WIDTH;
+  height: number = PADDLE_HEIGHT;
+  positionX: number = 0;
+  positionY: number = 0;
   afkLeftTime : number | null = null;
 
   public updatePaddlePosition(position: Position) {

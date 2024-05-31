@@ -40,16 +40,15 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     private _elementRef: ElementRef,
     private _router: Router,
     private _webSocketService: WebSocketService,
-    private _route: ActivatedRoute,  // Inject ActivatedRoute
-    private _connectionService: ConnectionService  // Inject connectionServiceComponent
+    private _route: ActivatedRoute,
+    private _connectionService: ConnectionService
   ) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     this.updateGameContainerScale();
   }
 
-  ngAfterViewInit() {
-    // Now you can safely access this.game.first
+  public ngAfterViewInit() {
     this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
@@ -58,7 +57,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this._connectionService.endConnection();
   }
 
@@ -68,7 +67,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     gameContainer.style.transform = `scale(${scale})`;
   }
 
-  confirmGiveUp() {
+  public confirmGiveUp() {
     this._router.navigate(['/home']);
     this._webSocketService.giveUp();
   }
