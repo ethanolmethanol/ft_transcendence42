@@ -113,9 +113,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
+            joined_arena = monitor.get_arena_from_user_id(self.user_id)
+            if joined_arena is not None and joined_arena["id"] != arena_id:
+                raise ValueError("User already in another arena")
             self.arena.enter_arena(self.user_id)
-            if not monitor.is_user_in_game(self.user_id, self.channel_id, arena_id):
-                monitor.add_user(self.user_id, self.channel_id, arena_id)
+            monitor.add_user(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e

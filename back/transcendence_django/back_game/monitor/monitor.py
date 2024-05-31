@@ -85,6 +85,12 @@ class Monitor:
         except KeyError:
             pass
 
+    def get_arena_from_user_id(self, user_id: int) -> dict[str, Any]:
+        user_channel: dict[str, Any] = self.user_game_table.get(user_id)
+        if user_channel is None:
+            return None
+        return user_channel["arena"]
+
     def is_user_in_game(self, user_id: int, channel_id: str, arena_id: int) -> bool:
         return self.user_game_table.get(user_id) == {
             "channel_id": channel_id,

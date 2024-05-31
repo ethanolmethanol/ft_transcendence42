@@ -106,7 +106,7 @@ class Arena:
         logger.info("Updated_dict: %s", update_dict)
         collided_slot: int | None = update_dict.get(COLLIDED_SLOT)
         if collided_slot is not None:
-            self.__update_scores(collided_slot)
+            update_dict[SCORE] = self.__update_scores(collided_slot)
         kicked_players = self.player_manager.kick_afk_players()
         if kicked_players:
             update_dict[KICKED_PLAYERS] = kicked_players
@@ -115,7 +115,7 @@ class Arena:
     def set_status(self, status: GameStatus):
         self.game.set_status(status)
 
-    def __update_scores(self, player_slot: int):
+    def __update_scores(self, player_slot: int) -> dict[str, str]:
         if not self.player_manager.is_remote:
             player_name = PLAYER2 if player_slot else PLAYER1
             logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
@@ -126,7 +126,7 @@ class Arena:
             )
             if player.score == MAXIMUM_SCORE:
                 self.conclude_game()
-            return {SCORE: {PLAYER_NAME: player_name}}
+            return {PLAYER_NAME: player_name}
         raise NotImplementedError()  # TO DO
 
     def __reset(self):

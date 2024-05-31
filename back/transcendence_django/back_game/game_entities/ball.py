@@ -52,11 +52,9 @@ class Ball:
             self.position.x + self.speed.x, self.position.y + self.speed.y
         )
         update = Collision.detect_collision(new_position, self)
-        logger.info("UPDATE COLISION: %s", update)
         return update
 
     def update_collision(self, paddle: Paddle):
-        logger.info("UPDATE PADDLE COLISION BRO")
         if Collision.is_paddle_collision(self, paddle):
             Collision.handle_collision(self.position, self)
 
