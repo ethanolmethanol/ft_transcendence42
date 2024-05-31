@@ -1,3 +1,4 @@
+# hadolint global ignore=DL3013,DL3018,DL3042
 FROM python:3
 
 # Default healthcheck for image
