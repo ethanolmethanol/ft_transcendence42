@@ -60,7 +60,7 @@ class Monitor:
         channel: dict[str, Any] | None = self.user_game_table.get(user_id)
         if channel is None:
             return None
-        channel_id: int = channel["channel_id"]
+        channel_id: str = channel["channel_id"]
         arena_id: int = channel["arena"]["id"]
         arena: Arena = self.channels[channel_id][arena_id]
         channel = {"channel_id": channel_id, "arena": arena.to_dict()}
