@@ -25,7 +25,7 @@ class Monitor:
 
     def __init__(self):
         self.channels: dict[str, Any] = {}
-        self.user_game_table: dict[int, Any] = {}
+        self.user_game_table: dict[int, dict[str, Any]] = {}
 
     def generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits
@@ -86,7 +86,7 @@ class Monitor:
             pass
 
     def get_arena_from_user_id(self, user_id: int) -> dict[str, Any]:
-        user_channel: dict[str, Any] = self.user_game_table.get(user_id)
+        user_channel: dict[str, Any] | None = self.user_game_table.get(user_id)
         if user_channel is None:
             return None
         return user_channel["arena"]

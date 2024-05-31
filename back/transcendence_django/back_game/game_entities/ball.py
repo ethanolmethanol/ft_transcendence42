@@ -48,9 +48,7 @@ class Ball:
         self.position.set_coordinates(x, y)
 
     def get_next_position(self) -> Position:
-        return Position(
-            self.position.x + self.speed.x, self.position.y + self.speed.y
-        )
+        return Position(self.position.x + self.speed.x, self.position.y + self.speed.y)
 
     def reset(self):
         self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)

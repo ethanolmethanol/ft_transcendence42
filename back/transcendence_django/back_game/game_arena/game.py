@@ -4,7 +4,6 @@ from typing import Any, NewType
 from back_game.game_arena.map import Map
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle, PaddleStatus
-from back_game.game_geometry.position import Position
 from back_game.game_physics.collision import Collision
 from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (

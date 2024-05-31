@@ -4,9 +4,9 @@ from typing import Any
 
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
+from back_game.game_geometry.position import Position
 from back_game.game_physics.ball_collider import BallCollider
 from back_game.game_physics.paddle_collider import PaddleCollider
-from back_game.game_geometry.position import Position
 from back_game.game_settings.dict_keys import BALL, COLLIDED_SLOT, POSITION
 
 logger = logging.getLogger(__name__)
