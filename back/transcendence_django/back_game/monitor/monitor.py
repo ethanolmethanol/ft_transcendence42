@@ -57,12 +57,12 @@ class Monitor:
         return self.user_game_table[user_id]
 
     def get_channel_from_user_id(self, user_id: int) -> dict[str, Any] | None:
-        channel = self.user_game_table.get(user_id)
+        channel: dict[str, Any] | None = self.user_game_table.get(user_id)
         if channel is None:
             return None
-        channel_id = channel["channel_id"]
-        arena_id = channel["arena"]["id"]
-        arena = self.channels[channel_id][arena_id]
+        channel_id: int = channel["channel_id"]
+        arena_id: int = channel["arena"]["id"]
+        arena: Arena = self.channels[channel_id][arena_id]
         channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
 
@@ -73,9 +73,10 @@ class Monitor:
         arenas.pop(arena_id)
 
     def add_user(self, user_id: int, channel_id: str, arena_id: int):
+        arena: Arena = self.channels[channel_id][arena_id]
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
-            "arena": self.channels[channel_id][arena_id].to_dict(),
+            "arena": arena.to_dict(),
         }
 
     def delete_user(self, user_id: int):
@@ -85,7 +86,7 @@ class Monitor:
         except KeyError:
             pass
 
-    def get_arena_from_user_id(self, user_id: int) -> dict[str, Any]:
+    def get_arena_from_user_id(self, user_id: int) -> dict[str, Any] | None:
         user_channel: dict[str, Any] | None = self.user_game_table.get(user_id)
         if user_channel is None:
             return None
