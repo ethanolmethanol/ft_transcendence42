@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 class BallCollider:
 
     @staticmethod
-    def ball_collide_with_wall(
-        new_position: Position, ball: Ball
-    ) -> int | None:
+    def ball_collide_with_wall(new_position: Position, ball: Ball) -> int | None:
         collide_x = (
             new_position.x <= ball.radius or new_position.x >= GAME_WIDTH - ball.radius
         )

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable
+from typing import Any
 
 from back_game.game_entities.ball_speed_randomizer import BallSpeedRandomizer
 from back_game.game_entities.paddle import Paddle
@@ -19,9 +19,7 @@ logger = logging.getLogger(__name__)
 
 class Ball:
 
-    def __init__(
-        self, paddles: dict[str, Paddle]
-    ):
+    def __init__(self, paddles: dict[str, Paddle]):
         self.position: Position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.radius: float = BALL_RADIUS
         self.paddles: dict[str, Paddle] = paddles

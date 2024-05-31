@@ -40,7 +40,9 @@ class Collision:
             if Collision.is_paddle_collision(ball, paddle):
                 Collision.collide_with_paddle(ball, paddle)
                 return None
-        collided_slot: int | None = BallCollider.ball_collide_with_wall(new_position, ball)
+        collided_slot: int | None = BallCollider.ball_collide_with_wall(
+            new_position, ball
+        )
         return {COLLIDED_SLOT: collided_slot} if collided_slot is not None else None
 
     @staticmethod
