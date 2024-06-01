@@ -1,0 +1,41 @@
+.form-group {
+    position:relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.form-group input {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.input-error-container {
+    position: relative;
+    display: flex;
+    align-items: center; /* This ensures the input and error message are vertically aligned */
+    justify-content: space-between;
+    width: 100%;
+}
+
+.form-control {
+    flex: 0 0 auto; /* This prevents the input field from growing or shrinking */
+    width: calc(100% - 120px); /* Adjust the width as needed, subtracting the space for the error message */
+}
+
+.signup-header {
+    font-size: 2em;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.disabled-button {
+    background-color: #ccc; /* Light grey background */
+    color: #666; /* Darker grey text */
+    cursor: not-allowed; /* Cursor style to indicate not clickable */
+}
+
+.error-message-container {
+    height: 40px; /* Adjust this value based on the height of your error message */
+}

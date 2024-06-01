@@ -15,7 +15,7 @@ db/*
 /*/node_modules
 npm-debug.log
 yarn-error.log
-package-lock.json
+*package-lock.json
 package.json
 
 # IDEs and edito

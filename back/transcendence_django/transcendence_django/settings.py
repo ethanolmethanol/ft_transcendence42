@@ -30,6 +30,8 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "back_auth",
     "back_user",
+    "back_game",
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",  # https://pypi.org/project/django-health-check/
@@ -79,6 +82,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "transcendence_django.wsgi.application"
+ASGI_APPLICATION = "transcendence_django.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -103,7 +115,6 @@ AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
 CORS_ALLOW_HEADERS = [
     "CONTENT-TYPE",
     "X-CSRFToken",
-    "X-SESSIONToken",
 ]
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
@@ -155,3 +166,22 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'debug.log'),
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console', 'file'],
+#         'level': 'DEBUG',
+#     },
+# }

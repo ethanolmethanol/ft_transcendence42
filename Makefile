@@ -11,9 +11,9 @@ ENV_FILE		= .env
 
 BROWSER			= firefox
 
-SHELL			= /bin/bash
+SHELL			= bash
 
-CONTAINERS		= back_auth back_user front db prometheus grafana node_exporter blackbox_exporter # pong redis
+CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -25,6 +25,8 @@ Y				= \033[1;33m # YELLOW
 C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
+
+TEST-ENGINE-TAGS = passed monitor paddle ball
 
 ${NAME}: gen-cert up health
 	$(call printname)
@@ -136,6 +138,16 @@ talk:
 	select c in ${CONTAINERS}; \
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
 
+test-engine:
+	@PS3="Select a tag: "; \
+	select TAG in ${TEST-ENGINE-TAGS}; do \
+		if [ -n "$$TAG" ]; then \
+			docker exec -it back_game pytest -m $$TAG; \
+		fi; \
+		break; \
+	done
+
+
 rmi:
 	@PS3="Select for which image you want to remove: "; \
 	select c in ${CONTAINERS}; \
@@ -153,11 +165,14 @@ fix:
 dev: all
 	cd front/; npm run watch
 
+test:
+	cd front/; npm run test
+
 install-mkcert:
-	@$(SHELL) ./scripts/install_mkcert.sh
+	@./scripts/install_mkcert.sh
 
 gen-cert: install-mkcert
-	@$(SHELL) ./scripts/gen_cert.sh
+	@./scripts/gen_cert.sh
 
 clean:
 	@${COMPOSE} down -v

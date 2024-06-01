@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import {ConnectionService} from "./services/connection/connection.service";
 
 @NgModule({
   imports: [
@@ -13,7 +14,9 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     CommonModule,
   ],
-  providers: [],
+  providers: [
+    ConnectionService,
+  ],
   bootstrap: [AppComponent]
 })
 
