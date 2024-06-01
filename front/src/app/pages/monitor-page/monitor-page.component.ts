@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MonitorService} from "../../services/monitor/monitor.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {UserService} from "../../services/user/user.service";
 
 @Component({
@@ -11,17 +11,20 @@ import {UserService} from "../../services/user/user.service";
   styleUrl: './monitor-page.component.css'
 })
 export class MonitorPageComponent implements OnInit {
-  constructor(private userService: UserService, private router: Router, private monitorService: MonitorService) {}
+  private gameType: string = "local";
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {}
 
   private getGameUrl(channel_id: string, arena_id: string): string {
-    return `/local-game/${channel_id}/${arena_id}`;
+    return `/${this.gameType}/${channel_id}/${arena_id}`;
   }
 
   async ngOnInit() : Promise<void> {
+    this.gameType = this.route.snapshot.data['gameType'];
     await this.userService.whenUserDataLoaded();
+    const mode: 0 | 1 = this.gameType === "local" ? 0 : 1;
     const postData = JSON.stringify({
       "user_id": this.userService.getUserID(),
-      "players_specs": {"nb_players": 2, "mode": 0}
+      "players_specs": {"nb_players": 2, "mode": mode}
     });
     this.monitorService.getWebSocketUrl(postData).subscribe(response => {
       const gameUrl = this.getGameUrl(response.channel_id, response.arena.id);

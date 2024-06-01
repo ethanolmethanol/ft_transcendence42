@@ -45,6 +45,7 @@ class PlayerManager:
     def add_player(self, user_id: int, player_name: str):
         player = Player(user_id, player_name)
         self.players[player_name] = player
+        logger.info("Player %s (%s) has been added to the arena.", player_name, str(user_id))
 
     def allow_player_enter_arena(self, user_id: int):
         if self.did_player_give_up(user_id):

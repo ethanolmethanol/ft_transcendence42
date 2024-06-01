@@ -67,6 +67,7 @@ class Arena:
 
     def enter_arena(self, user_id: int):
         self.player_manager.allow_player_enter_arena(user_id)
+        logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
             self.__enter_remote_mode(user_id)
         else:
@@ -140,9 +141,9 @@ class Arena:
 
     def __enter_remote_mode(self, user_id: int):
         if self.player_manager.is_player_in_game(user_id):
-            self.__register_player(user_id, str(user_id))
-        else:
             self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
+        else:
+            self.__register_player(user_id, str(user_id))
 
     def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)
