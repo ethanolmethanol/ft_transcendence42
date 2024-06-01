@@ -73,6 +73,12 @@ class PlayerManager:
             )
         return any(player.user_id == user_id for player in self.players.values())
 
+    def has_enough_players(self) -> bool:
+        count_active_players = 0
+        for player in self.players.values():
+            count_active_players += player.status == PlayerStatus(ENABLED)
+        return count_active_players >= 2
+
     def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
             raise KeyError(UNKNOWN_USER)

@@ -105,7 +105,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   };
   private _pressedKeys = new Set<string>();
   constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
-  
+
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.is_remote && this.is_remote) {
       await this.userService.whenUserDataLoaded();
@@ -158,17 +158,17 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
     kicked_players.forEach((afkResponse) => {
-      if (afkResponse.player_name === "Player1" || afkResponse.player_name === "Player2") {
+      const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
+      if (paddle) {
         if (afkResponse.time_left <= 0) {
-          console.log('You were kicked due to inactivity.');
-          this.redirectToHome();
+          if (afkResponse.player_name === this.playerName) {
+            console.log('You were kicked due to inactivity.');
+            this.redirectToHome();
+          }
         } else {
           const left_time = afkResponse.time_left;
-          console.log("Warning: You will be kicked in " + left_time + " seconds.");
-          const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
-          if (paddle) {
-            paddle.afkLeftTime = left_time;
-          }
+          console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
+          paddle.afkLeftTime = left_time;
         }
       }
     });
@@ -188,7 +188,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private updateStatus(status: number) {
-    if (status == WAITING || status == DYING) {
+    if (status == DYING) {
       this.overlay.first.show = true;
     } else if (status == DEAD) {
       this.redirectToHome();
