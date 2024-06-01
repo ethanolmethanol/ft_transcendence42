@@ -14,6 +14,7 @@ import {GameComponent} from "../../components/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
 import {ConnectionService} from "../../services/connection/connection.service";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-game-page',
@@ -23,6 +24,7 @@ import {ConnectionService} from "../../services/connection/connection.service";
     RouterLink,
     GameComponent,
     LoadingSpinnerComponent,
+    NgIf,
   ],
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
@@ -30,8 +32,7 @@ import {ConnectionService} from "../../services/connection/connection.service";
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  mode = 0;
-
+  is_remote: boolean | null = null;
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
   public onResize(event: Event) {
@@ -47,11 +48,11 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   public ngOnInit() {
-    this.mode = this._route.snapshot.data['gameType'] === 'local' ? 0 : 1;
-    this.updateGameContainerScale();
+    this.is_remote = this._route.snapshot.data['gameType'] === 'online';
   }
 
   public ngAfterViewInit() {
+    this.updateGameContainerScale();
     this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];

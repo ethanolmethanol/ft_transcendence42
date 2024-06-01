@@ -129,9 +129,7 @@ class Arena:
         return {PLAYER_NAME: player_name}
 
     def __get_player_name_by_paddle_slot(self, paddle_slot: int) -> str | None:
-        logger.info("Getting player name for slot %s", paddle_slot)
         for paddle in self.game.paddles.values():
-            logger.info("Paddle slot: %s", paddle.slot)
             if paddle.slot == paddle_slot:
                 return paddle.player_name
         return None

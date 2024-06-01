@@ -1,4 +1,13 @@
-import {OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren, Input} from '@angular/core';
+import {
+  OnDestroy,
+  AfterViewInit,
+  Component,
+  HostListener,
+  QueryList,
+  ViewChildren,
+  Input,
+  SimpleChanges, OnChanges
+} from '@angular/core';
 import {
   NOT_JOINED,
   INVALID_ARENA,
@@ -70,8 +79,8 @@ interface ErrorMapping {
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit, OnDestroy {
-  @Input() is_remote = 0;
+export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
+  @Input() is_remote: boolean = false;
   private playerName: string | null = null;
   readonly lineThickness = LINE_THICKNESS;
   gameWidth = GAME_WIDTH;
@@ -95,8 +104,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
-  constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {
-    if (this.is_remote) {
+  constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
+  
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes.is_remote && this.is_remote) {
+      await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
     }
   }
@@ -110,7 +122,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
-		paddle.afkLeftTime = null;
+        paddle.afkLeftTime = null;
+        console.log(paddle.playerName + " joined the game.");
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
