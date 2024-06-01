@@ -56,6 +56,15 @@ class Arena:
     def is_full(self) -> bool:
         return self.player_manager.is_full()
 
+    def is_user_active_in_game(self, user_id: int) -> bool:
+        if self.game.status == GameStatus(WAITING):
+            return False
+        return any(
+            player.user_id == user_id
+            and player.status == PlayerStatus(ENABLED)
+            for player in self.player_manager.players.values()
+        )
+
     def get_winner(self) -> str:
         return self.player_manager.get_winner()
 

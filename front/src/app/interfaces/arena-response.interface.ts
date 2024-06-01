@@ -25,7 +25,7 @@ interface Map {
 export interface ArenaResponse {
   id: string;
   status: number;
-  players: number[];
+  players: string[];
   scores: number[];
   ball: Ball;
   paddles: Paddle[];

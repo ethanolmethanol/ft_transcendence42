@@ -80,17 +80,19 @@ interface ErrorMapping {
   styleUrl: './game.component.css'
 })
 export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
-  @Input() is_remote: boolean = false;
-  private playerName: string | null = null;
-  readonly lineThickness = LINE_THICKNESS;
-  gameWidth = GAME_WIDTH;
-  gameHeight = GAME_HEIGHT;
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
-  player1Score = 0;
-  player2Score = 0;
-  dataLoaded = false;
+  @Input() is_remote: boolean = false;
+  private playerName: string | null = null;
+  readonly lineThickness: number = LINE_THICKNESS;
+  gameWidth: number = GAME_WIDTH;
+  gameHeight: number = GAME_HEIGHT;
+  player1Score: number = 0;
+  player2Score: number = 0;
+  dataLoaded: boolean = false;
+  isWaiting: boolean = true;
+  waitingPlayers: string[] = [];
 
   private _paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -134,6 +136,9 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
     this.updateStatus(arena.status)
+    if (arena.status == WAITING) {
+      this.waitingPlayers = arena.players;
+    }
     this.dataLoaded = true;
   }
 
@@ -188,6 +193,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private updateStatus(status: number) {
+    this.isWaiting = (status == WAITING)
     if (status == DYING) {
       this.overlay.first.show = true;
     } else if (status == DEAD) {
