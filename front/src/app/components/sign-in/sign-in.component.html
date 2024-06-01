@@ -1,0 +1,21 @@
+<main class="background">
+  <header class="signin-header">
+    <h1>Transcendence</h1>
+  </header>
+  <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+    <section class="form-group">
+      <input id="login" formControlName="login" class="form-control" placeholder="Username or email">
+    </section>
+    <section class="form-group">
+      <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password">
+    </section>
+    <button type="submit" [disabled]="!signInForm.valid" [class.hover-effect]="signInForm.valid" [class.disabled-button]="!signInForm.valid">Sign In</button>
+    <a routerLink="/sign-up">
+      Don't have an account?<br>
+      Sign up here.
+    </a>
+    <section class="error-message-container">
+      <app-error-message [condition]="hasAuthenticationFailed()" [message]="errorMessage"></app-error-message>
+    </section>
+  </form>
+</main>

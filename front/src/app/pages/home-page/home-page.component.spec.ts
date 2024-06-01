@@ -1,20 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { HomePageComponent } from './home-page.component';
+import {UserService} from "../../services/user/user.service";
 
 describe('HomePageComponent', () => {
   let component: HomePageComponent;
-  let fixture: ComponentFixture<HomePageComponent>;
+  let userServiceMock: jasmine.SpyObj<UserService>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [HomePageComponent]
-    })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(HomePageComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new HomePageComponent(userServiceMock);
   });
 
   it('should create', () => {

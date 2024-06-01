@@ -1,3 +1,4 @@
+---
 version: '3'
 
 services:
@@ -23,22 +24,58 @@ services:
         image: back_auth
         container_name: back_auth
         build:
-            context: back_auth
+            context: back
         depends_on:
             db:
                 condition: service_healthy
         ports:
-            - "8000:8000"
+            - "8000:443"
         networks:
             - transcendence
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: 'python3 transcendence_django/manage.py health_check'
+            test: 'python3 manage.py health_check'
             interval: 5s
             timeout: 1s
             retries: 10
             start_period: 5s
+
+    back_user:
+        image: back_user
+        container_name: back_user
+        build:
+            context: back
+        depends_on:
+            back_auth:
+                condition: service_healthy
+        ports:
+            - "8002:443"
+        networks:
+            - transcendence
+        restart: unless-stopped
+        env_file: .env
+        healthcheck:
+            test: 'python3 manage.py health_check'
+
+    back_game:
+        image: back_game
+        container_name: back_game
+        build:
+            context: back
+        env_file: .env
+        depends_on:
+            redis:
+                condition: service_healthy
+            back_user:
+                condition: service_healthy
+        ports:
+            - "8001:443"
+        networks:
+            - transcendence
+        restart: unless-stopped
+        healthcheck:
+            test: 'python3 manage.py health_check'
 
     front:
         image: front
@@ -52,9 +89,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        depends_on:
-            back_auth:
-                condition: service_healthy
         healthcheck:
             test: 'curl -kfsSL https://localhost:443/'
             interval: 5s
@@ -62,7 +96,20 @@ services:
             retries: 10
             start_period: 5s
 
-    # yoinked, updated, and tinkered with from https://github.com/ouidou/monitoring-bootstrap/tree/master
+    redis:
+        image: "redis:latest"
+        container_name: redis
+        ports:
+            - "6380:6379"
+        healthcheck:
+            test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+            interval: 5s
+            timeout: 1s
+            retries: 10
+            start_period: 5s
+        networks:
+            - transcendence
+
     prometheus:
         image: prom/prometheus:v2.35.0
         container_name: prometheus
@@ -72,7 +119,6 @@ services:
         volumes:
             - prometheus-data:/prometheus
             - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-            # - ./alertmanager/alert.rules/alerts.rules.yml:/alertmanager/alert.rules/alerts.rules.yml
         command:
             - '--config.file=/etc/prometheus/prometheus.yml'
             - '--storage.tsdb.path=/prometheus'
@@ -85,28 +131,13 @@ services:
             node_exporter:
                 condition: service_healthy
         healthcheck:
-            test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090" ]
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090"]
             interval: 5s
             timeout: 1s
             retries: 10
             start_period: 5s
         networks:
             - transcendence
-
-    # alertmanager:
-    #     image: prom/alertmanager:v0.18.0
-    #     container_name: alertmanager
-    #     deploy:
-    #         replicas: 1
-    #     volumes:
-    #         - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    #         - ./alertmanager/templates/default.tmpl:/etc/alertmanager/templates/default.tmpl
-    #     command:
-    #         - '--config.file=/etc/alertmanager/alertmanager.yml'
-    #     ports:
-        #     - "8000:8000"
-        # networks:
-        #     - transcendence
 
     grafana:
         image: grafana/grafana:9.3.6
@@ -120,7 +151,7 @@ services:
             prometheus:
                 condition: service_healthy
         healthcheck:
-            test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000" ]
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
             interval: 5s
             timeout: 1s
             retries: 10
@@ -142,7 +173,7 @@ services:
         deploy:
             replicas: 1
         healthcheck:
-            test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9115" ]
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9115"]
             interval: 5s
             timeout: 1s
             retries: 10
@@ -178,7 +209,6 @@ volumes:
             o: 'bind'
             device: './front/dist/transcendence/browser'
     db-data:
-
 
 networks:
     transcendence:

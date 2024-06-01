@@ -1,0 +1,12 @@
+.leaderboard {
+  display: table;
+  table-layout: fixed;
+  width: 90vw;
+  align-items: center;
+  text-align: center;
+  border-radius: 20px;
+  font-size: 2em;
+  background-color: black;
+  color: white;
+  opacity: 0.80;
+}

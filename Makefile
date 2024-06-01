@@ -11,9 +11,9 @@ ENV_FILE		= .env
 
 BROWSER			= firefox
 
-SHELL			= /bin/bash
+SHELL			= bash
 
-CONTAINERS		= back_auth front db prometheus grafana node_exporter blackbox_exporter # pong redis
+CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -26,12 +26,7 @@ C				= \033[1;34m # CYAN
 M				= \033[1;35m # MAGENTA
 N				= \033[0m    # RESET
 
-# Mkcert installation
-
-LOCAL_BIN		= $(HOME)/bin
-CERT_DIR 		= ssl/
-SSL_CONT_DIRS	= front/ssl back_auth/ssl
-SSL_DIRS		= $(LOCAL_BIN)/$(MKCERT_BIN) $(CERT_DIR) $(SSL_CONT_DIRS)
+TEST-ENGINE-TAGS = passed monitor paddle ball
 
 ${NAME}: gen-cert up health
 	$(call printname)
@@ -71,15 +66,15 @@ format-css: | front/.stylelintrc.json
 
 %/venv:
 	@echo -e "$(Y)Setting up new venv for $@.$(N)"
-	@python3 -m venv $@
+	@python3.12 -m venv $@
 
-PY_SERVICES = back_auth
+PY_SERVICES = back
 
 PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint flake8 isort mypy)
 
-PY_MOD_DEPS = pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
+PY_MOD_DEPS = django pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
 
-PYLINT_ARGS = --load-plugins pylint_django --django-settings-module transcendence_django.settings --disable=C0114 --disable=C0115 --disable=C0116 --disable=R0903 transcendence_django/*_app
+PYLINT_ARGS = --load-plugins pylint_django --django-settings-module transcendence_django.settings --disable=C0114 --disable=C0115 --disable=C0116 --disable=R0903 transcendence_django/back_*
 
 $(addprefix %, $(PY_FMT_DEPS)): | %/venv
 	@echo -e "$(Y)Installing dependencies for python linting (missing at least $(notdir $@)).$(N)"
@@ -92,15 +87,16 @@ format-cleanup:
 	rm -rf $(addsuffix /venv, $(PY_SERVICES))
 # pushd front && npm uninstall stylelint
 
-# lint:
-# 	docker run --rm \
-# 		-e RUN_LOCAL=true \
-# 		--env-file ".github/super-linter.env" \
-# 		-v "$(shell pwd)":/tmp/lint \
-# 		ghcr.io/super-linter/super-linter:latest
+lint: | $(foreach tool,$(PY_FMT_DEPS),$(addsuffix $(tool),$(PY_SERVICES)))
+	docker run --rm \
+		-e RUN_LOCAL=true \
+		-e DEFAULT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD) \
+		--env-file ".github/super-linter.env" \
+		-v "$(shell pwd)":/tmp/lint \
+		ghcr.io/super-linter/super-linter:slim-latest
 
 testform:
-	python3 -m http.server -d back_auth/test_form -b localhost 1234
+	python3 -m http.server -d back/test_form -b localhost 1234
 
 health:
 	while docker ps | grep "health: starting" > /dev/null; do true; done
@@ -142,6 +138,16 @@ talk:
 	select c in ${CONTAINERS}; \
 	do echo "Shell for $$c:"; docker exec -it $$c ${SHELL}; exit $?; done
 
+test-engine:
+	@PS3="Select a tag: "; \
+	select TAG in ${TEST-ENGINE-TAGS}; do \
+		if [ -n "$$TAG" ]; then \
+			docker exec -it back_game pytest -m $$TAG; \
+		fi; \
+		break; \
+	done
+
+
 rmi:
 	@PS3="Select for which image you want to remove: "; \
 	select c in ${CONTAINERS}; \
@@ -159,18 +165,21 @@ fix:
 dev: all
 	cd front/; npm run watch
 
+test:
+	cd front/; npm run test
+
 install-mkcert:
-	@$(SHELL) ./scripts/install_mkcert.sh
+	@./scripts/install_mkcert.sh
 
 gen-cert: install-mkcert
-	@$(SHELL) ./scripts/gen_cert.sh
+	@./scripts/gen_cert.sh
 
 clean:
 	@${COMPOSE} down -v
 
 fclean: clean
 	@docker --log-level=warn system prune -f
-	@ rm -rf ${SSL_DIRS}
+	@./scripts/gen_cert.sh clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af

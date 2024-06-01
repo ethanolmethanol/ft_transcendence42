@@ -1,0 +1,51 @@
+.game {
+  position: relative;
+  border-radius: 4px;
+  background-color: #000;
+  width: var(--game-width);
+  height: var(--game-height);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.game-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #aaaaaa;
+  scale: 100%;
+  padding: 5px;
+}
+
+.score-display {
+  position: absolute;
+  color: rgba(220, 220, 220, 0.5);
+  font-size: 100px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+}
+
+.score-player1, .score-player2 {
+  width: 50%;
+  text-align: center;
+  display: inline;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 0;
+}
+
+.dotted-line {
+  position: absolute;
+  height: var(--game-height);
+  width: var(--line-thickness);
+  left: calc(50% - var(--line-thickness) / 2);
+  background: linear-gradient(to bottom, #aaaaaa 60%, transparent 10%);
+  background-size: 100% 40px;
+}

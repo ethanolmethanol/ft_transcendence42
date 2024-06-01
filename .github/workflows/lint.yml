@@ -1,7 +1,6 @@
---- # https://github.com/marketplace/actions/super-linter
 name: Lint
 
-on:  # yamllint disable-line rule:truthy
+on:
   pull_request:
     branches:
       - main
@@ -14,33 +13,38 @@ jobs:
     permissions:
       contents: read
       packages: read
-      # To report GitHub Actions status checks
       statuses: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # super-linter needs the full git history to get the
-          # list of files that changed across commits
           fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12.2'
+      - name: Cache python dependencies
+        id: cache-pydeps
+        uses: actions/cache@v4
+        with:
+          path: venv
+          key: ${{ runner.os }}-pydeps
       - name: Create virtual environment and install dependencies
         run: |
           python3 -m venv venv
           venv/bin/pip install django django-stubs djangorestframework djangorestframework-stubs django-cors-headers django-health-check psycopg[binary]
-      - name: Move the dependencies
+      - name: Copy the dependencies
         run: |
-          mv venv /home/runner/work/_temp/_github_workflow
+          cp -r venv /home/runner/work/_temp/_github_workflow
       - name: Super-linter
-        uses: super-linter/super-linter@v6.3.0  # x-release-please-version
+        uses: super-linter/super-linter@v6.3.0
         env:
-          # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_TYPESCRIPT_STANDARD: false
-          PYTHON_PYLINT_CONFIG_FILE: .pylintrc
+          HADOLINT_IGNORE: "DL3013 DL3018 DL3042"
+          PYTHON_PYLINT_CONFIG_FILE: ".pylintrc"
+          LINTER_RULES_PATH: .github/linters
           PYTHONPATH: "/github/workspace/:\
             /github/workflow/venv/lib/python3.12/site-packages"
+          FILTER_REGEX_EXCLUDE: "back/transcendence_django/old_tests/*|back/transcendence_django/tests/*"

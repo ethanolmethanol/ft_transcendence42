@@ -1,0 +1,5 @@
+<div class="paddle"
+     [style]="{'--paddle-width': width + 'px', '--paddle-height': height + 'px'}"
+     [style.left.px]="positionX" [style.top.px]="positionY">
+  <div *ngIf="afkLeftTime" class="afk-left-time">{{ afkLeftTime }}s</div>
+</div>

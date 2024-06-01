@@ -1,0 +1,45 @@
+body {
+  background-image: url("../../../assets/app-themes/game-background.gif");
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.home-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+}
+
+h4 {
+  font-size: 2em;
+  position: sticky;
+  top: 25vh;
+  color: white;
+}
+
+app-leaderboard {
+  display: flex;
+  align-items: center;
+  position: relative;
+  top: 100vh;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-bottom: 5vh;
+}
+
+a {
+  font-size: 2em;
+  position: sticky;
+  top: 50vh;
+}
