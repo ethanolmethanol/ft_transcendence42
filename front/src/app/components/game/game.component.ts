@@ -20,6 +20,7 @@ import {
   DYING,
   DEAD,
   GIVEN_UP,
+  STARTED,
 } from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
@@ -138,6 +139,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.updateStatus(arena.status)
     if (arena.status == WAITING) {
       this.waitingPlayers = arena.players;
+    } else if (arena.status == STARTED) {
+      this.overlay.first.hasRematched = false;
     }
     this.dataLoaded = true;
   }
@@ -169,6 +172,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
           if (afkResponse.player_name === this.playerName) {
             console.log('You were kicked due to inactivity.');
             this.redirectToHome();
+            this.webSocketService.giveUp();
           }
         } else {
           const left_time = afkResponse.time_left;
@@ -193,13 +197,16 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private updateStatus(status: number) {
+    let gameOverOverlay = this.overlay.first;
     this.isWaiting = (status == WAITING)
-    if (status == DYING) {
-      this.overlay.first.show = true;
-    } else if (status == DEAD) {
-      this.redirectToHome();
-    } else {
-      this.overlay.first.show = false;
+    if (gameOverOverlay.hasRematched === false) {
+      if (status == DYING) {
+        gameOverOverlay.show = true;
+      } else if (status == DEAD) {
+        this.redirectToHome();
+      } else {
+        gameOverOverlay.show = false;
+      }
     }
   }
 
@@ -227,13 +234,16 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private gameOver(info: GameOverUpdateResponse) {
-    this.overlay.first.message = info.winner + " won! " + info.message
-    this.overlay.first.time = info.time
-    this.overlay.first.show = true
-    // for online mode, use info.winner to update the user score db?
+    let gameOverOverlay = this.overlay.first;
+    if (gameOverOverlay.hasRematched === false) {
+      gameOverOverlay.message = info.winner + " won! " + info.message
+      gameOverOverlay.time = info.time
+      gameOverOverlay.show = true
+      // for online mode, use info.winner to update the user score db?
 
-    if (info.time === 0) {
-      this.redirectToHome();
+      if (info.time === 0) {
+        this.redirectToHome();
+      }
     }
   }
 

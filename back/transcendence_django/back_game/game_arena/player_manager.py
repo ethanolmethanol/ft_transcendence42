@@ -76,7 +76,7 @@ class PlayerManager:
     def has_enough_players(self) -> bool:
         count_active_players = 0
         for player in self.players.values():
-            count_active_players += player.status == PlayerStatus(ENABLED)
+            count_active_players += player.status != PlayerStatus(GIVEN_UP)
         return count_active_players >= 2
 
     def rematch(self, user_id: int):

@@ -145,10 +145,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
         arena_data: dict[str, Any] | None = self.arena.rematch(self.user_id)
-        if arena_data is None:
-            await self.send_message(f"{self.user_id} asked for a rematch.")
-        else:
-            await self.send_update({ARENA: arena_data})
+        await self.send_message(f"{self.user_id} asked for a rematch.")
+        await self.send_update({ARENA: arena_data})
 
     async def move_paddle(self, message: dict[str, Any]):
         if not self.joined:

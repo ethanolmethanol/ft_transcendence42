@@ -16,6 +16,7 @@ from back_game.game_settings.game_constants import (
     STARTED,
     TIMEOUT_GAME_OVER,
     TIMEOUT_INTERVAL,
+    WAITING,
 )
 
 logger = logging.getLogger(__name__)
@@ -128,13 +129,13 @@ class Monitor:
     async def game_over(self, arenas: dict[str, Arena], arena: Arena):
         arena.set_status(GameStatus(DYING))
         time = TIMEOUT_GAME_OVER + 1
-        while arena.get_status() == GameStatus(DYING) and time > 0:
+        while arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0:
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:
                 await arena.game_over_callback(
                     "Game Over! Thank you for playing.", time
                 )
-            if time == 0:
+            if time == 0 and arena.get_status() == GameStatus(DYING):
                 arena.set_status(GameStatus(DEAD))
                 self.delete_arena(arenas, arena.id)
             else:

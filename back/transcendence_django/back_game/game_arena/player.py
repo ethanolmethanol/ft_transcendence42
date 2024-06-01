@@ -6,7 +6,6 @@ from back_game.game_settings.game_constants import AFK_TIMEOUT
 ENABLED = 0
 DISABLED = 1
 GIVEN_UP = 2
-WAITING = 3
 
 PlayerStatus = NewType("PlayerStatus", int)
 

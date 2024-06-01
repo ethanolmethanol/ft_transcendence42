@@ -19,7 +19,7 @@ from back_game.game_settings.dict_keys import (
     SCORES,
     STATUS,
 )
-from back_game.game_settings.game_constants import MAXIMUM_SCORE, WAITING
+from back_game.game_settings.game_constants import MAXIMUM_SCORE, STARTED, WAITING
 
 logger = logging.getLogger(__name__)
 
@@ -92,13 +92,12 @@ class Arena:
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
-    def rematch(self, user_id: int) -> dict[str, Any] | None:
+    def rematch(self, user_id: int) -> dict[str, Any]:
         self.player_manager.rematch(user_id)
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
             self.start_game()
-            return self.to_dict()
-        return None
+        return self.to_dict()
 
     def disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
@@ -107,13 +106,14 @@ class Arena:
         self.player_manager.player_gave_up(user_id)
 
     def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
+        if self.game.status != GameStatus(STARTED):
+            return {}
         paddle_dict: dict[str, Any] = self.game.move_paddle(player_name, direction)
         self.player_manager.update_activity_time(player_name)
         return paddle_dict
 
     def update_game(self) -> dict[str, Any]:
         update_dict: dict[str, Any] = self.game.update()
-        logger.info("Updated_dict: %s", update_dict)
         collided_slot: int | None = update_dict.get(COLLIDED_SLOT)
         if collided_slot is not None:
             update_dict[SCORE] = self.__update_scores(collided_slot)
