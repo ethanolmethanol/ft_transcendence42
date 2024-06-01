@@ -21,7 +21,7 @@ class BallCollider:
             new_position.y <= ball.radius or new_position.y >= GAME_HEIGHT - ball.radius
         )
         if collide_x:
-            player_slot: int = int(new_position.x <= ball.radius)
+            player_slot: int = int(new_position.x <= ball.radius) + 1
             ball.reset()
             return player_slot
         if collide_y:

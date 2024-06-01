@@ -30,6 +30,8 @@ import {ConnectionService} from "../../services/connection/connection.service";
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  mode = 0;
+
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
   public onResize(event: Event) {
@@ -45,6 +47,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   public ngOnInit() {
+    this.mode = this._route.snapshot.data['gameType'] === 'local' ? 0 : 1;
     this.updateGameContainerScale();
   }
 

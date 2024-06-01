@@ -1,4 +1,4 @@
-import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren, Input} from '@angular/core';
 import {
   NOT_JOINED,
   INVALID_ARENA,
@@ -15,7 +15,6 @@ import {
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
-import { MonitorService } from "../../services/monitor/monitor.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
@@ -72,6 +71,8 @@ interface ErrorMapping {
   styleUrl: './game.component.css'
 })
 export class GameComponent implements AfterViewInit, OnDestroy {
+  @Input() is_remote = 0;
+  private playerName: string | null = null;
   readonly lineThickness = LINE_THICKNESS;
   gameWidth = GAME_WIDTH;
   gameHeight = GAME_HEIGHT;
@@ -94,13 +95,17 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
-  constructor (private userService: UserService, private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
+  constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {
+    if (this.is_remote) {
+      this.playerName = this.userService.getUsername();
+    }
+  }
 
   public setArena(arena: ArenaResponse) {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
-        paddle.playerName = "Player" + paddle.id;
+        paddle.playerName = paddleData.player_name;
         paddle.positionX = paddleData.position.x;
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
@@ -192,10 +197,13 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateScore(score: ScoreUpdateResponse) {
-    if (this.paddles.length == 2) {
-      if (score.player_name == "Player1")
+    const paddleComponent = this.paddles.find(p => p.playerName === score.player_name);
+    if (paddleComponent) {
+      if (paddleComponent.id === 1) {
         this.player1Score += 1;
-      else this.player2Score += 1;
+      } else if (paddleComponent.id === 2) {
+        this.player2Score += 1;
+      }
     }
   }
 
@@ -240,7 +248,12 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     const isMovingDown = this._pressedKeys.has(binding.downKey) && !this._pressedKeys.has(binding.upKey);
     const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;
     if (direction !== 0) {
-      const playerName = paddle.id === 1 ? "Player1" : "Player2";
+      let playerName;
+      if (this.is_remote) {
+        playerName = this.playerName!;
+      } else {
+        playerName = paddle.playerName;
+      }
       this.webSocketService.sendPaddleMovement(playerName, direction);
     }
   }

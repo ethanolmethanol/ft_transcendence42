@@ -65,11 +65,11 @@ class Arena:
     def get_status(self) -> GameStatus:
         return self.game.status
 
-    def enter_arena(self, user_id: int):
+    def enter_arena(self, user_id: int, player_name: str) -> None:
         self.player_manager.allow_player_enter_arena(user_id)
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
-            self.__enter_remote_mode(user_id)
+            self.__enter_remote_mode(user_id, player_name)
         else:
             self.__enter_local_mode(user_id)
 
@@ -117,18 +117,24 @@ class Arena:
         self.game.set_status(status)
 
     def __update_scores(self, player_slot: int) -> dict[str, str]:
-        if not self.player_manager.is_remote:
-            player_name = PLAYER2 if player_slot else PLAYER1
-            logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
-            player = self.player_manager.players[player_name]
-            player.score += 1
-            logger.info(
-                "Point was scored for %s. Their score is %s", player_name, player.score
-            )
-            if player.score == MAXIMUM_SCORE:
-                self.conclude_game()
-            return {PLAYER_NAME: player_name}
-        raise NotImplementedError()  # TO DO
+        player_name = self.__get_player_name_by_paddle_slot(player_slot)
+        logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
+        player = self.player_manager.players[player_name]
+        player.score += 1
+        logger.info(
+            "Point was scored for %s. Their score is %s", player_name, player.score
+        )
+        if player.score == MAXIMUM_SCORE:
+            self.conclude_game()
+        return {PLAYER_NAME: player_name}
+
+    def __get_player_name_by_paddle_slot(self, paddle_slot: int) -> str | None:
+        logger.info("Getting player name for slot %s", paddle_slot)
+        for paddle in self.game.paddles.values():
+            logger.info("Paddle slot: %s", paddle.slot)
+            if paddle.slot == paddle_slot:
+                return paddle.player_name
+        return None
 
     def __reset(self):
         self.player_manager.reset()
@@ -139,11 +145,11 @@ class Arena:
             self.__register_player(user_id, PLAYER1)
             self.__register_player(user_id, PLAYER2)
 
-    def __enter_remote_mode(self, user_id: int):
+    def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
         else:
-            self.__register_player(user_id, str(user_id))
+            self.__register_player(user_id, player_name)
 
     def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)

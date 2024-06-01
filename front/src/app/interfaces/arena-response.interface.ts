@@ -10,6 +10,7 @@ interface Ball {
 
 interface Paddle {
   slot: number;
+  player_name: string;
   position: Position;
   speed: number;
   width: number;

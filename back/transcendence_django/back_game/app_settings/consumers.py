@@ -103,6 +103,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def join(self, message: dict[str, int]):
         self.user_id = message[USER_ID]
+        player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
             self.arena = monitor.channels[self.channel_id][arena_id]
@@ -116,7 +117,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             joined_arena = monitor.get_arena_from_user_id(self.user_id)
             if joined_arena is not None and joined_arena["id"] != arena_id:
                 raise ValueError("User already in another arena")
-            self.arena.enter_arena(self.user_id)
+            self.arena.enter_arena(self.user_id, player_name)
             monitor.add_user(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)

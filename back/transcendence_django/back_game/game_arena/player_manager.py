@@ -124,7 +124,7 @@ class PlayerManager:
                     player.status = status
 
     def get_scores(self) -> list[int]:
-        if not self.players:
+        if len(self.players) < self.nb_players:
             scores = [0 for _ in range(self.nb_players)]
         else:
             scores = [player.score for player in self.players.values()]

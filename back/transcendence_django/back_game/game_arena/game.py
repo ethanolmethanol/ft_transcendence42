@@ -23,6 +23,7 @@ GameStatus = NewType("GameStatus", int)
 
 class Game:
     def __init__(self, nb_players: int):
+        logger.info("Creating game with %s players", nb_players)
         self.status: GameStatus = GameStatus(WAITING)
         self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
@@ -31,7 +32,11 @@ class Game:
         self.map: Map = Map()  # depends on the number of players
 
     def add_paddle(self, player_name: str, index: int):
+        logger.info("Adding paddle for player %s", player_name)
         self.paddles[player_name] = self.paddles.pop(f"{index}")
+        paddle = self.paddles[player_name]
+        paddle.set_player_name(player_name)
+        logger.info("Paddle details: %s", self.paddles)
 
     def start(self):
         self.set_status(GameStatus(STARTED))
