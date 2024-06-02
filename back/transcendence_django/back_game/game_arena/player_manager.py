@@ -120,13 +120,12 @@ class PlayerManager:
             player.reset()
 
     def change_player_status(self, user_id: int, status: PlayerStatus):
-        if not self.did_player_give_up(user_id):
-            if self.is_remote:
-                player = self.__get_player_from_user_id(user_id)
+        if self.is_remote:
+            player = self.__get_player_from_user_id(user_id)
+            player.status = status
+        else:
+            for player in self.players.values():
                 player.status = status
-            else:
-                for player in self.players.values():
-                    player.status = status
 
     def get_scores(self) -> list[int]:
         if len(self.players) < self.nb_players:
