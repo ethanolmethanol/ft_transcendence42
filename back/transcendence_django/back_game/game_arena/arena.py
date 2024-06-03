@@ -10,10 +10,13 @@ from back_game.game_settings.dict_keys import (
     ID,
     KICKED_PLAYERS,
     MAP,
+    MODE,
+    NB_PLAYERS,
     PADDLES,
     PLAYER1,
     PLAYER2,
     PLAYER_NAME,
+    PLAYER_SPECS,
     PLAYERS,
     SCORE,
     SCORES,
@@ -48,6 +51,7 @@ class Arena:
             BALL: self.game.ball.to_dict(),
             PADDLES: [paddle.to_dict() for paddle in self.game.paddles.values()],
             MAP: self.game.map.__dict__,
+            PLAYER_SPECS: {NB_PLAYERS: self.player_manager.nb_players, MODE: self.player_manager.is_remote},
         }
 
     def is_remote(self) -> bool:

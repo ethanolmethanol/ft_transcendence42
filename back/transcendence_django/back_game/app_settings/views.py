@@ -30,6 +30,7 @@ async def join_channel(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
+        request_player_specs = data[PLAYER_SPECS]
         if CHANNEL_ID not in data:
             channel = await monitor.join_already_created_channel(user_id)
         else:
@@ -37,6 +38,9 @@ async def join_channel(request) -> JsonResponse:
             channel = await monitor.join_channel(user_id, channel_id)
         if channel is None:
             return JsonResponse({ERROR: "Channel does not exist"}, status=HTTPStatus.BAD_REQUEST)
+        channel_players_specs = channel['arena'][PLAYER_SPECS]
+        if request_player_specs != channel_players_specs:
+            return JsonResponse({ERROR: "Channel has different player specs"}, status=HTTPStatus.BAD_REQUEST)
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
