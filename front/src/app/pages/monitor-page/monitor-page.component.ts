@@ -22,12 +22,27 @@ export class MonitorPageComponent implements OnInit {
     this.gameType = this.route.snapshot.data['gameType'];
     await this.userService.whenUserDataLoaded();
     const mode: 0 | 1 = this.gameType === "local" ? 0 : 1;
-    const postData = JSON.stringify({
-      "user_id": this.userService.getUserID(),
+    const user_id: number = this.userService.getUserID();
+    const postData: string = JSON.stringify({
+      "user_id": user_id,
       "players_specs": {"nb_players": 2, "mode": mode}
     });
-    this.monitorService.getWebSocketUrl(postData).subscribe(response => {
-      const gameUrl = this.getGameUrl(response.channel_id, response.arena.id);
+    this.monitorService.isUserInGame(postData).subscribe(response => {
+        console.log(response);
+        if (response.isInChannel) {
+          this.monitorService.joinWebSocketUrl(postData).subscribe(response => {
+            this.navigateToGame(response.channel_id, response.arena.id);
+          })
+        } else {
+          this.monitorService.createWebSocketUrl(postData).subscribe(response => {
+            this.navigateToGame(response.channel_id, response.arena.id);
+          });
+        }
+    })
+  }
+
+  private navigateToGame(channelID: string, arenaID : number): void {
+      const gameUrl = this.getGameUrl(channelID, arenaID.toString());
       this.router.navigateByUrl(gameUrl);
-    })}
+  }
 }

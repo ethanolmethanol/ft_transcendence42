@@ -5,6 +5,9 @@ CHANNEL_ERROR_CODE = "code"
 MESSAGE = "message"
 TYPE = "type"
 
+#Channel
+CHANNEL_ID = "channel_id"
+
 # Game error
 GAME_ERROR = "game_error"
 ERROR = "error"

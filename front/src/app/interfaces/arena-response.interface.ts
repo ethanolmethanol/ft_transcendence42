@@ -23,7 +23,7 @@ interface Map {
 }
 
 export interface ArenaResponse {
-  id: string;
+  id: number;
   status: number;
   players: string[];
   scores: number[];

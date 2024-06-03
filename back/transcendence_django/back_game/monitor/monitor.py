@@ -7,6 +7,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
+from back_game.game_settings.dict_keys import ID
 from back_game.game_settings.game_constants import (
     DEAD,
     DYING,
@@ -32,28 +33,37 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def get_channel(
-        self, user_id: int, players_specs: dict[str, int]
-    ) -> dict[str, Any]:
+    async def create_channel(self, user_id: int, players_specs: dict[str, int]) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
             return await self.get_new_channel(user_id, players_specs)
+        return None
+
+    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any]:
+        channel = self.get_channel_from_user_id(user_id)
+        if self.channels[channel_id] is None:
+            return None
+        arena_id: int = self.channels[channel_id].keys()[0]
+        self.add_user_to_channel(user_id, channel_id, arena_id)
+        return channel
+
+    async def join_already_created_channel(self, user_id: int) -> dict[str, Any] | None:
+        channel = self.get_channel_from_user_id(user_id)
+        if channel is None:
+            return None
         return channel
 
     async def get_new_channel(
         self, user_id: int, players_specs: dict[str, int]
     ) -> dict[str, Any]:
-        new_arena = Arena(players_specs)
+        new_arena: Arena = Arena(players_specs)
         channel_id = self.generate_random_id(10)
         self.channels[channel_id] = {new_arena.id: new_arena}
         asyncio.create_task(
             self.monitor_arenas_loop(channel_id, self.channels[channel_id])
         )
         asyncio.create_task(self.run_game_loop(self.channels[channel_id]))
-        self.user_game_table[user_id] = {
-            "channel_id": channel_id,
-            "arena": new_arena.to_dict(),
-        }
+        self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
         return self.user_game_table[user_id]
 
@@ -66,6 +76,13 @@ class Monitor:
         arena: Arena = self.channels[channel_id][arena_id]
         channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
+
+    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: int):
+        arena: Arena = self.channels[channel_id][arena_id]
+        self.user_game_table[user_id] = {
+            "channel_id": channel_id,
+            "arena": arena.to_dict(),
+        }
 
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
         player_list: dict[str, Player] = arenas[arena_id].get_players()
