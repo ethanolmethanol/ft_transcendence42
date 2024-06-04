@@ -19,9 +19,9 @@ async def create_channel(request) -> JsonResponse:
         players_specs = data[PLAYER_SPECS]
         channel = await monitor.get_new_channel(user_id, players_specs)
         if channel is None:
-            return JsonResponse({ERROR: "A channel already exists"}, status=HTTPStatus.BAD_REQUEST)
+            raise ValueError("A channel already exists")
         return JsonResponse(channel, status=HTTPStatus.OK)
-    except (JSONDecodeError, TypeError) as e:
+    except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
@@ -37,12 +37,12 @@ async def join_channel(request) -> JsonResponse:
             channel_id = data[CHANNEL_ID]
             channel = await monitor.join_channel(user_id, channel_id)
         if channel is None:
-            return JsonResponse({ERROR: "Channel does not exist"}, status=HTTPStatus.BAD_REQUEST)
+            raise ValueError("Channel does not exist")
         channel_players_specs = channel['arena'][PLAYER_SPECS]
         if request_player_specs != channel_players_specs:
-            return JsonResponse({ERROR: "Channel has different player specs"}, status=HTTPStatus.BAD_REQUEST)
+            raise ValueError("Channel has different player specs")
         return JsonResponse(channel, status=HTTPStatus.OK)
-    except (JSONDecodeError, TypeError) as e:
+    except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
@@ -52,10 +52,7 @@ async def is_user_in_channel(request) -> JsonResponse:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         channel = monitor.get_channel_from_user_id(user_id)
-        if channel is None:
-            return JsonResponse({"isInChannel": False}, status=HTTPStatus.OK)
-        else:
-            return JsonResponse({"isInChannel": True}, status=HTTPStatus.OK)
+        return JsonResponse({"isInChannel": channel is not None}, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)

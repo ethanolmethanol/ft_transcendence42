@@ -74,7 +74,7 @@ export class MonitorPageComponent implements OnInit {
     this.gameType = this.route.snapshot.data['gameType'];
     this.actionType = this.route.snapshot.data['actionType'];
     await this.userService.whenUserDataLoaded();
-    const postData = this.getPostData();
+    const postData: string = this.getPostData();
     if (this.gameType === "local") {
       this.requestLocalWebSocketUrl(postData);
     } else {
