@@ -1,0 +1,14 @@
+<body>
+  <app-header></app-header>
+  <section class="game-selector">
+    <h4>Ball Speed</h4>
+    <app-slider [options]="['snail', 'deer', 'lion', 'hawk', 'jet']"></app-slider>
+    <h4>Paddle size</h4>
+    <app-slider [options]="['tiny', 'small', 'medium', 'large', 'jumbo']"></app-slider>
+    <h4>Players opponents</h4>
+    <app-slider [options]="[0, 1, 2, 3, 4, 5, 6, 7, 8]"></app-slider>
+    <h4>AI opponents</h4>
+    <app-slider [options]="[0, 1, 2, 3, 4, 5, 6, 7, 8]"></app-slider>
+    <a routerLink="/online/join">Join Game</a>
+  </section>
+</body>
