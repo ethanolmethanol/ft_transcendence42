@@ -47,11 +47,17 @@ class Monitor:
         self.add_user_to_channel(user_id, channel_id, arena_id)
         return channel
 
-    async def join_already_created_channel(self, user_id: int) -> dict[str, Any] | None:
-        channel = self.get_channel_from_user_id(user_id)
+    def join_already_created_channel(self, user_id: int) -> dict[str, Any] | None:
+        channel = self.get_available_channel()
         if channel is None:
             return None
         return channel
+
+    def get_available_channel(self) -> dict[str, Any] | None:
+        for channel in self.channels.values():
+            if list(channel.values())[0].get_status() == GameStatus(WAITING):
+                return list(channel.values())[0].to_dict()
+        return None
 
     async def get_new_channel(
         self, user_id: int, players_specs: dict[str, int]

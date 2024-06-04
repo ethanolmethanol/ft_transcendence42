@@ -18,6 +18,7 @@ import {NgIf} from "@angular/common";
 })
 export class MonitorPageComponent implements OnInit {
   private gameType: string = "local";
+  private actionType: string = "join";
   public errorMessage: string | null = null;
 
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {}
@@ -35,16 +36,34 @@ export class MonitorPageComponent implements OnInit {
     });
   }
 
-  private handleResponse(response: {isInChannel: boolean}, postData: string): void {
-    if (response.isInChannel) {
-      this.monitorService.joinWebSocketUrl(postData).subscribe(response => {
-        this.navigateToGame(response.channel_id, response.arena.id);
-      }, error => this.handleError(error));
-    } else {
-      this.monitorService.createWebSocketUrl(postData).subscribe(response => {
-        this.navigateToGame(response.channel_id, response.arena.id);
-      }, error => this.handleError(error));
+  private joinGame(postData: string): void {
+    this.monitorService.joinWebSocketUrl(postData).subscribe(response => {
+      this.navigateToGame(response.channel_id, response.arena.id);
+    }, error => this.handleError(error));
+  }
+
+  private createGame(postData: string): void {
+    this.monitorService.createWebSocketUrl(postData).subscribe(response => {
+      this.navigateToGame(response.channel_id, response.arena.id);
+    }, error => this.handleError(error));
+  }
+
+  private requestRemoteWebSocketUrl(postData: string): void {
+    if (this.actionType == "join") {
+      this.joinGame(postData);
+    } else if (this.actionType == "create") {
+      this.createGame(postData);
     }
+  }
+
+  private requestLocalWebSocketUrl(postData: string): void {
+    this.monitorService.isUserInGame(postData).subscribe(response => {
+      if (response.isInChannel) {
+        this.joinGame(postData);
+      } else {
+        this.createGame(postData);
+      }
+    });
   }
 
   private handleError(error: any): void {
@@ -53,16 +72,18 @@ export class MonitorPageComponent implements OnInit {
 
   async ngOnInit() : Promise<void> {
     this.gameType = this.route.snapshot.data['gameType'];
+    this.actionType = this.route.snapshot.data['actionType'];
     await this.userService.whenUserDataLoaded();
     const postData = this.getPostData();
-    this.monitorService.isUserInGame(postData).subscribe(
-      response => this.handleResponse(response, postData),
-      error => this.handleError(error)
-    )
+    if (this.gameType === "local") {
+      this.requestLocalWebSocketUrl(postData);
+    } else {
+      this.requestRemoteWebSocketUrl(postData)
+    }
   }
 
   private navigateToGame(channelID: string, arenaID : number): void {
-    const gameUrl = this.getGameUrl(channelID, arenaID.toString());
+    const gameUrl: string = this.getGameUrl(channelID, arenaID.toString());
     this.router.navigateByUrl(gameUrl);
   }
 }

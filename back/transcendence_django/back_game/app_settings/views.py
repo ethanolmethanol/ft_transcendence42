@@ -32,7 +32,7 @@ async def join_channel(request) -> JsonResponse:
         user_id = data[USER_ID]
         request_player_specs = data[PLAYER_SPECS]
         if CHANNEL_ID not in data:
-            channel = await monitor.join_already_created_channel(user_id)
+            channel = monitor.join_already_created_channel(user_id)
         else:
             channel_id = data[CHANNEL_ID]
             channel = await monitor.join_channel(user_id, channel_id)
