@@ -127,6 +127,8 @@ class Monitor:
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
+            if arena.get_status() == GameStatus(WAITING) and arena.has_enough_players():
+                await arena.start_game()
             if arena.get_status() == GameStatus(STARTED) and arena.has_enough_players() == False:
                 arena.conclude_game()
             if arena.get_status() == GameStatus(OVER):

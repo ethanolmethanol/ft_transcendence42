@@ -116,7 +116,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         try:
             if monitor.is_user_active_in_game(self.user_id, self.channel_id, arena_id):
                 raise ValueError("User already in another arena")
-            self.arena.enter_arena(self.user_id, player_name)
+            await self.arena.enter_arena(self.user_id, player_name)
             monitor.add_user(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)
@@ -144,9 +144,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def rematch(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        arena_data: dict[str, Any] | None = self.arena.rematch(self.user_id)
+        await self.arena.rematch(self.user_id)
         await self.send_message(f"{self.user_id} asked for a rematch.")
-        await self.send_update({ARENA: arena_data})
+        await self.send_update({ARENA: self.arena.to_dict()})
 
     async def move_paddle(self, message: dict[str, Any]):
         if not self.joined:
@@ -193,4 +193,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_data({TYPE: GAME_MESSAGE, MESSAGE: message})
 
     async def send_data(self, data: dict[str, Any]):
-        await self.channel_layer.group_send(self.room_group_name, data)
+        try:
+            await self.channel_layer.group_send(self.room_group_name, data)
+        except asyncio.CancelledError:
+            log.error("WebSocket connection closed while trying to send a message.")

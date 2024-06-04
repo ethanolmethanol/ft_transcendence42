@@ -5,6 +5,7 @@ from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.dict_keys import (
+    ARENA,
     BALL,
     COLLIDED_SLOT,
     ID,
@@ -45,7 +46,7 @@ class Arena:
             ID: self.id,
             STATUS: self.game.status,
             PLAYERS: [
-                player.player_name for player in self.player_manager.players.values()
+                player.player_name for player in self.player_manager.players.values() if player.status == PlayerStatus(ENABLED)
             ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),
@@ -81,30 +82,31 @@ class Arena:
     def get_status(self) -> GameStatus:
         return self.game.status
 
-    def enter_arena(self, user_id: int, player_name: str) -> None:
+    async def enter_arena(self, user_id: int, player_name: str) -> None:
         self.player_manager.allow_player_enter_arena(user_id)
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
-            self.__enter_remote_mode(user_id, player_name)
+            await self.__enter_remote_mode(user_id, player_name)
         else:
-            self.__enter_local_mode(user_id)
+            await self.__enter_local_mode(user_id)
 
-    def start_game(self):
+    async def start_game(self):
         self.__reset()
         self.game.start()
+        await self.game_update_callback({ARENA: self.to_dict()})
         logger.info("Game started. %s", self.id)
 
     def conclude_game(self):
-        self.player_manager.disable_all_players()
+        self.player_manager.finish_active_players()
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
-    def rematch(self, user_id: int) -> dict[str, Any]:
+    async def rematch(self, user_id: int):
+        self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
-            self.start_game()
-        return self.to_dict()
+            await self.start_game()
 
     def disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
@@ -133,6 +135,7 @@ class Arena:
         self.game.set_status(status)
 
     def has_enough_players(self) -> bool:
+        logger.info("Checking if there are enough players in the arena %s", self.id)
         return self.player_manager.has_enough_players()
 
     def __update_scores(self, player_slot: int) -> dict[str, str]:
@@ -154,22 +157,25 @@ class Arena:
         return None
 
     def __reset(self):
+        logger.info("Resetting arena %s", self.id)
         self.player_manager.reset()
         self.game.reset()
 
-    def __enter_local_mode(self, user_id: int):
+    async def __enter_local_mode(self, user_id: int):
         if self.is_empty():
-            self.__register_player(user_id, PLAYER1)
-            self.__register_player(user_id, PLAYER2)
+            await self.__register_player(user_id, PLAYER1)
+            await self.__register_player(user_id, PLAYER2)
 
-    def __enter_remote_mode(self, user_id: int, player_name: str):
+    async def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
         else:
-            self.__register_player(user_id, player_name)
+            await self.__register_player(user_id, player_name)
 
-    def __register_player(self, user_id: int, player_name: str):
+    async def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)
         self.game.add_paddle(player_name, len(self.player_manager.players))
+        for player in self.player_manager.players.values():
+            logger.info("Player %s is in the arena %s", player.player_name, self.id)
         if self.is_full():
-            self.start_game()
+            await self.start_game()

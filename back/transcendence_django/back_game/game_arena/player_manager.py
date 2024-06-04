@@ -6,6 +6,7 @@ from back_game.game_arena.player import (
     DISABLED,
     ENABLED,
     GIVEN_UP,
+    OVER,
     Player,
     PlayerStatus,
 )
@@ -40,7 +41,9 @@ class PlayerManager:
         )
 
     def is_full(self) -> bool:
-        return len(self.players) == self.nb_players
+        enable_players_count = self.count_players(ENABLED)
+        disable_players_count = self.count_players(DISABLED)
+        return enable_players_count + disable_players_count == self.nb_players
 
     def add_player(self, user_id: int, player_name: str):
         player = Player(user_id, player_name)
@@ -61,23 +64,26 @@ class PlayerManager:
     def player_gave_up(self, user_id: int):
         self.change_player_status(user_id, PlayerStatus(GIVEN_UP))
 
-    def disable_all_players(self):
+    def finish_player(self, user_id: int):
+        self.change_player_status(user_id, PlayerStatus(OVER))
+
+    def finish_active_players(self):
         for player in self.players.values():
-            self.disable_player(player.user_id)
+            if player.is_active():
+                self.finish_player(player.user_id)
 
     def is_player_in_game(self, user_id: int) -> bool:
         if self.is_remote:
             return any(
-                player.user_id == user_id and player.status != PlayerStatus(GIVEN_UP)
+                player.user_id == user_id
                 for player in self.players.values()
             )
         return any(player.user_id == user_id for player in self.players.values())
 
     def has_enough_players(self) -> bool:
-        count_active_players = 0
-        for player in self.players.values():
-            count_active_players += player.status != PlayerStatus(GIVEN_UP)
-        return count_active_players >= 2
+        enable_players_count = self.count_players(ENABLED)
+        disable_players_count = self.count_players(DISABLED)
+        return enable_players_count + disable_players_count >= 2
 
     def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
@@ -102,8 +108,16 @@ class PlayerManager:
             return False
 
     def get_winner(self) -> str:
-        winner = max(self.players.values(), key=lambda player: player.score)
+        active_players = [player for player in self.players.values() if player.is_active()]
+        if not active_players:
+            return ""
+        winner = max(active_players, key=lambda player: player.score)
         return winner.player_name
+
+    def finish_given_up_players(self):
+        for player in self.players.values():
+            if player.status == PlayerStatus(GIVEN_UP):
+                player.status = PlayerStatus(OVER)
 
     def update_activity_time(self, player_name: str):
         self.players[player_name].update_activity_time()
@@ -123,6 +137,7 @@ class PlayerManager:
         if self.is_remote:
             player = self.__get_player_from_user_id(user_id)
             player.status = status
+            logger.info("Player %s status changed to %s", player.player_name, status)
         else:
             for player in self.players.values():
                 player.status = status
@@ -133,6 +148,11 @@ class PlayerManager:
         else:
             scores = [player.score for player in self.players.values()]
         return scores
+
+    def count_players(self, state: PlayerStatus = ENABLED) -> int:
+        return sum(
+            player.status == state for player in self.players.values()
+        )
 
     def __fill_player_specs(self, players_specs: dict[str, int]):
         self.nb_players = players_specs[NB_PLAYERS]
