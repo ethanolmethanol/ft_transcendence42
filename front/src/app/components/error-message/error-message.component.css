@@ -16,14 +16,12 @@
 
 .error-message {
   font-size: 0.8em;
-  padding: 5px 10px;
-  margin-top: 20px;
   border-radius: 5px;
   background-color: #f8d7da; /* Light red background */
   color: #721c24; /* Dark red text */
   border: 1px solid #f5c6cb; /* Light red border */
   animation: fade-in 1s ease-out;
-  max-width: 90%; /* Ensure the message doesn't stretch too far */
+  max-width: 100%; /* Ensure the message doesn't stretch too far */
   word-wrap: break-word; /* Allow words to break and wrap onto the next line */
 }
 

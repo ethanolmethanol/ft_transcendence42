@@ -1,1 +1,7 @@
-<body></body>
+<body *ngIf="errorMessage">
+  <section class="panel">
+    <h4>The game you chose is not available...</h4>
+    <app-error-message [message]="errorMessage"></app-error-message>
+    <a routerLink="/home">Back to Home</a>
+  </section>
+</body>

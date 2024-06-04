@@ -11,6 +11,8 @@ import {NgIf} from "@angular/common";
   styleUrl: './error-message.component.css'
 })
 export class ErrorMessageComponent {
-  @Input() condition: boolean = false;
+  @Input() condition: boolean = true;
   @Input() message: string = "";
+
+  constructor() {}
 }
