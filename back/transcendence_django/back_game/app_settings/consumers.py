@@ -128,7 +128,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def leave(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to leave without joining.")
-        self.arena.disable_player(self.user_id)
+        if not self.arena.did_player_give_up(self.user_id):
+            self.arena.disable_player(self.user_id)
         self.joined = False
         await self.send_message(f"{self.user_id} has left the game.")
 

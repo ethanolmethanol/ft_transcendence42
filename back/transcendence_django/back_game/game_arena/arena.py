@@ -157,7 +157,6 @@ class Arena:
         return None
 
     def __reset(self):
-        logger.info("Resetting arena %s", self.id)
         self.player_manager.reset()
         self.game.reset()
 
@@ -175,7 +174,5 @@ class Arena:
     async def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)
         self.game.add_paddle(player_name, len(self.player_manager.players))
-        for player in self.player_manager.players.values():
-            logger.info("Player %s is in the arena %s", player.player_name, self.id)
         if self.is_full():
             await self.start_game()
