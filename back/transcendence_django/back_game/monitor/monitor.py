@@ -56,11 +56,11 @@ class Monitor:
         return channel
 
     def get_available_channel(self) -> dict[str, Any] | None:
-        for channel in self.channels.values():
+        for channel_id, channel in self.channels.items():
             arena_id = list(channel.keys())[0]
             arena = channel[arena_id]
             if arena.get_status() == GameStatus(WAITING):
-                return {"channel_id": channel.key, "arena": arena.to_dict()}
+                return {"channel_id": channel_id, "arena_id": arena_id, "arena": arena.to_dict()}
         return None
 
     async def get_new_channel(
@@ -145,7 +145,6 @@ class Monitor:
                 logger.info("Game over in arena %s", arena.id)
                 await self.game_over(arenas, arena)
                 break
-        logger.info("User game table: %s", self.user_game_table)
 
     async def run_game_loop(self, arenas: dict[str, Arena]):
         while arenas:
@@ -165,7 +164,6 @@ class Monitor:
                 await arena.game_over_callback(
                     "Game Over! Thank you for playing.", time
                 )
-            logger.info("Game over in arena %s with status %s", arena.id, arena.get_status())
             if time == 0 and arena.get_status() == GameStatus(DYING):
                 logger.info("Arena %s is dead", arena.id)
                 arena.set_status(GameStatus(DEAD))
