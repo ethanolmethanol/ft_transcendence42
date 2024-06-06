@@ -136,7 +136,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to give up without joining.")
         self.arena.player_gave_up(self.user_id)
-        monitor.delete_user(self.user_id)
         self.joined = False
         await self.send_message(f"{self.user_id} has given up.")
         await self.send_update({GIVE_UP: self.user_id})
@@ -170,10 +169,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def safe_send(self, data: dict[str, Any]):
+        websocket = self.scope.get('websocket')
         try:
             await self.send(text_data=json.dumps(data))
-        except ChannelError as e:
-            await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
+        except Exception as e:
+            console.log(f"Error: {e}")
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]

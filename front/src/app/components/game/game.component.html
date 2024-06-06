@@ -11,8 +11,15 @@
     <app-paddle [id]="2"></app-paddle>
   </section>
 </section>
-<h6 *ngIf="dataLoaded && isWaiting">
-    Current players: {{ waitingPlayers.join(', ') }} <br>
+<section *ngIf="dataLoaded && isWaiting">
+  <h6>
     Waiting for players to join...
-</h6>
+  </h6>
+  <ul>
+    <li *ngFor="let player of waitingPlayers">
+      <app-player-icon [playerName]="player"></app-player-icon>
+    </li>
+  </ul>
+</section>
+
 <app-gameover></app-gameover>

@@ -86,6 +86,8 @@ class Arena:
         self.player_manager.allow_player_enter_arena(user_id)
         if self.get_status() == GameStatus(CREATED):
             self.game.set_status(WAITING)
+        if self.get_status() != GameStatus(WAITING):
+            return
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
             await self.__enter_remote_mode(user_id, player_name)

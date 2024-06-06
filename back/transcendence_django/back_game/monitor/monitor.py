@@ -93,8 +93,7 @@ class Monitor:
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
         player_list: dict[str, Player] = arenas[arena_id].get_players()
         for player in player_list.values():
-            if player.is_finished():
-                self.delete_user(player.user_id)
+            self.delete_user(player.user_id)
         arenas.pop(arena_id)
 
     def delete_user(self, user_id: int):
@@ -107,9 +106,10 @@ class Monitor:
     def leave_arena(self, user_id: int, channel_id: int, arena_id: int):
         arena = self.channels[channel_id].get(arena_id)
         if arena and not arena.did_player_give_up(user_id):
-            arena.player_leave(user_id)
             if arena.get_status() == WAITING:
-                monitor.delete_user(user_id)
+                arena.player_gave_up(user_id)
+            else:
+                arena.player_leave(user_id)
 
     def get_arena_from_user_id(self, user_id: int) -> dict[str, Any] | None:
         user_channel: dict[str, Any] | None = self.user_game_table.get(user_id)

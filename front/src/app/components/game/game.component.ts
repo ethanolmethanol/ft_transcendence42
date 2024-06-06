@@ -32,9 +32,10 @@ import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
 import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
-import {NgIf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 import {ConnectionService} from "../../services/connection/connection.service";
 import {UserService} from "../../services/user/user.service";
+import {PlayerIconComponent} from "../player-icon/player-icon.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -76,7 +77,9 @@ interface ErrorMapping {
     BallComponent,
     GameOverComponent,
     LoadingSpinnerComponent,
-    NgIf
+    NgIf,
+    NgForOf,
+    PlayerIconComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -140,6 +143,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.updateStatus(arena.status)
     if (arena.status == CREATED || arena.status == WAITING) {
       this.waitingPlayers = arena.players;
+      console.log("Waiting list: " + this.waitingPlayers);
     } else if (arena.status == STARTED) {
       this.overlay.first.hasRematched = false;
     }
