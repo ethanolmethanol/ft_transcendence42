@@ -23,7 +23,7 @@ from back_game.game_settings.dict_keys import (
     SCORES,
     STATUS,
 )
-from back_game.game_settings.game_constants import MAXIMUM_SCORE, STARTED, WAITING
+from back_game.game_settings.game_constants import MAXIMUM_SCORE, CREATED, STARTED, WAITING
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +84,8 @@ class Arena:
 
     async def enter_arena(self, user_id: int, player_name: str) -> None:
         self.player_manager.allow_player_enter_arena(user_id)
+        if self.get_status() == GameStatus(CREATED):
+            self.game.set_status(WAITING)
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
             await self.__enter_remote_mode(user_id, player_name)
@@ -107,6 +109,14 @@ class Arena:
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
             await self.start_game()
+
+    def player_leave(self, user_id: int):
+        if self.game.status == GameStatus(WAITING):
+            player_name = self.player_manager.get_player_name(user_id)
+            self.player_manager.remove_player(player_name)
+            self.game.remove_paddle(player_name)
+        else:
+            self.disable_player(user_id)
 
     def disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
@@ -138,6 +148,9 @@ class Arena:
         logger.info("Checking if there are enough players in the arena %s", self.id)
         return self.player_manager.has_enough_players()
 
+    def did_player_give_up(self, user_id: int) -> bool:
+        return self.player_manager.did_player_give_up(user_id)
+
     def __update_scores(self, player_slot: int) -> dict[str, str]:
         player_name = self.__get_player_name_by_paddle_slot(player_slot)
         logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
@@ -161,7 +174,7 @@ class Arena:
         self.game.reset()
 
     async def __enter_local_mode(self, user_id: int):
-        if self.is_empty():
+        if not self.is_full():
             await self.__register_player(user_id, PLAYER1)
             await self.__register_player(user_id, PLAYER2)
 
@@ -173,6 +186,6 @@ class Arena:
 
     async def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)
-        self.game.add_paddle(player_name, len(self.player_manager.players))
+        self.game.add_paddle(player_name)
         if self.is_full():
             await self.start_game()

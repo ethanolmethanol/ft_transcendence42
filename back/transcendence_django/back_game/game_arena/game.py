@@ -7,6 +7,7 @@ from back_game.game_entities.paddle import Paddle, PaddleStatus
 from back_game.game_physics.collision import Collision
 from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (
+    CREATED,
     LISTENING,
     OVER,
     PROCESSING,
@@ -23,17 +24,24 @@ GameStatus = NewType("GameStatus", int)
 
 class Game:
     def __init__(self, nb_players: int):
-        self.status: GameStatus = GameStatus(WAITING)
+        self.status: GameStatus = GameStatus(CREATED)
         self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
         }
         self.ball: Ball = Ball(self.paddles)
         self.map: Map = Map()  # depends on the number of players
 
-    def add_paddle(self, player_name: str, index: int):
-        self.paddles[player_name] = self.paddles.pop(f"{index}")
+    def add_paddle(self, player_name: str):
+        for key, paddle in list(self.paddles.items()):
+            if paddle.player_name is None:
+                paddle.set_player_name(player_name)
+                del self.paddles[key]
+                self.paddles[player_name] = paddle
+                break
+
+    def remove_paddle(self, player_name: str):
         paddle = self.paddles[player_name]
-        paddle.set_player_name(player_name)
+        paddle.unset_player_name()
 
     def start(self):
         self.set_status(GameStatus(STARTED))

@@ -33,7 +33,7 @@ PaddleStatus = NewType("PaddleStatus", int)
 class Paddle:
     def __init__(self, slot: int, num_players: int):
         self.slot: int = slot
-        self.player_name: str = ""
+        self.player_name: str | None = None
         self.status: PaddleStatus = PaddleStatus(LISTENING)
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
         self.rectangle: Rectangle = Rectangle(
@@ -91,6 +91,9 @@ class Paddle:
 
     def set_player_name(self, player_name: str):
         self.player_name = player_name
+
+    def unset_player_name(self):
+        self.player_name = None
 
     def to_dict(self) -> dict[str, Any]:
         return {

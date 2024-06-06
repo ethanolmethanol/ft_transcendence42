@@ -21,11 +21,12 @@ export const NOT_ENTERED = 4
 export const GIVEN_UP = 5
 
 // Game status
-export const WAITING = 0
-export const STARTED = 1
-export const OVER = 2
-export const DYING = 3
-export const DEAD = 4
+export const CREATED = 0
+export const WAITING = 1
+export const STARTED = 2
+export const OVER = 3
+export const DYING = 4
+export const DEAD = 5
 
 //////////
 // GAME //

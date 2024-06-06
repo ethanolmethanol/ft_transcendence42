@@ -32,3 +32,6 @@ class Player:
 
     def is_active(self) -> bool:
         return self.status != PlayerStatus(GIVEN_UP)
+
+    def is_finished(self) -> bool:
+        return self.status == PlayerStatus(OVER)

@@ -36,9 +36,7 @@ class PlayerManager:
         self.last_kick_check: float = time.time()
 
     def is_empty(self) -> bool:
-        return all(
-            player.status == PlayerStatus(GIVEN_UP) for player in self.players.values()
-        )
+        return self.count_players(ENABLED) == 0
 
     def is_full(self) -> bool:
         enable_players_count = self.count_players(ENABLED)
@@ -48,6 +46,9 @@ class PlayerManager:
     def add_player(self, user_id: int, player_name: str):
         player = Player(user_id, player_name)
         self.players[player_name] = player
+
+    def remove_player(self, player_name):
+        del self.players[player_name]
 
     def allow_player_enter_arena(self, user_id: int):
         if self.did_player_give_up(user_id):
@@ -153,6 +154,9 @@ class PlayerManager:
         return sum(
             player.status == state for player in self.players.values()
         )
+
+    def get_player_name(self, user_id: int) -> str:
+        return self.__get_player_from_user_id(user_id).player_name
 
     def __fill_player_specs(self, players_specs: dict[str, int]):
         self.nb_players = players_specs[NB_PLAYERS]

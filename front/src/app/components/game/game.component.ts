@@ -9,6 +9,7 @@ import {
   SimpleChanges, OnChanges
 } from '@angular/core';
 import {
+  CREATED,
   NOT_JOINED,
   INVALID_ARENA,
   INVALID_CHANNEL,
@@ -137,7 +138,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
     this.updateStatus(arena.status)
-    if (arena.status == WAITING) {
+    if (arena.status == CREATED || arena.status == WAITING) {
       this.waitingPlayers = arena.players;
     } else if (arena.status == STARTED) {
       this.overlay.first.hasRematched = false;
@@ -198,7 +199,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private updateStatus(status: number) {
     let gameOverOverlay = this.overlay.first;
-    this.isWaiting = (status == WAITING)
+    this.isWaiting = (status == CREATED || status == WAITING)
     if (gameOverOverlay.hasRematched === false) {
       if (status == DYING) {
         gameOverOverlay.show = true;

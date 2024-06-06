@@ -117,7 +117,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             if monitor.is_user_active_in_game(self.user_id, self.channel_id, arena_id):
                 raise ValueError("User already in another arena")
             await self.arena.enter_arena(self.user_id, player_name)
-            monitor.add_user(self.user_id, self.channel_id, arena_id)
+            monitor.add_user_to_channel(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
@@ -128,8 +128,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def leave(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to leave without joining.")
-        if not self.arena.did_player_give_up(self.user_id):
-            self.arena.disable_player(self.user_id)
+        monitor.leave_arena(self.user_id, self.channel_id, self.arena.id)
         self.joined = False
         await self.send_message(f"{self.user_id} has left the game.")
 
@@ -158,35 +157,42 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({PADDLE: paddle_data})
 
     async def send_game_over(self, game_over_message: str, time: float):
-        log.info("Game over: %s wins. %s seconds left.", self.arena.get_winner(), time)
+        winner: str = self.arena.get_winner()
+        log.info("Game over: %s wins. %s seconds left.", winner, time)
         await self.send_update(
             {
                 GAME_OVER: {
-                    WINNER: f"{self.arena.get_winner()}",
+                    WINNER: winner,
                     TIME: time,
                     MESSAGE: game_over_message,
                 }
             }
         )
 
+    async def safe_send(self, data: dict[str, Any]):
+        try:
+            await self.send(text_data=json.dumps(data))
+        except ChannelError as e:
+            await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
+
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]
-        await self.send(text_data=json.dumps({TYPE: GAME_MESSAGE, MESSAGE: message}))
+        await self.safe_send({TYPE: GAME_MESSAGE, MESSAGE: message})
 
     async def game_error(self, event: dict[str, str]):
         error = event[ERROR]
-        await self.send(text_data=json.dumps({TYPE: GAME_ERROR, ERROR: error}))
+        await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def game_update(self, event: dict[str, str]):
         message = event[UPDATE]
-        await self.send(text_data=json.dumps({TYPE: GAME_UPDATE, UPDATE: message}))
+        await self.safe_send({TYPE: GAME_UPDATE, UPDATE: message})
 
     async def send_error(self, error: dict[str, Any]):
         log.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
-        await self.send(text_data=json.dumps({TYPE: GAME_ERROR, ERROR: error}))
+        await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def send_update(self, update: dict[str, Any]):
-        log.info("Sending update: %s", update)
+#         log.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):

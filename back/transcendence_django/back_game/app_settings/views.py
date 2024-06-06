@@ -3,7 +3,7 @@ import logging
 from http import HTTPStatus
 from json import JSONDecodeError
 
-from back_game.game_settings.dict_keys import CHANNEL_ID, ERROR, PLAYER_SPECS, USER_ID
+from back_game.game_settings.dict_keys import CHANNEL_ID, ERROR, MODE, PLAYER_SPECS, USER_ID
 from back_game.monitor.monitor import monitor
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -17,9 +17,9 @@ async def create_channel(request) -> JsonResponse:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         players_specs = data[PLAYER_SPECS]
+        if monitor.get_channel_from_user_id(user_id) is not None:
+            raise ValueError("User is already in a channel")
         channel = await monitor.get_new_channel(user_id, players_specs)
-        if channel is None:
-            raise ValueError("A channel already exists")
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
@@ -31,13 +31,17 @@ async def join_channel(request) -> JsonResponse:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         request_player_specs = data[PLAYER_SPECS]
+        is_remote = request_player_specs[MODE]
         if CHANNEL_ID not in data:
-            channel = monitor.join_already_created_channel(user_id)
+            logger.info("Joining already created channel")
+            channel = monitor.join_already_created_channel(user_id, is_remote)
         else:
             channel_id = data[CHANNEL_ID]
+            logger.info("Joining channel: %s", channel_id)
             channel = await monitor.join_channel(user_id, channel_id)
         if channel is None:
             raise ValueError("Channel does not exist")
+        logger.info("Channel: %s", channel)
         channel_players_specs = channel['arena'][PLAYER_SPECS]
         if request_player_specs != channel_players_specs:
             raise ValueError("Channel has different player specs")

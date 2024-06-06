@@ -38,11 +38,12 @@ VALID_DIRECTIONS = [-1, 1]
 # ONLINE_MODE = 1
 
 # Game status
-WAITING = 0
-STARTED = 1
-OVER = 2
-DYING = 3
-DEAD = 4
+CREATED = 0
+WAITING = 1
+STARTED = 2
+OVER = 3
+DYING = 4
+DEAD = 5
 
 # Game loop parameters
 MONITOR_LOOP_INTERVAL = 0.5
