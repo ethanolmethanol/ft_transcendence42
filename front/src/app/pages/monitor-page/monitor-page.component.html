@@ -1,11 +1,11 @@
 <body>
   <section *ngIf="isLoading && !errorMessage">
-    <app-loading-spinner></app-loading-spinner>
     <h4>Looking for available party...</h4>
+    <app-loading-spinner></app-loading-spinner>
   </section>
   <section class="panel" *ngIf="errorMessage">
-    <h4>The game you chose is not available...</h4>
-    <app-error-message [message]="errorMessage"></app-error-message>
-    <a routerLink="/home">Back to Home</a>
+      <h4>The game you chose is not available...</h4>
+      <app-error-message [message]="errorMessage"></app-error-message>
   </section>
+  <a routerLink="/home">Back to Home</a>
 </body>
