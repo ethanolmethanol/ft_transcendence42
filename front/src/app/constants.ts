@@ -12,6 +12,10 @@ export const API_AUTH = 'https://localhost:8000/auth';
 export const API_USER = 'https://localhost:8002/user';
 export const API_GAME = 'https://localhost:8001/game';
 
+// TIME
+
+export const JOIN_GAME_RETRY_DELAY_MS = 5000;
+
 // ERROR
 
 export const NOT_JOINED = 1

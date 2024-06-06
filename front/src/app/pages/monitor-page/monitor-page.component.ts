@@ -5,6 +5,17 @@ import {UserService} from "../../services/user/user.service";
 import {ErrorMessageComponent} from "../../components/error-message/error-message.component";
 import {NgIf} from "@angular/common";
 import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
+import {
+  catchError,
+  delay,
+  Observable,
+  of, repeat,
+  retry,
+  switchMap,
+  tap,
+  throwError
+} from "rxjs";
+import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
 
 @Component({
   selector: 'app-monitor-page',
@@ -23,6 +34,7 @@ export class MonitorPageComponent implements OnInit {
   private actionType: string = "join";
   public errorMessage: string | null = null;
   public isLoading: boolean = false;
+
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {}
 
   private getGameUrl(channel_id: string, arena_id: string): string {
@@ -38,33 +50,32 @@ export class MonitorPageComponent implements OnInit {
     });
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  private async joinGame(postData: string): Promise<void> {
+  private joinGame(postData: string): Observable<any> {
     this.isLoading = true;
-    let errorOccurred: boolean = true;
-
-    while (errorOccurred) {
-      errorOccurred = false;
-
-      const response = await this.monitorService.joinWebSocketUrl(postData).toPromise().catch(async (error) => {
-        if (error.error.error === "No available channel") {
-          errorOccurred = true;
-          console.log("No available channel. Retrying in 5 seconds...");
-          await this.delay(5000);
-        } else {
-          this.handleError(error);
-        }
-      });
-
-      if (!errorOccurred && response) {
-        this.navigateToGame(response.channel_id, response.arena.id);
-      }
-    }
-    this.isLoading = false;
+    return of(null).pipe(
+      delay(JOIN_GAME_RETRY_DELAY_MS),
+      repeat(),
+      switchMap(() =>
+        this.monitorService.joinWebSocketUrl(postData).pipe(
+          tap(response => {
+            this.navigateToGame(response.channel_id, response.arena.id);
+          }),
+          catchError((error) => {
+            if (error.error.error === 'No available channel') {
+              console.log('No available channel. Retrying...');
+              return of(null); // Signal to retry
+            } else {
+              console.log('Error joining game');
+              this.handleError(error);
+              return throwError(error); // Propagate error
+            }
+          })
+        )
+      ),
+    );
   }
+
+
 
   private createGame(postData: string): void {
     this.monitorService.createWebSocketUrl(postData).subscribe(response => {
@@ -74,7 +85,7 @@ export class MonitorPageComponent implements OnInit {
 
   private async requestRemoteWebSocketUrl(postData: string): Promise<void> {
     if (this.actionType == "join") {
-      await this.joinGame(postData);
+      this.joinGame(postData).subscribe();
     } else if (this.actionType == "create") {
       this.createGame(postData);
     }

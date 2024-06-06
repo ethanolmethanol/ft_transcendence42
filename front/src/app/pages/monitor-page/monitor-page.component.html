@@ -1,5 +1,5 @@
 <body>
-  <section *ngIf="isLoading">
+  <section *ngIf="isLoading && !errorMessage">
     <app-loading-spinner></app-loading-spinner>
     <h4>Looking for available party...</h4>
   </section>
