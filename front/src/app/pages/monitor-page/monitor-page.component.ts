@@ -4,6 +4,7 @@ import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {UserService} from "../../services/user/user.service";
 import {ErrorMessageComponent} from "../../components/error-message/error-message.component";
 import {NgIf} from "@angular/common";
+import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
 
 @Component({
   selector: 'app-monitor-page',
@@ -11,7 +12,8 @@ import {NgIf} from "@angular/common";
   imports: [
     ErrorMessageComponent,
     NgIf,
-    RouterLink
+    RouterLink,
+    LoadingSpinnerComponent
   ],
   templateUrl: './monitor-page.component.html',
   styleUrl: './monitor-page.component.css'
@@ -20,7 +22,7 @@ export class MonitorPageComponent implements OnInit {
   private gameType: string = "local";
   private actionType: string = "join";
   public errorMessage: string | null = null;
-
+  public isLoading: boolean = false;
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {}
 
   private getGameUrl(channel_id: string, arena_id: string): string {
@@ -36,10 +38,32 @@ export class MonitorPageComponent implements OnInit {
     });
   }
 
-  private joinGame(postData: string): void {
-    this.monitorService.joinWebSocketUrl(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
-    }, error => this.handleError(error));
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private async joinGame(postData: string): Promise<void> {
+    this.isLoading = true;
+    let errorOccurred: boolean = true;
+
+    while (errorOccurred) {
+      errorOccurred = false;
+
+      const response = await this.monitorService.joinWebSocketUrl(postData).toPromise().catch(async (error) => {
+        if (error.error.error === "No available channel") {
+          errorOccurred = true;
+          console.log("No available channel. Retrying in 5 seconds...");
+          await this.delay(5000);
+        } else {
+          this.handleError(error);
+        }
+      });
+
+      if (!errorOccurred && response) {
+        this.navigateToGame(response.channel_id, response.arena.id);
+      }
+    }
+    this.isLoading = false;
   }
 
   private createGame(postData: string): void {
@@ -48,9 +72,9 @@ export class MonitorPageComponent implements OnInit {
     }, error => this.handleError(error));
   }
 
-  private requestRemoteWebSocketUrl(postData: string): void {
+  private async requestRemoteWebSocketUrl(postData: string): Promise<void> {
     if (this.actionType == "join") {
-      this.joinGame(postData);
+      await this.joinGame(postData);
     } else if (this.actionType == "create") {
       this.createGame(postData);
     }
@@ -78,7 +102,7 @@ export class MonitorPageComponent implements OnInit {
     if (this.gameType === "local") {
       this.requestLocalWebSocketUrl(postData);
     } else {
-      this.requestRemoteWebSocketUrl(postData)
+      await this.requestRemoteWebSocketUrl(postData)
     }
   }
 

@@ -35,13 +35,14 @@ async def join_channel(request) -> JsonResponse:
         if CHANNEL_ID not in data:
             logger.info("Joining already created channel")
             channel = monitor.join_already_created_channel(user_id, is_remote)
+            if channel is None:
+                raise ValueError("No available channel")
         else:
             channel_id = data[CHANNEL_ID]
             logger.info("Joining channel: %s", channel_id)
             channel = await monitor.join_channel(user_id, channel_id)
-        if channel is None:
-            raise ValueError("Channel does not exist")
-        logger.info("Channel: %s", channel)
+            if channel is None:
+                raise ValueError("Channel does not exist")
         channel_players_specs = channel['arena'][PLAYER_SPECS]
         if request_player_specs != channel_players_specs:
             raise ValueError("Channel has different player specs")
