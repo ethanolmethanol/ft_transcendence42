@@ -14,7 +14,7 @@ export const API_GAME = 'https://localhost:8001/game';
 
 // TIME
 
-export const JOIN_GAME_RETRY_DELAY_MS = 5000;
+export const JOIN_GAME_RETRY_DELAY_MS = 2000;
 
 // ERROR
 
