@@ -66,7 +66,19 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  private joinGame(postData: string): Observable<any> {
+  private joinLocalGame(postData: string): Observable<any> {
+    return this.monitorService.joinWebSocketUrl(postData).pipe(
+      tap(response => {
+        this.navigateToGame(response.channel_id, response.arena.id);
+      }),
+      catchError((error) => {
+        this.handleError(error);
+        return throwError(error);
+      }),
+    );
+  }
+
+  private joinRemoteGame(postData: string): Observable<any> {
     this.isLoading = true;
     return of(null).pipe(
       repeat({delay: JOIN_GAME_RETRY_DELAY_MS}),
@@ -80,7 +92,6 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
               console.log('No available channel. Retrying...');
               return of(null); // Signal to retry
             } else {
-              console.log('Error joining game');
               this.handleError(error);
               return throwError(error); // Propagate error
             }
@@ -89,6 +100,14 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       ),
       takeUntil(this.destroy$)
     );
+  }
+
+  private joinGame(postData: string): Observable<any> {
+    if (this.gameType === "local") {
+      return this.joinLocalGame(postData);
+    } else {
+      return this.joinRemoteGame(postData);
+    }
   }
 
   private createGame(postData: string): void {
@@ -108,7 +127,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   private requestLocalWebSocketUrl(postData: string): void {
     this.monitorService.isUserInGame(postData).subscribe(response => {
       if (response.isInChannel) {
-        this.joinGame(postData);
+        this.joinGame(postData).subscribe();
       } else {
         this.createGame(postData);
       }
@@ -117,6 +136,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
 
   private handleError(error: any): void {
     this.errorMessage = error.error.error;
+    console.log('Error joining game: ' + this.errorMessage);
   }
 
   private navigateToGame(channelID: string, arenaID : number): void {
