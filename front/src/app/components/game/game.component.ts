@@ -97,7 +97,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   player2Score: number = 0;
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
-  waitingPlayers: string[] = [];
+  activePlayers: string[] = [];
 
   private _paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -142,12 +142,11 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.player2Score = arena.scores[1];
     this.updateStatus(arena.status)
     if (arena.status == CREATED || arena.status == WAITING) {
-      this.waitingPlayers = arena.players;
-      console.log("Waiting list: " + this.waitingPlayers);
-    } else if (arena.status == STARTED) {
-      this.overlay.first.hasRematched = false;
+      this.activePlayers = arena.players;
+      console.log("Waiting list: " + this.activePlayers);
     }
     this.dataLoaded = true;
+    this.overlay.first.hasRematched = false;
   }
 
   private handleGameUpdate(gameState: any) {
@@ -209,7 +208,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         gameOverOverlay.show = true;
       } else if (status == DEAD) {
         this.redirectToHome();
-      } else {
+      } else if (status == STARTED) {
         gameOverOverlay.show = false;
       }
     }
@@ -240,6 +239,10 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private gameOver(info: GameOverUpdateResponse) {
     let gameOverOverlay = this.overlay.first;
+    let player = this.activePlayers.find(name => name === this.playerName);
+    if (this.is_remote && player) {
+      gameOverOverlay.hasRematched = true;
+    }
     if (gameOverOverlay.hasRematched === false) {
       gameOverOverlay.message = info.winner + " won! " + info.message
       gameOverOverlay.time = info.time

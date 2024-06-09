@@ -143,6 +143,17 @@ class Arena:
             update_dict[KICKED_PLAYERS] = kicked_players
         return update_dict
 
+    def can_be_over(self) -> bool:
+        status = self.game.status
+        if status == GameStatus(WAITING):
+            return self.is_empty()
+        elif status == GameStatus(STARTED):
+            return self.has_enough_players() == False or self.did_player_win()
+        return False
+
+    def did_player_win(self) -> bool:
+        return any(player.score >= MAXIMUM_SCORE for player in self.player_manager.players.values())
+
     def set_status(self, status: GameStatus):
         self.game.set_status(status)
 
@@ -161,8 +172,6 @@ class Arena:
         logger.info(
             "Point was scored for %s. Their score is %s", player_name, player.score
         )
-        if player.score == MAXIMUM_SCORE:
-            self.conclude_game()
         return {PLAYER_NAME: player_name}
 
     def __get_player_name_by_paddle_slot(self, paddle_slot: int) -> str | None:

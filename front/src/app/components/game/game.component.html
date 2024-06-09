@@ -16,7 +16,7 @@
     Waiting for players to join...
   </h6>
   <ul>
-    <li *ngFor="let player of waitingPlayers">
+    <li *ngFor="let player of activePlayers">
       <app-player-icon [playerName]="player"></app-player-icon>
     </li>
   </ul>

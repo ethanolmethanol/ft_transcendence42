@@ -51,8 +51,6 @@ class PlayerManager:
         del self.players[player_name]
 
     def allow_player_enter_arena(self, user_id: int):
-#         if self.did_player_give_up(user_id):
-#             raise ValueError(PLAYER_GAVE_UP)
         if not self.is_player_in_game(user_id) and self.is_full():
             raise ValueError(ARENA_FULL)
 

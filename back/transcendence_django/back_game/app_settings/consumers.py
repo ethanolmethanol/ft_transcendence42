@@ -173,7 +173,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         try:
             await self.send(text_data=json.dumps(data))
         except Exception as e:
-            console.log(f"Error: {e}")
+            log.error(f"Error: {e}")
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]

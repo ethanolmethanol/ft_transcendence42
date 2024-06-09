@@ -7,7 +7,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.dict_keys import ID
+from back_game.game_settings.dict_keys import ARENA, ID
 from back_game.game_settings.game_constants import (
     DEAD,
     DYING,
@@ -104,7 +104,12 @@ class Monitor:
             pass
 
     def leave_arena(self, user_id: int, channel_id: int, arena_id: int):
-        arena = self.channels[channel_id].get(arena_id)
+        channel = self.channels.get(channel_id)
+        if channel is None:
+            return
+        arena = channel.get(arena_id)
+        if arena is None:
+            return
         if arena and not arena.did_player_give_up(user_id):
             if arena.get_status() == WAITING:
                 arena.player_gave_up(user_id)
@@ -135,11 +140,9 @@ class Monitor:
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
             arena_status = arena.get_status()
-            if arena_status == GameStatus(WAITING) and arena.has_enough_players():
+            if arena_status == GameStatus(WAITING) and arena.has_enough_players(): # can_be_started method to implement
                 await arena.start_game()
-            elif arena_status == GameStatus(WAITING) and arena.is_empty():
-                arena.conclude_game()
-            elif arena_status == GameStatus(STARTED) and arena.has_enough_players() == False:
+            elif arena.can_be_over():
                 arena.conclude_game()
             elif arena_status == GameStatus(OVER):
                 logger.info("Game over in arena %s", arena.id)
@@ -157,6 +160,9 @@ class Monitor:
 
     async def game_over(self, arenas: dict[str, Arena], arena: Arena):
         arena.set_status(GameStatus(DYING))
+        if arena.game_update_callback is not None:
+            logger.info("Sending game over message to arena %s", arena.id)
+            await arena.game_update_callback({ARENA: arena.to_dict()})
         time = TIMEOUT_GAME_OVER + 1
         while arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0:
             time -= TIMEOUT_INTERVAL
