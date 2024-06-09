@@ -16,6 +16,7 @@
                 [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex" 
                 (selectedOption)="handleOptionSelected($event, constants.NUMBER_PLAYERS)">
     </app-slider>
-    <a routerLink="/online/join">Join Game</a>
+    <a (click)="navigateToJoinGame()">Join Game</a>
+    <!-- <a routerLink="/online/join">Join Game</a> -->
   </section>
 </body>

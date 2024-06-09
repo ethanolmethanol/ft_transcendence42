@@ -12,7 +12,15 @@ import {UserService} from "../../services/user/user.service";
 })
 export class MonitorPageComponent implements OnInit {
   private gameType: string = "local";
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {}
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {
+/*     const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras.state) {
+      const state = navigation.extras.state as {options: any};
+      console.log("Selected options: ", state.options);
+    } else {
+      console.log('No options were passed.');
+    } */
+  }
 
   private getGameUrl(channel_id: string, arena_id: string): string {
     return `/${this.gameType}/${channel_id}/${arena_id}`;

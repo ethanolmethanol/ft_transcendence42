@@ -4,6 +4,7 @@ import { SliderComponent } from '../../components/slider/slider.component';
 import * as Constants from '../../constants';
 import { RouterLink } from '@angular/router';
 import { EventEmitter } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-create-online-game-page',
@@ -24,6 +25,8 @@ export class CreateOnlineGamePageComponent {
     new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT)
   ];
 
+  constructor(private router: Router) {}
+
   public handleOptionSelected(optionIndex: number, optionType: number): void {
     this.options[optionType].optionIndex = optionIndex;
     
@@ -35,6 +38,22 @@ export class CreateOnlineGamePageComponent {
   private _isBadSelection(): boolean {
     return false;
     return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
+  }
+
+  public navigateToJoinGame(): void {
+    console.log('Navigating to join game');
+    const selectedOptions = [
+      this.options[this.constants.BALL_SPEED].value(), 
+      this.options[this.constants.PADDLE_SIZE].value(), 
+      this.options[this.constants.NUMBER_PLAYERS].value()
+    ];
+    const navigationExtras: NavigationExtras = {
+      state: {
+        options: selectedOptions
+      }
+    };
+
+    this.router.navigate(['/online/join'], navigationExtras);
   }
 }
 
