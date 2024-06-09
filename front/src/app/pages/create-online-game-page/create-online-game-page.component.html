@@ -2,13 +2,20 @@
   <app-header></app-header>
   <section class="game-selector">
     <h4>Ball Speed</h4>
-    <app-slider [options]="['snail', 'deer', 'lion', 'hawk', 'jet']"></app-slider>
+    <app-slider [options]="constants.BALL_SPEED_OPTIONS" 
+                [(optionIndex)]="options[constants.BALL_SPEED].optionIndex" 
+                (selectedOption)="handleOptionSelected($event, constants.BALL_SPEED)">
+    </app-slider>
     <h4>Paddle size</h4>
-    <app-slider [options]="['tiny', 'small', 'medium', 'large', 'jumbo']"></app-slider>
-    <h4>Players opponents</h4>
-    <app-slider [options]="[0, 1, 2, 3, 4, 5, 6, 7, 8]"></app-slider>
-    <h4>AI opponents</h4>
-    <app-slider [options]="[0, 1, 2, 3, 4, 5, 6, 7, 8]"></app-slider>
+    <app-slider [options]="constants.PADDLE_SIZE_OPTIONS" 
+                [(optionIndex)]="options[constants.PADDLE_SIZE].optionIndex" 
+                (selectedOption)="handleOptionSelected($event, constants.PADDLE_SIZE)">
+    </app-slider>
+    <h4>Number players</h4>
+    <app-slider [options]="constants.NUMBER_PLAYERS_OPTIONS" 
+                [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex" 
+                (selectedOption)="handleOptionSelected($event, constants.NUMBER_PLAYERS)">
+    </app-slider>
     <a routerLink="/online/join">Join Game</a>
   </section>
 </body>
