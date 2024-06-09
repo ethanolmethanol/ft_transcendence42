@@ -1,26 +1,27 @@
-<app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
-<section class="game-container" [class.hidden]="!dataLoaded || isWaiting">
-  <section class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
-    <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
-    <section class="score-display">
-      <div class="score-player1">{{ player1Score }}</div>
-      <div class="score-player2">{{ player2Score }}</div>
+<section class="game-container">
+  <app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
+  <section class="game-area" [class.hidden]="!dataLoaded || isWaiting">
+    <section class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
+      <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
+      <section class="score-display">
+        <div class="score-player1">{{ player1Score }}</div>
+        <div class="score-player2">{{ player2Score }}</div>
+      </section>
+      <app-ball></app-ball>
+      <app-paddle [id]="1"></app-paddle>
+      <app-paddle [id]="2"></app-paddle>
     </section>
-    <app-ball></app-ball>
-    <app-paddle [id]="1"></app-paddle>
-    <app-paddle [id]="2"></app-paddle>
   </section>
+  <section *ngIf="dataLoaded && isWaiting">
+    <h6>
+      Waiting for players to join... <br><br>
+      {{ activePlayers.length }} / {{ maxPlayers }}
+    </h6>
+    <ul class="players">
+      <li *ngFor="let player of activePlayers">
+        <app-player-icon [playerName]="player"></app-player-icon>
+      </li>
+    </ul>
+  </section>
+  <app-gameover></app-gameover>
 </section>
-<section *ngIf="dataLoaded && isWaiting">
-  <h6>
-    Waiting for players to join... <br><br>
-    {{ activePlayers.length }} / {{ maxPlayers }}
-  </h6>
-  <ul class="players">
-    <li *ngFor="let player of activePlayers">
-      <app-player-icon [playerName]="player"></app-player-icon>
-    </li>
-  </ul>
-</section>
-
-<app-gameover></app-gameover>
