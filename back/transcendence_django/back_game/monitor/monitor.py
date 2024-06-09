@@ -91,7 +91,10 @@ class Monitor:
         }
 
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
-        player_list: dict[str, Player] = arenas[arena_id].get_players()
+        arena = arenas[arena_id]
+        arena.set_status(GameStatus(DEAD))
+        logger.info("Arena %s is dead", arena.id)
+        player_list: dict[str, Player] = arena.get_players()
         for player in player_list.values():
             self.delete_user(player.user_id)
         arenas.pop(arena_id)
@@ -144,6 +147,9 @@ class Monitor:
                 await arena.start_game()
             elif arena.can_be_over():
                 arena.conclude_game()
+                if arena_status != GameStatus(STARTED):
+                    self.delete_arena(arenas, arena.id)
+                    break
             elif arena_status == GameStatus(OVER):
                 logger.info("Game over in arena %s", arena.id)
                 await self.game_over(arenas, arena)
@@ -171,8 +177,6 @@ class Monitor:
                     "Game Over! Thank you for playing.", time
                 )
             if time == 0 and arena.get_status() == GameStatus(DYING):
-                logger.info("Arena %s is dead", arena.id)
-                arena.set_status(GameStatus(DEAD))
                 self.delete_arena(arenas, arena.id)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)

@@ -95,6 +95,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   gameHeight: number = GAME_HEIGHT;
   player1Score: number = 0;
   player2Score: number = 0;
+  maxPlayers: number = 2;
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   activePlayers: string[] = [];
@@ -140,11 +141,9 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
+    this.maxPlayers = arena.players_specs.nb_players;
     this.updateStatus(arena.status)
-    if (arena.status == CREATED || arena.status == WAITING) {
-      this.activePlayers = arena.players;
-      console.log("Waiting list: " + this.activePlayers);
-    }
+    this.activePlayers = arena.players;
     this.dataLoaded = true;
     this.overlay.first.hasRematched = false;
   }

@@ -54,8 +54,16 @@
 
 h6 {
     position: absolute;
+    text-align: center;
     color: #e1e1e1;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+.players {
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  width: 100%;
+}

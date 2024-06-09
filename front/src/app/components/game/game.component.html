@@ -13,9 +13,10 @@
 </section>
 <section *ngIf="dataLoaded && isWaiting">
   <h6>
-    Waiting for players to join...
+    Waiting for players to join... <br><br>
+    {{ activePlayers.length }} / {{ maxPlayers }}
   </h6>
-  <ul>
+  <ul class="players">
     <li *ngFor="let player of activePlayers">
       <app-player-icon [playerName]="player"></app-player-icon>
     </li>
