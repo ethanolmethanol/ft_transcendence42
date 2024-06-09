@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_X_OFFSET, PADDLE_SPEED} from '../../constants';
+import {Component, Input} from '@angular/core';
+import {PADDLE_HEIGHT, PADDLE_WIDTH} from '../../constants';
 import {Position} from '../../interfaces/position.interface';
 import {NgIf} from "@angular/common";
 
