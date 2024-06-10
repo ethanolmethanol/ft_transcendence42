@@ -19,11 +19,14 @@ async def create_channel(request) -> JsonResponse:
         players_specs = data[PLAYER_SPECS]
         channel = await monitor.get_new_channel(user_id, players_specs)
         if channel is None:
-            return JsonResponse({ERROR: "A channel already exists"}, status=HTTPStatus.BAD_REQUEST)
+            return JsonResponse(
+                {ERROR: "A channel already exists"}, status=HTTPStatus.BAD_REQUEST
+            )
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
+
 
 @require_http_methods(["POST"])
 async def join_channel(request) -> JsonResponse:
@@ -36,11 +39,14 @@ async def join_channel(request) -> JsonResponse:
             channel_id = data[CHANNEL_ID]
             channel = await monitor.join_channel(user_id, channel_id)
         if channel is None:
-            return JsonResponse({ERROR: "Channel does not exist"}, status=HTTPStatus.BAD_REQUEST)
+            return JsonResponse(
+                {ERROR: "Channel does not exist"}, status=HTTPStatus.BAD_REQUEST
+            )
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
+
 
 @require_http_methods(["POST"])
 async def is_user_in_channel(request) -> JsonResponse:

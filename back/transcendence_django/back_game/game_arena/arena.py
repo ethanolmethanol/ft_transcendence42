@@ -63,8 +63,7 @@ class Arena:
         if self.game.status == GameStatus(WAITING):
             return False
         return any(
-            player.user_id == user_id
-            and player.status == PlayerStatus(ENABLED)
+            player.user_id == user_id and player.status == PlayerStatus(ENABLED)
             for player in self.player_manager.players.values()
         )
 

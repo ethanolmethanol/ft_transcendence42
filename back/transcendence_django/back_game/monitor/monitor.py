@@ -7,7 +7,6 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.dict_keys import ID
 from back_game.game_settings.game_constants import (
     DEAD,
     DYING,
@@ -33,7 +32,9 @@ class Monitor:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
-    async def create_channel(self, user_id: int, players_specs: dict[str, int]) -> dict[str, Any] | None:
+    async def create_channel(
+            self, user_id: int, players_specs: dict[str, int]
+        ) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
             return await self.get_new_channel(user_id, players_specs)
@@ -110,8 +111,13 @@ class Monitor:
             return None
         return user_channel["arena"]
 
-    def is_user_active_in_game(self, user_id: int, channel_id: str, arena_id: int) -> bool:
-        if self.user_game_table.get(user_id) == {"channel_id": channel_id, "arena": arena_id}:
+    def is_user_active_in_game(
+            self, user_id: int, channel_id: str, arena_id: int
+        ) -> bool:
+        if self.user_game_table.get(user_id) == {
+            "channel_id": channel_id, 
+            "arena": arena_id
+        }:
             arena: Arena = self.channels[channel_id][arena_id]
             return arena.is_user_active_in_game(user_id)
         return False
@@ -127,7 +133,10 @@ class Monitor:
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
-            if arena.get_status() == GameStatus(STARTED) and arena.has_enough_players() == False:
+            if (
+                arena.get_status() == GameStatus(STARTED) 
+                and not arena.has_enough_players()
+            ):
                 arena.conclude_game()
             if arena.get_status() == GameStatus(OVER):
                 logger.info("Game over in arena %s", arena.id)
@@ -146,7 +155,9 @@ class Monitor:
     async def game_over(self, arenas: dict[str, Arena], arena: Arena):
         arena.set_status(GameStatus(DYING))
         time = TIMEOUT_GAME_OVER + 1
-        while arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0:
+        while (
+            arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
+        ):
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:
                 await arena.game_over_callback(
