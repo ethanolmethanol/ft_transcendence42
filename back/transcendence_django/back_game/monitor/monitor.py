@@ -33,14 +33,14 @@ class Monitor:
         return "".join(random.choice(letters_and_digits) for _ in range(length))
 
     async def create_channel(
-            self, user_id: int, players_specs: dict[str, int]
-        ) -> dict[str, Any] | None:
+        self, user_id: int, players_specs: dict[str, int]
+    ) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None:
             return await self.get_new_channel(user_id, players_specs)
         return None
 
-    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any]:
+    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if self.channels[channel_id] is None:
             return None
@@ -78,7 +78,7 @@ class Monitor:
         channel = {"channel_id": channel_id, "arena": arena.to_dict()}
         return channel
 
-    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: int):
+    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: Any):
         arena: Arena = self.channels[channel_id][arena_id]
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
@@ -112,11 +112,11 @@ class Monitor:
         return user_channel["arena"]
 
     def is_user_active_in_game(
-            self, user_id: int, channel_id: str, arena_id: int
-        ) -> bool:
+        self, user_id: int, channel_id: str, arena_id: int
+    ) -> bool:
         if self.user_game_table.get(user_id) == {
-            "channel_id": channel_id, 
-            "arena": arena_id
+            "arena": arena_id,
+            "channel_id": channel_id,
         }:
             arena: Arena = self.channels[channel_id][arena_id]
             return arena.is_user_active_in_game(user_id)
@@ -134,7 +134,7 @@ class Monitor:
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
             if (
-                arena.get_status() == GameStatus(STARTED) 
+                arena.get_status() == GameStatus(STARTED)
                 and not arena.has_enough_players()
             ):
                 arena.conclude_game()

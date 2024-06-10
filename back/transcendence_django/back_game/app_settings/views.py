@@ -56,8 +56,7 @@ async def is_user_in_channel(request) -> JsonResponse:
         channel = monitor.get_channel_from_user_id(user_id)
         if channel is None:
             return JsonResponse({"isInChannel": False}, status=HTTPStatus.OK)
-        else:
-            return JsonResponse({"isInChannel": True}, status=HTTPStatus.OK)
+        return JsonResponse({"isInChannel": True}, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)

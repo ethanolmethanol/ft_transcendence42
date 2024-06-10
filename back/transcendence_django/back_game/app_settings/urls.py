@@ -1,7 +1,7 @@
 from back_game.app_settings.views import (
-    create_channel, 
-    is_user_in_channel, 
-    join_channel
+    create_channel,
+    is_user_in_channel,
+    join_channel,
 )
 from django.urls import path
 

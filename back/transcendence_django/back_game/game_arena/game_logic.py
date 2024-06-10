@@ -1,4 +1,5 @@
 import logging
+
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_geometry.position import Position
@@ -18,7 +19,7 @@ class GameLogic:
         return False
 
     @staticmethod
-    def detect_collision(ball: Ball, new_position: Position) -> dict:
+    def detect_collision(ball: Ball, new_position: Position) -> dict[str, any]:
         update = Collision.handle_collision(new_position, ball)
         ball_position_update = {BALL: {POSITION: ball.position.__dict__}}
         return (
