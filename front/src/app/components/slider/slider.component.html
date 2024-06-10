@@ -1,6 +1,6 @@
 <div role="group" class="slider-container" [style.--min]="min" [style.--max]="max" [style.--val]="optionIndex" (mousemove)="onMouseMove($event)">
-  <input type="range" min="{{min}}" max="{{max}}" value="{{optionIndex}}" (input)="onInput($event)" list="datalistOptions">
-  <datalist id="datalistOptions">
+  <input type="range" min="{{min}}" max="{{max}}" value="{{optionIndex}}" (input)="onInput($event)" list="datalist-options">
+  <datalist id="datalist-options">
     <ng-container *ngFor="let option of options; index as i">
       <option [value]="i">{{option}}</option>
     </ng-container>
