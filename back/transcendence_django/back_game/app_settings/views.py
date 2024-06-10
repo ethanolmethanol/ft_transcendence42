@@ -17,9 +17,9 @@ async def create_channel(request) -> JsonResponse:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         players_specs = data[PLAYER_SPECS]
-        if monitor.get_channel_from_user_id(user_id) is not None:
+        if monitor.is_user_in_channel(user_id):
             raise ValueError("User is already in a channel")
-        channel = await monitor.get_new_channel(user_id, players_specs)
+        channel = await monitor.create_new_channel(user_id, players_specs)
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
@@ -56,8 +56,8 @@ async def is_user_in_channel(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
-        channel = monitor.get_channel_from_user_id(user_id)
-        return JsonResponse({"isInChannel": channel is not None}, status=HTTPStatus.OK)
+        is_user_in_channel: bool = monitor.is_user_in_channel(user_id)
+        return JsonResponse({"isInChannel": is_user_in_channel}, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)

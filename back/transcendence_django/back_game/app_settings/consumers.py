@@ -61,7 +61,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
         await self.accept()
-        if monitor.channels.get(self.channel_id) is None:
+        if monitor.does_exist_channel(self.channel_id) == False:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
@@ -106,7 +106,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
-            self.arena = monitor.channels[self.channel_id][arena_id]
+            self.arena = monitor.get_arena(self.channel_id, arena_id)
             if self.arena is None:
                 raise KeyError("Arena not found")
             self.arena.game_update_callback = self.send_update
@@ -191,6 +191,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def send_error(self, error: dict[str, Any]):
         log.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
         await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
+
 
     async def send_update(self, update: dict[str, Any]):
 #         log.info("Sending update: %s", update)
