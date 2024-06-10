@@ -100,9 +100,12 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   isWaiting: boolean = true;
   activePlayers: string[] = [];
 
-  private _paddleBinding = [
+  private _localPaddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
+  ];
+  private _remotePaddleBinding = [
+    { id: 1, upKey: 'w', downKey: 's' },
   ];
   private readonly _errorMapping: ErrorMapping = {
     [NOT_JOINED]: this.redirectToHome.bind(this),
@@ -268,10 +271,22 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this._pressedKeys.delete(event.key);
   }
   private gameLoop() {
-    this._paddleBinding.forEach(_paddleBinding => {
-      const paddle = this.paddles.find(p => p.id === _paddleBinding.id);
+    let bindingMap;
+    if (this.is_remote) {
+      bindingMap = this._remotePaddleBinding;
+    } else {
+      bindingMap = this._localPaddleBinding;
+    }
+    bindingMap.forEach(bindingMap => {
+      const paddle = this.paddles.find(p => p.id === bindingMap.id);
       if (paddle) {
-        this.movePaddle(paddle, _paddleBinding)
+        let playerName;
+        if (this.is_remote) {
+          playerName = this.playerName!;
+        } else {
+          playerName = paddle.playerName;
+        }
+        this.movePaddle(paddle, playerName, bindingMap)
       }
     });
 
@@ -279,17 +294,15 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     requestAnimationFrame(() => this.gameLoop());
   }
 
-  private movePaddle(paddle: PaddleComponent, binding: { upKey: string; downKey: string }) {
-    const isMovingUp = this._pressedKeys.has(binding.upKey) && !this._pressedKeys.has(binding.downKey);
-    const isMovingDown = this._pressedKeys.has(binding.downKey) && !this._pressedKeys.has(binding.upKey);
+  private movePaddle(paddle: PaddleComponent, playerName: string, binding: { upKey: string; downKey: string }) {
+    const isMovingUp = this._pressedKeys.has(binding.upKey);
+    const isMovingDown = this._pressedKeys.has(binding.downKey);
+
+    if (isMovingUp && isMovingDown) {
+      return;
+    }
     const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;
     if (direction !== 0) {
-      let playerName;
-      if (this.is_remote) {
-        playerName = this.playerName!;
-      } else {
-        playerName = paddle.playerName;
-      }
       this.webSocketService.sendPaddleMovement(playerName, direction);
     }
   }

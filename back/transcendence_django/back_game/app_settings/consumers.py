@@ -139,6 +139,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.joined = False
         await self.send_message(f"{self.user_id} has given up.")
         await self.send_update({GIVE_UP: self.user_id})
+        await self.send_update({ARENA: self.arena.to_dict()})
 
     async def rematch(self, _):
         if not self.joined:
