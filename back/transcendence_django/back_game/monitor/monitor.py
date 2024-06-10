@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from typing import Any
+from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
@@ -55,6 +55,39 @@ class Monitor:
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: int):
         self.channelManager.add_user_to_channel(user_id, channel_id, arena_id)
 
+    def init_arena(self, channel_id: str, arena_id: int,
+        send_update: Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]],
+        send_game_over: Optional[Callable[[str, float], Coroutine[Any, Any, None]]]):
+        arena = monitor.get_arena(channel_id, arena_id)
+        if arena is None:
+            raise KeyError("Arena not found")
+        arena.game_update_callback = send_update
+        arena.game_over_callback = send_game_over
+
+    async def join_arena(self, user_id: int, player_name: str, channel_id: str, arena_id: int):
+        if self.is_user_active_in_game(user_id, channel_id, arena_id):
+            raise ValueError("User already in another arena")
+        arena = self.get_arena(channel_id, arena_id)
+        await arena.enter_arena(user_id, player_name)
+        self.add_user_to_channel(user_id, channel_id, arena_id)
+
+    def give_up(self, user_id: int, channel_id: str, arena_id: int):
+        arena = self.get_arena(channel_id, arena_id)
+        arena.player_gave_up(user_id)
+
+    async def rematch(self, user_id: int, channel_id: str, arena_id: int):
+        arena = self.get_arena(channel_id, arena_id)
+        await arena.rematch(user_id)
+
+    def get_winner(self, channel_id: str, arena_id: int) -> str:
+        arena = self.get_arena(channel_id, arena_id)
+        winner: str = arena.get_winner()
+        return winner
+
+    def move_paddle(self, user_id: int, channel_id: str, arena_id: int, player_name: str, direction: int) -> dict[str, Any]:
+        arena = self.get_arena(channel_id, arena_id)
+        return arena.move_paddle(player_name, direction)
+
     def leave_arena(self, user_id: int, channel_id: str, arena_id: int):
         self.channelManager.leave_arena(user_id, channel_id, arena_id)
 
@@ -70,7 +103,7 @@ class Monitor:
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
             arena_status = arena.get_status()
-            if arena_status == GameStatus(WAITING) and arena.has_enough_players(): # can_be_started method to implement
+            if arena.can_be_started():
                 await arena.start_game()
             elif arena.can_be_over():
                 arena.conclude_game()

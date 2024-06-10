@@ -2,7 +2,6 @@ import json
 import logging
 from typing import Any, Callable, Coroutine
 
-from back_game.game_arena.arena import Arena
 from back_game.game_settings.dict_keys import (
     ARENA,
     ARENA_ID,
@@ -38,7 +37,7 @@ from back_game.game_settings.game_constants import (
 from back_game.monitor.monitor import monitor
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class ChannelError(Exception):
@@ -53,7 +52,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]):
         super().__init__(*args, **kwargs)
         self.channel_id: str = ""
-        self.arena: Arena
+        self.arena_id: int = -1
         self.room_group_name: str | None = None
         self.joined: bool = False
         self.user_id: int = -1
@@ -70,7 +69,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def add_user_to_channel_group(self):
         self.room_group_name = f"game_{self.channel_id}"
-        log.info("User Connected to %s", self.room_group_name)
+        logger.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
     async def disconnect(self, close_code: int):
@@ -82,7 +81,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
-        log.info("Disconnect with code: %s", close_code)
+        logger.info("Disconnect with code: %s", close_code)
 
     async def receive(self, text_data: str):
         content = json.loads(text_data)
@@ -106,59 +105,57 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
-            self.arena = monitor.get_arena(self.channel_id, arena_id)
-            if self.arena is None:
-                raise KeyError("Arena not found")
-            self.arena.game_update_callback = self.send_update
-            self.arena.game_over_callback = self.send_game_over
+            monitor.init_arena(self.channel_id, arena_id, self.send_update, self.send_game_over)
+            self.arena_id = arena_id
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
-            if monitor.is_user_active_in_game(self.user_id, self.channel_id, arena_id):
-                raise ValueError("User already in another arena")
-            await self.arena.enter_arena(self.user_id, player_name)
-            monitor.add_user_to_channel(self.user_id, self.channel_id, arena_id)
+            await monitor.join_arena(self.user_id, player_name, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
-            log.error("Error: %s", e)
+            logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
         self.joined = True
         await self.send_message(f"{self.user_id} has joined the game.")
-        await self.send_update({ARENA: self.arena.to_dict()})
+        await self.send_arena_data(self.channel_id, self.arena_id)
 
     async def leave(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to leave without joining.")
-        monitor.leave_arena(self.user_id, self.channel_id, self.arena.id)
+        monitor.leave_arena(self.user_id, self.channel_id, self.arena_id)
         self.joined = False
         await self.send_message(f"{self.user_id} has left the game.")
 
     async def give_up(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to give up without joining.")
-        self.arena.player_gave_up(self.user_id)
+        monitor.give_up(self.user_id, self.channel_id, self.arena_id)
         self.joined = False
         await self.send_message(f"{self.user_id} has given up.")
         await self.send_update({GIVE_UP: self.user_id})
-        await self.send_update({ARENA: self.arena.to_dict()})
+        await self.send_arena_data(self.channel_id, self.arena_id)
 
     async def rematch(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        await self.arena.rematch(self.user_id)
+        await monitor.rematch(self.user_id, self.channel_id, self.arena_id)
         await self.send_message(f"{self.user_id} asked for a rematch.")
-        await self.send_update({ARENA: self.arena.to_dict()})
+        await self.send_arena_data(self.channel_id, self.arena_id)
 
     async def move_paddle(self, message: dict[str, Any]):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
         player_name: str = message[PLAYER]
         direction: int = message[DIRECTION]
-        paddle_data: dict[str, Any] = self.arena.move_paddle(player_name, direction)
+        paddle_data: dict[str, Any] = monitor.move_paddle(self.user_id, self.channel_id, self.arena_id, player_name, direction)
         await self.send_update({PADDLE: paddle_data})
 
+    async def send_arena_data(self, channel_id: str, arena_id: int):
+        arena = monitor.get_arena(channel_id, arena_id)
+        await self.send_update({ARENA: arena.to_dict()})
+
     async def send_game_over(self, game_over_message: str, time: float):
-        winner: str = self.arena.get_winner()
-        log.info("Game over: %s wins. %s seconds left.", winner, time)
+        winner = monitor.get_winner(self.channel_id, self.arena_id)
+        logger.info("Game over: %s wins. %s seconds left.", winner, time)
         await self.send_update(
             {
                 GAME_OVER: {
@@ -174,7 +171,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         try:
             await self.send(text_data=json.dumps(data))
         except Exception as e:
-            log.error(f"Error: {e}")
+            logger.error(f"Error: {e}")
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]
@@ -189,20 +186,20 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.safe_send({TYPE: GAME_UPDATE, UPDATE: message})
 
     async def send_error(self, error: dict[str, Any]):
-        log.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
+        logger.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
         await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
 
     async def send_update(self, update: dict[str, Any]):
-#         log.info("Sending update: %s", update)
+#         logger.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):
-        log.info("Sending message: %s", message)
+        logger.info("Sending message: %s", message)
         await self.send_data({TYPE: GAME_MESSAGE, MESSAGE: message})
 
     async def send_data(self, data: dict[str, Any]):
         try:
             await self.channel_layer.group_send(self.room_group_name, data)
         except asyncio.CancelledError:
-            log.error("WebSocket connection closed while trying to send a message.")
+            logger.error("WebSocket connection closed while trying to send a message.")

@@ -143,6 +143,9 @@ class Arena:
             update_dict[KICKED_PLAYERS] = kicked_players
         return update_dict
 
+    def can_be_started(self) -> bool:
+        return self.game.status == GameStatus(WAITING) and self.has_enough_players()
+
     def can_be_over(self) -> bool:
         status = self.game.status
         if status == GameStatus(WAITING):
