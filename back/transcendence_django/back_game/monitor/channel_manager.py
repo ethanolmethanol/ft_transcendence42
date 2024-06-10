@@ -60,7 +60,7 @@ class ChannelManager:
         logger.info("Arena %s is dead", arena.id)
         player_list: dict[str, Player] = arena.get_players()
         for player in player_list.values():
-            self.__delete_user(player.user_id)
+            self.delete_user(player.user_id)
         arenas.pop(arena_id)
 
     def get_arena(self, channel_id: str, arena_id: int) -> Arena | None:
@@ -91,6 +91,13 @@ class ChannelManager:
     def delete_channel(self, channel_id: str):
         del self.channels[channel_id]
 
+    def delete_user(self, user_id: int):
+        try:
+            self.user_game_table.pop(user_id)
+            logger.info("User %s deleted from user_game_table", user_id)
+        except KeyError:
+            pass
+
     def __get_available_channel(self) -> dict[str, Any] | None:
         for channel_id, channel in self.channels.items():
             arena_id = list(channel.keys())[0]
@@ -102,10 +109,3 @@ class ChannelManager:
     def __generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))
-
-    def __delete_user(self, user_id: int):
-        try:
-            self.user_game_table.pop(user_id)
-            logger.info("User %s deleted from user_game_table", user_id)
-        except KeyError:
-            pass

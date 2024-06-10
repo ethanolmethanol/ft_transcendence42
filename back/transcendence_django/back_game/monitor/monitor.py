@@ -74,6 +74,7 @@ class Monitor:
     def give_up(self, user_id: int, channel_id: str, arena_id: int):
         arena = self.get_arena(channel_id, arena_id)
         arena.player_gave_up(user_id)
+        self.channelManager.delete_user(user_id)
 
     async def rematch(self, user_id: int, channel_id: str, arena_id: int):
         arena = self.get_arena(channel_id, arena_id)
@@ -136,7 +137,7 @@ class Monitor:
                 await arena.game_over_callback(
                     "Game Over! Thank you for playing.", time
                 )
-            if time == 0 and arena.get_status() == GameStatus(DYING):
+            if time <= 0 and arena.get_status() == GameStatus(DYING):
                 self.channelManager.delete_arena(arenas, arena.id)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
