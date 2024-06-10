@@ -130,7 +130,7 @@ class Arena:
     def has_enough_players(self) -> bool:
         return self.player_manager.has_enough_players()
 
-    def __update_scores(self, player_slot: int) -> dict[str, str]:
+    def __update_scores(self, player_slot: int) -> dict[str, str | None]:
         player_name = self.__get_player_name_by_paddle_slot(player_slot)
         logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
         if player_name is not None:

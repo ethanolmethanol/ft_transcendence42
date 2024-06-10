@@ -40,7 +40,9 @@ class Monitor:
             return await self.get_new_channel(user_id, players_specs)
         return None
 
-    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any] | None:
+    async def join_channel(
+        self, user_id: int, channel_id: str
+    ) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if self.channels[channel_id] is None:
             return None
