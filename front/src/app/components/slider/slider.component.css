@@ -29,17 +29,11 @@ body {
 }
 
 [role=group] {
-  --hlght: 0;
-  --not-hlght: calc(1 - var(--hlght));
   --track-w: calc(var(--max)*3em + 1.5em);
   place-self: center;
   filter: grayScale(var(--not-hlght));
   transition: filter 0.3s;
 }
-[role=group]:focus-within {
-  --hlght: 1 ;
-}
-
 [type=range] {
   justify-self: center;
   width: var(--track-w);
@@ -52,28 +46,14 @@ body {
   -webkit-appearance: none;
 }
 [type=range]::-webkit-slider-runnable-track {
-  --alpha: var(--hlght);
   width: 100%;
   height: 100%;
   background: radial-gradient(circle, rgba(0, 0, 0, var(--alpha)) 2px, transparent 3px) 50%/3em, linear-gradient(rgba(0, 0, 0, var(--alpha)) 0 0) 50%/calc(100% - 1.5em) 2px no-repeat;
-  transition: --hlght 0.3s;
-}
-@of $o > 0 {
-  [type=range]::-webkit-slider-runnable-track {
-    transition: opacity 0.3s;
-  }
 }
 [type=range]::-moz-range-track {
-  --alpha: var(--hlght);
   width: 100%;
   height: 100%;
   background: radial-gradient(circle, rgba(0, 0, 0, var(--alpha)) 2px, transparent 3px) 50%/3em, linear-gradient(rgba(0, 0, 0, var(--alpha)) 0 0) 50%/calc(100% - 1.5em) 2px no-repeat;
-  transition: --hlght 0.3s;
-}
-@of $o > 0 {
-  [type=range]::-moz-range-track {
-    transition: opacity 0.3s;
-  }
 }
 [type=range]::-webkit-slider-thumb {
   box-sizing: border-box;
@@ -81,7 +61,6 @@ body {
   width: 1.5em;
   height: 1.5em;
   border-radius: 50%;
-  transform: scale(calc(var(--not-hlght) + var(--hlght) * 1.1666666667));
   box-shadow: 0 0 0.125em #101010, 0.125em 0.125em 0.25em #101010, 0.25em 0.25em 0.75em #101010;
   background: radial-gradient(closest-side, #bababa, rgba(186, 186, 186, 0)) content-box, linear-gradient(#68716e, #b5bbba) content-box, linear-gradient(#e1e5e7, #6e706f) border-box;
   transition: transform 0.3s;
@@ -93,7 +72,6 @@ body {
   width: 1.5em;
   height: 1.5em;
   border-radius: 50%;
-  transform: scale(calc(var(--not-hlght) + var(--hlght) * 1.1666666667));
   box-shadow: 0 0 0.125em #101010, 0.125em 0.125em 0.25em #101010, 0.25em 0.25em 0.75em #101010;
   background: radial-gradient(closest-side, #bababa, rgba(186, 186, 186, 0)) content-box, linear-gradient(#68716e, #b5bbba) content-box, linear-gradient(#e1e5e7, #6e706f) border-box;
   transition: transform 0.3s;
@@ -117,7 +95,7 @@ option {
   padding: 0.875em 0;
   opacity: calc(var(--not-sel) * (1 - var(--not-hlght) * 0.65) + var(--sel));
   font: 900 0.625em sans-serif !important;
-  color: #e5f25a;
+  color: white;
   text-align: center;
   text-shadow: 1px 1px #262626, 1px 1px 1px #101010;
   text-transform: uppercase;
