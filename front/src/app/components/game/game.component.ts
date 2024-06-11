@@ -96,7 +96,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
-  @Input() is_remote: boolean = false;
+  @Input() isRemote: boolean = false;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -126,7 +126,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
 
   async ngOnChanges(changes: SimpleChanges) {
-    if (changes.is_remote && this.is_remote) {
+    if (changes.isRemote && this.isRemote) {
       await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
     }
@@ -258,7 +258,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   private updateGameOver(info: GameOverUpdateResponse) {
     let gameOverOverlay = this.gameOver.first;
     let player = this.activePlayers.find(name => name === this.playerName);
-    if (this.is_remote && player) {
+    if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
     }
     if (gameOverOverlay.hasRematched === false) {
@@ -288,7 +288,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
   private gameLoop() {
     let bindingMap;
-    if (this.is_remote) {
+    if (this.isRemote) {
       bindingMap = this._remotePaddleBinding;
     } else {
       bindingMap = this._localPaddleBinding;
@@ -297,7 +297,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       const paddle = this.paddles.find(p => p.id === bindingMap.id);
       if (paddle) {
         let playerName;
-        if (this.is_remote) {
+        if (this.isRemote) {
           playerName = this.playerName!;
         } else {
           playerName = paddle.playerName;

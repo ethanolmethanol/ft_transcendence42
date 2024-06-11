@@ -14,7 +14,7 @@
     </section>
   </section>
   <section *ngIf="dataLoaded && isWaiting">
-    <h6>
+    <h6 *ngIf="isRemote">
       Waiting for players to join... <br><br>
       {{ activePlayers.length }} / {{ maxPlayers }}
     </h6>
