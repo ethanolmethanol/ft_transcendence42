@@ -62,11 +62,39 @@ h6 {
     transform: translate(-50%, -50%);
   }
 
-.players {
+.waiting_players {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   font-size: 2em;
   width: 100%;
   padding: 0;
+  position: absolute;
+}
+
+.players {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2em;
+  width: 100%;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.player-name {
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.player1 {
+  position: absolute;
+  left: -15%;
+}
+
+.player2 {
+  position: absolute;
+  right: -15%;
 }

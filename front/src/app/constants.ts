@@ -27,10 +27,11 @@ export const GIVEN_UP = 5
 // Game status
 export const CREATED = 0
 export const WAITING = 1
-export const STARTED = 2
-export const OVER = 3
-export const DYING = 4
-export const DEAD = 5
+export const READY_TO_START = 2
+export const STARTED = 3
+export const OVER = 4
+export const DYING = 5
+export const DEAD = 6
 
 //////////
 // GAME //

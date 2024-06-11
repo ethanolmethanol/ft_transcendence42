@@ -24,7 +24,7 @@ from back_game.game_settings.dict_keys import (
     SCORES,
     STATUS,
 )
-from back_game.game_settings.game_constants import MAXIMUM_SCORE, CREATED, STARTED, TIME_START, TIME_START_INTERVAL, WAITING
+from back_game.game_settings.game_constants import MAXIMUM_SCORE, CREATED, READY_TO_START, STARTED, TIME_START, TIME_START_INTERVAL, WAITING
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +153,7 @@ class Arena:
         return update_dict
 
     def can_be_started(self) -> bool:
-        return self.game.status == GameStatus(WAITING) and self.has_enough_players()
+        return self.game.status in [GameStatus(WAITING), GameStatus(READY_TO_START)] and self.has_enough_players()
 
     def can_be_over(self) -> bool:
         status = self.game.status
@@ -210,3 +210,5 @@ class Arena:
     async def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)
         self.game.add_paddle(player_name)
+        if self.is_full():
+            self.game.set_status(READY_TO_START)

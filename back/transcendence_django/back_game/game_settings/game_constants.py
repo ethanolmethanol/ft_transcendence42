@@ -40,10 +40,11 @@ VALID_DIRECTIONS = [-1, 1]
 # Game status
 CREATED = 0
 WAITING = 1
-STARTED = 2
-OVER = 3
-DYING = 4
-DEAD = 5
+READY_TO_START = 2
+STARTED = 3
+OVER = 4
+DYING = 5
+DEAD = 6
 
 # Game loop parameters
 MONITOR_LOOP_INTERVAL = 0.5

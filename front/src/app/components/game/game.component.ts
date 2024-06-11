@@ -21,7 +21,7 @@ import {
   DYING,
   DEAD,
   GIVEN_UP,
-  STARTED,
+  STARTED, READY_TO_START,
 } from "../../constants";
 import {PaddleComponent} from "../paddle/paddle.component";
 import {BallComponent} from "../ball/ball.component";
