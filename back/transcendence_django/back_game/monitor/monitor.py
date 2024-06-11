@@ -56,6 +56,7 @@ class Monitor:
         self.channelManager.add_user_to_channel(user_id, channel_id, arena_id)
 
     def init_arena(self, channel_id: str, arena_id: int,
+        send_start_timer: Optional[Callable[[str, float], Coroutine[Any, Any, None]]],
         send_update: Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]],
         send_game_over: Optional[Callable[[str, float], Coroutine[Any, Any, None]]]):
         arena = monitor.get_arena(channel_id, arena_id)
@@ -63,6 +64,7 @@ class Monitor:
             raise KeyError("Arena not found")
         arena.game_update_callback = send_update
         arena.game_over_callback = send_game_over
+        arena.start_timer_callback = send_start_timer
 
     async def join_arena(self, user_id: int, player_name: str, channel_id: str, arena_id: int):
         if self.is_user_active_in_game(user_id, channel_id, arena_id):

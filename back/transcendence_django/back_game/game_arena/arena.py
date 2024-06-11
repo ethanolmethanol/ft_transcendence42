@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
@@ -23,7 +24,7 @@ from back_game.game_settings.dict_keys import (
     SCORES,
     STATUS,
 )
-from back_game.game_settings.game_constants import MAXIMUM_SCORE, CREATED, STARTED, WAITING
+from back_game.game_settings.game_constants import MAXIMUM_SCORE, CREATED, STARTED, TIME_START, TIME_START_INTERVAL, WAITING
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,9 @@ class Arena:
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(self.player_manager.nb_players)
+        self.start_timer_callback: Optional[
+            Callable[[str, float], Coroutine[Any, Any, None]]
+        ] = None
         self.game_update_callback: Optional[
             Callable[[dict[str, Any]], Coroutine[Any, Any, None]]
         ] = None
@@ -96,9 +100,14 @@ class Arena:
 
     async def start_game(self):
         self.__reset()
-        self.game.start()
         await self.game_update_callback({ARENA: self.to_dict()})
+        for time in range(0, TIME_START):
+            if self.start_timer_callback is not None:
+                await self.start_timer_callback("Game will begin in", TIME_START - time)
+            await asyncio.sleep(TIME_START_INTERVAL)
+        self.game.start()
         logger.info("Game started. %s", self.id)
+        await self.game_update_callback({ARENA: self.to_dict()})
 
     def conclude_game(self):
         self.player_manager.finish_active_players()
@@ -201,5 +210,3 @@ class Arena:
     async def __register_player(self, user_id: int, player_name: str):
         self.player_manager.add_player(user_id, player_name)
         self.game.add_paddle(player_name)
-        if self.is_full():
-            await self.start_game()

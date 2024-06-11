@@ -36,6 +36,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {ConnectionService} from "../../services/connection/connection.service";
 import {UserService} from "../../services/user/user.service";
 import {PlayerIconComponent} from "../player-icon/player-icon.component";
+import {StartTimerComponent} from "../start-timer/start-timer.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -48,6 +49,11 @@ interface BallUpdateResponse {
 
 interface ScoreUpdateResponse {
   player_name: string;
+}
+
+interface StartTimerResponse {
+  time: number;
+  message: string;
 }
 
 interface GameOverUpdateResponse {
@@ -79,7 +85,8 @@ interface ErrorMapping {
     LoadingSpinnerComponent,
     NgIf,
     NgForOf,
-    PlayerIconComponent
+    PlayerIconComponent,
+    StartTimerComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -87,7 +94,8 @@ interface ErrorMapping {
 export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
-  @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
+  @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
+  @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() is_remote: boolean = false;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
@@ -148,7 +156,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.updateStatus(arena.status)
     this.activePlayers = arena.players;
     this.dataLoaded = true;
-    this.overlay.first.hasRematched = false;
+    this.startTimer.first.show = false;
+    this.gameOver.first.hasRematched = false;
   }
 
   private handleGameUpdate(gameState: any) {
@@ -156,7 +165,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
-        'game_over': (value: GameOverUpdateResponse) => { this.gameOver(value) },
+        'start_timer': (value: StartTimerResponse) => { this.updateStartTimer(value) },
+        'game_over': (value: GameOverUpdateResponse) => { this.updateGameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
         'give_up': (value: number) => { this.giveUp(value) },
@@ -168,6 +178,12 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
             variableMapping[variable](gameState[variable]);
         }
     }
+  }
+
+  private updateStartTimer(timer: StartTimerResponse) {
+    this.startTimer.first.message = timer.message;
+    this.startTimer.first.time = timer.time;
+    this.startTimer.first.show = true;
   }
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
@@ -203,7 +219,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private updateStatus(status: number) {
-    let gameOverOverlay = this.overlay.first;
+    let gameOverOverlay = this.gameOver.first;
     this.isWaiting = (status == CREATED || status == WAITING)
     if (gameOverOverlay.hasRematched === false) {
       if (status == DYING) {
@@ -239,8 +255,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  private gameOver(info: GameOverUpdateResponse) {
-    let gameOverOverlay = this.overlay.first;
+  private updateGameOver(info: GameOverUpdateResponse) {
+    let gameOverOverlay = this.gameOver.first;
     let player = this.activePlayers.find(name => name === this.playerName);
     if (this.is_remote && player) {
       gameOverOverlay.hasRematched = true;
@@ -258,7 +274,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private redirectToHome() {
-    this.overlay.first.redirectToHome();
+    this.gameOver.first.redirectToHome();
   }
 
   @HostListener('window:keydown', ['$event'])

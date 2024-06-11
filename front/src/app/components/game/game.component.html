@@ -1,3 +1,4 @@
+<script src="../start-timer/start-timer.component.ts"></script>
 <section class="game-container">
   <app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
   <section class="game-area" [class.hidden]="!dataLoaded || isWaiting">
@@ -24,4 +25,5 @@
     </ul>
   </section>
 </section>
+<app-start-timer></app-start-timer>
 <app-gameover></app-gameover>

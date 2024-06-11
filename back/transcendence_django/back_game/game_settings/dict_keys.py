@@ -30,7 +30,9 @@ PLAYER = "player"
 DIRECTION = "direction"
 PADDLE = "paddle"
 
-# Game over
+# Game timers
+
+START_TIMER = "start_timer"
 GAME_OVER = "game_over"
 WINNER = "winner"
 TIME = "time"

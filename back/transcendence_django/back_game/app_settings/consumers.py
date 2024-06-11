@@ -20,6 +20,7 @@ from back_game.game_settings.dict_keys import (
     PADDLE,
     PLAYER,
     REMATCH,
+    START_TIMER,
     TIME,
     TYPE,
     UPDATE,
@@ -105,7 +106,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
-            monitor.init_arena(self.channel_id, arena_id, self.send_update, self.send_game_over)
+            monitor.init_arena(self.channel_id, arena_id, self.send_start_timer, self.send_update, self.send_game_over)
             self.arena_id = arena_id
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
@@ -152,6 +153,17 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def send_arena_data(self, channel_id: str, arena_id: int):
         arena = monitor.get_arena(channel_id, arena_id)
         await self.send_update({ARENA: arena.to_dict()})
+
+    async def send_start_timer(self, start_timer_message: str, time: float):
+        logger.info("Game will begin in %s seconds...", time)
+        await self.send_update(
+            {
+                START_TIMER: {
+                    TIME: time,
+                    MESSAGE: start_timer_message,
+                }
+            }
+        )
 
     async def send_game_over(self, game_over_message: str, time: float):
         winner = monitor.get_winner(self.channel_id, self.arena_id)
