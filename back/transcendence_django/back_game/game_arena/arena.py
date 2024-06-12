@@ -97,10 +97,9 @@ class Arena:
             self.__enter_remote_mode(user_id, player_name)
         else:
             self.__enter_local_mode(user_id)
-        if self.is_full():
-            self.game.set_status(READY_TO_START)
 
     async def start_game(self):
+        self.game.set_status(READY_TO_START)
         self.__reset()
         await self.game_update_callback({ARENA: self.to_dict()})
         for time in range(0, TIME_START):
@@ -120,9 +119,6 @@ class Arena:
         self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
         self.game.set_status(WAITING)
-        if self.player_manager.are_all_players_ready():
-            logger.info("All players are ready for a rematch. %s", self.id)
-            self.set_status(READY_TO_START)
 
     def player_leave(self, user_id: int):
         if self.game.status == GameStatus(WAITING):
@@ -156,7 +152,7 @@ class Arena:
         return update_dict
 
     def can_be_started(self) -> bool:
-        return self.game.status == GameStatus(READY_TO_START) and self.has_enough_players()
+        return self.game.status == GameStatus(WAITING) and self.has_enough_players()
 
     def can_be_over(self) -> bool:
         status = self.game.status

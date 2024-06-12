@@ -64,7 +64,7 @@ h6 {
 
 .waiting_players {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   text-align: center;
   font-size: 2em;
