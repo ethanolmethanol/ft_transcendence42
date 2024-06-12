@@ -72,8 +72,7 @@ class Arena:
         if self.game.status == GameStatus(WAITING):
             return False
         return any(
-            player.user_id == user_id
-            and player.status == PlayerStatus(ENABLED)
+            player.user_id == user_id and player.status == PlayerStatus(ENABLED)
             for player in self.player_manager.players.values()
         )
 
@@ -178,7 +177,8 @@ class Arena:
     def __update_scores(self, player_slot: int) -> dict[str, str]:
         player_name = self.__get_player_name_by_paddle_slot(player_slot)
         logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
-        player = self.player_manager.players[player_name]
+        if player_name is not None:
+            player = self.player_manager.players[player_name]
         player.score += 1
         logger.info(
             "Point was scored for %s. Their score is %s", player_name, player.score

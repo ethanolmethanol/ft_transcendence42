@@ -133,7 +133,9 @@ class Monitor:
             logger.info("Sending game over message to arena %s", arena.id)
             await arena.game_update_callback({ARENA: arena.to_dict()})
         time = TIMEOUT_GAME_OVER + 1
-        while arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0:
+        while (
+            arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
+        ):
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:
                 await arena.game_over_callback(

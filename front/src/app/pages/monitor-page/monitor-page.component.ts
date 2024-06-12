@@ -34,7 +34,15 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   public isLoading: boolean = false;
   private destroy$ = new Subject<void>();
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {}
+  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {
+/*     const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras.state) {
+      const state = navigation.extras.state as {options: any};
+      console.log("Selected options: ", state.options);
+    } else {
+      console.log('No options were passed.');
+    } */
+  }
 
   async ngOnInit() : Promise<void> {
     this.gameType = this.route.snapshot.data['gameType'];

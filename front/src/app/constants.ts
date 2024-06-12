@@ -45,3 +45,16 @@ export const PADDLE_WIDTH = 20;
 export const PADDLE_SPEED = 20;
 export const PADDLE_X_OFFSET = 60;
 export const BALL_RADIUS = 10;
+
+// Game options
+export const BALL_SPEED = 0
+export const PADDLE_SIZE = 1
+export const NUMBER_PLAYERS = 2
+
+export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
+export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
+export const NUMBER_PLAYERS_OPTIONS = ['2', '3', '4']
+
+export const BALL_SPEED_DEFAULT = 2
+export const PADDLE_SIZE_DEFAULT = 2
+export const NUMBER_PLAYERS_DEFAULT = 0

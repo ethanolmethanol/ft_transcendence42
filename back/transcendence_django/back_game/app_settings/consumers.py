@@ -101,7 +101,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         except ChannelError as e:
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
 
-    async def join(self, message: dict[str, int]):
+    async def join(self, message: dict[str, Any]):
         self.user_id = message[USER_ID]
         player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]

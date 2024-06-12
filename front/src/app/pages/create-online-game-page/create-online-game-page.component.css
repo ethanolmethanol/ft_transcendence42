@@ -1,0 +1,38 @@
+body {
+    background-image: url("../../../assets/app-themes/game-background.gif");
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+h4 {
+    font-size: 1em;
+    color: white;
+}
+
+.game-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+    margin-top: 6em;
+}
+
+.game-selector app-slider {
+    margin-bottom: 3em;
+    width: 100%;
+}
+
+.game-selector a {
+    font-size: 2em;
+    color: white;
+}
+  

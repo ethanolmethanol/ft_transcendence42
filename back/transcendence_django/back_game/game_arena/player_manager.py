@@ -160,7 +160,7 @@ class PlayerManager:
         self.nb_players = players_specs[NB_PLAYERS]
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
-        self.is_remote = players_specs[MODE]
+        self.is_remote = bool(players_specs[MODE])
 
     def __get_afk_players(self) -> list[dict[str, Any]]:
         kicked_players: list[dict[str, Any]] = []
