@@ -66,11 +66,11 @@ class Monitor:
         arena.game_over_callback = send_game_over
         arena.start_timer_callback = send_start_timer
 
-    async def join_arena(self, user_id: int, player_name: str, channel_id: str, arena_id: int):
+    def join_arena(self, user_id: int, player_name: str, channel_id: str, arena_id: int):
         if self.is_user_active_in_game(user_id, channel_id, arena_id):
             raise ValueError("User already in another arena")
         arena = self.get_arena(channel_id, arena_id)
-        await arena.enter_arena(user_id, player_name)
+        arena.enter_arena(user_id, player_name)
         self.add_user_to_channel(user_id, channel_id, arena_id)
 
     def give_up(self, user_id: int, channel_id: str, arena_id: int):
@@ -78,9 +78,9 @@ class Monitor:
         arena.player_gave_up(user_id)
         self.channelManager.delete_user(user_id)
 
-    async def rematch(self, user_id: int, channel_id: str, arena_id: int):
+    def rematch(self, user_id: int, channel_id: str, arena_id: int):
         arena = self.get_arena(channel_id, arena_id)
-        await arena.rematch(user_id)
+        arena.rematch(user_id)
 
     def get_winner(self, channel_id: str, arena_id: int) -> str:
         arena = self.get_arena(channel_id, arena_id)

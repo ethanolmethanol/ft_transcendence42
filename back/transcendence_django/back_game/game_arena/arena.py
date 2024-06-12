@@ -86,7 +86,7 @@ class Arena:
     def get_status(self) -> GameStatus:
         return self.game.status
 
-    async def enter_arena(self, user_id: int, player_name: str) -> None:
+    def enter_arena(self, user_id: int, player_name: str) -> None:
         self.player_manager.allow_player_enter_arena(user_id)
         if self.get_status() == GameStatus(CREATED):
             self.game.set_status(WAITING)
@@ -94,9 +94,11 @@ class Arena:
             return
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
-            await self.__enter_remote_mode(user_id, player_name)
+            self.__enter_remote_mode(user_id, player_name)
         else:
-            await self.__enter_local_mode(user_id)
+            self.__enter_local_mode(user_id)
+        if self.is_full():
+            self.game.set_status(READY_TO_START)
 
     async def start_game(self):
         self.__reset()
@@ -114,12 +116,13 @@ class Arena:
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
-    async def rematch(self, user_id: int):
+    def rematch(self, user_id: int):
         self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
         self.game.set_status(WAITING)
         if self.player_manager.are_all_players_ready():
-            await self.start_game()
+            logger.info("All players are ready for a rematch. %s", self.id)
+            self.set_status(READY_TO_START)
 
     def player_leave(self, user_id: int):
         if self.game.status == GameStatus(WAITING):
@@ -153,7 +156,7 @@ class Arena:
         return update_dict
 
     def can_be_started(self) -> bool:
-        return self.game.status in [GameStatus(WAITING), GameStatus(READY_TO_START)] and self.has_enough_players()
+        return self.game.status == GameStatus(READY_TO_START) and self.has_enough_players()
 
     def can_be_over(self) -> bool:
         status = self.game.status
@@ -196,19 +199,18 @@ class Arena:
         self.player_manager.reset()
         self.game.reset()
 
-    async def __enter_local_mode(self, user_id: int):
+    def __enter_local_mode(self, user_id: int):
         if not self.is_full():
-            await self.__register_player(user_id, PLAYER1)
-            await self.__register_player(user_id, PLAYER2)
+            self.__register_player(user_id, PLAYER1)
+            self.__register_player(user_id, PLAYER2)
 
-    async def __enter_remote_mode(self, user_id: int, player_name: str):
+    def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
         else:
-            await self.__register_player(user_id, player_name)
+            self.__register_player(user_id, player_name)
 
-    async def __register_player(self, user_id: int, player_name: str):
+    def __register_player(self, user_id: int, player_name: str):
+        self.player_manager.finish_given_up_players()
         self.player_manager.add_player(user_id, player_name)
         self.game.add_paddle(player_name)
-        if self.is_full():
-            self.game.set_status(READY_TO_START)

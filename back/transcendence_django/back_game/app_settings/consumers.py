@@ -111,7 +111,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
-            await monitor.join_arena(self.user_id, player_name, self.channel_id, arena_id)
+            monitor.join_arena(self.user_id, player_name, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
@@ -138,7 +138,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def rematch(self, _):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        await monitor.rematch(self.user_id, self.channel_id, self.arena_id)
+        monitor.rematch(self.user_id, self.channel_id, self.arena_id)
         await self.send_message(f"{self.user_id} asked for a rematch.")
         await self.send_arena_data(self.channel_id, self.arena_id)
 
