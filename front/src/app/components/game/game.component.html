@@ -1,5 +1,5 @@
 <app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
-<section class="game-container" [class.hidden]="!dataLoaded">
+<section class="game-container" [class.hidden]="!dataLoaded || isWaiting">
   <section class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
     <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
     <section class="score-display">
@@ -11,4 +11,8 @@
     <app-paddle [id]="2"></app-paddle>
   </section>
 </section>
+<h6 *ngIf="dataLoaded && isWaiting">
+    Current players: {{ waitingPlayers.join(', ') }} <br>
+    Waiting for players to join...
+</h6>
 <app-gameover></app-gameover>

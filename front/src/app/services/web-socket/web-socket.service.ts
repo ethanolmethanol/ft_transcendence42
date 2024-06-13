@@ -122,7 +122,7 @@ export class WebSocketService implements OnInit, OnDestroy {
     console.log(`Join ${arena_id}`);
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"user_id": this.userService.getUserID(), "arena_id": arena_id});
+      this.send('join', {"user_id": this.userService.getUserID(), "player": this.userService.getUsername(), "arena_id": arena_id});
       this.getMessages().subscribe(message => {
         const data = JSON.parse(message);
         if (data.type === 'arena') {

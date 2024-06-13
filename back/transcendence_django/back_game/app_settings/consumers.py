@@ -101,8 +101,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         except ChannelError as e:
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
 
-    async def join(self, message: dict[str, int]):
+    async def join(self, message: dict[str, Any]):
         self.user_id = message[USER_ID]
+        player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
             self.arena = monitor.channels[self.channel_id][arena_id]
@@ -113,10 +114,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
-            joined_arena = monitor.get_arena_from_user_id(self.user_id)
-            if joined_arena is not None and joined_arena["id"] != arena_id:
+            if monitor.is_user_active_in_game(self.user_id, self.channel_id, arena_id):
                 raise ValueError("User already in another arena")
-            self.arena.enter_arena(self.user_id)
+            self.arena.enter_arena(self.user_id, player_name)
             monitor.add_user(self.user_id, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             log.error("Error: %s", e)
@@ -145,10 +145,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         if not self.joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
         arena_data: dict[str, Any] | None = self.arena.rematch(self.user_id)
-        if arena_data is None:
-            await self.send_message(f"{self.user_id} asked for a rematch.")
-        else:
-            await self.send_update({ARENA: arena_data})
+        await self.send_message(f"{self.user_id} asked for a rematch.")
+        await self.send_update({ARENA: arena_data})
 
     async def move_paddle(self, message: dict[str, Any]):
         if not self.joined:

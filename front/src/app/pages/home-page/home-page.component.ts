@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {RouterLink} from "@angular/router";
-import {HeaderComponent} from "../../components/header/./header.component";
-import {LeaderboardComponent} from "../../components/leaderboard/leaderboard.component";
+import { RouterLink } from "@angular/router";
+import { HeaderComponent } from "../../components/header/./header.component";
+import { LeaderboardComponent } from "../../components/leaderboard/leaderboard.component";
 import { UserService } from '../../services/user/user.service';
-import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
+import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 
 @Component({
   selector: 'app-home-page',

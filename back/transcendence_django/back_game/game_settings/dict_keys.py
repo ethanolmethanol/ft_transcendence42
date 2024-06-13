@@ -5,6 +5,9 @@ CHANNEL_ERROR_CODE = "code"
 MESSAGE = "message"
 TYPE = "type"
 
+# Channel
+CHANNEL_ID = "channel_id"
+
 # Game error
 GAME_ERROR = "game_error"
 ERROR = "error"
@@ -63,6 +66,7 @@ TIME_LEFT = "time_left"
 POSITION = "position"
 SPEED = "speed"
 RADIUS = "radius"
+PLAYER_NAME = "player_name"
 BALL_X_OUT_OF_BOUNDS = "Ball x-coordinate is out of bounds."
 BALL_Y_OUT_OF_BOUNDS = "Ball y-coordinate is out of bounds."
 START = "start"

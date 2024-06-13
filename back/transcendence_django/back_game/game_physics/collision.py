@@ -17,7 +17,7 @@ class Collision:
     @staticmethod
     def resolve_collision(ball: Ball) -> dict[str, Any]:
         new_position = ball.get_next_position()
-        collided_slot = Collision.__handle_collision(new_position, ball)
+        collided_slot = Collision.handle_collision(new_position, ball)
         ball_position_update = {BALL: {POSITION: ball.position.__dict__}}
         return (
             {**collided_slot, **ball_position_update}
@@ -27,11 +27,11 @@ class Collision:
 
     @staticmethod
     def update_ball_collision(ball: Ball, paddle: Paddle):
-        if Collision.__is_paddle_collision(ball, paddle):
-            Collision.__handle_collision(ball.position, ball)
+        if Collision.is_paddle_collision(ball, paddle):
+            Collision.handle_collision(ball.position, ball)
 
     @staticmethod
-    def __is_paddle_collision(ball: Ball, paddle: Paddle) -> bool:
+    def is_paddle_collision(ball: Ball, paddle: Paddle) -> bool:
         """
         Checks if the ball collides with a paddle.
         """
@@ -42,7 +42,7 @@ class Collision:
         return distance < ball.radius
 
     @staticmethod
-    def __collide_with_paddle(ball: Ball, paddle: Paddle):
+    def collide_with_paddle(ball: Ball, paddle: Paddle):
         BallCollider.push_ball(ball, paddle)
         collision_point = PaddleCollider.get_collision_point(ball, paddle)
         ball.speed = PaddleCollider.get_ball_speed_after_paddle_collision(
@@ -51,10 +51,10 @@ class Collision:
         logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
-    def __handle_collision(new_position: Position, ball: Ball) -> dict[str, int] | None:
+    def handle_collision(new_position: Position, ball: Ball) -> dict[str, int] | None:
         for paddle in ball.paddles.values():
-            if Collision.__is_paddle_collision(ball, paddle):
-                Collision.__collide_with_paddle(ball, paddle)
+            if Collision.is_paddle_collision(ball, paddle):
+                Collision.collide_with_paddle(ball, paddle)
                 return None
         collided_slot: int | None = BallCollider.ball_collide_with_wall(
             new_position, ball
