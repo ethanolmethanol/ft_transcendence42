@@ -7,8 +7,8 @@ import { AuthGuard } from "./guards/auth.guard";
 import { GuestGuard } from "./guards/guest.guard";
 import { GamePageComponent } from "./pages/game-page/game-page.component";
 import { MonitorPageComponent } from "./pages/monitor-page/monitor-page.component";
+import { OnlineGameSelectorPageComponent } from "./pages/online-game-selector-page/online-game-selector-page.component";
 import { CreateOnlineGamePageComponent } from './pages/create-online-game-page/create-online-game-page.component';
-import {OnlineGameSelectorPageComponent} from "./pages/online-game-selector-page/online-game-selector-page.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },

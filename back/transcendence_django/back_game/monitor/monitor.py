@@ -59,7 +59,7 @@ class Monitor:
         send_start_timer: Optional[Callable[[str, float], Coroutine[Any, Any, None]]],
         send_update: Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]],
         send_game_over: Optional[Callable[[str, float], Coroutine[Any, Any, None]]]):
-        arena = monitor.get_arena(channel_id, arena_id)
+        arena = self.get_arena(channel_id, arena_id)
         if arena is None:
             raise KeyError("Arena not found")
         arena.game_update_callback = send_update

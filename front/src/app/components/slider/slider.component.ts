@@ -23,11 +23,9 @@ export class SliderComponent implements OnChanges {
     if (changes.options && this.options) {
       this.max = this.options.length - 1;
       this.value = this.options[this.optionIndex];
-      console.log("New slider: ", this.options, " with default value: ", this.options[this.optionIndex]);
     }
     if (changes.optionIndex) {
       this.value = this.options[this.optionIndex];
-      console.log("New value: ", this.options[this.optionIndex]);
     }
   }
 
@@ -35,7 +33,6 @@ export class SliderComponent implements OnChanges {
     this.optionIndex = Number(event.target.value);
     this.selectedOption.emit(this.optionIndex);
     this.optionIndexChange.emit(this.optionIndex);
-    console.log("valIndex: ", this.optionIndex, " | val: ", this.options[this.optionIndex]);
   }
 
   onMouseMove(event: MouseEvent): void {
@@ -46,7 +43,7 @@ export class SliderComponent implements OnChanges {
       const optionEl = this.el.nativeElement.querySelector(`option:nth-child(${index + 1})`);
       const optionRect = optionEl.getBoundingClientRect();
       const optionPos = optionRect.left - sliderRect.left;
-  
+
       if (cursorPos >= optionPos && cursorPos <= optionPos + optionRect.width) {
         this.renderer.setStyle(optionEl, 'color', '#e5f25a');  // Yellow when the cursor is over the option
       } else {

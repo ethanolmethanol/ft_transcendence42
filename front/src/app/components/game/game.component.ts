@@ -302,7 +302,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         } else {
           playerName = paddle.playerName;
         }
-        this.movePaddle(paddle, playerName, bindingMap)
+        this.movePaddle(playerName, bindingMap)
       }
     });
 
@@ -310,7 +310,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     requestAnimationFrame(() => this.gameLoop());
   }
 
-  private movePaddle(paddle: PaddleComponent, playerName: string, binding: { upKey: string; downKey: string }) {
+  private movePaddle(playerName: string, binding: { upKey: string; downKey: string }) {
     const isMovingUp = this._pressedKeys.has(binding.upKey);
     const isMovingDown = this._pressedKeys.has(binding.downKey);
 

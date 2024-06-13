@@ -11,10 +11,8 @@ from back_game.game_settings.game_constants import (
     LISTENING,
     OVER,
     PROCESSING,
-    READY_TO_START,
     STARTED,
     VALID_DIRECTIONS,
-    WAITING,
 )
 
 logger = logging.getLogger(__name__)
