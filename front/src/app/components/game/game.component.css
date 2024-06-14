@@ -62,7 +62,7 @@ h6 {
     transform: translate(-50%, -50%);
   }
 
-.waiting_players {
+.waiting-players {
   display: flex;
   justify-content: space-around;
   align-items: center;

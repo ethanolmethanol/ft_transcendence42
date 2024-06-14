@@ -10,6 +10,7 @@ from back_game.game_settings.game_constants import DEAD, WAITING
 
 logger = logging.getLogger(__name__)
 
+
 class ChannelManager:
     def __init__(self):
         self.channels: dict[str, dict[int, Arena]] = {}
@@ -23,7 +24,9 @@ class ChannelManager:
         self.add_user_to_channel(user_id, channel_id, arena_id)
         return channel
 
-    def join_already_created_channel(self, user_id: int, is_remote: bool) -> dict[str, Any] | None:
+    def join_already_created_channel(
+        self, user_id: int, is_remote: bool
+    ) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None and is_remote:
             channel = self.__get_available_channel()

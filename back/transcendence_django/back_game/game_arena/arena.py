@@ -24,7 +24,15 @@ from back_game.game_settings.dict_keys import (
     SCORES,
     STATUS,
 )
-from back_game.game_settings.game_constants import MAXIMUM_SCORE, CREATED, READY_TO_START, STARTED, TIME_START, TIME_START_INTERVAL, WAITING
+from back_game.game_settings.game_constants import (
+    CREATED,
+    MAXIMUM_SCORE,
+    READY_TO_START,
+    STARTED,
+    TIME_START,
+    TIME_START_INTERVAL,
+    WAITING
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +58,18 @@ class Arena:
             ID: self.id,
             STATUS: self.game.status,
             PLAYERS: [
-                player.player_name for player in self.player_manager.players.values() if player.status == PlayerStatus(ENABLED)
+                player.player_name
+                for player in self.player_manager.players.values()
+                if player.status == PlayerStatus(ENABLED)
             ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),
             PADDLES: [paddle.to_dict() for paddle in self.game.paddles.values()],
             MAP: self.game.map.__dict__,
-            PLAYER_SPECS: {NB_PLAYERS: self.player_manager.nb_players, MODE: self.player_manager.is_remote},
+            PLAYER_SPECS: {
+                NB_PLAYERS: self.player_manager.nb_players,
+                MODE: self.player_manager.is_remote
+            },
         }
 
     def is_remote(self) -> bool:
@@ -162,7 +175,10 @@ class Arena:
         return False
 
     def did_player_win(self) -> bool:
-        return any(player.score >= MAXIMUM_SCORE for player in self.player_manager.players.values())
+        return any(
+            player.score >= MAXIMUM_SCORE
+            for player in self.player_manager.players.values()
+        )
 
     def set_status(self, status: GameStatus):
         self.game.set_status(status)

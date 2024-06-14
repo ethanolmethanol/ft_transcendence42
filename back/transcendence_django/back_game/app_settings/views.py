@@ -3,7 +3,14 @@ import logging
 from http import HTTPStatus
 from json import JSONDecodeError
 
-from back_game.game_settings.dict_keys import CHANNEL_ID, ERROR, MODE, PLAYER_SPECS, USER_ID
+from back_game.game_settings.dict_keys import (
+    ARENA,
+    CHANNEL_ID,
+    ERROR,
+    MODE,
+    PLAYER_SPECS,
+    USER_ID
+)
 from back_game.monitor.monitor import monitor
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -44,7 +51,7 @@ async def join_channel(request) -> JsonResponse:
             channel = await monitor.join_channel(user_id, channel_id)
             if channel is None:
                 raise ValueError("Channel does not exist")
-        channel_players_specs = channel['arena'][PLAYER_SPECS]
+        channel_players_specs = channel[ARENA][PLAYER_SPECS]
         if request_player_specs != channel_players_specs:
             raise ValueError("Channel has different player specs")
         return JsonResponse(channel, status=HTTPStatus.OK)

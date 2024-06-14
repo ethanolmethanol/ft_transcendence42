@@ -71,11 +71,6 @@ class PlayerManager:
                 self.finish_player(player.user_id)
 
     def is_player_in_game(self, user_id: int) -> bool:
-        if self.is_remote:
-            return any(
-                player.user_id == user_id
-                for player in self.players.values()
-            )
         return any(player.user_id == user_id for player in self.players.values())
 
     def has_enough_players(self) -> bool:
@@ -148,9 +143,7 @@ class PlayerManager:
         return scores
 
     def count_players(self, state: PlayerStatus = ENABLED) -> int:
-        return sum(
-            player.status == state for player in self.players.values()
-        )
+        return sum(player.status == state for player in self.players.values())
 
     def get_player_name(self, user_id: int) -> str:
         return self.__get_player_from_user_id(user_id).player_name

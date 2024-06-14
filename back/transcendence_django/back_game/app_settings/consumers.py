@@ -106,7 +106,13 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
-            monitor.init_arena(self.channel_id, arena_id, self.send_start_timer, self.send_update, self.send_game_over)
+            monitor.init_arena(
+                self.channel_id,
+                arena_id,
+                self.send_start_timer,
+                self.send_update,
+                self.send_game_over
+            )
             self.arena_id = arena_id
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
@@ -147,7 +153,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
         player_name: str = message[PLAYER]
         direction: int = message[DIRECTION]
-        paddle_data: dict[str, Any] = monitor.move_paddle(self.user_id, self.channel_id, self.arena_id, player_name, direction)
+        paddle_data: dict[str, Any] = monitor.move_paddle(
+            self.user_id, self.channel_id, self.arena_id, player_name, direction
+        )
         await self.send_update({PADDLE: paddle_data})
 
     async def send_arena_data(self, channel_id: str, arena_id: int):
@@ -179,7 +187,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def safe_send(self, data: dict[str, Any]):
-        websocket = self.scope.get('websocket')
+        websocket = self.scope.get("websocket")
         try:
             await self.send(text_data=json.dumps(data))
         except Exception as e:
@@ -201,9 +209,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         logger.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
         await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
-
     async def send_update(self, update: dict[str, Any]):
-#         logger.info("Sending update: %s", update)
+        #logger.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):
