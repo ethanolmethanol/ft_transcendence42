@@ -5,7 +5,13 @@ from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.dict_keys import ARENA, CHANNEL_ID
+from back_game.game_settings.dict_keys import (
+    ARENA,
+    CHANNEL_ID,
+    OVER_CALLBACK,
+    START_TIMER_CALLBACK,
+    UPDATE_CALLBACK,
+)
 from back_game.game_settings.game_constants import (
     DYING,
     MONITOR_LOOP_INTERVAL,
@@ -62,16 +68,14 @@ class Monitor:
         self,
         channel_id: str,
         arena_id: int,
-        send_start_timer: Optional[Callable[[str, float], Coroutine[Any, Any, None]]],
-        send_update: Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]],
-        send_game_over: Optional[Callable[[str, float], Coroutine[Any, Any, None]]],
+        callbacks: dict[str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]],
     ):
         arena = self.get_arena(channel_id, arena_id)
         if arena is None:
             raise KeyError("Arena not found")
-        arena.game_update_callback = send_update
-        arena.game_over_callback = send_game_over
-        arena.start_timer_callback = send_start_timer
+        arena.game_update_callback = callbacks[UPDATE_CALLBACK]
+        arena.game_over_callback = callbacks[OVER_CALLBACK]
+        arena.start_timer_callback = callbacks[START_TIMER_CALLBACK]
 
     def join_arena(
         self, user_id: int, player_name: str, channel_id: str, arena_id: int

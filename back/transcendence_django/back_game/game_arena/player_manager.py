@@ -35,11 +35,11 @@ class PlayerManager:
         self.last_kick_check: float = time.time()
 
     def is_empty(self) -> bool:
-        return self.count_players(ENABLED) == 0
+        return self.__count_players(ENABLED) == 0
 
     def is_full(self) -> bool:
-        enable_players_count = self.count_players(ENABLED)
-        disable_players_count = self.count_players(DISABLED)
+        enable_players_count = self.__count_players(ENABLED)
+        disable_players_count = self.__count_players(DISABLED)
         return enable_players_count + disable_players_count == self.nb_players
 
     def add_player(self, user_id: int, player_name: str):
@@ -54,39 +54,31 @@ class PlayerManager:
             raise ValueError(ARENA_FULL)
 
     def disable_player(self, user_id: int):
-        self.change_player_status(user_id, PlayerStatus(DISABLED))
+        self.__change_player_status(user_id, PlayerStatus(DISABLED))
 
     def enable_player(self, user_id: int):
-        self.change_player_status(user_id, PlayerStatus(ENABLED))
+        self.__change_player_status(user_id, PlayerStatus(ENABLED))
 
     def player_gave_up(self, user_id: int):
-        self.change_player_status(user_id, PlayerStatus(GIVEN_UP))
-
-    def finish_player(self, user_id: int):
-        self.change_player_status(user_id, PlayerStatus(OVER))
+        self.__change_player_status(user_id, PlayerStatus(GIVEN_UP))
 
     def finish_active_players(self):
         for player in self.players.values():
             if player.is_active():
-                self.finish_player(player.user_id)
+                self.__finish_player(player.user_id)
 
     def is_player_in_game(self, user_id: int) -> bool:
         return any(player.user_id == user_id for player in self.players.values())
 
     def has_enough_players(self) -> bool:
-        enable_players_count = self.count_players(ENABLED)
-        disable_players_count = self.count_players(DISABLED)
+        enable_players_count = self.__count_players(ENABLED)
+        disable_players_count = self.__count_players(DISABLED)
         return enable_players_count + disable_players_count >= 2
 
     def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
             raise KeyError(UNKNOWN_USER)
         self.enable_player(user_id)
-
-    def are_all_players_ready(self) -> bool:
-        return self.is_full() and all(
-            player.status == (ENABLED) for player in self.players.values()
-        )
 
     def did_player_give_up(self, user_id: int) -> bool:
         try:
@@ -128,7 +120,20 @@ class PlayerManager:
         for player in self.players.values():
             player.reset()
 
-    def change_player_status(self, user_id: int, status: PlayerStatus):
+    def get_scores(self) -> list[int]:
+        if len(self.players) < self.nb_players:
+            scores = [0 for _ in range(self.nb_players)]
+        else:
+            scores = [player.score for player in self.players.values()]
+        return scores
+
+    def get_player_name(self, user_id: int) -> str:
+        return self.__get_player_from_user_id(user_id).player_name
+
+    def __count_players(self, state: PlayerStatus = ENABLED) -> int:
+        return sum(player.status == state for player in self.players.values())
+
+    def __change_player_status(self, user_id: int, status: PlayerStatus):
         if self.is_remote:
             player = self.__get_player_from_user_id(user_id)
             player.status = status
@@ -137,18 +142,8 @@ class PlayerManager:
             for player in self.players.values():
                 player.status = status
 
-    def get_scores(self) -> list[int]:
-        if len(self.players) < self.nb_players:
-            scores = [0 for _ in range(self.nb_players)]
-        else:
-            scores = [player.score for player in self.players.values()]
-        return scores
-
-    def count_players(self, state: PlayerStatus = ENABLED) -> int:
-        return sum(player.status == state for player in self.players.values())
-
-    def get_player_name(self, user_id: int) -> str:
-        return self.__get_player_from_user_id(user_id).player_name
+    def __finish_player(self, user_id: int):
+        self.__change_player_status(user_id, PlayerStatus(OVER))
 
     def __fill_player_specs(self, players_specs: dict[str, int]):
         self.nb_players = players_specs[NB_PLAYERS]

@@ -110,14 +110,16 @@ class Arena:
     async def start_game(self):
         self.game.set_status(READY_TO_START)
         self.__reset()
-        await self.game_update_callback({ARENA: self.to_dict()})
+        if self.game_update_callback is not None:
+            await self.game_update_callback({ARENA: self.to_dict()})
         for time in range(0, TIME_START):
             if self.start_timer_callback is not None:
                 await self.start_timer_callback("Game will begin in", TIME_START - time)
             await asyncio.sleep(TIME_START_INTERVAL)
         self.game.start()
         logger.info("Game started. %s", self.id)
-        await self.game_update_callback({ARENA: self.to_dict()})
+        if self.game_update_callback is not None:
+            await self.game_update_callback({ARENA: self.to_dict()})
 
     def conclude_game(self):
         self.player_manager.finish_active_players()
@@ -215,7 +217,7 @@ class Arena:
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
-            self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
+            self.player_manager.enable_player(user_id)
         else:
             self.__register_player(user_id, player_name)
 

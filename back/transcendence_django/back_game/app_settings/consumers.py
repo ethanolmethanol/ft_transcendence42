@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import Any, Callable, Coroutine
+from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_settings.dict_keys import (
     ARENA,
@@ -18,13 +18,16 @@ from back_game.game_settings.dict_keys import (
     LEAVE,
     MESSAGE,
     MOVE_PADDLE,
+    OVER_CALLBACK,
     PADDLE,
     PLAYER,
     REMATCH,
     START_TIMER,
+    START_TIMER_CALLBACK,
     TIME,
     TYPE,
     UPDATE,
+    UPDATE_CALLBACK,
     USER_ID,
     WINNER,
 )
@@ -107,12 +110,17 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name = message[PLAYER]
         arena_id: int = message[ARENA_ID]
         try:
+            callbacks: dict[
+                str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
+            ] = {
+                UPDATE_CALLBACK: self.send_update,
+                OVER_CALLBACK: self.send_game_over,
+                START_TIMER_CALLBACK: self.send_start_timer,
+            }
             monitor.init_arena(
                 self.channel_id,
                 arena_id,
-                self.send_start_timer,
-                self.send_update,
-                self.send_game_over,
+                callbacks,
             )
             self.arena_id = arena_id
         except KeyError as e:
@@ -188,7 +196,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def safe_send(self, data: dict[str, Any]):
-        websocket = self.scope.get("websocket")
         try:
             await self.send(text_data=json.dumps(data))
         except Exception as e:
