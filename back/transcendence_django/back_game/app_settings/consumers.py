@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from typing import Any, Callable, Coroutine
@@ -61,7 +62,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
         await self.accept()
-        if monitor.does_exist_channel(self.channel_id) == False:
+        if monitor.does_exist_channel(self.channel_id) is False:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
@@ -154,7 +155,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name: str = message[PLAYER]
         direction: int = message[DIRECTION]
         paddle_data: dict[str, Any] = monitor.move_paddle(
-            self.user_id, self.channel_id, self.arena_id, player_name, direction
+            self.channel_id, self.arena_id, player_name, direction
         )
         await self.send_update({PADDLE: paddle_data})
 
@@ -191,7 +192,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         try:
             await self.send(text_data=json.dumps(data))
         except Exception as e:
-            logger.error(f"Error: {e}")
+            logger.error("Error: %s", e)
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]

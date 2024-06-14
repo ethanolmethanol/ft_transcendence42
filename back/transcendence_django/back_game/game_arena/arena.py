@@ -72,9 +72,6 @@ class Arena:
             },
         }
 
-    def is_remote(self) -> bool:
-        return self.player_manager.is_remote
-
     def is_empty(self) -> bool:
         return self.player_manager.is_empty()
 
@@ -138,10 +135,7 @@ class Arena:
             self.player_manager.remove_player(player_name)
             self.game.remove_paddle(player_name)
         else:
-            self.disable_player(user_id)
-
-    def disable_player(self, user_id: int):
-        self.player_manager.disable_player(user_id)
+            self.__disable_player(user_id)
 
     def player_gave_up(self, user_id: int):
         self.player_manager.player_gave_up(user_id)
@@ -164,31 +158,34 @@ class Arena:
         return update_dict
 
     def can_be_started(self) -> bool:
-        return self.game.status == GameStatus(WAITING) and self.has_enough_players()
+        return self.game.status == GameStatus(WAITING) and self.__has_enough_players()
 
     def can_be_over(self) -> bool:
         status = self.game.status
         if status == GameStatus(WAITING):
             return self.is_empty()
-        elif status == GameStatus(STARTED):
-            return self.has_enough_players() == False or self.did_player_win()
+        if status == GameStatus(STARTED):
+            return self.__has_enough_players() is False or self.__did_player_win()
         return False
 
-    def did_player_win(self) -> bool:
+    def set_status(self, status: GameStatus):
+        self.game.set_status(status)
+
+    def did_player_give_up(self, user_id: int) -> bool:
+        return self.player_manager.did_player_give_up(user_id)
+
+    def __disable_player(self, user_id: int):
+        self.player_manager.disable_player(user_id)
+
+    def __did_player_win(self) -> bool:
         return any(
             player.score >= MAXIMUM_SCORE
             for player in self.player_manager.players.values()
         )
 
-    def set_status(self, status: GameStatus):
-        self.game.set_status(status)
-
-    def has_enough_players(self) -> bool:
+    def __has_enough_players(self) -> bool:
         logger.info("Checking if there are enough players in the arena %s", self.id)
         return self.player_manager.has_enough_players()
-
-    def did_player_give_up(self, user_id: int) -> bool:
-        return self.player_manager.did_player_give_up(user_id)
 
     def __update_scores(self, player_slot: int) -> dict[str, str]:
         player_name = self.__get_player_name_by_paddle_slot(player_slot)

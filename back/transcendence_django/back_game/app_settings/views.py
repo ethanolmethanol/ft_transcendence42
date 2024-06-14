@@ -65,8 +65,8 @@ async def is_user_in_channel(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
-        is_user_in_channel: bool = monitor.is_user_in_channel(user_id)
-        return JsonResponse({"isInChannel": is_user_in_channel}, status=HTTPStatus.OK)
+        is_user_in_channel_value: bool = monitor.is_user_in_channel(user_id)
+        return JsonResponse({"isInChannel": is_user_in_channel_value}, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
