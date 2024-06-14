@@ -31,7 +31,7 @@ from back_game.game_settings.game_constants import (
     STARTED,
     TIME_START,
     TIME_START_INTERVAL,
-    WAITING
+    WAITING,
 )
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class Arena:
             MAP: self.game.map.__dict__,
             PLAYER_SPECS: {
                 NB_PLAYERS: self.player_manager.nb_players,
-                MODE: self.player_manager.is_remote
+                MODE: self.player_manager.is_remote,
             },
         }
 

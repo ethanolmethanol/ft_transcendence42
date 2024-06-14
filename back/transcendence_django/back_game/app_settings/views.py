@@ -9,7 +9,7 @@ from back_game.game_settings.dict_keys import (
     ERROR,
     MODE,
     PLAYER_SPECS,
-    USER_ID
+    USER_ID,
 )
 from back_game.monitor.monitor import monitor
 from django.http import JsonResponse

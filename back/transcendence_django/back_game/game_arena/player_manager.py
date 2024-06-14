@@ -101,7 +101,9 @@ class PlayerManager:
             return False
 
     def get_winner(self) -> str:
-        active_players = [player for player in self.players.values() if player.is_active()]
+        active_players = [
+            player for player in self.players.values() if player.is_active()
+        ]
         if not active_players:
             return ""
         winner = max(active_players, key=lambda player: player.score)

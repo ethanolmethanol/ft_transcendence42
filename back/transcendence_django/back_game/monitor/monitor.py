@@ -65,7 +65,7 @@ class Monitor:
         arena_id: int,
         send_start_timer: Optional[Callable[[str, float], Coroutine[Any, Any, None]]],
         send_update: Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]],
-        send_game_over: Optional[Callable[[str, float], Coroutine[Any, Any, None]]]
+        send_game_over: Optional[Callable[[str, float], Coroutine[Any, Any, None]]],
     ):
         arena = self.get_arena(channel_id, arena_id)
         if arena is None:
@@ -103,7 +103,7 @@ class Monitor:
         channel_id: str,
         arena_id: int,
         player_name: str,
-        direction: int
+        direction: int,
     ) -> dict[str, Any]:
         arena = self.get_arena(channel_id, arena_id)
         return arena.move_paddle(player_name, direction)

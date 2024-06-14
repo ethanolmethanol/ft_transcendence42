@@ -111,7 +111,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 arena_id,
                 self.send_start_timer,
                 self.send_update,
-                self.send_game_over
+                self.send_game_over,
             )
             self.arena_id = arena_id
         except KeyError as e:
@@ -210,7 +210,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def send_update(self, update: dict[str, Any]):
-        #logger.info("Sending update: %s", update)
+        # logger.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):
