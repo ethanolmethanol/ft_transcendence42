@@ -34,12 +34,8 @@ from back_game.game_settings.dict_keys import (
     USER_ID,
     WINNER,
 )
-from back_game.game_settings.game_constants import (
-    INVALID_CHANNEL,
-    UNKNOWN_CHANNEL_ID,
-)
+from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
 from back_game.monitor.monitor import monitor
-
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 logger = logging.getLogger(__name__)
@@ -100,7 +96,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         player_name = message[PLAYER]
         arena_id: str = message[ARENA_ID]
         callbacks: dict[
-            str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
+            str, Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]]
         ] = {
             UPDATE_CALLBACK: self.send_update,
             OVER_CALLBACK: self.send_game_over,
@@ -168,9 +164,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             logger.error("Serialization type error: %s", e)
         except ConnectionResetError as e:
             logger.error("Connection reset error: %s", e)
-        except Exception as e:
-            logger.error("Unexpected error: %s", e)
-
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]

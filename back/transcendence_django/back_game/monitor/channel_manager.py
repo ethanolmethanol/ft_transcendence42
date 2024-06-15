@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class ChannelManager:
     def __init__(self):
-        self.channels: dict[str, dict[int, Arena]] = {}
+        self.channels: dict[str, dict[str, Arena]] = {}
         self.user_game_table: dict[int, dict[str, Any]] = {}
 
     async def join_channel(
@@ -42,7 +42,7 @@ class ChannelManager:
     ) -> dict[str, Any]:
         new_arena: Arena = Arena(players_specs)
         channel_id: str = self.__generate_random_id(10)
-        self.channels[channel_id]: dict[str, Arena] = {new_arena.id: new_arena}
+        self.channels[channel_id] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
         return self.user_game_table[user_id]
@@ -60,7 +60,7 @@ class ChannelManager:
             "arena": arena.to_dict(),
         }
 
-    def delete_arena(self, arenas: dict[int, Arena], arena_id: str):
+    def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
         arena = arenas[arena_id]
         arena.set_status(GameStatus(DEAD))
         logger.info("Arena %s is dead", arena.id)

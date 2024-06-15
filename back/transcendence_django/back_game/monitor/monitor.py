@@ -43,7 +43,7 @@ class Monitor:
         asyncio.create_task(self.run_game_loop(arenas))
         return new_channel
 
-    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any]:
+    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any] | None:
         return await self.channel_manager.join_channel(user_id, channel_id)
 
     def join_already_created_channel(
@@ -52,7 +52,7 @@ class Monitor:
         return self.channel_manager.join_already_created_channel(user_id, is_remote)
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena:
-        arena: Arena = self.channel_manager.get_arena(channel_id, arena_id)
+        arena: Arena | None = self.channel_manager.get_arena(channel_id, arena_id)
         if arena is None:
             raise KeyError("Arena not found")
         return arena
@@ -71,7 +71,7 @@ class Monitor:
         channel_id: str,
         arena_id: str,
         callbacks: dict[
-            str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
+            str, Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]]
         ],
     ):
         logger.info("User table: %s", self.channel_manager.user_game_table)

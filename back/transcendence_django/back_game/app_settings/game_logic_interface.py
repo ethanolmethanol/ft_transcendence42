@@ -51,7 +51,10 @@ class GameLogicInterface:
         try:
             monitor.leave_arena(self.user_id, self.channel_id, self.arena_id)
         except KeyError as e:
-            raise ChannelError(NOT_ENTERED, "User cannot leave or has already left this arena.") from e
+            raise ChannelError(
+                NOT_ENTERED,
+                "User cannot leave or has already left this arena."
+            ) from e
         self.has_joined = False
 
     def give_up(self):
@@ -71,4 +74,3 @@ class GameLogicInterface:
         return monitor.move_paddle(
             self.channel_id, self.arena_id, player_name, direction
         )
-
