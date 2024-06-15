@@ -3,6 +3,7 @@ import json
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
+from back_game.game_arena.arena import Arena
 from back_game.game_settings.dict_keys import (
     ARENA,
     ARENA_ID,
@@ -168,7 +169,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({PADDLE: paddle_data})
 
     async def send_arena_data(self, channel_id: str, arena_id: int):
-        arena = monitor.get_arena(channel_id, arena_id)
+        arena: Arena = monitor.get_arena(channel_id, arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 
     async def send_start_timer(self, start_timer_message: str, time: float):

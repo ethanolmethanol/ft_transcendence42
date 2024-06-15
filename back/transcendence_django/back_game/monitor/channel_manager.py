@@ -1,13 +1,12 @@
 import logging
 import random
 import string
-
 from typing import Any
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import DEAD, WAITING
 from back_game.game_arena.player import Player
+from back_game.game_settings.game_constants import DEAD, WAITING
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class ChannelManager:
         self.channels: dict[str, dict[int, Arena]] = {}
         self.user_game_table: dict[int, dict[str, Any]] = {}
 
-    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any]:
+    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if self.channels[channel_id] is None:
             return None
@@ -39,8 +38,8 @@ class ChannelManager:
         self, user_id: int, players_specs: dict[str, int]
     ) -> dict[str, Any]:
         new_arena: Arena = Arena(players_specs)
-        channel_id = self.__generate_random_id(10)
-        self.channels[channel_id] = {new_arena.id: new_arena}
+        channel_id: str = self.__generate_random_id(10)
+        self.channels[channel_id]: dict[int, Arena] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
         return self.user_game_table[user_id]

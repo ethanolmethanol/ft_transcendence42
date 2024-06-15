@@ -1,6 +1,5 @@
 import asyncio
 import logging
-
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
@@ -38,7 +37,7 @@ class Monitor:
         new_channel = await self.channel_manager.create_new_channel(
             user_id, players_specs
         )
-        channel_id = new_channel[CHANNEL_ID]
+        channel_id: str = new_channel[CHANNEL_ID]
         arenas = self.channel_manager.channels[channel_id]
         asyncio.create_task(self.monitor_arenas_loop(channel_id, arenas))
         asyncio.create_task(self.run_game_loop(arenas))
@@ -52,8 +51,9 @@ class Monitor:
     ) -> dict[str, Any] | None:
         return self.channel_manager.join_already_created_channel(user_id, is_remote)
 
-    def get_arena(self, channel_id: str, arena_id: int) -> Arena | None:
-        return self.channel_manager.get_arena(channel_id, arena_id)
+    def get_arena(self, channel_id: str, arena_id: int) -> Arena:
+        arena: Arena = self.channel_manager.get_arena(channel_id, arena_id)
+        return arena
 
     def does_exist_channel(self, channel_id: str) -> bool:
         return self.channel_manager.channels.get(channel_id) is not None
@@ -68,11 +68,9 @@ class Monitor:
         self,
         channel_id: str,
         arena_id: int,
-        callbacks: dict[str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]],
+        callbacks: dict[str, Optional[Callable[dict[str, Any], Coroutine[Any, Any, None]]]],
     ):
-        arena = self.get_arena(channel_id, arena_id)
-        if arena is None:
-            raise KeyError("Arena not found")
+        arena: Arena = self.get_arena(channel_id, arena_id)
         arena.game_update_callback = callbacks[UPDATE_CALLBACK]
         arena.game_over_callback = callbacks[OVER_CALLBACK]
         arena.start_timer_callback = callbacks[START_TIMER_CALLBACK]
@@ -82,21 +80,21 @@ class Monitor:
     ):
         if self.is_user_active_in_game(user_id, channel_id, arena_id):
             raise ValueError("User already in another arena")
-        arena = self.get_arena(channel_id, arena_id)
+        arena: Arena = self.get_arena(channel_id, arena_id)
         arena.enter_arena(user_id, player_name)
         self.add_user_to_channel(user_id, channel_id, arena_id)
 
     def give_up(self, user_id: int, channel_id: str, arena_id: int):
-        arena = self.get_arena(channel_id, arena_id)
+        arena: Arena = self.get_arena(channel_id, arena_id)
         arena.player_gave_up(user_id)
         self.channel_manager.delete_user(user_id)
 
     def rematch(self, user_id: int, channel_id: str, arena_id: int):
-        arena = self.get_arena(channel_id, arena_id)
+        arena: Arena = self.get_arena(channel_id, arena_id)
         arena.rematch(user_id)
 
     def get_winner(self, channel_id: str, arena_id: int) -> str:
-        arena = self.get_arena(channel_id, arena_id)
+        arena: Arena = self.get_arena(channel_id, arena_id)
         winner: str = arena.get_winner()
         return winner
 
@@ -107,7 +105,7 @@ class Monitor:
         player_name: str,
         direction: int,
     ) -> dict[str, Any]:
-        arena = self.get_arena(channel_id, arena_id)
+        arena: Arena = self.get_arena(channel_id, arena_id)
         return arena.move_paddle(player_name, direction)
 
     def leave_arena(self, user_id: int, channel_id: str, arena_id: int):
@@ -116,7 +114,9 @@ class Monitor:
     def is_user_active_in_game(
         self, user_id: int, channel_id: str, arena_id: int
     ) -> bool:
-        return self.channel_manager.is_user_active_in_game(user_id, channel_id, arena_id)
+        return self.channel_manager.is_user_active_in_game(
+            user_id, channel_id, arena_id
+        )
 
     async def monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
         while arenas:
