@@ -200,8 +200,15 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def safe_send(self, data: dict[str, Any]):
         try:
             await self.send(text_data=json.dumps(data))
+        except ValueError as e:
+            logger.error("Serialization value error: %s", e)
+        except TypeError as e:
+            logger.error("Serialization type error: %s", e)
+        except ConnectionResetError as e:
+            logger.error("Connection reset error: %s", e)
         except Exception as e:
-            logger.error("Error: %s", e)
+            logger.error("Unexpected error: %s", e)
+
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]

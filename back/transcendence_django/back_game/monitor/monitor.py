@@ -70,7 +70,9 @@ class Monitor:
         self,
         channel_id: str,
         arena_id: str,
-        callbacks: dict[str, Optional[Callable[dict[str, Any], Coroutine[Any, Any, None]]]],
+        callbacks: dict[
+            str, Optional[Callable[dict[str, Any], Coroutine[Any, Any, None]]]
+        ],
     ):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.game_update_callback = callbacks[UPDATE_CALLBACK]
