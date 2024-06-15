@@ -3,6 +3,8 @@ import json
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
+from back_game.app_settings.channel_error import ChannelError
+from back_game.app_settings.game_logic_interface import GameLogicInterface
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.dict_keys import (
     ARENA,
@@ -33,40 +35,27 @@ from back_game.game_settings.dict_keys import (
     WINNER,
 )
 from back_game.game_settings.game_constants import (
-    INVALID_ARENA,
     INVALID_CHANNEL,
-    NOT_ENTERED,
-    NOT_JOINED,
-    UNKNOWN_ARENA_ID,
     UNKNOWN_CHANNEL_ID,
 )
 from back_game.monitor.monitor import monitor
+
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 logger = logging.getLogger(__name__)
-
-
-class ChannelError(Exception):
-
-    def __init__(self, code: int, message: str):
-        self.code = code
-        self.message = message
 
 
 class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]):
         super().__init__(*args, **kwargs)
-        self.channel_id: str = ""
-        self.arena_id: str = ""
         self.room_group_name: str | None = None
-        self.joined: bool = False
-        self.user_id: int = -1
+        self.game = GameLogicInterface()
 
     async def connect(self):
-        self.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
+        self.game.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
         await self.accept()
-        if monitor.does_exist_channel(self.channel_id) is False:
+        if monitor.does_exist_channel(self.game.channel_id) is False:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
@@ -74,7 +63,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.add_user_to_channel_group()
 
     async def add_user_to_channel_group(self):
-        self.room_group_name = f"game_{self.channel_id}"
+        self.room_group_name = f"game_{self.game.channel_id}"
         logger.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
@@ -107,70 +96,43 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
 
     async def join(self, message: dict[str, Any]):
-        self.user_id = message[USER_ID]
+        user_id = message[USER_ID]
         player_name = message[PLAYER]
         arena_id: str = message[ARENA_ID]
-        try:
-            logger.info("Joining arena %s", arena_id)
-            callbacks: dict[
-                str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
-            ] = {
-                UPDATE_CALLBACK: self.send_update,
-                OVER_CALLBACK: self.send_game_over,
-                START_TIMER_CALLBACK: self.send_start_timer,
-            }
-            monitor.init_arena(
-                self.channel_id,
-                arena_id,
-                callbacks,
-            )
-            self.arena_id = arena_id
-        except KeyError as e:
-            raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
-        try:
-            monitor.join_arena(self.user_id, player_name, self.channel_id, arena_id)
-        except (KeyError, ValueError) as e:
-            logger.error("Error: %s", e)
-            raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
-        self.joined = True
-        await self.send_message(f"{self.user_id} has joined the game.")
-        await self.send_arena_data(self.channel_id, self.arena_id)
+        callbacks: dict[
+            str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
+        ] = {
+            UPDATE_CALLBACK: self.send_update,
+            OVER_CALLBACK: self.send_game_over,
+            START_TIMER_CALLBACK: self.send_start_timer,
+        }
+        self.game.join(user_id, player_name, arena_id, callbacks)
+        await self.send_message(f"{self.game.user_id} has joined the game.")
+        await self.send_arena_data()
 
     async def leave(self, _):
-        if not self.joined:
-            raise ChannelError(NOT_JOINED, "Attempt to leave without joining.")
-        monitor.leave_arena(self.user_id, self.channel_id, self.arena_id)
-        self.joined = False
-        await self.send_message(f"{self.user_id} has left the game.")
+        self.game.leave()
+        await self.send_message(f"{self.game.user_id} has left the game.")
 
     async def give_up(self, _):
-        if not self.joined:
-            raise ChannelError(NOT_JOINED, "Attempt to give up without joining.")
-        monitor.give_up(self.user_id, self.channel_id, self.arena_id)
-        self.joined = False
-        await self.send_message(f"{self.user_id} has given up.")
-        await self.send_update({GIVE_UP: self.user_id})
-        await self.send_arena_data(self.channel_id, self.arena_id)
+        self.game.give_up()
+        await self.send_message(f"{self.game.user_id} has given up.")
+        await self.send_update({GIVE_UP: self.game.user_id})
+        await self.send_arena_data()
 
     async def rematch(self, _):
-        if not self.joined:
-            raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        monitor.rematch(self.user_id, self.channel_id, self.arena_id)
-        await self.send_message(f"{self.user_id} asked for a rematch.")
-        await self.send_arena_data(self.channel_id, self.arena_id)
+        self.game.rematch()
+        await self.send_message(f"{self.game.user_id} asked for a rematch.")
+        await self.send_arena_data()
 
     async def move_paddle(self, message: dict[str, Any]):
-        if not self.joined:
-            raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
         player_name: str = message[PLAYER]
         direction: int = message[DIRECTION]
-        paddle_data: dict[str, Any] = monitor.move_paddle(
-            self.channel_id, self.arena_id, player_name, direction
-        )
+        paddle_data = self.game.move_paddle(player_name, direction)
         await self.send_update({PADDLE: paddle_data})
 
-    async def send_arena_data(self, channel_id: str, arena_id: str):
-        arena: Arena = monitor.get_arena(channel_id, arena_id)
+    async def send_arena_data(self):
+        arena: Arena = monitor.get_arena(self.game.channel_id, self.game.arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 
     async def send_start_timer(self, start_timer_message: str, time: float):
@@ -185,7 +147,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_game_over(self, game_over_message: str, time: float):
-        winner = monitor.get_winner(self.channel_id, self.arena_id)
+        winner = monitor.get_winner(self.game.channel_id, self.game.arena_id)
         logger.info("Game over: %s wins. %s seconds left.", winner, time)
         await self.send_update(
             {

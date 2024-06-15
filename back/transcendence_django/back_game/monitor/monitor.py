@@ -71,9 +71,10 @@ class Monitor:
         channel_id: str,
         arena_id: str,
         callbacks: dict[
-            str, Optional[Callable[dict[str, Any], Coroutine[Any, Any, None]]]
+            str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
         ],
     ):
+        logger.info("User table: %s", self.channel_manager.user_game_table)
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.game_update_callback = callbacks[UPDATE_CALLBACK]
         arena.game_over_callback = callbacks[OVER_CALLBACK]

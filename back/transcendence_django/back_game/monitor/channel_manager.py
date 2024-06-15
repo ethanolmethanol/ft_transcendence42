@@ -42,7 +42,7 @@ class ChannelManager:
     ) -> dict[str, Any]:
         new_arena: Arena = Arena(players_specs)
         channel_id: str = self.__generate_random_id(10)
-        self.channels[channel_id]: dict[int, Arena] = {new_arena.id: new_arena}
+        self.channels[channel_id]: dict[str, Arena] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
         return self.user_game_table[user_id]
