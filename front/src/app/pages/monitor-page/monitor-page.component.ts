@@ -61,7 +61,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private getGameUrl(channel_id: string, arena_id: string): string {
+  private getGameUrl(channel_id: string, arena_id: number): string {
     return `/${this.gameType}/${channel_id}/${arena_id}`;
   }
 
@@ -148,7 +148,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   private navigateToGame(channelID: string, arenaID : number): void {
-    const gameUrl: string = this.getGameUrl(channelID, arenaID.toString());
+    const gameUrl: string = this.getGameUrl(channelID, arenaID);
     this.router.navigateByUrl(gameUrl);
   }
 }

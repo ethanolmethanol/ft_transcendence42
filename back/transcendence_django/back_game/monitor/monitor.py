@@ -51,8 +51,10 @@ class Monitor:
     ) -> dict[str, Any] | None:
         return self.channel_manager.join_already_created_channel(user_id, is_remote)
 
-    def get_arena(self, channel_id: str, arena_id: int) -> Arena:
+    def get_arena(self, channel_id: str, arena_id: str) -> Arena:
         arena: Arena = self.channel_manager.get_arena(channel_id, arena_id)
+        if arena is None:
+            raise KeyError("Arena not found")
         return arena
 
     def does_exist_channel(self, channel_id: str) -> bool:
@@ -61,13 +63,13 @@ class Monitor:
     def is_user_in_channel(self, user_id: int) -> bool:
         return self.channel_manager.get_channel_from_user_id(user_id) is not None
 
-    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: int):
+    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         self.channel_manager.add_user_to_channel(user_id, channel_id, arena_id)
 
     def init_arena(
         self,
         channel_id: str,
-        arena_id: int,
+        arena_id: str,
         callbacks: dict[str, Optional[Callable[dict[str, Any], Coroutine[Any, Any, None]]]],
     ):
         arena: Arena = self.get_arena(channel_id, arena_id)
@@ -76,7 +78,7 @@ class Monitor:
         arena.start_timer_callback = callbacks[START_TIMER_CALLBACK]
 
     def join_arena(
-        self, user_id: int, player_name: str, channel_id: str, arena_id: int
+        self, user_id: int, player_name: str, channel_id: str, arena_id: str
     ):
         if self.is_user_active_in_game(user_id, channel_id, arena_id):
             raise ValueError("User already in another arena")
@@ -84,16 +86,16 @@ class Monitor:
         arena.enter_arena(user_id, player_name)
         self.add_user_to_channel(user_id, channel_id, arena_id)
 
-    def give_up(self, user_id: int, channel_id: str, arena_id: int):
+    def give_up(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.player_gave_up(user_id)
         self.channel_manager.delete_user(user_id)
 
-    def rematch(self, user_id: int, channel_id: str, arena_id: int):
+    def rematch(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.rematch(user_id)
 
-    def get_winner(self, channel_id: str, arena_id: int) -> str:
+    def get_winner(self, channel_id: str, arena_id: str) -> str:
         arena: Arena = self.get_arena(channel_id, arena_id)
         winner: str = arena.get_winner()
         return winner
@@ -101,18 +103,18 @@ class Monitor:
     def move_paddle(
         self,
         channel_id: str,
-        arena_id: int,
+        arena_id: str,
         player_name: str,
         direction: int,
     ) -> dict[str, Any]:
         arena: Arena = self.get_arena(channel_id, arena_id)
         return arena.move_paddle(player_name, direction)
 
-    def leave_arena(self, user_id: int, channel_id: str, arena_id: int):
+    def leave_arena(self, user_id: int, channel_id: str, arena_id: str):
         self.channel_manager.leave_arena(user_id, channel_id, arena_id)
 
     def is_user_active_in_game(
-        self, user_id: int, channel_id: str, arena_id: int
+        self, user_id: int, channel_id: str, arena_id: str
     ) -> bool:
         return self.channel_manager.is_user_active_in_game(
             user_id, channel_id, arena_id

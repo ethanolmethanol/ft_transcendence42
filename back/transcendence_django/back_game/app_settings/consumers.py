@@ -58,7 +58,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]):
         super().__init__(*args, **kwargs)
         self.channel_id: str = ""
-        self.arena_id: int = -1
+        self.arena_id: str = ""
         self.room_group_name: str | None = None
         self.joined: bool = False
         self.user_id: int = -1
@@ -109,8 +109,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
     async def join(self, message: dict[str, Any]):
         self.user_id = message[USER_ID]
         player_name = message[PLAYER]
-        arena_id: int = message[ARENA_ID]
+        arena_id: str = message[ARENA_ID]
         try:
+            logger.info("Joining arena %s", arena_id)
             callbacks: dict[
                 str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]
             ] = {
@@ -168,7 +169,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
         await self.send_update({PADDLE: paddle_data})
 
-    async def send_arena_data(self, channel_id: str, arena_id: int):
+    async def send_arena_data(self, channel_id: str, arena_id: str):
         arena: Arena = monitor.get_arena(channel_id, arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 

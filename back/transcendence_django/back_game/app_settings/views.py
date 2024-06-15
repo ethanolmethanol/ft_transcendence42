@@ -2,6 +2,7 @@ import json
 import logging
 from http import HTTPStatus
 from json import JSONDecodeError
+from typing import Any
 
 from back_game.game_settings.dict_keys import (
     ARENA,

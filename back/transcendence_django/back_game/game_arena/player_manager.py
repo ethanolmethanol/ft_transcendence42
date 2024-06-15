@@ -130,7 +130,7 @@ class PlayerManager:
     def get_player_name(self, user_id: int) -> str:
         return self.__get_player_from_user_id(user_id).player_name
 
-    def __count_players(self, state: PlayerStatus = ENABLED) -> int:
+    def __count_players(self, state: PlayerStatus = PlayerStatus(ENABLED)) -> int:
         return sum(player.status == state for player in self.players.values())
 
     def __change_player_status(self, user_id: int, status: PlayerStatus):
