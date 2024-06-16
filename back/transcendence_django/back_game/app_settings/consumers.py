@@ -154,6 +154,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def safe_send(self, data: dict[str, Any]):
+        """
+        Safely send data to the client. If an error occurs, log it and do nothing.
+        """
         try:
             await self.send(text_data=json.dumps(data))
         except ValueError as e:
