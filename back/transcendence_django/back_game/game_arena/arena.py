@@ -114,7 +114,7 @@ class Arena:
             await self.game_update_callback({ARENA: self.to_dict()})
         for time in range(0, TIME_START):
             if self.start_timer_callback is not None:
-                await self.start_timer_callback("Game will begin in", TIME_START - time)
+                await self.start_timer_callback(TIME_START - time)
             await asyncio.sleep(TIME_START_INTERVAL)
         self.game.start()
         logger.info("Game started. %s", self.id)

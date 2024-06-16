@@ -129,18 +129,18 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         arena: Arena = monitor.get_arena(self.game.channel_id, self.game.arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 
-    async def send_start_timer(self, start_timer_message: str, time: float):
+    async def send_start_timer(self, time: float):
         logger.info("Game will begin in %s seconds...", time)
         await self.send_update(
             {
                 START_TIMER: {
                     TIME: time,
-                    MESSAGE: start_timer_message,
+                    MESSAGE: "Game will begin in ",
                 }
             }
         )
 
-    async def send_game_over(self, game_over_message: str, time: float):
+    async def send_game_over(self, time: float):
         winner = monitor.get_winner(self.game.channel_id, self.game.arena_id)
         logger.info("Game over: %s wins. %s seconds left.", winner, time)
         await self.send_update(
@@ -148,7 +148,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 GAME_OVER: {
                     WINNER: winner,
                     TIME: time,
-                    MESSAGE: game_over_message,
+                    MESSAGE: "Game over. Thanks for playing!",
                 }
             }
         )

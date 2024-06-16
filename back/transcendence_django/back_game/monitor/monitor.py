@@ -164,9 +164,7 @@ class Monitor:
         ):
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:
-                await arena.game_over_callback(
-                    "Game Over! Thank you for playing.", time
-                )
+                await arena.game_over_callback(time)
             if time <= 0 and arena.get_status() == GameStatus(DYING):
                 self.channel_manager.delete_arena(arenas, arena.id)
             else:
