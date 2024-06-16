@@ -72,9 +72,7 @@ class Monitor:
         self,
         channel_id: str,
         arena_id: str,
-        callbacks: dict[
-            str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]
-        ],
+        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
         logger.info("User table: %s", self.channel_manager.user_game_table)
         arena: Arena = self.get_arena(channel_id, arena_id)

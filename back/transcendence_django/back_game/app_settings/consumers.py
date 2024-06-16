@@ -95,9 +95,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         user_id = message[USER_ID]
         player_name = message[PLAYER]
         arena_id: str = message[ARENA_ID]
-        callbacks: dict[
-            str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]
-        ] = {
+        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]] = {
             UPDATE_CALLBACK: self.send_update,
             OVER_CALLBACK: self.send_game_over,
             START_TIMER_CALLBACK: self.send_start_timer,
