@@ -25,7 +25,7 @@ class GameLogicInterface:
         user_id: int,
         player_name: str,
         arena_id: str,
-        callbacks: dict[str, Optional[Callable[[str, Any], Coroutine[Any, Any, None]]]]
+        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
         try:
             logger.info("Joining arena %s", arena_id)
@@ -52,8 +52,7 @@ class GameLogicInterface:
             monitor.leave_arena(self.user_id, self.channel_id, self.arena_id)
         except KeyError as e:
             raise ChannelError(
-                NOT_ENTERED,
-                "User cannot leave or has already left this arena."
+                NOT_ENTERED, "User cannot leave or has already left this arena."
             ) from e
         self.has_joined = False
 

@@ -43,7 +43,9 @@ class Monitor:
         asyncio.create_task(self.run_game_loop(arenas))
         return new_channel
 
-    async def join_channel(self, user_id: int, channel_id: str) -> dict[str, Any] | None:
+    async def join_channel(
+        self, user_id: int, channel_id: str
+    ) -> dict[str, Any] | None:
         return await self.channel_manager.join_channel(user_id, channel_id)
 
     def join_already_created_channel(
@@ -71,7 +73,7 @@ class Monitor:
         channel_id: str,
         arena_id: str,
         callbacks: dict[
-            str, Optional[Callable[[dict[str, Any]], Coroutine[Any, Any, None]]]
+            str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]
         ],
     ):
         logger.info("User table: %s", self.channel_manager.user_game_table)
