@@ -42,7 +42,7 @@ class Arena:
     def __init__(self, players_specs: dict[str, int]):
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
-        self.game: Game = Game(self.player_manager.nb_players)
+        self.game: Game = Game(players_specs)
         self.start_timer_callback: Optional[
             Callable[[Any], Coroutine[Any, Any, None]]
         ] = None

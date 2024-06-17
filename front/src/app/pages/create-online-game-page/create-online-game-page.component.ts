@@ -37,7 +37,7 @@ export class CreateOnlineGamePageComponent {
 
   private _isBadSelection(): boolean {
     return false;
-    return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
+    // return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
   }
 
   public navigateToWaitPage(): void {
@@ -71,7 +71,7 @@ export class Option {
     this.optionIndexChange.emit(this._optionIndex);
   }
 
-  public value(): string {
-    return this.options[this._optionIndex];
+  public value(): number {
+    return this._optionIndex;
   }
 }

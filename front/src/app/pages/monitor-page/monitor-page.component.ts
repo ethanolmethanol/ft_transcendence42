@@ -30,18 +30,25 @@ import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
 export class MonitorPageComponent implements OnInit, OnDestroy {
   private gameType: string = "local";
   private actionType: string = "join";
+  private optionsDict: any = {};
   public errorMessage: string | null = null;
   public isLoading: boolean = false;
   private destroy$ = new Subject<void>();
 
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {
-/*     const navigation = this.router.getCurrentNavigation();
+    const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       const state = navigation.extras.state as {options: any};
+      this.optionsDict = {
+        "ball_speed": state.options[0],
+        "paddle_size": state.options[1],
+        "number_players": state.options[2]
+      }
       console.log("Selected options: ", state.options);
     } else {
       console.log('No options were passed.');
-    } */
+    }
+
   }
 
   async ngOnInit() : Promise<void> {
@@ -70,7 +77,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     const user_id: number = this.userService.getUserID();
     return JSON.stringify({
       "user_id": user_id,
-      "players_specs": {"nb_players": 2, "mode": mode}
+      "players_specs": {"nb_players": 2, "mode": mode, "options": this.optionsDict}
     });
   }
 

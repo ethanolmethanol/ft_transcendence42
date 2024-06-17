@@ -53,8 +53,8 @@ async def join_channel(request) -> JsonResponse:
             channel = await monitor.join_channel(user_id, channel_id)
             if channel is None:
                 raise ValueError("Channel does not exist")
-        channel_players_specs = channel[ARENA][PLAYER_SPECS]
-        if request_player_specs != channel_players_specs:
+        mode = channel[ARENA][PLAYER_SPECS][MODE]
+        if mode != is_remote:
             raise ValueError("Channel has different player specs")
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
