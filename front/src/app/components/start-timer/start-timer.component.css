@@ -1,0 +1,34 @@
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px)
+  }
+  to {
+    opacity: .8;
+    transform: translateY(0px)
+  }
+}
+
+.start-timer {
+  height: 20vh; /* Adjust this value based on the height of your error message */
+  width: 80vw; /* Adjust this value based on the height of your error message */
+  overflow: hidden; /* Hide the content that exceeds the container's height */
+  position: absolute;
+  align-items: center;
+  text-align: center;
+  opacity: .8;
+  font-size: 0.8em;
+  top: 40vh;
+  left: 10vw;
+  border-radius: 5px;
+  background-color: black; /* Light red background */
+  color: white; /* Dark red text */
+  border: 1px solid #f5c6cb; /* Light red border */
+  animation: fade-in 1s ease-out;
+}
+
+.message {
+  margin: 10px;
+  margin-top: 2vh;
+  opacity: 1;
+}

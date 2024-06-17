@@ -32,7 +32,7 @@ import {NgIf} from "@angular/common";
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  is_remote: boolean | null = null;
+  isRemote: boolean | null = null;
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
   public onResize(event: Event) {
@@ -48,7 +48,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   public ngOnInit() {
-    this.is_remote = this._route.snapshot.data['gameType'] === 'online';
+    this.isRemote = this._route.snapshot.data['gameType'] === 'online';
   }
 
   public ngAfterViewInit() {

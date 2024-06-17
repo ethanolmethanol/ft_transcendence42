@@ -19,9 +19,9 @@ import { Router, NavigationExtras } from '@angular/router';
 })
 export class CreateOnlineGamePageComponent {
   constants = Constants;
-  options: Option[] = [ 
-    new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT), 
-    new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT), 
+  options: Option[] = [
+    new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
+    new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
     new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT)
   ];
 
@@ -29,7 +29,7 @@ export class CreateOnlineGamePageComponent {
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
     this.options[optionType].optionIndex = optionIndex;
-    
+
     if (this._isBadSelection() && optionType === this.constants.PADDLE_SIZE) {
       this.options[this.constants.BALL_SPEED].optionIndex = 4;
     }
@@ -40,11 +40,11 @@ export class CreateOnlineGamePageComponent {
     return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
   }
 
-  public navigateToJoinGame(): void {
+  public navigateToWaitPage(): void {
     console.log('Navigating to join game');
     const selectedOptions = [
-      this.options[this.constants.BALL_SPEED].value(), 
-      this.options[this.constants.PADDLE_SIZE].value(), 
+      this.options[this.constants.BALL_SPEED].value(),
+      this.options[this.constants.PADDLE_SIZE].value(),
       this.options[this.constants.NUMBER_PLAYERS].value()
     ];
     const navigationExtras: NavigationExtras = {
@@ -53,7 +53,7 @@ export class CreateOnlineGamePageComponent {
       }
     };
 
-    this.router.navigate(['/online/join'], navigationExtras);
+    this.router.navigate(['/online/create/waiting'], navigationExtras);
   }
 }
 

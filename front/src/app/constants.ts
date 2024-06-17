@@ -12,6 +12,10 @@ export const API_AUTH = 'https://localhost:8000/auth';
 export const API_USER = 'https://localhost:8002/user';
 export const API_GAME = 'https://localhost:8001/game';
 
+// TIME
+
+export const JOIN_GAME_RETRY_DELAY_MS = 2000;
+
 // ERROR
 
 export const NOT_JOINED = 1
@@ -21,11 +25,13 @@ export const NOT_ENTERED = 4
 export const GIVEN_UP = 5
 
 // Game status
-export const WAITING = 0
-export const STARTED = 1
-export const OVER = 2
-export const DYING = 3
-export const DEAD = 4
+export const CREATED = 0
+export const WAITING = 1
+export const READY_TO_START = 2
+export const STARTED = 3
+export const OVER = 4
+export const DYING = 5
+export const DEAD = 6
 
 //////////
 // GAME //

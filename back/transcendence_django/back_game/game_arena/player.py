@@ -6,6 +6,7 @@ from back_game.game_settings.game_constants import AFK_TIMEOUT
 ENABLED = 0
 DISABLED = 1
 GIVEN_UP = 2
+OVER = 3
 
 PlayerStatus = NewType("PlayerStatus", int)
 
@@ -28,3 +29,9 @@ class Player:
     def get_time_left_before_kick(self) -> float:
         current_time: float = time.time()
         return self.last_activity_time + AFK_TIMEOUT - current_time
+
+    def is_active(self) -> bool:
+        return self.status != PlayerStatus(GIVEN_UP)
+
+    def is_finished(self) -> bool:
+        return self.status == PlayerStatus(OVER)
