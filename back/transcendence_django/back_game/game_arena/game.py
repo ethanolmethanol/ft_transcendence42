@@ -24,9 +24,12 @@ GameStatus = NewType("GameStatus", int)
 class Game:
     def __init__(self, players_specs: dict[str, int]):
         nb_players = players_specs["nb_players"]
-        options = players_specs["options"]
-        paddle_size = options["paddle_size"]
-        ball_speed = options["ball_speed"]
+        try:
+            options = players_specs["options"]
+            paddle_size = options["paddle_size"]
+            ball_speed = options["ball_speed"]
+        except KeyError:
+            raise ValueError("Options are missing.")
         self.status: GameStatus = GameStatus(CREATED)
         self.paddles: dict[str, Paddle] = {
             f"{i + 1}": Paddle(i + 1, nb_players, paddle_size) for i in range(nb_players)

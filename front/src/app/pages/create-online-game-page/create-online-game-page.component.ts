@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { SliderComponent } from '../../components/slider/slider.component';
 import * as Constants from '../../constants';
-import { RouterLink } from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { EventEmitter } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 
@@ -24,8 +24,16 @@ export class CreateOnlineGamePageComponent {
     new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
     new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT)
   ];
+  urlDestination = '/';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {
+    const gameType = this.route.snapshot.data['gameType'];
+    if (gameType === 'local') {
+      this.urlDestination = '/local/waiting';
+    } else if (gameType === 'online') {
+      this.urlDestination = '/online/create/waiting';
+    }
+  }
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
     this.options[optionType].optionIndex = optionIndex;
@@ -53,7 +61,7 @@ export class CreateOnlineGamePageComponent {
       }
     };
 
-    this.router.navigate(['/online/create/waiting'], navigationExtras);
+    this.router.navigate([this.urlDestination], navigationExtras);
   }
 }
 

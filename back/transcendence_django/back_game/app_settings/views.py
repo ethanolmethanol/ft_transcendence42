@@ -29,7 +29,7 @@ async def create_channel(request) -> JsonResponse:
             raise ValueError("User is already in a channel")
         channel = await monitor.create_new_channel(user_id, players_specs)
         return JsonResponse(channel, status=HTTPStatus.OK)
-    except (JSONDecodeError, TypeError, ValueError) as e:
+    except (JSONDecodeError, TypeError, KeyError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
@@ -55,7 +55,9 @@ async def join_channel(request) -> JsonResponse:
                 raise ValueError("Channel does not exist")
         mode = channel[ARENA][PLAYER_SPECS][MODE]
         if mode != is_remote:
-            raise ValueError("Channel has different player specs")
+            if mode == "remote":
+                raise ValueError("User is already in an online channel")
+            raise ValueError("User is already in a remote channel")
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)

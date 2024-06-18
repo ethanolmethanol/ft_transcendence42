@@ -28,12 +28,12 @@ import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
   styleUrl: './monitor-page.component.css'
 })
 export class MonitorPageComponent implements OnInit, OnDestroy {
+  private readonly optionsDict: any = {};
   private gameType: string = "local";
   private actionType: string = "join";
-  private optionsDict: any = {};
+  private destroy$ = new Subject<void>();
   public errorMessage: string | null = null;
   public isLoading: boolean = false;
-  private destroy$ = new Subject<void>();
 
   constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {
     const navigation = this.router.getCurrentNavigation();
@@ -140,13 +140,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   private requestLocalWebSocketUrl(postData: string): void {
-    this.monitorService.isUserInGame(postData).subscribe(response => {
-      if (response.isInChannel) {
-        this.joinGame(postData).subscribe();
-      } else {
-        this.createGame(postData);
-      }
-    });
+    this.createGame(postData);
   }
 
   private handleError(error: any): void {
