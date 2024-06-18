@@ -1,5 +1,11 @@
 <body>
   <app-header></app-header>
-  <a routerLink="/online/create/options">Create Game</a>
-  <a routerLink="/online/join">Join Game</a>
+  <section class="game-selector">
+    <a routerLink="/online/create/options">Create</a>
+    <a routerLink="/online/join">Quick join</a>
+    <section class="join-game">
+      <textarea [(ngModel)]="gameID" maxlength="10"  placeholder="Party Code"></textarea>
+      <button type="submit" [class.hover-effect]="gameID" [class.disabled-button]="!gameID">Join</button>
+    </section>
+  </section>
 </body>

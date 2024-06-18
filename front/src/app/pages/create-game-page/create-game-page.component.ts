@@ -7,17 +7,17 @@ import { EventEmitter } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
-  selector: 'app-create-online-game-page',
+  selector: 'app-create-game-page',
   standalone: true,
   imports: [
     HeaderComponent,
     SliderComponent,
     RouterLink,
   ],
-  templateUrl: './create-online-game-page.component.html',
-  styleUrl: './create-online-game-page.component.css'
+  templateUrl: './create-game-page.component.html',
+  styleUrl: './create-game-page.component.css'
 })
-export class CreateOnlineGamePageComponent {
+export class CreateGamePageComponent {
   constants = Constants;
   options: Option[] = [
     new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
