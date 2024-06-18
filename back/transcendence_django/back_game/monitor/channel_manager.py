@@ -112,7 +112,10 @@ class ChannelManager:
 
     def __get_available_channel(self) -> dict[str, Any] | None:
         for channel_id, channel in self.channels.items():
-            arena_id: str = list(channel.keys())[0]
+            arenas: dict[str, Any] = list(channel.keys())
+            if arenas is None:
+                return None
+            arena_id: str = arenas[0]
             arena: Arena = channel[arena_id]
             if arena.get_status() == GameStatus(WAITING):
                 return {"channel_id": channel_id, "arena": arena.to_dict()}

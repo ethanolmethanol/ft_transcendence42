@@ -150,6 +150,8 @@ class Arena:
         return paddle_dict
 
     def update_game(self) -> dict[str, Any]:
+        if self.can_be_over():
+            return {}
         update_dict: dict[str, Any] = self.game.update()
         collided_slot: int | None = update_dict.get(COLLIDED_SLOT)
         if collided_slot is not None:

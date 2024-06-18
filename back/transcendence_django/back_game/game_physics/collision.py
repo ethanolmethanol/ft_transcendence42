@@ -45,9 +45,7 @@ class Collision:
     def collide_with_paddle(ball: Ball, paddle: Paddle):
         BallCollider.push_ball(ball, paddle)
         collision_point = PaddleCollider.get_collision_point(ball, paddle)
-        ball.speed = PaddleCollider.get_ball_speed_after_paddle_collision(
-            paddle, collision_point
-        )
+        ball.set_speed(PaddleCollider.get_ball_speed_after_paddle_collision(paddle, collision_point))
         logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
