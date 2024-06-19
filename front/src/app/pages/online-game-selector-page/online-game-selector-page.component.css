@@ -15,10 +15,7 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-}
-
-.game-selector > * {
-  margin: 3%;
+  gap: 1em;
 }
 
 .join-game {
@@ -27,6 +24,7 @@ body {
   font-size: 1em;
   height: 4%;
   width: 100%;
+  margin-top: 1em;
 }
 
 .join-game > * {
@@ -42,9 +40,8 @@ textarea {
   padding: 1%;
 }
 
-a {
+app-button-with-icon {
   width: 100%;
-  font-size: 2em;
   position: relative;
 }
 
