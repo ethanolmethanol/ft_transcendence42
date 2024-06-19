@@ -3,8 +3,17 @@
     <app-header></app-header>
     <h4>{{welcome}}</h4>
     <section class="buttons">
-      <a routerLink="/local">Play local</a>
-      <a routerLink="/online">Play online</a>
+      <app-button-with-icon
+        [title]="'Play local'"
+        [link]="'/local'"
+        [icon]="'computer'">
+      </app-button-with-icon>
+      <app-button-with-icon
+        [title]="'Play online'"
+        [link]="'/online'"
+        [icon]="'public'">
+
+      </app-button-with-icon>
     </section>
     <app-leaderboard></app-leaderboard>
   </section>

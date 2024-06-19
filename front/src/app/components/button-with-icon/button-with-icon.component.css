@@ -1,0 +1,19 @@
+a {
+  font-size: 2em;
+  width: 100%;
+  text-align: left;
+  padding: 3%;
+  justify-content: space-between;
+}
+
+i {
+  scale: 1.5;
+  color: white;
+  margin-right: 2%;
+}
+
+.button-with-icon a {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
