@@ -17,15 +17,20 @@
       <div class="player-name player2">{{ paddles.last.playerName }}</div>
     </section>
   </section>
-  <section *ngIf="dataLoaded && isWaiting && isRemote">
-    <h6>
+  <section class="remote_section" *ngIf="dataLoaded && isWaiting && isRemote">
+    <h4>
       Share this code with your friends!
-    </h6>
-    <app-copy-button></app-copy-button>
-    <h6>
+    </h4>
+    <section class="share_code">
+      <h5>
+        {{ channelID }}
+      </h5>
+      <app-copy-button [textToCopy]="channelID"></app-copy-button>
+    </section>
+    <h4>
       Waiting for players to join... <br><br>
       {{ activePlayers.length }} / {{ maxPlayers }}
-    </h6>
+    </h4>
     <ul class="waiting-players">
       <li *ngFor="let player of activePlayers">
         <app-player-icon [playerName]="player"></app-player-icon>

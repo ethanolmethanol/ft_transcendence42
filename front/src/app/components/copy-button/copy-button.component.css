@@ -8,6 +8,7 @@ button {
   justify-content: center;
   color: white;
   flex-direction: row;
+
 }
 
 span {
@@ -16,7 +17,7 @@ span {
 }
 
 i {
-  margin: 10%;
+  padding-left: 5%;
 }
 
 .copy-button {
@@ -25,5 +26,13 @@ i {
 
 .copy-button:hover {
   cursor: pointer;
+  width: 100%;
+}
 
+.activated {
+  background-color: green;
+}
+
+.deactivated {
+  background-color: cornflowerblue;
 }

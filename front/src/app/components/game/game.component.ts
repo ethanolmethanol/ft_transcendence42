@@ -106,6 +106,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   player1Score: number = 0;
   player2Score: number = 0;
   maxPlayers: number = 2;
+  channelID: string = '';
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   activePlayers: string[] = [];
@@ -328,6 +329,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
+    this.channelID = this.connectionService.getChannelID();
     this.gameLoop();
   }
 
