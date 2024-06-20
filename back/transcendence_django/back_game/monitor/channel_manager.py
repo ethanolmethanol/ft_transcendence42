@@ -112,7 +112,7 @@ class ChannelManager:
 
     def __get_available_channel(self) -> dict[str, Any] | None:
         for channel_id, channel in self.channels.items():
-            arenas: dict[str, Any] = list(channel.keys())
+            arenas: list[str] = list(channel.keys())
             if arenas is None:
                 return None
             arena_id: str = arenas[0]

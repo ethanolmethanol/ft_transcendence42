@@ -29,13 +29,14 @@ log = logging.getLogger(__name__)
 
 PaddleStatus = NewType("PaddleStatus", int)
 
-size_factor: dict[int, int] = {
+size_factor: dict[int, float] = {
     0: 0.1,
     1: 0.5,
     2: 1,
     3: 2,
     4: 3,
 }
+
 
 class Paddle:
     def __init__(self, slot: int, num_players: int, paddle_size: int):

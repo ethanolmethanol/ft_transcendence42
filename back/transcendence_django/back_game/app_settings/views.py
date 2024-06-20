@@ -63,6 +63,7 @@ async def join_channel(request) -> JsonResponse:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
+
 @require_http_methods(["POST"])
 async def join_specific_channel(request) -> JsonResponse:
     try:

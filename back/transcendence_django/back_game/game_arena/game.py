@@ -25,15 +25,16 @@ class Game:
     def __init__(self, players_specs: dict[str, int]):
         try:
             nb_players = players_specs["nb_players"]
-            options = players_specs["options"]
+            options: dict[str, int] = players_specs["options"]
             paddle_size = options["paddle_size"]
             ball_speed = options["ball_speed"]
             self.is_private = options["is_private"]
-        except KeyError:
-            raise ValueError("Options are missing.")
+        except KeyError as exc:
+            raise ValueError("Options are missing.") from exc
         self.status: GameStatus = GameStatus(CREATED)
         self.paddles: dict[str, Paddle] = {
-            f"{i + 1}": Paddle(i + 1, nb_players, paddle_size) for i in range(nb_players)
+            f"{i + 1}": Paddle(i + 1, nb_players, paddle_size)
+            for i in range(nb_players)
         }
         self.ball: Ball = Ball(self.paddles, ball_speed)
         self.map: Map = Map()  # depends on the number of players
