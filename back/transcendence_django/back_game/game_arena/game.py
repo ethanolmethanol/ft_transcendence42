@@ -22,13 +22,13 @@ GameStatus = NewType("GameStatus", int)
 
 
 class Game:
-    def __init__(self, players_specs: dict[str, int]):
+    def __init__(self, players_specs: dict[str, Any]):
         try:
             nb_players = players_specs["nb_players"]
-            options: dict[str, int] = players_specs["options"]
+            options: dict[str, Any]  = players_specs["options"]
             paddle_size = options["paddle_size"]
             ball_speed = options["ball_speed"]
-            self.is_private = options["is_private"]
+            self.is_private: bool = options["is_private"]
         except KeyError as exc:
             raise ValueError("Options are missing.") from exc
         self.status: GameStatus = GameStatus(CREATED)

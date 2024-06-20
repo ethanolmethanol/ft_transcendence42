@@ -49,7 +49,7 @@ class Collision:
             PaddleCollider.get_ball_speed_after_paddle_collision(
                 paddle, collision_point
             )
-       )
+        )
         logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
