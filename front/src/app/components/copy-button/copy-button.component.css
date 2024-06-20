@@ -1,0 +1,29 @@
+.hidden {
+  display: none;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-direction: row;
+}
+
+span {
+  align-content: center;
+  justify-content: center;
+}
+
+i {
+  margin: 10%;
+}
+
+.copy-button {
+  width: 100%;
+}
+
+.copy-button:hover {
+  cursor: pointer;
+
+}

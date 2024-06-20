@@ -19,6 +19,10 @@
   </section>
   <section *ngIf="dataLoaded && isWaiting && isRemote">
     <h6>
+      Share this code with your friends!
+    </h6>
+    <app-copy-button></app-copy-button>
+    <h6>
       Waiting for players to join... <br><br>
       {{ activePlayers.length }} / {{ maxPlayers }}
     </h6>

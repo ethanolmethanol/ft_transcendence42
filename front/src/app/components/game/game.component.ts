@@ -37,6 +37,7 @@ import {ConnectionService} from "../../services/connection/connection.service";
 import {UserService} from "../../services/user/user.service";
 import {PlayerIconComponent} from "../player-icon/player-icon.component";
 import {StartTimerComponent} from "../start-timer/start-timer.component";
+import {CopyButtonComponent} from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -78,16 +79,17 @@ interface ErrorMapping {
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [
-    PaddleComponent,
-    BallComponent,
-    GameOverComponent,
-    LoadingSpinnerComponent,
-    NgIf,
-    NgForOf,
-    PlayerIconComponent,
-    StartTimerComponent
-  ],
+    imports: [
+        PaddleComponent,
+        BallComponent,
+        GameOverComponent,
+        LoadingSpinnerComponent,
+        NgIf,
+        NgForOf,
+        PlayerIconComponent,
+        StartTimerComponent,
+        CopyButtonComponent
+    ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
