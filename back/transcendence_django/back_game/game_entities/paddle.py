@@ -45,7 +45,10 @@ class Paddle:
         self.status: PaddleStatus = PaddleStatus(LISTENING)
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
         self.rectangle: Rectangle = Rectangle(
-            slot, Position(0, 0), PADDLE_WIDTH, int(PADDLE_HEIGHT * size_factor[paddle_size])
+            slot,
+            Position(0, 0),
+            PADDLE_WIDTH,
+            int(PADDLE_HEIGHT * size_factor[paddle_size]),
         )
         self.rate: float = 0.5
         self.axis: dict[str, Position] = self.__calculate_axis(num_players)
