@@ -30,4 +30,5 @@ export class HomePageComponent implements OnInit {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
  }
+
 }
