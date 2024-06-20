@@ -8,13 +8,13 @@ import {
   QueryList,
   AfterViewInit
 } from '@angular/core';
-import {PaddleComponent} from "../../components/paddle/paddle.component";
-import {ActivatedRoute, Router, RouterLink} from "@angular/router";
-import {GameComponent} from "../../components/game/game.component";
+import { PaddleComponent } from "../../components/paddle/paddle.component";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { GameComponent } from "../../components/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
-import {LoadingSpinnerComponent} from "../../components/loading-spinner/loading-spinner.component";
-import {ConnectionService} from "../../services/connection/connection.service";
-import {NgIf} from "@angular/common";
+import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
+import { ConnectionService } from "../../services/connection/connection.service";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-game-page',

@@ -22,18 +22,18 @@ import {
   GIVEN_UP,
   STARTED,
 } from "../../constants";
-import {PaddleComponent} from "../paddle/paddle.component";
-import {BallComponent} from "../ball/ball.component";
-import {WebSocketService} from "../../services/web-socket/web-socket.service";
+import { PaddleComponent } from "../paddle/paddle.component";
+import { BallComponent } from "../ball/ball.component";
+import { WebSocketService } from "../../services/web-socket/web-socket.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
-import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
-import {NgIf} from "@angular/common";
-import {ConnectionService} from "../../services/connection/connection.service";
-import {UserService} from "../../services/user/user.service";
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+import { NgIf } from "@angular/common";
+import { ConnectionService } from "../../services/connection/connection.service";
+import { UserService } from "../../services/user/user.service";
 
 interface PaddleUpdateResponse {
   slot: number;

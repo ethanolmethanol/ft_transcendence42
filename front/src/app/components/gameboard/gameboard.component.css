@@ -1,0 +1,211 @@
+.game-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 6px solid #aaaaaa;
+    border-radius: 20px;
+    background-color: black;
+    scale: 30%;
+    padding: 5px;
+}
+
+.game {
+    position: relative;
+    border-radius: 4px;
+    background-color: #000;
+    width: var(--game-width);
+    height: var(--game-height);
+    display: flex;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.score-display {
+    position: absolute;
+    color: rgba(220, 220, 220, 0.5);
+    font-size: 100px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+.score-player1, .score-player2 {
+    width: 50%;
+    text-align: center;
+    display: inline;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0;
+}
+
+.dotted-line {
+    position: absolute;
+    height: var(--game-height);
+    width: var(--line-thickness);
+    left: calc(50% - var(--line-thickness) / 2);
+    background: linear-gradient(to bottom, #aaaaaa 60%, transparent 10%);
+    background-size: 100% 40px;
+}
+
+h6 {
+      position: absolute;
+      color: #e1e1e1;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+}
+
+.paddle {
+    position: absolute;
+    width: 10px;
+    height: 60px;
+    background: white;
+}
+
+.paddle-left {
+    left: 0;
+    animation: moveUpDown 3s infinite;
+}
+
+.paddle-right {
+    left: calc(100% - 10px);
+    animation: moveDownUp 3s infinite;
+}
+
+@keyframes moveUpDown {
+    0% {
+        top: 0;
+    }
+    50% {
+        top: calc(100% - 60px);
+    }
+    100% {
+        top: 0;
+    }
+}
+
+@keyframes moveDownUp {
+    0% {
+        top: calc(100% - 60px);
+    }
+    50% {
+        top: 0;
+    }
+    100% {
+        top: calc(100% - 60px);
+    }
+}
+  
+.ball {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    animation: moveBall 5s linear infinite;
+}
+
+@keyframes moveBall {
+    0%, 100% {
+        top: 50%;
+        left: 0%;
+        transform: translate(-50%, -50%);
+    }
+    5% {
+        top: 10%;
+        left: 100%;
+        transform: translate(-80%, -10%);
+    }
+    10% {
+        top: 100%;
+        left: 20%;
+        transform: translate(-90%, -70%);
+    }
+    15% {
+        top: 60%;
+        left: 100%;
+        transform: translate(-30%, -30%);
+    }
+    20% {
+        top: 0%;
+        left: 20%;
+        transform: translate(-20%, -90%);
+    }
+    25% {
+        top: 100%;
+        left: 80%;
+        transform: translate(-60%, -20%);
+    }
+    30% {
+        top: 10%;
+        left: 0%;
+        transform: translate(-10%, -80%);
+    }
+    35% {
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, -40%);
+    }
+    40% {
+        top: 0%;
+        left: 60%;
+        transform: translate(-40%, -60%);
+    }
+    45% {
+        top: 40%;
+        left: 0%;
+        transform: translate(-20%, -50%);
+    }
+    50% {
+        top: 100%;
+        left: 70%;
+        transform: translate(-80%, -50%);
+    }
+    55% {
+        top: 60%;
+        left: 0%;
+        transform: translate(-60%, -60%);
+    }
+    60% {
+        top: 40%;
+        left: 100%;
+        transform: translate(-20%, -40%);
+    }
+    65% {
+        top: 20%;
+        left: 0%;
+        transform: translate(-40%, -70%);
+    }
+    70% {
+        top: 0%;
+        left: 80%;
+        transform: translate(-80%, -30%);
+    }
+    75% {
+        top: 70%;
+        left: 0%;
+        transform: translate(-10%, -90%);
+    }
+    80% {
+        top: 100%;
+        left: 30%;
+        transform: translate(-30%, -20%);
+    }
+    85% {
+        top: 20%;
+        left: 100%;
+        transform: translate(-90%, -80%);
+    }
+    90% {
+        top: 0%;
+        left: 70%;
+        transform: translate(-70%, -10%);
+    }
+    95% {
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
