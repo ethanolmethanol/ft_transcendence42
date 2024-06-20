@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {Subscription} from "rxjs";
-import {Router} from "@angular/router";
 import {MonitorService} from "../monitor/monitor.service";
 import {WebSocketService} from "../web-socket/web-socket.service";
 import {ErrorResponse} from "../../interfaces/error-response.interface";
@@ -16,7 +15,7 @@ export class ConnectionService {
   private WebSocketMessagesSubscription?: Subscription;
   private joinSubscription?: Subscription;
 
-  constructor(private router: Router, private monitorService: MonitorService, private webSocketService: WebSocketService) {
+  constructor(private webSocketService: WebSocketService) {
     console.log('Connection service initialized');
   }
 

@@ -63,6 +63,23 @@ async def join_channel(request) -> JsonResponse:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
+@require_http_methods(["POST"])
+async def join_specific_channel(request) -> JsonResponse:
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data[USER_ID]
+        channel_id: str = data[CHANNEL_ID]
+        logger.info("Joining channel: %s", channel_id)
+        if monitor.is_user_in_channel(user_id):
+            raise ValueError("User is already in a remote channel")
+        channel = await monitor.join_channel(user_id, channel_id)
+        if channel is None:
+            raise ValueError("Channel does not exist")
+        return JsonResponse(channel, status=HTTPStatus.OK)
+    except (JSONDecodeError, TypeError, ValueError) as e:
+        logger.error(e)
+        return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
+
 
 @require_http_methods(["POST"])
 async def is_user_in_channel(request) -> JsonResponse:

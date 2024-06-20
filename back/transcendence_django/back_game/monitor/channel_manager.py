@@ -19,13 +19,13 @@ class ChannelManager:
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> dict[str, Any] | None:
-        channel = self.get_channel_from_user_id(user_id)
-        if self.channels[channel_id] is None:
+        channel = self.channels.get(channel_id)
+        if channel is None:
             return None
         arena_id: str = list(self.channels[channel_id].keys())[0]
         logger.info("Arena id: %s", arena_id)
         self.add_user_to_channel(user_id, channel_id, arena_id)
-        return channel
+        return self.get_channel_from_user_id(user_id)
 
     def join_already_created_channel(
         self, user_id: int, is_remote: bool

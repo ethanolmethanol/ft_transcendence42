@@ -35,7 +35,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   public errorMessage: string | null = null;
   public isLoading: boolean = false;
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {
+  constructor(private userService: UserService, private router: Router, private _route: ActivatedRoute, private monitorService: MonitorService) {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       const state = navigation.extras.state as {options: any};
@@ -48,14 +48,15 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     } else {
       console.log('No options were passed.');
     }
-
   }
 
   async ngOnInit() : Promise<void> {
-    this.gameType = this.route.snapshot.data['gameType'];
-    this.actionType = this.route.snapshot.data['actionType'];
+    console.log("Monitor page init");
+    this.gameType = this._route.snapshot.data['gameType'];
+    this.actionType = this._route.snapshot.data['actionType'];
     await this.userService.whenUserDataLoaded();
     const postData: string = this.getPostData();
+    console.log("Post data: ", postData)
     if (this.gameType === "local") {
       this.requestLocalWebSocketUrl(postData);
     } else {
@@ -75,10 +76,17 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   private getPostData(): string {
     const mode: 0 | 1 = this.gameType === "local" ? 0 : 1;
     const user_id: number = this.userService.getUserID();
-    return JSON.stringify({
-      "user_id": user_id,
-      "players_specs": {"nb_players": 2, "mode": mode, "options": this.optionsDict}
-    });
+    if (this.actionType === "join_specific") {
+      return JSON.stringify({
+        "user_id": user_id,
+        "channel_id": this._route.snapshot.params['channel_id']
+      });
+    } else {
+      return JSON.stringify({
+        "user_id": user_id,
+        "players_specs": {"nb_players": 2, "mode": mode, "options": this.optionsDict}
+      });
+    }
   }
 
   private joinLocalGame(postData: string): Observable<any> {
@@ -131,9 +139,17 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     }, error => this.handleError(error));
   }
 
+  private joinSpecificChannel(postData: string): void {
+    this.monitorService.joinSpecificWebSocketUrl(postData).subscribe(response => {
+      this.navigateToGame(response.channel_id, response.arena.id);
+    }, error => this.handleError(error));
+  }
+
   private async requestRemoteWebSocketUrl(postData: string): Promise<void> {
     if (this.actionType == "join") {
       this.joinGame(postData).subscribe();
+    } else if (this.actionType == "join_specific") {
+      this.joinSpecificChannel(postData);
     } else if (this.actionType == "create") {
       this.createGame(postData);
     }
