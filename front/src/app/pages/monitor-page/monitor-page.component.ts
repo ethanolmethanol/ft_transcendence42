@@ -42,7 +42,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this.optionsDict = {
         "ball_speed": state.options[0],
         "paddle_size": state.options[1],
-        "number_players": state.options[2]
+        "number_players": state.options[2],
+        "is_private": state.options[3]
       }
       console.log("Selected options: ", state.options);
     } else {
@@ -111,7 +112,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
             this.navigateToGame(response.channel_id, response.arena.id);
           }),
           catchError((error) => {
-            if (error.error.error === 'No available channel') {
+            if (error.error.error === 'No available channel.') {
               console.log('No available channel. Retrying...');
               return of(null); // Signal to retry
             } else {

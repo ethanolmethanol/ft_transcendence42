@@ -5,6 +5,7 @@ import * as Constants from '../../constants';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import { EventEmitter } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-create-game-page',
@@ -13,6 +14,7 @@ import { Router, NavigationExtras } from '@angular/router';
     HeaderComponent,
     SliderComponent,
     RouterLink,
+    NgIf,
   ],
   templateUrl: './create-game-page.component.html',
   styleUrl: './create-game-page.component.css'
@@ -22,12 +24,15 @@ export class CreateGamePageComponent {
   options: Option[] = [
     new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
     new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
-    new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT)
+    new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT),
+    new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.constants.IS_PRIVATE_DEFAULT)
   ];
+  isRemote = false;
   urlDestination = '/';
 
   constructor(private router: Router, private route: ActivatedRoute) {
     const gameType = this.route.snapshot.data['gameType'];
+    this.isRemote = (gameType === 'online');
     if (gameType === 'local') {
       this.urlDestination = '/local/waiting';
     } else if (gameType === 'online') {
@@ -53,7 +58,8 @@ export class CreateGamePageComponent {
     const selectedOptions = [
       this.options[this.constants.BALL_SPEED].value(),
       this.options[this.constants.PADDLE_SIZE].value(),
-      this.options[this.constants.NUMBER_PLAYERS].value()
+      this.options[this.constants.NUMBER_PLAYERS].value(),
+      this.options[this.constants.IS_PRIVATE].value()
     ];
     const navigationExtras: NavigationExtras = {
       state: {

@@ -117,6 +117,8 @@ class ChannelManager:
                 return None
             arena_id: str = arenas[0]
             arena: Arena = channel[arena_id]
+            if arena.is_private():
+                continue
             if arena.get_status() == GameStatus(WAITING):
                 return {"channel_id": channel_id, "arena": arena.to_dict()}
         return None

@@ -178,6 +178,9 @@ class Arena:
     def did_player_give_up(self, user_id: int) -> bool:
         return self.player_manager.did_player_give_up(user_id)
 
+    def is_private(self) -> bool:
+        return self.game.is_private
+
     def __disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
 
