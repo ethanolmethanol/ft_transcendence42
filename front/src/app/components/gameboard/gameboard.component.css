@@ -55,8 +55,9 @@ h6 {
 
 .paddle {
     position: absolute;
-    width: 10px;
-    height: 60px;
+    width: 1.5%;
+    height: 14%;
+    border-radius: 15%;
 }
 
 .paddle-left {
@@ -65,7 +66,7 @@ h6 {
 }
 
 .paddle-right {
-    left: calc(100% - 10px);
+    left: calc(100% - 1.5%);
     animation: moveDownUp 3s infinite;
 }
 
@@ -95,8 +96,8 @@ h6 {
   
 .ball {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     animation: moveBall 5s linear infinite;
 }
