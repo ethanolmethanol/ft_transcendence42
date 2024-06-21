@@ -1,22 +1,12 @@
 <ul class="nav nav-tabs game-settings">
-	<li class="nav-item">
-	  <a class="nav-link" [class.active]="currentTab === 'paddles'" (click)="currentTab = 'paddles'">Paddles</a>
+	<li class="nav-item" *ngFor="let tab of tabs">
+	  <a class="nav-link" [class.active]="currentTab === tab.id" (click)="currentTab = tab.id">{{ tab.name }}</a>
 	</li>
-	<li class="nav-item">
-	  <a class="nav-link" [class.active]="currentTab === 'ball'" (click)="currentTab = 'ball'">Ball</a>
-	</li>
-	<li class="nav-item">
-	  <a class="nav-link" [class.active]="currentTab === 'background'" (click)="currentTab = 'background'">Background</a>
-	</li>
-  </ul>
-  <div class="tab-content clearfix">
-	<div class="tab-pane" [class.active]="currentTab === 'paddles'">
-	  <h3>Change paddle color here</h3>
+</ul>
+  
+<div class="tab-content clearfix">
+	<div class="tab-pane" *ngFor="let tab of tabs" [class.active]="currentTab === tab.id">
+	  <h3>{{ tab.title }}</h3>
+	  <app-color-wheel *ngFor="let color of tab.colors" (colorSelected)="onColorSelected($event, color)"></app-color-wheel>
 	</div>
-	<div class="tab-pane" [class.active]="currentTab === 'ball'">
-	  <h3>Change the ball color here</h3>
-	</div>
-	<div class="tab-pane" [class.active]="currentTab === 'background'">
-	  <h3>Change the bg color here</h3>
-	</div>
-  </div>
+</div>

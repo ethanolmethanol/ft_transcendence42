@@ -1,0 +1,35 @@
+.color-wheel-container {
+    position: relative;
+    width: 200px; /* 2 * radius */
+    height: 200px; /* 2 * radius */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .color-wheel {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+  }
+  
+  .color-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    margin: -20px; /* Half of the width/height to center the button */
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .color-button:hover {
+    transform: scale(1.2);
+  }
+  

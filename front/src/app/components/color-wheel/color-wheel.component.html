@@ -1,0 +1,9 @@
+<div class="color-wheel-container">
+    <div class="color-wheel">
+      <div *ngFor="let color of colors; let i = index"
+           [style.backgroundColor]="color"
+           (click)="selectColor(color)"
+           [style.transform]="getTransform(i)"
+           class="color-button"></div>
+    </div>
+  </div>

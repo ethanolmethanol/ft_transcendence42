@@ -22,9 +22,7 @@
   
 .game-settings .nav-link {
     border: none;
-    border-bottom: 2px solid transparent; /* Add bottom border for tab effect */
     border-radius: 0;
-    /* transition: background-color 0.3s, border-color 0.3s; */
     width: 100%;
 }
 
