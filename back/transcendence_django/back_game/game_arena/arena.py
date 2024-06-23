@@ -10,9 +10,9 @@ from back_game.game_settings.dict_keys import (
     BALL,
     COLLIDED_SLOT,
     ID,
+    IS_REMOTE,
     KICKED_PLAYERS,
     MAP,
-    IS_REMOTE,
     NB_PLAYERS,
     PADDLES,
     PLAYER1,
@@ -169,7 +169,10 @@ class Arena:
         return update_dict
 
     def can_be_started(self) -> bool:
-        return self.game.status in [GameStatus(WAITING), GameStatus(READY_TO_START)] and self.__has_enough_players()
+        return (
+            self.game.status in [GameStatus(WAITING), GameStatus(READY_TO_START)]
+            and self.__has_enough_players()
+        )
 
     def can_be_over(self) -> bool:
         status = self.game.status

@@ -96,7 +96,10 @@ class PlayerManager:
         active_players = [
             player for player in self.players.values() if player.is_active()
         ]
-        if not active_players or len(set(player.score for player in active_players)) == 1:
+        if (
+            not active_players
+            or len(set(player.score for player in active_players)) == 1
+        ):
             return ""
         winner = max(active_players, key=lambda player: player.score)
         return winner.player_name
@@ -149,7 +152,7 @@ class PlayerManager:
         self.nb_players = players_specs[NB_PLAYERS]
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
-        self.is_remote = (players_specs[IS_REMOTE] == "online")
+        self.is_remote = players_specs[IS_REMOTE] == "online"
 
     def __get_afk_players(self) -> list[dict[str, Any]]:
         kicked_players: list[dict[str, Any]] = []

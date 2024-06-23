@@ -72,11 +72,10 @@ async def join_specific_channel(request) -> JsonResponse:
         channel_id: str = data[CHANNEL_ID]
         logger.info("Joining channel: %s", channel_id)
         if monitor.is_user_in_channel(user_id):
-            raise ValueError("User is already in another channel.")
+            raise ValueError("User is already in a channel.")
         channel = await monitor.join_channel(user_id, channel_id)
         if channel is None:
             raise ValueError("Channel does not exist")
-        mode = channel[ARENA][PLAYER_SPECS][IS_REMOTE]
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
