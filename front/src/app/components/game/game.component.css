@@ -97,6 +97,8 @@ app-copy-button {
   justify-content: center;
   align-items: center;
   gap: 1em;
+  scale: 1.5;
+  height: 100%;
 }
 
 .waiting-players {

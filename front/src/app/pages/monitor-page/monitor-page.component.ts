@@ -52,12 +52,10 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() : Promise<void> {
-    console.log("Monitor page init");
     this.gameType = this._route.snapshot.data['gameType'];
     this.actionType = this._route.snapshot.data['actionType'];
     await this.userService.whenUserDataLoaded();
     const postData: string = this.getPostData();
-    console.log("Post data: ", postData)
     if (this.gameType === "local") {
       this.requestLocalWebSocketUrl(postData);
     } else {
@@ -75,7 +73,6 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   private getPostData(): string {
-    const mode: 0 | 1 = this.gameType === "local" ? 0 : 1;
     const user_id: number = this.userService.getUserID();
     if (this.actionType === "join_specific") {
       return JSON.stringify({
@@ -85,7 +82,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     } else {
       return JSON.stringify({
         "user_id": user_id,
-        "players_specs": {"nb_players": 2, "mode": mode, "options": this.optionsDict}
+        "players_specs": {"nb_players": 2, "type": this.gameType, "options": this.optionsDict}
       });
     }
   }

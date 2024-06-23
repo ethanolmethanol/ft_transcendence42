@@ -265,7 +265,11 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       gameOverOverlay.hasRematched = true;
     }
     if (gameOverOverlay.hasRematched === false) {
-      gameOverOverlay.message = info.winner + " won! " + info.message
+      if (info.winner === "") {
+        gameOverOverlay.message = "It's a tie! " + info.message
+      } else {
+        gameOverOverlay.message = info.winner + " won! " + info.message
+      }
       gameOverOverlay.time = info.time
       gameOverOverlay.show = true
       // for online mode, use info.winner to update the user score db?

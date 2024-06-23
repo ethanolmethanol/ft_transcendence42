@@ -33,10 +33,10 @@ export class CreateGamePageComponent {
   constructor(private router: Router, private route: ActivatedRoute) {
     const gameType = this.route.snapshot.data['gameType'];
     this.isRemote = (gameType === 'online');
-    if (gameType === 'local') {
-      this.urlDestination = '/local/waiting';
-    } else if (gameType === 'online') {
+    if (this.isRemote) {
       this.urlDestination = '/online/create/waiting';
+    } else {
+      this.urlDestination = '/local/waiting';
     }
   }
 

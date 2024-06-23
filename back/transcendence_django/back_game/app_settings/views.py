@@ -8,7 +8,7 @@ from back_game.game_settings.dict_keys import (
     ARENA,
     CHANNEL_ID,
     ERROR,
-    MODE,
+    IS_REMOTE,
     PLAYER_SPECS,
     USER_ID,
 )
@@ -40,11 +40,11 @@ async def join_channel(request) -> JsonResponse:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         request_player_specs = data[PLAYER_SPECS]
-        is_remote = request_player_specs[MODE]
+        asked_mode = request_player_specs[IS_REMOTE]
         channel: dict[str, Any] | None = None
         if CHANNEL_ID not in data:
             logger.info("Joining already created channel.")
-            channel = monitor.join_already_created_channel(user_id, is_remote)
+            channel = monitor.join_already_created_channel(user_id, asked_mode)
             if channel is None:
                 raise ValueError("No available channel.")
         else:
@@ -53,11 +53,11 @@ async def join_channel(request) -> JsonResponse:
             channel = await monitor.join_channel(user_id, channel_id)
             if channel is None:
                 raise ValueError("The channel does not exist.")
-        mode = channel[ARENA][PLAYER_SPECS][MODE]
-        if mode != is_remote:
-            if mode == "remote":
-                raise ValueError("User is already in an online channel.")
-            raise ValueError("User is already in a remote channel.")
+        mode = channel[ARENA][PLAYER_SPECS][IS_REMOTE]
+        if asked_mode != mode:
+            if mode == "online":
+                raise ValueError("User is already in a remote channel.")
+            raise ValueError("User is already in a local channel.")
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
@@ -72,12 +72,11 @@ async def join_specific_channel(request) -> JsonResponse:
         channel_id: str = data[CHANNEL_ID]
         logger.info("Joining channel: %s", channel_id)
         if monitor.is_user_in_channel(user_id):
-            raise ValueError("User is already in a remote channel.")
+            raise ValueError("User is already in another channel.")
         channel = await monitor.join_channel(user_id, channel_id)
         if channel is None:
             raise ValueError("Channel does not exist")
-        if channel[ARENA][PLAYER_SPECS][MODE] != 1:
-            raise ValueError("This channel is not a remote channel.")
+        mode = channel[ARENA][PLAYER_SPECS][IS_REMOTE]
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)

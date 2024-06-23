@@ -6,6 +6,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
+from back_game.game_settings.dict_keys import ID
 from back_game.game_settings.game_constants import DEAD, WAITING
 
 logger = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ class ChannelManager:
         logger.info("Arena %s is dead", arena.id)
         player_list: dict[str, Player] = arena.get_players()
         for player in player_list.values():
-            self.delete_user(player.user_id)
+            self.delete_user(player.user_id, arena_id)
         arenas.pop(arena_id)
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
@@ -103,10 +104,12 @@ class ChannelManager:
     def delete_channel(self, channel_id: str):
         del self.channels[channel_id]
 
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int, arena_id: str):
         try:
-            self.user_game_table.pop(user_id)
-            logger.info("User %s deleted from user_game_table", user_id)
+            user_data = self.user_game_table[user_id]
+            if user_data["arena"][ID] == arena_id:
+                self.user_game_table.pop(user_id)
+                logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
 

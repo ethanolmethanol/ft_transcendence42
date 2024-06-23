@@ -12,7 +12,7 @@ from back_game.game_settings.dict_keys import (
     ID,
     KICKED_PLAYERS,
     MAP,
-    MODE,
+    IS_REMOTE,
     NB_PLAYERS,
     PADDLES,
     PLAYER1,
@@ -54,6 +54,10 @@ class Arena:
         ] = None
 
     def to_dict(self) -> dict[str, Any]:
+        if self.player_manager.is_remote:
+            mode = "online"
+        else:
+            mode = "local"
         return {
             ID: self.id,
             STATUS: self.game.status,
@@ -68,7 +72,7 @@ class Arena:
             MAP: self.game.map.__dict__,
             PLAYER_SPECS: {
                 NB_PLAYERS: self.player_manager.nb_players,
-                MODE: self.player_manager.is_remote,
+                IS_REMOTE: mode,
             },
         }
 
@@ -129,7 +133,10 @@ class Arena:
     def rematch(self, user_id: int):
         self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
-        self.game.set_status(WAITING)
+        if self.is_full():
+            self.game.set_status(READY_TO_START)
+        else:
+            self.game.set_status(WAITING)
 
     def player_leave(self, user_id: int):
         if self.game.status == GameStatus(WAITING):
@@ -162,7 +169,7 @@ class Arena:
         return update_dict
 
     def can_be_started(self) -> bool:
-        return self.game.status == GameStatus(WAITING) and self.__has_enough_players()
+        return self.game.status in [GameStatus(WAITING), GameStatus(READY_TO_START)] and self.__has_enough_players()
 
     def can_be_over(self) -> bool:
         status = self.game.status
