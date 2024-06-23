@@ -115,10 +115,10 @@ class ChannelManager:
 
     def __get_available_channel(self) -> dict[str, Any] | None:
         for channel_id, channel in self.channels.items():
-            arenas: list[str] = list(channel.keys())
-            if arenas is None:
+            arenas_id: list[str] = list(channel.keys())
+            if arenas_id is None:
                 return None
-            arena_id: str = arenas[0]
+            arena_id: str = arenas_id[0]
             arena: Arena = channel[arena_id]
             if arena.is_private():
                 continue

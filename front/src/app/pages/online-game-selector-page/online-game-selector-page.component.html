@@ -12,8 +12,8 @@
       [icon]="'electric_bolt'">
     </app-button-with-icon>
     <section class="join-game">
-      <textarea [(ngModel)]="gameID" maxlength="10"  placeholder="Party Code"></textarea>
-      <button type="submit" (click)="joinGame()" [class.hover-effect]="gameID" [class.disabled-button]="!gameID" [disabled]="!gameID">Join</button>
+      <textarea [(ngModel)]="gameID" maxlength="10" placeholder="Party Code" (keypress)="preventSpaces($event)"></textarea>
+      <button type="submit" (click)="joinGame()" [class.hover-effect]="gameID" [class.disabled-button]="gameID?.length !== 10" [disabled]="gameID?.length !== 10">Join</button>
     </section>
   </section>
 </body>

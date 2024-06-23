@@ -14,6 +14,7 @@ import {
   throwError
 } from "rxjs";
 import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
+import {SubsetOfKeys} from "@angular/compiler-cli/src/ngtsc/util/src/typescript";
 
 @Component({
   selector: 'app-monitor-page',
@@ -28,10 +29,10 @@ import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
   styleUrl: './monitor-page.component.css'
 })
 export class MonitorPageComponent implements OnInit, OnDestroy {
-  private readonly optionsDict: any = {};
-  private gameType: string = "local";
-  private actionType: string = "join";
-  private destroy$ = new Subject<void>();
+  private readonly _optionsDict: any = {};
+  private _gameType: string = "local";
+  private _actionType: string = "join";
+  private _destroy$: Subject<void> = new Subject<void>();
   public errorMessage: string | null = null;
   public isLoading: boolean = false;
 
@@ -39,7 +40,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       const state = navigation.extras.state as {options: any};
-      this.optionsDict = {
+      this._optionsDict = {
         "ball_speed": state.options[0],
         "paddle_size": state.options[1],
         "number_players": state.options[2],
@@ -52,11 +53,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() : Promise<void> {
-    this.gameType = this._route.snapshot.data['gameType'];
-    this.actionType = this._route.snapshot.data['actionType'];
+    this._gameType = this._route.snapshot.data['gameType'];
+    this._actionType = this._route.snapshot.data['actionType'];
     await this.userService.whenUserDataLoaded();
     const postData: string = this.getPostData();
-    if (this.gameType === "local") {
+    if (this._gameType === "local") {
       this.requestLocalWebSocketUrl(postData);
     } else {
       await this.requestRemoteWebSocketUrl(postData)
@@ -64,17 +65,17 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   private getGameUrl(channel_id: string, arena_id: number): string {
-    return `/${this.gameType}/${channel_id}/${arena_id}`;
+    return `/${this._gameType}/${channel_id}/${arena_id}`;
   }
 
   private getPostData(): string {
     const user_id: number = this.userService.getUserID();
-    if (this.actionType === "join_specific") {
+    if (this._actionType === "join_specific") {
       return JSON.stringify({
         "user_id": user_id,
         "channel_id": this._route.snapshot.params['channel_id']
@@ -82,7 +83,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     } else {
       return JSON.stringify({
         "user_id": user_id,
-        "players_specs": {"nb_players": 2, "type": this.gameType, "options": this.optionsDict}
+        "players_specs": {"nb_players": 2, "type": this._gameType, "options": this._optionsDict}
       });
     }
   }
@@ -119,12 +120,12 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
           }),
         )
       ),
-      takeUntil(this.destroy$)
+      takeUntil(this._destroy$)
     );
   }
 
   private joinGame(postData: string): Observable<any> {
-    if (this.gameType === "local") {
+    if (this._gameType === "local") {
       return this.joinLocalGame(postData);
     } else {
       return this.joinRemoteGame(postData);
@@ -144,11 +145,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   private async requestRemoteWebSocketUrl(postData: string): Promise<void> {
-    if (this.actionType == "join") {
+    if (this._actionType == "join") {
       this.joinGame(postData).subscribe();
-    } else if (this.actionType == "join_specific") {
+    } else if (this._actionType == "join_specific") {
       this.joinSpecificChannel(postData);
-    } else if (this.actionType == "create") {
+    } else if (this._actionType == "create") {
       this.createGame(postData);
     }
   }

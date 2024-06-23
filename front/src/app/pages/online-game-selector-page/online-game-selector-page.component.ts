@@ -31,4 +31,9 @@ export class OnlineGameSelectorPageComponent {
     this.router.navigate([url]);
   }
 
+  public preventSpaces(event: KeyboardEvent): void {
+    if (event.key === ' ') {
+      event.preventDefault();
+    }
+    }
 }
