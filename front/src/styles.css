@@ -3,7 +3,7 @@
 @import './assets/fonts/custom-font.css';
 
 body {
-  background-image: url("assets/app-themes/game-background.gif");
+  background-image: url("assets/app-themes/game-background_light.gif");
   height: 100vh; /* Full viewport height */
   width: 100vw; /* Full viewport width */
   margin: 0;
@@ -65,9 +65,9 @@ button {
   border: none;
 }
 
-a {
+a:not(.title) {
   display: inline-block;
-  padding: 10px 20px;
+  padding: 1% 2%;
   margin-top: 20px;
   background-color: #007bff; /* Bootstrap primary color */
   color: white;
@@ -79,7 +79,7 @@ a {
   animation: fade-in 1s ease-out;
 }
 
-a:hover {
+a:hover:not(.title) {
   background-color: #0056b3; /* Darker shade for hover effect */
   transition: background-color 0.3s ease;
 }

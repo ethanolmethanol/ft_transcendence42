@@ -6,7 +6,7 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .home-page-container {
@@ -17,6 +17,16 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: scroll;
+}
+
+.buttons {
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  justify-content: center;
+  width: 30%;
+  top: 40vh;
+  position: relative;
 }
 
 h4 {
@@ -35,10 +45,4 @@ app-leaderboard {
   right: 0;
   bottom: 0;
   padding-bottom: 5vh;
-}
-
-a {
-  font-size: 2em;
-  position: relative;
-  top: 30vh;
 }

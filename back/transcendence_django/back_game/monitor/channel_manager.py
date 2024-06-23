@@ -6,6 +6,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
+from back_game.game_settings.dict_keys import ID
 from back_game.game_settings.game_constants import DEAD, WAITING
 
 logger = logging.getLogger(__name__)
@@ -19,13 +20,13 @@ class ChannelManager:
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> dict[str, Any] | None:
-        channel = self.get_channel_from_user_id(user_id)
-        if self.channels[channel_id] is None:
+        channel = self.channels.get(channel_id)
+        if channel is None:
             return None
         arena_id: str = list(self.channels[channel_id].keys())[0]
         logger.info("Arena id: %s", arena_id)
         self.add_user_to_channel(user_id, channel_id, arena_id)
-        return channel
+        return self.get_channel_from_user_id(user_id)
 
     def join_already_created_channel(
         self, user_id: int, is_remote: bool
@@ -66,7 +67,7 @@ class ChannelManager:
         logger.info("Arena %s is dead", arena.id)
         player_list: dict[str, Player] = arena.get_players()
         for player in player_list.values():
-            self.delete_user(player.user_id)
+            self.delete_user(player.user_id, arena_id)
         arenas.pop(arena_id)
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
@@ -103,17 +104,24 @@ class ChannelManager:
     def delete_channel(self, channel_id: str):
         del self.channels[channel_id]
 
-    def delete_user(self, user_id: int):
+    def delete_user(self, user_id: int, arena_id: str):
         try:
-            self.user_game_table.pop(user_id)
-            logger.info("User %s deleted from user_game_table", user_id)
+            user_data = self.user_game_table[user_id]
+            if user_data["arena"][ID] == arena_id:
+                self.user_game_table.pop(user_id)
+                logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
 
     def __get_available_channel(self) -> dict[str, Any] | None:
         for channel_id, channel in self.channels.items():
-            arena_id: str = list(channel.keys())[0]
+            arenas_id: list[str] = list(channel.keys())
+            if arenas_id is None:
+                return None
+            arena_id: str = arenas_id[0]
             arena: Arena = channel[arena_id]
+            if arena.is_private():
+                continue
             if arena.get_status() == GameStatus(WAITING):
                 return {"channel_id": channel_id, "arena": arena.to_dict()}
         return None

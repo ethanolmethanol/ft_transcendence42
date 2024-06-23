@@ -1,5 +1,4 @@
 body {
-    background-image: url("../../../assets/app-themes/game-background.gif");
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,8 +21,8 @@ h4 {
     justify-content: center;
     width: 100vw;
     height: 100vh;
-    overflow: scroll;
-    margin-top: 6em;
+    overflow: auto;
+    margin-top: 5%;
 }
 
 .game-selector app-slider {
@@ -35,4 +34,3 @@ h4 {
     font-size: 2em;
     color: white;
 }
-  

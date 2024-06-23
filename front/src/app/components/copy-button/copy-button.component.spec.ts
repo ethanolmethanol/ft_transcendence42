@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WaitingRoomPageComponent } from './waiting-room-page.component';
+import { CopyButtonComponent } from './copy-button.component';
 
-describe('WaitingRoomPageComponent', () => {
-  let component: WaitingRoomPageComponent;
-  let fixture: ComponentFixture<WaitingRoomPageComponent>;
+describe('CopyButtonComponent', () => {
+  let component: CopyButtonComponent;
+  let fixture: ComponentFixture<CopyButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WaitingRoomPageComponent]
+      imports: [CopyButtonComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(WaitingRoomPageComponent);
+    fixture = TestBed.createComponent(CopyButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

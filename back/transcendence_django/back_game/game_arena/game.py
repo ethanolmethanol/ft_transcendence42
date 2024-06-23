@@ -22,12 +22,21 @@ GameStatus = NewType("GameStatus", int)
 
 
 class Game:
-    def __init__(self, nb_players: int):
+    def __init__(self, players_specs: dict[str, Any]):
+        try:
+            nb_players = players_specs["nb_players"]
+            options: dict[str, Any] = players_specs["options"]
+            paddle_size = options["paddle_size"]
+            ball_speed = options["ball_speed"]
+            self.is_private: bool = options["is_private"]
+        except KeyError as exc:
+            raise ValueError("Options are missing.") from exc
         self.status: GameStatus = GameStatus(CREATED)
         self.paddles: dict[str, Paddle] = {
-            f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
+            f"{i + 1}": Paddle(i + 1, nb_players, paddle_size)
+            for i in range(nb_players)
         }
-        self.ball: Ball = Ball(self.paddles)
+        self.ball: Ball = Ball(self.paddles, ball_speed)
         self.map: Map = Map()  # depends on the number of players
 
     def add_paddle(self, player_name: str):

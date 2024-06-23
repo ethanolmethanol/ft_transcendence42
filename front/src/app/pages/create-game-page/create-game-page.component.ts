@@ -2,30 +2,43 @@ import { Component } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { SliderComponent } from '../../components/slider/slider.component';
 import * as Constants from '../../constants';
-import { RouterLink } from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { EventEmitter } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
+import {NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-create-online-game-page',
+  selector: 'app-create-game-page',
   standalone: true,
   imports: [
     HeaderComponent,
     SliderComponent,
     RouterLink,
+    NgIf,
   ],
-  templateUrl: './create-online-game-page.component.html',
-  styleUrl: './create-online-game-page.component.css'
+  templateUrl: './create-game-page.component.html',
+  styleUrl: './create-game-page.component.css'
 })
-export class CreateOnlineGamePageComponent {
+export class CreateGamePageComponent {
   constants = Constants;
   options: Option[] = [
     new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
     new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
-    new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT)
+    new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT),
+    new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.constants.IS_PRIVATE_DEFAULT)
   ];
+  isRemote = false;
+  urlDestination = '/';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route: ActivatedRoute) {
+    const gameType = this.route.snapshot.data['gameType'];
+    this.isRemote = (gameType === 'online');
+    if (this.isRemote) {
+      this.urlDestination = '/online/create/waiting';
+    } else {
+      this.urlDestination = '/local/waiting';
+    }
+  }
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
     this.options[optionType].optionIndex = optionIndex;
@@ -37,7 +50,7 @@ export class CreateOnlineGamePageComponent {
 
   private _isBadSelection(): boolean {
     return false;
-    return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
+    // return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
   }
 
   public navigateToWaitPage(): void {
@@ -45,7 +58,8 @@ export class CreateOnlineGamePageComponent {
     const selectedOptions = [
       this.options[this.constants.BALL_SPEED].value(),
       this.options[this.constants.PADDLE_SIZE].value(),
-      this.options[this.constants.NUMBER_PLAYERS].value()
+      this.options[this.constants.NUMBER_PLAYERS].value(),
+      this.options[this.constants.IS_PRIVATE].value()
     ];
     const navigationExtras: NavigationExtras = {
       state: {
@@ -53,7 +67,7 @@ export class CreateOnlineGamePageComponent {
       }
     };
 
-    this.router.navigate(['/online/create/waiting'], navigationExtras);
+    this.router.navigate([this.urlDestination], navigationExtras);
   }
 }
 
@@ -71,7 +85,7 @@ export class Option {
     this.optionIndexChange.emit(this._optionIndex);
   }
 
-  public value(): string {
-    return this.options[this._optionIndex];
+  public value(): number {
+    return this._optionIndex;
   }
 }

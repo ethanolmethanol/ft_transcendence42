@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OnlineGamePageComponent } from './online-game-page.component';
+import { ButtonWithIconComponent } from './button-with-icon.component';
 
-describe('OnlineGamePageComponent', () => {
-  let component: OnlineGamePageComponent;
-  let fixture: ComponentFixture<OnlineGamePageComponent>;
+describe('ButtonWithIconComponent', () => {
+  let component: ButtonWithIconComponent;
+  let fixture: ComponentFixture<ButtonWithIconComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [OnlineGamePageComponent]
+      imports: [ButtonWithIconComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(OnlineGamePageComponent);
+    fixture = TestBed.createComponent(ButtonWithIconComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

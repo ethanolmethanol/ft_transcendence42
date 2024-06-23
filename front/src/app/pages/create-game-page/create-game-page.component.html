@@ -16,6 +16,12 @@
                 [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex"
                 (selectedOption)="handleOptionSelected($event, constants.NUMBER_PLAYERS)">
     </app-slider>
+    <h4 *ngIf="isRemote">Visibility</h4>
+    <app-slider *ngIf="isRemote"
+                [options]="constants.IS_PRIVATE_OPTIONS"
+                [(optionIndex)]="options[constants.IS_PRIVATE].optionIndex"
+                (selectedOption)="handleOptionSelected($event, constants.IS_PRIVATE)">
+    </app-slider>
     <a (click)="navigateToWaitPage()">Join Game</a>
   </section>
 </body>

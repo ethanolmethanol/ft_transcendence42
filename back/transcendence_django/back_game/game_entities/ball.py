@@ -16,15 +16,25 @@ from back_game.game_settings.game_constants import BALL_RADIUS, GAME_HEIGHT, GAM
 
 logger = logging.getLogger(__name__)
 
+speed_rate = {
+    0: 2,
+    1: 5,
+    2: 8,
+    3: 14,
+    4: 20,
+}
+
 
 class Ball:
 
-    def __init__(self, paddles: dict[str, Paddle]):
+    def __init__(self, paddles: dict[str, Paddle], speed_index: int):
         self.position: Position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.radius: float = BALL_RADIUS
         self.paddles: dict[str, Paddle] = paddles
         self.player_turn = 0
-        self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
+        self.speed = Speed(0, 0)
+        self.speed_rate = speed_rate[speed_index]
+        self.__set_random_speed()
 
     def update(self, new_position: Position, new_speed: Speed, new_radius: float):
         self.position.set_coordinates(new_position.x, new_position.y)
@@ -50,10 +60,15 @@ class Ball:
     def get_next_position(self) -> Position:
         return Position(self.position.x + self.speed.x, self.position.y + self.speed.y)
 
+    def set_speed(self, speed: Speed):
+        speed.multiply_by_scalar(self.speed_rate)
+        logger.info("New speed is: %s", speed.__dict__)
+        self.speed.update(speed)
+
     def reset(self):
         self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
         self.__set_random_speed()
 
     def __set_random_speed(self):
-        self.speed = BallSpeedRandomizer.generate_random_speed(self.player_turn)
+        self.set_speed(BallSpeedRandomizer.generate_random_speed(self.player_turn))
         self.player_turn = (self.player_turn + 1) % 2

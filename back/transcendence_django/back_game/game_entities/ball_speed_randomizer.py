@@ -26,7 +26,7 @@ random_ball_speeds = [
 class BallSpeedRandomizer:
 
     @staticmethod
-    def generate_random_speed(player_turn) -> Speed:
+    def generate_random_speed(player_turn: int) -> Speed:
         chosen_set = random_ball_speeds[player_turn]
         random_speed = random.choice(list(chosen_set))
         return random_speed

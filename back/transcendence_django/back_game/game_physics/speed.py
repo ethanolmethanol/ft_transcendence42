@@ -14,3 +14,11 @@ class Speed(Vector):
 
     def reverse_y_direction(self):
         self.y *= -1
+
+    def multiply_by_scalar(self, scalar: float):
+        norm = self.magnitude()
+        if norm == 0:
+            return
+        self.x = (self.x / norm) * scalar
+        self.y = (self.y / norm) * scalar
+        self.absolute_velocity = self.magnitude()

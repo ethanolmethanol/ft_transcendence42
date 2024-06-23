@@ -66,7 +66,7 @@ ARENA_FULL = "The arena is full."
 UNKNOWN_USER = "This user is unknown"
 INVALID_NB_PLAYERS = "The number of players is out of allowed range."
 NB_PLAYERS = "nb_players"
-MODE = "mode"
+IS_REMOTE = "type"
 PLAYER_NAME = "player_name"
 TIME_LEFT = "time_left"
 

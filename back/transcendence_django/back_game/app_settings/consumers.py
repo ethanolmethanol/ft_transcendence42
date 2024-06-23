@@ -3,6 +3,7 @@ import json
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
+import autobahn
 from back_game.app_settings.channel_error import ChannelError
 from back_game.app_settings.game_logic_interface import GameLogicInterface
 from back_game.game_arena.arena import Arena
@@ -165,6 +166,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             logger.error("Serialization type error: %s", e)
         except ConnectionResetError as e:
             logger.error("Connection reset error: %s", e)
+        except autobahn.exception as e:
+            logger.error("Connection closed error: %s", e)
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]
