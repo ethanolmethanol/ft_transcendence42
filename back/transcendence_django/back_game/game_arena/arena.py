@@ -90,8 +90,8 @@ class Arena:
             for player in self.player_manager.players.values()
         )
 
-    def get_winner(self) -> str:
-        return self.player_manager.get_winner()
+    def get_game_summary(self) -> dict[str, Any]:
+        return self.player_manager.get_game_summary()
 
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players

@@ -25,6 +25,7 @@ from back_game.game_settings.dict_keys import (
     OVER_CALLBACK,
     PADDLE,
     PLAYER,
+    PLAYERS,
     REMATCH,
     START_TIMER,
     START_TIMER_CALLBACK,
@@ -142,12 +143,13 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_game_over(self, time: float):
-        winner = monitor.get_winner(self.game.channel_id, self.game.arena_id)
-        logger.info("Game over: %s wins. %s seconds left.", winner, time)
+        summary = monitor.get_game_summary(self.game.channel_id, self.game.arena_id)
+        logger.info("Game over: %s wins. %s seconds left.", summary[WINNER], time)
         await self.send_update(
             {
                 GAME_OVER: {
-                    WINNER: winner,
+                    PLAYERS: summary[PLAYERS],
+                    WINNER: summary[WINNER],
                     TIME: time,
                     MESSAGE: "Game over. Thanks for playing!",
                 }

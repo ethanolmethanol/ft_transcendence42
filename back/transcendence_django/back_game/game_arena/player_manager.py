@@ -92,17 +92,12 @@ class PlayerManager:
         except KeyError:
             return False
 
-    def get_winner(self) -> str:
-        active_players = [
-            player for player in self.players.values() if player.is_active()
-        ]
-        if (
-            not active_players
-            or len(set(player.score for player in active_players)) == 1
-        ):
-            return ""
-        winner = max(active_players, key=lambda player: player.score)
-        return winner.player_name
+    def get_game_summary(self) -> dict[str, Any]:
+        winner = self.__get_winner()
+        return {
+            "players": {player.player_name: player.score for player in self.players.values()},
+            "winner": winner,
+        }
 
     def finish_given_up_players(self):
         for player in self.players.values():
@@ -132,6 +127,18 @@ class PlayerManager:
 
     def get_player_name(self, user_id: int) -> str:
         return self.__get_player_from_user_id(user_id).player_name
+
+    def __get_winner(self) -> str | None:
+        active_players = [
+            player for player in self.players.values() if player.is_active()
+        ]
+        if (
+            not active_players
+            or len(set(player.score for player in active_players)) == 1
+        ):
+            return ""
+        winner = max(active_players, key=lambda player: player.score)
+        return winner.player_name
 
     def __count_players(self, state: PlayerStatus = PlayerStatus(ENABLED)) -> int:
         return sum(player.status == state for player in self.players.values())

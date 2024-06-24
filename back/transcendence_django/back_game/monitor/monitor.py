@@ -98,10 +98,10 @@ class Monitor:
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.rematch(user_id)
 
-    def get_winner(self, channel_id: str, arena_id: str) -> str:
+    def get_game_summary(self, channel_id: str, arena_id: str) -> dict[str, Any]:
         arena: Arena = self.get_arena(channel_id, arena_id)
-        winner: str = arena.get_winner()
-        return winner
+        summary: str = arena.get_game_summary()
+        return summary
 
     def move_paddle(
         self,

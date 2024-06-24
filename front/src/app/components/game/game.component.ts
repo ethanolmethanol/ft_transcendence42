@@ -58,6 +58,7 @@ interface StartTimerResponse {
 }
 
 interface GameOverUpdateResponse {
+  players: string[];
   winner: string;
   time: number;
   message: string;
@@ -259,7 +260,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private updateGameOver(info: GameOverUpdateResponse) {
-    let gameOverOverlay = this.gameOver.first;
+    let gameOverOverlay: GameOverComponent = this.gameOver.first;
     let player = this.activePlayers.find(name => name === this.playerName);
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
