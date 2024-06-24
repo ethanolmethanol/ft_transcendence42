@@ -37,7 +37,7 @@ from back_game.game_settings.dict_keys import (
     WINNER,
 )
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
-from back_game.monitor.monitor import monitor
+from back_game.monitor.monitor import Monitor, get_monitor
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 logger = logging.getLogger(__name__)
@@ -49,11 +49,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.room_group_name: str | None = None
         self.game = GameLogicInterface()
+        self.monitor = get_monitor()
 
     async def connect(self):
         self.game.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
         await self.accept()
-        if monitor.does_exist_channel(self.game.channel_id) is False:
+        if self.monitor.does_exist_channel(self.game.channel_id) is False:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
@@ -128,7 +129,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({PADDLE: paddle_data})
 
     async def send_arena_data(self):
-        arena: Arena = monitor.get_arena(self.game.channel_id, self.game.arena_id)
+        arena: Arena = self.monitor.get_arena(self.game.channel_id, self.game.arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 
     async def send_start_timer(self, time: float):
@@ -143,7 +144,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_game_over(self, time: float):
-        summary = monitor.get_game_summary(self.game.channel_id, self.game.arena_id)
+        summary = self.monitor.get_game_summary(self.game.channel_id, self.game.arena_id)
         logger.info("Game over: %s wins. %s seconds left.", summary[WINNER], time)
         await self.send_update(
             {
@@ -154,6 +155,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                     MESSAGE: "Game over. Thanks for playing!",
                 }
             }
+        )
+        await self.monitor.save_game_summary(
+            self.game.channel_id, self.game.arena_id, summary[WINNER], summary[PLAYERS]
         )
 
     async def safe_send(self, data: dict[str, Any]):

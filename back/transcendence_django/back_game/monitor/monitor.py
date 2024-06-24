@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from asgiref.sync import sync_to_async
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
@@ -26,9 +27,19 @@ from back_game.monitor.channel_manager import ChannelManager
 logger = logging.getLogger(__name__)
 
 
+# def get_model(model_path):
+#     module_name, _, class_name = model_path.rpartition('.')
+#     module = importlib.import_module(module_name)
+#     return getattr(module, class_name)
+#
+# GameSummary = get_model('back_game.models.GameSummary')
+
 class Monitor:
 
+
     def __init__(self):
+        from back_game.models import GameSummary
+        self.GameSummary = GameSummary
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -39,8 +50,8 @@ class Monitor:
         )
         channel_id: str = new_channel[CHANNEL_ID]
         arenas = self.channel_manager.channels[channel_id]
-        asyncio.create_task(self.monitor_arenas_loop(channel_id, arenas))
-        asyncio.create_task(self.run_game_loop(arenas))
+        asyncio.create_task(self.__monitor_arenas_loop(channel_id, arenas))
+        asyncio.create_task(self.__run_game_loop(arenas))
         return new_channel
 
     async def join_channel(
@@ -123,11 +134,10 @@ class Monitor:
             user_id, channel_id, arena_id
         )
 
-    async def monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
-        while arenas:
-            await self.update_game_states(arenas)
-            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        self.channel_manager.delete_channel(channel_id)
+    async def save_game_summary(self, channel_id: str, arena_id: str, winner: str, players: dict):
+        await sync_to_async(self.GameSummary.objects.create)(
+            channel_id=channel_id, arena_id=arena_id, winner=winner, players=players
+        )
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
@@ -141,10 +151,16 @@ class Monitor:
                     break
             elif arena_status == GameStatus(OVER):
                 logger.info("Game over in arena %s", arena.id)
-                await self.game_over(arenas, arena)
+                await self.__game_over(arenas, arena)
                 break
 
-    async def run_game_loop(self, arenas: dict[str, Arena]):
+    async def __monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
+        while arenas:
+            await self.update_game_states(arenas)
+            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+        self.channel_manager.delete_channel(channel_id)
+
+    async def __run_game_loop(self, arenas: dict[str, Arena]):
         while arenas:
             for arena in arenas.values():
                 if arena.get_status() == GameStatus(STARTED):
@@ -153,7 +169,7 @@ class Monitor:
                         await arena.game_update_callback(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
-    async def game_over(self, arenas: dict[str, Arena], arena: Arena):
+    async def __game_over(self, arenas: dict[str, Arena], arena: Arena):
         arena.set_status(GameStatus(DYING))
         if arena.game_update_callback is not None:
             logger.info("Sending game over message to arena %s", arena.id)
@@ -171,4 +187,10 @@ class Monitor:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
 
 
-monitor = Monitor()
+_monitor_instance = None
+
+def get_monitor() -> Monitor:
+    global _monitor_instance
+    if _monitor_instance is None:
+        _monitor_instance = Monitor()
+    return _monitor_instance

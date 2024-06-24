@@ -8,7 +8,7 @@ from back_game.game_settings.game_constants import (
     NOT_JOINED,
     UNKNOWN_ARENA_ID,
 )
-from back_game.monitor.monitor import monitor
+from back_game.monitor.monitor import Monitor, get_monitor
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class GameLogicInterface:
         self.arena_id: str = ""
         self.user_id: int = -1
         self.has_joined: bool = False
+        self.monitor = get_monitor()
 
     def join(
         self,
@@ -29,7 +30,7 @@ class GameLogicInterface:
     ):
         try:
             logger.info("Joining arena %s", arena_id)
-            monitor.init_arena(
+            self.monitor.init_arena(
                 self.channel_id,
                 arena_id,
                 callbacks,
@@ -37,7 +38,7 @@ class GameLogicInterface:
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
-            monitor.join_arena(user_id, player_name, self.channel_id, arena_id)
+            self.monitor.join_arena(user_id, player_name, self.channel_id, arena_id)
         except (KeyError, ValueError) as e:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
@@ -49,7 +50,7 @@ class GameLogicInterface:
         if not self.has_joined:
             raise ChannelError(NOT_JOINED, "Attempt to leave without joining.")
         try:
-            monitor.leave_arena(self.user_id, self.channel_id, self.arena_id)
+            self.monitor.leave_arena(self.user_id, self.channel_id, self.arena_id)
         except KeyError as e:
             raise ChannelError(
                 NOT_ENTERED, "User cannot leave or has already left this arena."
@@ -59,17 +60,17 @@ class GameLogicInterface:
     def give_up(self):
         if not self.has_joined:
             raise ChannelError(NOT_JOINED, "Attempt to give up without joining.")
-        monitor.give_up(self.user_id, self.channel_id, self.arena_id)
+        self.monitor.give_up(self.user_id, self.channel_id, self.arena_id)
         self.has_joined = False
 
     def rematch(self):
         if not self.has_joined:
             raise ChannelError(NOT_JOINED, "Attempt to rematch without joining.")
-        monitor.rematch(self.user_id, self.channel_id, self.arena_id)
+        self.monitor.rematch(self.user_id, self.channel_id, self.arena_id)
 
     def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
         if not self.has_joined:
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
-        return monitor.move_paddle(
+        return self.monitor.move_paddle(
             self.channel_id, self.arena_id, player_name, direction
         )
