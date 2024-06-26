@@ -37,4 +37,11 @@ export class MonitorService {
       catchError(this.handleError<WebSocketUrlResponse>('joinSpecificWebSocketUrl'))
     );
   }
+
+  public getSummaries(): Observable<any> {
+    console.log("Getting summaries");
+    return this.http.get<WebSocketUrlResponse>(`${API_GAME}/get_game_summaries/`).pipe(
+      catchError(this.handleError<WebSocketUrlResponse>('getSummaries'))
+    );
+  }
 }

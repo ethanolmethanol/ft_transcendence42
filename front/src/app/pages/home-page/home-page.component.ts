@@ -6,6 +6,7 @@ import { UserService } from '../../services/user/user.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import {NgStyle} from "@angular/common";
 import {ButtonWithIconComponent} from "../../components/button-with-icon/button-with-icon.component";
+import {MonitorService} from "../../services/monitor/monitor.service";
 
 @Component({
   selector: 'app-home-page',
@@ -24,11 +25,19 @@ import {ButtonWithIconComponent} from "../../components/button-with-icon/button-
 export class HomePageComponent implements OnInit {
   welcome: string = '';
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private monitorService: MonitorService) { }
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
+ }
+
+ public getSummaries(): string[] {
+    this.monitorService.getSummaries().subscribe((data) => {
+      console.log(data);
+      return data;
+    });
+    return [];
  }
 
 }

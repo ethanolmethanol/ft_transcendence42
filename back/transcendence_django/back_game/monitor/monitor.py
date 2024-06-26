@@ -9,8 +9,10 @@ from back_game.game_settings.dict_keys import (
     ARENA,
     CHANNEL_ID,
     OVER_CALLBACK,
+    PLAYERS,
     START_TIMER_CALLBACK,
     UPDATE_CALLBACK,
+    WINNER,
 )
 from back_game.game_settings.game_constants import (
     DYING,
@@ -26,13 +28,6 @@ from back_game.monitor.channel_manager import ChannelManager
 
 logger = logging.getLogger(__name__)
 
-
-# def get_model(model_path):
-#     module_name, _, class_name = model_path.rpartition('.')
-#     module = importlib.import_module(module_name)
-#     return getattr(module, class_name)
-#
-# GameSummary = get_model('back_game.models.GameSummary')
 
 class Monitor:
 
@@ -134,9 +129,9 @@ class Monitor:
             user_id, channel_id, arena_id
         )
 
-    async def save_game_summary(self, channel_id: str, arena_id: str, winner: str, players: dict):
+    async def save_game_summary(self, arena_id: str, winner: str, players: dict):
         await sync_to_async(self.GameSummary.objects.create)(
-            channel_id=channel_id, arena_id=arena_id, winner=winner, players=players
+            arena_id=arena_id, winner=winner, players=players
         )
 
     async def update_game_states(self, arenas: dict[str, Arena]):
@@ -146,6 +141,10 @@ class Monitor:
                 await arena.start_game()
             elif arena.can_be_over():
                 arena.conclude_game()
+                summary = arena.get_game_summary()
+                await self.save_game_summary(
+                    arena.id, summary[WINNER], summary[PLAYERS]
+                )
                 if arena_status != GameStatus(STARTED):
                     self.channel_manager.delete_arena(arenas, arena.id)
                     break

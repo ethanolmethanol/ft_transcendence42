@@ -13,6 +13,7 @@ from back_game.game_settings.dict_keys import (
     USER_ID,
 )
 from back_game.monitor.monitor import Monitor, get_monitor
+from back_game.models import GameSummary
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
@@ -86,7 +87,7 @@ async def join_specific_channel(request) -> JsonResponse:
 
 
 @require_http_methods(["POST"])
-async def is_user_in_channel(request) -> JsonResponse:
+def is_user_in_channel(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
@@ -97,3 +98,8 @@ async def is_user_in_channel(request) -> JsonResponse:
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
+
+@require_http_methods(["GET"])
+def get_game_summaries(request):
+    game_summaries = GameSummary.objects.all().values()
+    return JsonResponse(list(game_summaries), safe=False)

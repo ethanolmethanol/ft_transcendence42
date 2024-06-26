@@ -156,9 +156,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 }
             }
         )
-        await self.monitor.save_game_summary(
-            self.game.channel_id, self.game.arena_id, summary[WINNER], summary[PLAYERS]
-        )
+
 
     async def safe_send(self, data: dict[str, Any]):
         """

@@ -15,9 +15,11 @@ from back_game.game_settings.dict_keys import (
     INVALID_NB_PLAYERS,
     IS_REMOTE,
     NB_PLAYERS,
+    PLAYERS,
     PLAYER_NAME,
     TIME_LEFT,
     UNKNOWN_USER,
+    WINNER,
 )
 from back_game.game_settings.game_constants import (
     AFK_WARNING_THRESHOLD,
@@ -95,8 +97,8 @@ class PlayerManager:
     def get_game_summary(self) -> dict[str, Any]:
         winner = self.__get_winner()
         return {
-            "players": {player.player_name: player.score for player in self.players.values()},
-            "winner": winner,
+            PLAYERS: {player.player_name: player.score for player in self.players.values()},
+            WINNER: winner,
         }
 
     def finish_given_up_players(self):
@@ -132,10 +134,7 @@ class PlayerManager:
         active_players = [
             player for player in self.players.values() if player.is_active()
         ]
-        if (
-            not active_players
-            or len(set(player.score for player in active_players)) == 1
-        ):
+        if (not active_players):
             return ""
         winner = max(active_players, key=lambda player: player.score)
         return winner.player_name
