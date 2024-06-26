@@ -6,7 +6,10 @@ import {
   QueryList,
   ViewChildren,
   Input,
-  SimpleChanges, OnChanges
+  SimpleChanges,
+  OnChanges,
+  Renderer2,
+  ElementRef,
 } from '@angular/core';
 import {
   NOT_JOINED,
@@ -34,6 +37,7 @@ import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.comp
 import { NgIf } from "@angular/common";
 import { ConnectionService } from "../../services/connection/connection.service";
 import { UserService } from "../../services/user/user.service";
+import * as Constants from '../../constants';
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -85,6 +89,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
   @Input() is_remote: boolean = false;
+  gameboardColors: string[] = Constants.DEFAULT_COLORS;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -94,6 +99,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   waitingPlayers: string[] = [];
+  constants = Constants;
 
   private _paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -107,13 +113,37 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
-  constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
-
+  constructor (
+    private userService: UserService, 
+    private webSocketService: WebSocketService, 
+    private router: Router, 
+    private connectionService: ConnectionService, 
+    private renderer: Renderer2, 
+    private el: ElementRef
+  ) {}
+  
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.is_remote && this.is_remote) {
       await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
     }
+  }
+
+  private _setGameStyle() {
+    this._setStyle('.game-container', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.game-container', 'border', `6px solid ${this.gameboardColors[Constants.LINE_COLOR]}`);
+    this._setStyle('.game', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.dotted-line', '--line-thickness', `${this.lineThickness}px`);
+    this._setStyle('.dotted-line', 'background', `linear-gradient(to bottom, ${this.gameboardColors[Constants.LINE_COLOR]} 60%, transparent 10%)`);
+    this._setStyle('.dotted-line', 'background-size', '100% 40px');
+    this._setStyle('.score-display', 'color', this.gameboardColors[Constants.SCORE_COLOR]);
+    // this._setStyle('.app-paddle', 'background-color', this.gameboardColors[Constants.PADDLE_COLOR]);
+    // this._setStyle('.app-ball', 'background-color', this.gameboardColors[Constants.BALL_COLOR]);
+  }
+
+  private _setStyle(selector: string, styleName: string, styleValue: string) {
+    const element = this.el.nativeElement.querySelector(selector);
+    this.renderer.setStyle(element, styleName, styleValue);
   }
 
   public setArena(arena: ArenaResponse) {
@@ -266,6 +296,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       if (paddle) {
         this.movePaddle(paddle, _paddleBinding)
       }
+      this.gameboardColors = this.userService.getColorConfig();
+      this._setGameStyle();
     });
 
     // Call this function again on the next frame
@@ -290,7 +322,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
-    this.gameLoop();
+    this.gameLoop()
   }
 
   ngOnDestroy() {

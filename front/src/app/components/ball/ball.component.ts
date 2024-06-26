@@ -1,6 +1,7 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, Renderer2, ElementRef} from '@angular/core';
 import {BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH} from "../../constants";
 import {Position} from "../../interfaces/position.interface";
+import * as Constants from '../../constants';
 
 @Component({
   selector: 'app-ball',
@@ -13,6 +14,18 @@ export class BallComponent {
   @Input() positionX: number = 150;
   @Input() positionY: number = 150;
   @Input() ballSize = BALL_RADIUS * 2;
+  @Input() ballColor: string = Constants.DEFAULT_COLORS[Constants.BALL_COLOR];
+
+  constructor(private renderer: Renderer2, private el: ElementRef) {}
+
+  ngOnChanges() {
+    this._setStyle('.ball', 'background-color', this.ballColor);
+  }
+
+  private _setStyle(selector: string, styleName: string, styleValue: string) {
+    const element = this.el.nativeElement.querySelector(selector);
+    this.renderer.setStyle(element, styleName, styleValue);
+  }
 
   public updateBallPosition(position: Position) {
     this.positionX = Math.max(0, Math.min(position.x, GAME_WIDTH));
