@@ -75,7 +75,7 @@ h6 {
         top: 0;
     }
     50% {
-        top: calc(100% - 60px);
+        top: calc(100% - 14%);
     }
     100% {
         top: 0;
@@ -84,13 +84,13 @@ h6 {
 
 @keyframes moveDownUp {
     0% {
-        top: calc(100% - 60px);
+        top: calc(100% - 14%);
     }
     50% {
         top: 0;
     }
     100% {
-        top: calc(100% - 60px);
+        top: calc(100% - 14%);
     }
 }
   

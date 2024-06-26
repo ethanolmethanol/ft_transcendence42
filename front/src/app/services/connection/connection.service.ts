@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {Subscription} from "rxjs";
-import {Router} from "@angular/router";
-import {MonitorService} from "../monitor/monitor.service";
-import {WebSocketService} from "../web-socket/web-socket.service";
-import {ErrorResponse} from "../../interfaces/error-response.interface";
-import {ArenaResponse} from "../../interfaces/arena-response.interface";
+import { Subscription } from "rxjs";
+import { Router } from "@angular/router";
+import { MonitorService } from "../monitor/monitor.service";
+import { WebSocketService } from "../web-socket/web-socket.service";
+import { ErrorResponse } from "../../interfaces/error-response.interface";
+import { ArenaResponse } from "../../interfaces/arena-response.interface";
 
 @Injectable({
   providedIn: 'root'

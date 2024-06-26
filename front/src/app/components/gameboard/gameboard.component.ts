@@ -22,18 +22,9 @@ import * as Constants from '../../constants';
 })
 export class GameboardComponent {
   @Input() gameboardColors: string[] = Constants.DEFAULT_COLORS;
-
-  paddle1Y = 0;
-  paddle2Y = GAME_HEIGHT;
-  ballX = GAME_WIDTH / 2;
-  ballY = GAME_HEIGHT / 2;
-  ballSpeedX = 2;
-  ballSpeedY = 2;
-
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
   gameHeight: number = GAME_HEIGHT;
-  waitingPlayers: string[] = [];
 
   constructor(private renderer: Renderer2, private el: ElementRef) {}
 
