@@ -28,8 +28,11 @@ N				= \033[0m    # RESET
 
 TEST-ENGINE-TAGS = passed monitor paddle ball
 
-${NAME}: gen-cert up health
+${NAME}: gen-cert hostname up health
 	$(call printname)
+
+hostname:
+	echo HOSTNAME=$(shell hostname --short) >> ${ENV_FILE}
 
 # ${ENV_FILE}
 

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+import subprocess
+from corsheaders.defaults import default_headers
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,6 +32,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "daphne",
     "channels",
     "django.contrib.admin",
@@ -47,11 +50,11 @@ INSTALLED_APPS = [
     "health_check.cache",  # https://pypi.org/project/django-health-check/
     "health_check.storage",
     "health_check.contrib.migrations",
-    "corsheaders",
     "django_extensions",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -59,7 +62,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
 
@@ -108,18 +110,36 @@ DATABASES = {
 
 # AUTH_USER_MODEL = 'auth.User'
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost:4200", "http://localhost:1234"]
-CORS_ALLOWED_ORIGINS = ["https://localhost:4200"]
+server_name = os.environ.get('HOSTNAME').lower()
+
+print("Server name:", server_name)
+print(f"Server name: https://{server_name}:4200")
 CORS_ALLOW_CREDENTIALS = True
-AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
-CORS_ALLOW_HEADERS = [
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ORIGIN_WHITELIST = [
+#     "https://localhost:4200",
+#     f"https://{server_name}:4200",
+# ]
+
+CORS_ALLOW_HEADERS = default_headers + (
     "CONTENT-TYPE",
     "X-CSRFToken",
-]
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
+)
+
+ALLOWED_HOSTS = ["localhost", server_name]
+
+CSRF_TRUSTED_ORIGINS = ("https://localhost:4200", f"https://{server_name}:4200", "http://localhost:1234")
+CSRF_ALLOWED_ORIGINS = ["https://localhost:4200", f"https://{server_name}:4200", "http://localhost:1234"]
 CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+
+AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
+SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
 
 print("Database settings:")
 print("Name:", DATABASES["default"]["NAME"])

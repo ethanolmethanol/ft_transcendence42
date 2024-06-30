@@ -8,9 +8,18 @@
 // API //
 /////////
 
-export const API_AUTH = 'https://localhost:8000/auth';
-export const API_USER = 'https://localhost:8002/user';
-export const API_GAME = 'https://localhost:8001/game';
+// Function to get the base URL based on the hostname
+function getBaseUrl() {
+//   const serverName = window.location.hostname;
+  return 'https://localhost';
+}
+
+export const API_BASE_URL = getBaseUrl();
+
+
+export const API_AUTH = `${API_BASE_URL}:8000/auth`;
+export const API_USER = `${API_BASE_URL}:8002/user`;
+export const API_GAME = `${API_BASE_URL}:8001/game`;
 
 // INTERFACES
 
