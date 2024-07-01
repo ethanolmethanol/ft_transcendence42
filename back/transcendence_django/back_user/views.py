@@ -39,18 +39,18 @@ class UserDataView(APIView):
 
     def _respond_with_unauthorized(self) -> Response:
         return Response(
-            {"detail": "User isn't logged in."},
-            status=HTTPStatus.UNAUTHORIZED
+            {"detail": "User isn't logged in."}, status=HTTPStatus.UNAUTHORIZED
         )
 
     def _respond_with_bad_request(self) -> Response:
         return Response(
-            {"detail": "User does not exist."},
-            status=HTTPStatus.BAD_REQUEST
+            {"detail": "User does not exist."}, status=HTTPStatus.BAD_REQUEST
         )
 
     def _handle_get_request(self, user: User) -> Response:
-        profile, _ = Profile.objects.get_or_create(user=user, defaults={"color_config": DEFAULT_COLORS})
+        profile, _ = Profile.objects.get_or_create(
+            user=user, defaults={"color_config": DEFAULT_COLORS}
+        )
         user_data = {
             "id": user.id,
             "username": user.username,
@@ -60,7 +60,7 @@ class UserDataView(APIView):
         return Response(user_data, status=HTTPStatus.OK)
 
     def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
-        new_color_config = data.get('color_config')
+        new_color_config = data.get("color_config")
         profile, _ = Profile.objects.get_or_create(user=user)
         profile.color_config = new_color_config
         profile.save()
