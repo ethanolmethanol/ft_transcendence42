@@ -6,7 +6,7 @@ from django.db import models
 
 
 class Profile(models.Model):
-    user: User = models.OneToOneField(User, on_delete=models.CASCADE)  # type: User
+    user: User = models.OneToOneField(User, on_delete=models.CASCADE)
     color_config: List[str] = ArrayField(
         models.CharField(max_length=20), default=list
     )  # type: List[str]
