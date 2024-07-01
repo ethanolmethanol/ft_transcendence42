@@ -66,7 +66,9 @@ class UserDataView(APIView):
 
     def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
         raw_color_config = data.get("color_config")
-        if isinstance(raw_color_config, list) and all(isinstance(item, str) for item in raw_color_config):
+        if isinstance(raw_color_config, list) and all(
+            isinstance(item, str) for item in raw_color_config
+        ):
             new_color_config = raw_color_config
         else:
             new_color_config = DEFAULT_COLORS
