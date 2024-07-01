@@ -20,7 +20,7 @@ class UserDataView(APIView):
 
         try:
             user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+        except User.DoesNotExist: # pylint: disable=no-member
             return self._respond_with_bad_request()
 
         return self._handle_get_request(user)
@@ -32,7 +32,7 @@ class UserDataView(APIView):
 
         try:
             user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+        except User.DoesNotExist: # pylint: disable=no-member
             return self._respond_with_bad_request()
 
         return self._handle_post_request(user, request.data)
@@ -50,7 +50,7 @@ class UserDataView(APIView):
     def _handle_get_request(self, user: User) -> Response:
         profile, _ = Profile.objects.get_or_create(
             user=user, defaults={"color_config": DEFAULT_COLORS}
-        )
+        ) # pylint: disable=no-member
         user_data = {
             "id": user.id,
             "username": user.username,
@@ -60,8 +60,8 @@ class UserDataView(APIView):
         return Response(user_data, status=HTTPStatus.OK)
 
     def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
-        new_color_config = data.get("color_config")
-        profile, _ = Profile.objects.get_or_create(user=user)
+        new_color_config = data.get("color_config") # pylint: disable=no-member
+        profile, _ = Profile.objects.get_or_create(user=user) # pylint: disable=no-member
         profile.color_config = new_color_config
         profile.save()
         return Response({"status": "success"}, status=HTTPStatus.OK)
