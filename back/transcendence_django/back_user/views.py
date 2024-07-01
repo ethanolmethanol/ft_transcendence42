@@ -13,8 +13,12 @@ from .models import Profile
 
 @method_decorator(csrf_protect, name="dispatch")
 class UserDataView(APIView):
+
+    def get_user_id(self, request: Any) -> int:
+        return request.session.get("_auth_user_id")
+
     def get(self, request: Any) -> Response:
-        user_id = request.session.get("_auth_user_id")
+        user_id = self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
 
@@ -23,10 +27,10 @@ class UserDataView(APIView):
         except User.DoesNotExist: # pylint: disable=no-member
             return self._respond_with_bad_request()
 
-        return self._handle_get_request(user)
+        return self._handle_get_request(user, user_id)
 
     def post(self, request: Any) -> Response:
-        user_id = request.session.get("_auth_user_id")
+        user_id = self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
 
@@ -47,12 +51,12 @@ class UserDataView(APIView):
             {"detail": "User does not exist."}, status=HTTPStatus.BAD_REQUEST
         )
 
-    def _handle_get_request(self, user: User) -> Response:
+    def _handle_get_request(self, user: User, user_id: int) -> Response:
         profile, _ = Profile.objects.get_or_create(
             user=user, defaults={"color_config": DEFAULT_COLORS}
         ) # pylint: disable=no-member
         user_data = {
-            "id": user.id,
+            "id": user_id,
             "username": user.username,
             "email": user.email,
             "color_config": profile.color_config,
