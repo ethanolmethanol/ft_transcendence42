@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, HostBinding } from '@angular/core';
+import { Component, Output, Input, EventEmitter, HostBinding } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './color-wheel.component.css'
 })
 export class ColorWheelComponent {
-  selectedColor: string = '';
+  @Input() previewColor: string = '';
   @Output() colorSelected = new EventEmitter<string>();
   @HostBinding('style.--brightness') brightness = 50;
 
@@ -30,8 +30,8 @@ export class ColorWheelComponent {
   }
 
   selectColor(color: string) {
-    this.selectedColor = this.adjustBrightness(color);
-    this.colorSelected.emit(this.selectedColor);
+    this.previewColor = this.adjustBrightness(color);
+    this.colorSelected.emit(this.previewColor);
   }
 
   getTransform(index: number): string {
@@ -55,8 +55,12 @@ export class ColorWheelComponent {
   }
 
   adjustBrightness(hslColor: string): string {
-    const hsl = this.parseHsl(hslColor);
-    hsl[2] = this.selectedBrightness;
-    return `hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`;
+    try {
+      const hsl = this.parseHsl(hslColor);
+      hsl[2] = this.selectedBrightness;
+      return `hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`;
+    } catch (e) {
+      return hslColor;
+    }
   }
 }

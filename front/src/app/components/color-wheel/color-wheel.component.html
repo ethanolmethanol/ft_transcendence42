@@ -7,8 +7,8 @@
 </section>
 
 <section class="slider-container">
-  <input type="range" min="0" max="100" [(ngModel)]="selectedBrightness" (input)="selectColor(selectedColor)">
+  <input type="range" min="0" max="100" [(ngModel)]="selectedBrightness" (input)="selectColor(previewColor)">
   <h3>Adjust brightness</h3>
 </section>
 
-<article class="color-preview" [style.background]="selectedColor"></article>
+<article class="color-preview" [style.background]="previewColor"></article>

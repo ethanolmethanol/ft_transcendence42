@@ -19,12 +19,12 @@ export class AppearanceSettingsComponent {
   selectedColors: string[] = Constants.DEFAULT_COLORS;
 
   tabs = [
-    { id: 'bg1', name: 'Bg1', title: 'Change top background color here', colors: [Constants.BACKGROUND_COLOR1] },
-    { id: 'bg2', name: 'Bg2', title: 'Change bottom background color here', colors: [Constants.BACKGROUND_COLOR2] },
-    { id: 'lines', name: 'Lines', title: 'Change lines color here', colors: [Constants.LINE_COLOR] },
-    { id: 'score', name: 'Score', title: 'Change score color here', colors: [Constants.SCORE_COLOR] },
-    { id: 'paddles', name: 'Paddles', title: 'Change paddle color here', colors: [Constants.PADDLE_COLOR] },
-    { id: 'ball', name: 'Ball', title: 'Change ball color here', colors: [Constants.BALL_COLOR] },
+    { id: 'bg1', name: 'Bg1', title: 'Change top background color here', colorIndex: Constants.BACKGROUND_COLOR1 },
+    { id: 'bg2', name: 'Bg2', title: 'Change bottom background color here', colorIndex: Constants.BACKGROUND_COLOR2 },
+    { id: 'lines', name: 'Lines', title: 'Change lines color here', colorIndex: Constants.LINE_COLOR },
+    { id: 'score', name: 'Score', title: 'Change score color here', colorIndex: Constants.SCORE_COLOR },
+    { id: 'paddles', name: 'Paddles', title: 'Change paddle color here', colorIndex: Constants.PADDLE_COLOR },
+    { id: 'ball', name: 'Ball', title: 'Change ball color here', colorIndex: Constants.BALL_COLOR },
   ];
   currentTab: string = 'bg1'; // Default tab
   constants = Constants;
