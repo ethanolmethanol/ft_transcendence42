@@ -62,15 +62,15 @@ h6 {
 
 .paddle-left {
     left: 0;
-    animation: moveUpDown 3s infinite;
+    animation: move-up-down 3s infinite;
 }
 
 .paddle-right {
     left: calc(100% - 1.5%);
-    animation: moveDownUp 3s infinite;
+    animation: move-down-up 3s infinite;
 }
 
-@keyframes moveUpDown {
+@keyframes move-up-down {
     0% {
         top: 0;
     }
@@ -82,7 +82,7 @@ h6 {
     }
 }
 
-@keyframes moveDownUp {
+@keyframes move-down-up {
     0% {
         top: calc(100% - 14%);
     }
@@ -99,10 +99,10 @@ h6 {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    animation: moveBall 5s linear infinite;
+    animation: move-ball 5s linear infinite;
 }
 
-@keyframes moveBall {
+@keyframes move-ball {
     0%, 100% {
         top: 50%;
         left: 0%;

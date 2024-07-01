@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { Component, ViewEncapsulation, Output, Input, EventEmitter } from '@angular/core';
 import { ColorWheelComponent } from '../color-wheel/color-wheel.component';
 import * as Constants from '../../constants';
 import { NgFor } from '@angular/common';
@@ -16,7 +16,7 @@ import { NgFor } from '@angular/common';
 })
 export class AppearanceSettingsComponent {
   @Output() colors = new EventEmitter<string[]>();
-  selectedColors: string[] = Constants.DEFAULT_COLORS;
+  @Input() selectedColors: string[] = Constants.DEFAULT_COLORS;
 
   tabs = [
     { id: 'bg1', name: 'Bg1', title: 'Change top background color here', colorIndex: Constants.BACKGROUND_COLOR1 },
