@@ -11,7 +11,7 @@ from .constants import DEFAULT_COLORS
 from .models import Profile
 
 
-@method_decorator(csrf_protect, name='dispatch')
+@method_decorator(csrf_protect, name="dispatch")
 class UserDataView(APIView):
     def get(self, request: Any) -> Response:
         user_id = request.session.get("_auth_user_id")
@@ -64,4 +64,4 @@ class UserDataView(APIView):
         profile, _ = Profile.objects.get_or_create(user=user)
         profile.color_config = new_color_config
         profile.save()
-        return Response({'status': 'success'}, status=HTTPStatus.OK)
+        return Response({"status": "success"}, status=HTTPStatus.OK)

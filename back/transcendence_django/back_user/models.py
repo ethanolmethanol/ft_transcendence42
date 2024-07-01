@@ -1,7 +1,9 @@
+from typing import Any
+
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from typing import Any, List
+
 
 class Profile(models.Model):
     user: models.OneToOneField = models.OneToOneField(User, on_delete=models.CASCADE)
