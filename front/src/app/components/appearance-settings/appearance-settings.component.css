@@ -39,6 +39,14 @@
     width: 100%;
     padding: 20px;
 }
+
+.tab-content h3 {
+    position: absolute;
+    text-align: center;
+    top: 20%;
+    left: 5%;
+    width: 50%;
+}
   
 .tab-pane {
     display: none;

@@ -1,35 +1,50 @@
-.color-wheel-container {
-    position: relative;
-    width: 200px; /* 2 * radius */
-    height: 200px; /* 2 * radius */
-    display: flex;
+.color-wheel {
+    position: absolute;
     justify-content: center;
     align-items: center;
+    display: flex;
+    left: 68%;
+    top: 25%;
     padding: 20px;
-  }
-  
-  .color-wheel {
-    position: relative;
     width: 200px;
     height: 200px;
     border-radius: 50%;
-  }
+}
   
-  .color-button {
+.color-button {
     position: absolute;
     top: 50%;
     left: 50%;
     transform-origin: center;
     width: 40px;
     height: 40px;
-    border: none;
+    border: 2px solid white;
     border-radius: 50%;
     margin: -20px; /* Half of the width/height to center the button */
     cursor: pointer;
-    transition: transform 0.3s;
-  }
-  
-  .color-button:hover {
-    transform: scale(1.2);
-  }
-  
+}
+
+.slider-container {
+  position: absolute;
+  width: 50%;
+  left: 5%;
+  top: 75%;
+}
+
+.slider-container h3 {
+  position: absolute;
+  font-size: medium;
+  text-align: center;
+  top: 100%;
+  width: 100%;
+}
+
+.color-preview {
+  position: absolute;
+  width: 15%;
+  height: 10%;
+  border-radius: 5%;
+  left: 22%;
+  top: 56%;
+  border: 3px solid white;
+}
