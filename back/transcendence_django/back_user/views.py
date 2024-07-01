@@ -1,12 +1,15 @@
-from typing import Any, Dict
 from http import HTTPStatus
+from typing import Any, Dict
+
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_protect
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .models import Profile
-from .constants import DEFAULT_COLORS
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .constants import DEFAULT_COLORS
+from .models import Profile
+
 
 @method_decorator(csrf_protect, name='dispatch')
 class UserDataView(APIView):
