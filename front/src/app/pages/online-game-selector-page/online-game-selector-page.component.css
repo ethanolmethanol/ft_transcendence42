@@ -1,0 +1,16 @@
+body {
+    background-image: url("../../../assets/app-themes/game-background.gif");
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+a {
+  font-size: 2em;
+  position: relative;
+}

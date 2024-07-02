@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import {catchError, map, Observable, of} from 'rxjs';
 import { Router } from "@angular/router";
-import {API_AUTH} from "../../constants";
+import { API_AUTH } from "../../constants";
 
 interface SignInResponse {
   detail: string;

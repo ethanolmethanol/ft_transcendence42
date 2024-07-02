@@ -24,3 +24,17 @@ header {
   padding: 5px 10px;
   cursor: pointer;
 }
+
+a {
+  display: unset;
+  padding: unset;
+  margin-top: unset;
+  background-color: unset;
+  color: unset;
+  text-align: unset;
+  text-decoration: unset;
+  font-size: unset;
+  border-radius: unset;
+  transition: unset;
+  animation: unset;
+}

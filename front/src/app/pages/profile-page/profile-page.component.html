@@ -1,0 +1,9 @@
+<body>
+    <app-header></app-header>
+    <section class="preview-appearance">
+      <app-gameboard [gameboardColors]="gameboardColors"></app-gameboard>
+    </section>
+    <section class="appearance-settings">
+      <app-appearance-settings (colors)="applyColors($event)" [selectedColors]="colors"></app-appearance-settings>
+    </section>
+</body>

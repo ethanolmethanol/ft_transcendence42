@@ -73,6 +73,12 @@ class PlayerManager:
             )
         return any(player.user_id == user_id for player in self.players.values())
 
+    def has_enough_players(self) -> bool:
+        count_active_players = 0
+        for player in self.players.values():
+            count_active_players += player.status != PlayerStatus(GIVEN_UP)
+        return count_active_players >= 2
+
     def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
             raise KeyError(UNKNOWN_USER)
@@ -114,16 +120,15 @@ class PlayerManager:
             player.reset()
 
     def change_player_status(self, user_id: int, status: PlayerStatus):
-        if not self.did_player_give_up(user_id):
-            if self.is_remote:
-                player = self.__get_player_from_user_id(user_id)
+        if self.is_remote:
+            player = self.__get_player_from_user_id(user_id)
+            player.status = status
+        else:
+            for player in self.players.values():
                 player.status = status
-            else:
-                for player in self.players.values():
-                    player.status = status
 
     def get_scores(self) -> list[int]:
-        if not self.players:
+        if len(self.players) < self.nb_players:
             scores = [0 for _ in range(self.nb_players)]
         else:
             scores = [player.score for player in self.players.values()]
@@ -133,7 +138,7 @@ class PlayerManager:
         self.nb_players = players_specs[NB_PLAYERS]
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
-        self.is_remote = players_specs[MODE]
+        self.is_remote = bool(players_specs[MODE])
 
     def __get_afk_players(self) -> list[dict[str, Any]]:
         kicked_players: list[dict[str, Any]] = []

@@ -4,3 +4,15 @@ body {
   background-position: center;
   background-size: 50%;
 }
+
+a {
+  color: white;
+  font-size: 2em;
+  top: 5%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  margin: 10%;
+  margin-left: 20%;
+  margin-right: 20%;
+}

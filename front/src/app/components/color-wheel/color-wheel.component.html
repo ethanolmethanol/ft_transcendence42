@@ -1,0 +1,14 @@
+<section class="color-wheel">
+  <button *ngFor="let color of colors; let i = index"
+          [style.background]="color"
+          (click)="selectColor(color)"
+          [style.transform]="getTransform(i)"
+          class="color-button"></button>
+</section>
+
+<section class="slider-container">
+  <input type="range" min="0" max="100" [(ngModel)]="selectedBrightness" (input)="selectColor(previewColor)">
+  <h3>Adjust brightness</h3>
+</section>
+
+<article class="color-preview" [style.background]="previewColor"></article>

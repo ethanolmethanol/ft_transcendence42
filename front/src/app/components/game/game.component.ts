@@ -1,4 +1,16 @@
-import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {
+  OnDestroy,
+  AfterViewInit,
+  Component,
+  HostListener,
+  QueryList,
+  ViewChildren,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  Renderer2,
+  ElementRef,
+} from '@angular/core';
 import {
   NOT_JOINED,
   INVALID_ARENA,
@@ -11,20 +23,21 @@ import {
   DYING,
   DEAD,
   GIVEN_UP,
+  STARTED,
 } from "../../constants";
-import {PaddleComponent} from "../paddle/paddle.component";
-import {BallComponent} from "../ball/ball.component";
-import {WebSocketService} from "../../services/web-socket/web-socket.service";
-import { MonitorService } from "../../services/monitor/monitor.service";
+import { PaddleComponent } from "../paddle/paddle.component";
+import { BallComponent } from "../ball/ball.component";
+import { WebSocketService } from "../../services/web-socket/web-socket.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
-import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
-import {NgIf} from "@angular/common";
-import {ConnectionService} from "../../services/connection/connection.service";
-import {UserService} from "../../services/user/user.service";
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+import { NgIf } from "@angular/common";
+import { ConnectionService } from "../../services/connection/connection.service";
+import { UserService } from "../../services/user/user.service";
+import * as Constants from '../../constants';
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -71,16 +84,22 @@ interface ErrorMapping {
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit, OnDestroy {
-  readonly lineThickness = LINE_THICKNESS;
-  gameWidth = GAME_WIDTH;
-  gameHeight = GAME_HEIGHT;
+export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
-  player1Score = 0;
-  player2Score = 0;
-  dataLoaded = false;
+  @Input() is_remote: boolean = false;
+  gameboardColors: string[] = Constants.DEFAULT_COLORS;
+  private playerName: string | null = null;
+  readonly lineThickness: number = LINE_THICKNESS;
+  gameWidth: number = GAME_WIDTH;
+  gameHeight: number = GAME_HEIGHT;
+  player1Score: number = 0;
+  player2Score: number = 0;
+  dataLoaded: boolean = false;
+  isWaiting: boolean = true;
+  waitingPlayers: string[] = [];
+  constants = Constants;
 
   private _paddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -94,18 +113,50 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
-  constructor (private userService: UserService, private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
+  constructor (
+    private userService: UserService, 
+    private webSocketService: WebSocketService, 
+    private router: Router, 
+    private connectionService: ConnectionService, 
+    private renderer: Renderer2, 
+    private el: ElementRef
+  ) {}
+  
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes.is_remote && this.is_remote) {
+      await this.userService.whenUserDataLoaded();
+      this.playerName = this.userService.getUsername();
+    }
+  }
+
+  private _setGameStyle() {
+    this._setStyle('.game-container', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.game-container', 'border', `6px solid ${this.gameboardColors[Constants.LINE_COLOR]}`);
+    this._setStyle('.game', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.dotted-line', '--line-thickness', `${this.lineThickness}px`);
+    this._setStyle('.dotted-line', 'background', `linear-gradient(to bottom, ${this.gameboardColors[Constants.LINE_COLOR]} 60%, transparent 10%)`);
+    this._setStyle('.dotted-line', 'background-size', '100% 40px');
+    this._setStyle('.score-display', 'color', this.gameboardColors[Constants.SCORE_COLOR]);
+    // this._setStyle('.app-paddle', 'background-color', this.gameboardColors[Constants.PADDLE_COLOR]);
+    // this._setStyle('.app-ball', 'background-color', this.gameboardColors[Constants.BALL_COLOR]);
+  }
+
+  private _setStyle(selector: string, styleName: string, styleValue: string) {
+    const element = this.el.nativeElement.querySelector(selector);
+    this.renderer.setStyle(element, styleName, styleValue);
+  }
 
   public setArena(arena: ArenaResponse) {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
-        paddle.playerName = "Player" + paddle.id;
+        paddle.playerName = paddleData.player_name;
         paddle.positionX = paddleData.position.x;
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
-		paddle.afkLeftTime = null;
+        paddle.afkLeftTime = null;
+        console.log(paddle.playerName + " joined the game.");
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
@@ -116,6 +167,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
     this.updateStatus(arena.status)
+    if (arena.status == WAITING) {
+      this.waitingPlayers = arena.players;
+    } else if (arena.status == STARTED) {
+      this.overlay.first.hasRematched = false;
+    }
     this.dataLoaded = true;
   }
 
@@ -140,17 +196,18 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
     kicked_players.forEach((afkResponse) => {
-      if (afkResponse.player_name === "Player1" || afkResponse.player_name === "Player2") {
+      const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
+      if (paddle) {
         if (afkResponse.time_left <= 0) {
-          console.log('You were kicked due to inactivity.');
-          this.redirectToHome();
+          if (afkResponse.player_name === this.playerName) {
+            console.log('You were kicked due to inactivity.');
+            this.redirectToHome();
+            this.webSocketService.giveUp();
+          }
         } else {
           const left_time = afkResponse.time_left;
-          console.log("Warning: You will be kicked in " + left_time + " seconds.");
-          const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
-          if (paddle) {
-            paddle.afkLeftTime = left_time;
-          }
+          console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
+          paddle.afkLeftTime = left_time;
         }
       }
     });
@@ -170,12 +227,16 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateStatus(status: number) {
-    if (status == WAITING || status == DYING) {
-      this.overlay.first.show = true;
-    } else if (status == DEAD) {
-      this.redirectToHome();
-    } else {
-      this.overlay.first.show = false;
+    let gameOverOverlay = this.overlay.first;
+    this.isWaiting = (status == WAITING)
+    if (gameOverOverlay.hasRematched === false) {
+      if (status == DYING) {
+        gameOverOverlay.show = true;
+      } else if (status == DEAD) {
+        this.redirectToHome();
+      } else {
+        gameOverOverlay.show = false;
+      }
     }
   }
 
@@ -192,21 +253,27 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateScore(score: ScoreUpdateResponse) {
-    if (this.paddles.length == 2) {
-      if (score.player_name == "Player1")
+    const paddleComponent = this.paddles.find(p => p.playerName === score.player_name);
+    if (paddleComponent) {
+      if (paddleComponent.id === 1) {
         this.player1Score += 1;
-      else this.player2Score += 1;
+      } else if (paddleComponent.id === 2) {
+        this.player2Score += 1;
+      }
     }
   }
 
   private gameOver(info: GameOverUpdateResponse) {
-    this.overlay.first.message = info.winner + " won! " + info.message
-    this.overlay.first.time = info.time
-    this.overlay.first.show = true
-    // for online mode, use info.winner to update the user score db?
+    let gameOverOverlay = this.overlay.first;
+    if (gameOverOverlay.hasRematched === false) {
+      gameOverOverlay.message = info.winner + " won! " + info.message
+      gameOverOverlay.time = info.time
+      gameOverOverlay.show = true
+      // for online mode, use info.winner to update the user score db?
 
-    if (info.time === 0) {
-      this.redirectToHome();
+      if (info.time === 0) {
+        this.redirectToHome();
+      }
     }
   }
 
@@ -229,6 +296,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       if (paddle) {
         this.movePaddle(paddle, _paddleBinding)
       }
+      this.gameboardColors = this.userService.getColorConfig();
+      this._setGameStyle();
     });
 
     // Call this function again on the next frame
@@ -240,7 +309,12 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     const isMovingDown = this._pressedKeys.has(binding.downKey) && !this._pressedKeys.has(binding.upKey);
     const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;
     if (direction !== 0) {
-      const playerName = paddle.id === 1 ? "Player1" : "Player2";
+      let playerName;
+      if (this.is_remote) {
+        playerName = this.playerName!;
+      } else {
+        playerName = paddle.playerName;
+      }
       this.webSocketService.sendPaddleMovement(playerName, direction);
     }
   }
@@ -248,7 +322,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
-    this.gameLoop();
+    this.gameLoop()
   }
 
   ngOnDestroy() {

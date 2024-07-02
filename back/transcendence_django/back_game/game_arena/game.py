@@ -32,6 +32,8 @@ class Game:
 
     def add_paddle(self, player_name: str, index: int):
         self.paddles[player_name] = self.paddles.pop(f"{index}")
+        paddle = self.paddles[player_name]
+        paddle.set_player_name(player_name)
 
     def start(self):
         self.set_status(GameStatus(STARTED))

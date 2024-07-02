@@ -8,6 +8,7 @@ from back_game.game_geometry.rectangle import Rectangle
 from back_game.game_settings.dict_keys import (
     END,
     HEIGHT,
+    PLAYER_NAME,
     POSITION,
     SLOT,
     SPEED,
@@ -32,6 +33,7 @@ PaddleStatus = NewType("PaddleStatus", int)
 class Paddle:
     def __init__(self, slot: int, num_players: int):
         self.slot: int = slot
+        self.player_name: str = ""
         self.status: PaddleStatus = PaddleStatus(LISTENING)
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
         self.rectangle: Rectangle = Rectangle(
@@ -87,9 +89,13 @@ class Paddle:
             self.axis[START].y + (self.axis[END].y - self.axis[START].y) * rate,
         ).round()
 
+    def set_player_name(self, player_name: str):
+        self.player_name = player_name
+
     def to_dict(self) -> dict[str, Any]:
         return {
             SLOT: self.slot,
+            PLAYER_NAME: self.player_name,
             POSITION: self.rectangle.position.__dict__,
             SPEED: self.speed_rate,
             WIDTH: self.rectangle.width,

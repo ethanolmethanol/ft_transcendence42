@@ -40,6 +40,6 @@ app-leaderboard {
 
 a {
   font-size: 2em;
-  position: sticky;
-  top: 50vh;
+  position: relative;
+  top: 30vh;
 }
