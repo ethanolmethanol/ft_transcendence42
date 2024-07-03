@@ -54,10 +54,10 @@ class UserDataView(APIView):
 
     def _handle_get_request(self, user: User, user_id: int) -> Response:
         profile, _ = Profile.objects.get_or_create(
-            user=user, 
+            user=user,
             defaults={
-                "color_config": DEFAULT_COLORS, 
-                "game_settings": DEFAULT_SETTINGS
+                "color_config": DEFAULT_COLORS,
+                "game_settings": DEFAULT_SETTINGS,
             },
         )
         user_data = {
@@ -70,7 +70,9 @@ class UserDataView(APIView):
         return Response(user_data, status=HTTPStatus.OK)
 
     def _validate_list_of_type(self, lst, item_type):
-        return isinstance(lst, list) and all(isinstance(item, item_type) for item in lst)
+        return isinstance(lst, list) and all(
+            isinstance(item, item_type) for item in lst
+        )
 
     def _get_validated_config(self, data, key, default, item_type):
         raw_config = data.get(key)
@@ -78,7 +80,9 @@ class UserDataView(APIView):
             return raw_config
         return default
 
-    def _update_profile(self, user: User, color_config: list[str], game_settings: list[int]):
+    def _update_profile(
+            self, user: User, color_config: list[str], game_settings: list[int]
+        ):
         profile, _ = Profile.objects.get_or_create(user=user)
         profile.color_config = color_config
         profile.game_settings = game_settings
