@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .constants import DEFAULT_COLORS
+from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 from .models import Profile
 
 
@@ -54,25 +54,34 @@ class UserDataView(APIView):
 
     def _handle_get_request(self, user: User, user_id: int) -> Response:
         profile, _ = Profile.objects.get_or_create(
-            user=user, defaults={"color_config": DEFAULT_COLORS}
+            user=user, defaults={"color_config": DEFAULT_COLORS, "game_settings": DEFAULT_SETTINGS}
         )
         user_data = {
             "id": user_id,
             "username": user.username,
             "email": user.email,
             "color_config": profile.color_config,
+            "game_settings": profile.game_settings,
         }
         return Response(user_data, status=HTTPStatus.OK)
 
-    def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
-        raw_color_config = data.get("color_config")
-        if isinstance(raw_color_config, list) and all(
-            isinstance(item, str) for item in raw_color_config
-        ):
-            new_color_config = raw_color_config
-        else:
-            new_color_config = DEFAULT_COLORS
+    def _validate_list_of_type(self, lst, type):
+        return isinstance(lst, list) and all(isinstance(item, type) for item in lst)
+
+    def _get_validated_config(self, data, key, default, type):
+        raw_config = data.get(key)
+        if self._validate_list_of_type(raw_config, type):
+            return raw_config
+        return default
+    
+    def _update_profile(user: User, color_config: list, game_settings: list):
         profile, _ = Profile.objects.get_or_create(user=user)
-        profile.color_config = new_color_config
+        profile.color_config = color_config
+        profile.game_settings = game_settings
         profile.save()
+
+    def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
+        new_color_config = self._get_validated_config(data, "color_config", DEFAULT_COLORS, str)
+        new_game_settings = self._get_validated_config(data, "game_settings", DEFAULT_SETTINGS, int)
+        self._update_profile(user, new_color_config, new_game_settings)
         return Response({"status": "success"}, status=HTTPStatus.OK)

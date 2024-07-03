@@ -10,6 +10,9 @@ class Profile(models.Model):
     color_config: List[str] = ArrayField(
         models.CharField(max_length=20), default=list
     )  # type: ignore
+    game_settings: List[int] = ArrayField(
+        models.IntegerField(max_length=20), default=list
+    )  # type: ignore
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if self.pk is not None:

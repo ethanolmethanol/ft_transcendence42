@@ -7,6 +7,7 @@ interface User {
   username: string;
   email: string;
   color_config: string[];
+  game_settings: number[];
 }
 
 @Injectable({
@@ -37,6 +38,7 @@ export class UserService {
         email: Object.freeze(userData.email),
         username: Object.freeze(userData.username),
         color_config: userData.color_config,
+        game_settings: userData.game_settings,
       };
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -76,6 +78,15 @@ export class UserService {
 
   public setColorConfig(colors: string[]): void {
     this.getUserData().color_config = colors;
+    this.saveUserData();
+  }
+
+  public getGameSettings(): number[] {
+    return this.getUserData().game_settings;
+  }
+
+  public setGameSettings(settings: number[]): void {
+    this.getUserData().game_settings = settings;
     this.saveUserData();
   }
 

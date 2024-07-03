@@ -16,6 +16,11 @@
                 [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex" 
                 (selectedOption)="handleOptionSelected($event, constants.NUMBER_PLAYERS)">
     </app-slider>
-    <a (click)="navigateToJoinGame()">Join Game</a>
+    <section class="save-settings">
+      <a (click)="navigateToJoinGame()">Join Game</a>
+      <label class="save-settings save-settings-box">
+        <input type="checkbox" (change)="saveSettings($event)">Remember settings for later
+      </label>
+    </section>
   </section>
 </body>
