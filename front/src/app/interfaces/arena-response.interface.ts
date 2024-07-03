@@ -22,6 +22,11 @@ interface Map {
   height: number;
 }
 
+interface PlayersSpecs {
+  nb_players: number;
+  mode: number;
+}
+
 export interface ArenaResponse {
   id: number;
   status: number;
@@ -30,4 +35,5 @@ export interface ArenaResponse {
   ball: Ball;
   paddles: Paddle[];
   map: Map;
+  players_specs: PlayersSpecs;
 }

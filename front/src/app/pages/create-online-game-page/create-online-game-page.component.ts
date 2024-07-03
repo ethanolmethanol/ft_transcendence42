@@ -31,7 +31,7 @@ export class CreateOnlineGamePageComponent {
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
     this.options[optionType].optionIndex = optionIndex;
-    
+
     if (this._isBadSelection() && optionType === this.constants.PADDLE_SIZE) {
       this.options[this.constants.BALL_SPEED].optionIndex = 4;
     }
@@ -81,7 +81,7 @@ export class CreateOnlineGamePageComponent {
     ];
   }
 
-  public navigateToJoinGame(): void {
+  public navigateToWaitPage(): void {
     const selectedOptions = this._getSelectedOptions();
 
     console.log('Navigating to join game');
@@ -93,7 +93,7 @@ export class CreateOnlineGamePageComponent {
       }
     };
 
-    this.router.navigate(['/online/join'], navigationExtras);
+    this.router.navigate(['/online/create/waiting'], navigationExtras);
   }
 }
 

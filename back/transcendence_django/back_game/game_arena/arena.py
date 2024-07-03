@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
@@ -5,21 +6,33 @@ from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.dict_keys import (
+    ARENA,
     BALL,
     COLLIDED_SLOT,
     ID,
     KICKED_PLAYERS,
     MAP,
+    MODE,
+    NB_PLAYERS,
     PADDLES,
     PLAYER1,
     PLAYER2,
     PLAYER_NAME,
+    PLAYER_SPECS,
     PLAYERS,
     SCORE,
     SCORES,
     STATUS,
 )
-from back_game.game_settings.game_constants import MAXIMUM_SCORE, STARTED, WAITING
+from back_game.game_settings.game_constants import (
+    CREATED,
+    MAXIMUM_SCORE,
+    READY_TO_START,
+    STARTED,
+    TIME_START,
+    TIME_START_INTERVAL,
+    WAITING,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +43,14 @@ class Arena:
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(self.player_manager.nb_players)
+        self.start_timer_callback: Optional[
+            Callable[[Any], Coroutine[Any, Any, None]]
+        ] = None
         self.game_update_callback: Optional[
-            Callable[[dict[str, Any]], Coroutine[Any, Any, None]]
+            Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
         self.game_over_callback: Optional[
-            Callable[[str, float], Coroutine[Any, Any, None]]
+            Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -42,16 +58,19 @@ class Arena:
             ID: self.id,
             STATUS: self.game.status,
             PLAYERS: [
-                player.player_name for player in self.player_manager.players.values()
+                player.player_name
+                for player in self.player_manager.players.values()
+                if player.status == PlayerStatus(ENABLED)
             ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),
             PADDLES: [paddle.to_dict() for paddle in self.game.paddles.values()],
             MAP: self.game.map.__dict__,
+            PLAYER_SPECS: {
+                NB_PLAYERS: self.player_manager.nb_players,
+                MODE: self.player_manager.is_remote,
+            },
         }
-
-    def is_remote(self) -> bool:
-        return self.player_manager.is_remote
 
     def is_empty(self) -> bool:
         return self.player_manager.is_empty()
@@ -78,31 +97,47 @@ class Arena:
 
     def enter_arena(self, user_id: int, player_name: str) -> None:
         self.player_manager.allow_player_enter_arena(user_id)
+        if self.get_status() == GameStatus(CREATED):
+            self.game.set_status(WAITING)
+        if self.get_status() != GameStatus(WAITING):
+            return
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
             self.__enter_remote_mode(user_id, player_name)
         else:
             self.__enter_local_mode(user_id)
 
-    def start_game(self):
+    async def start_game(self):
+        self.game.set_status(READY_TO_START)
         self.__reset()
+        if self.game_update_callback is not None:
+            await self.game_update_callback({ARENA: self.to_dict()})
+        for time in range(0, TIME_START):
+            if self.start_timer_callback is not None:
+                await self.start_timer_callback(TIME_START - time)
+            await asyncio.sleep(TIME_START_INTERVAL)
         self.game.start()
         logger.info("Game started. %s", self.id)
+        if self.game_update_callback is not None:
+            await self.game_update_callback({ARENA: self.to_dict()})
 
     def conclude_game(self):
-        self.player_manager.disable_all_players()
+        self.player_manager.finish_active_players()
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
-    def rematch(self, user_id: int) -> dict[str, Any]:
+    def rematch(self, user_id: int):
+        self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
         self.game.set_status(WAITING)
-        if self.player_manager.are_all_players_ready():
-            self.start_game()
-        return self.to_dict()
 
-    def disable_player(self, user_id: int):
-        self.player_manager.disable_player(user_id)
+    def player_leave(self, user_id: int):
+        if self.game.status == GameStatus(WAITING):
+            player_name = self.player_manager.get_player_name(user_id)
+            self.player_manager.remove_player(player_name)
+            self.game.remove_paddle(player_name)
+        else:
+            self.__disable_player(user_id)
 
     def player_gave_up(self, user_id: int):
         self.player_manager.player_gave_up(user_id)
@@ -124,14 +159,40 @@ class Arena:
             update_dict[KICKED_PLAYERS] = kicked_players
         return update_dict
 
+    def can_be_started(self) -> bool:
+        return self.game.status == GameStatus(WAITING) and self.__has_enough_players()
+
+    def can_be_over(self) -> bool:
+        status = self.game.status
+        if status == GameStatus(WAITING):
+            return self.is_empty()
+        if status == GameStatus(STARTED):
+            return self.__has_enough_players() is False or self.__did_player_win()
+        return False
+
     def set_status(self, status: GameStatus):
         self.game.set_status(status)
 
-    def has_enough_players(self) -> bool:
+    def did_player_give_up(self, user_id: int) -> bool:
+        return self.player_manager.did_player_give_up(user_id)
+
+    def __disable_player(self, user_id: int):
+        self.player_manager.disable_player(user_id)
+
+    def __did_player_win(self) -> bool:
+        return any(
+            player.score >= MAXIMUM_SCORE
+            for player in self.player_manager.players.values()
+        )
+
+    def __has_enough_players(self) -> bool:
+        logger.info("Checking if there are enough players in the arena %s", self.id)
         return self.player_manager.has_enough_players()
 
-    def __update_scores(self, player_slot: int) -> dict[str, str | None]:
-        player_name = self.__get_player_name_by_paddle_slot(player_slot)
+    def __update_scores(self, player_slot: int) -> dict[str, str]:
+        player_name: str | None = self.__get_player_name_by_paddle_slot(player_slot)
+        if player_name is None:
+            raise ValueError("Player name is None")
         logger.info("Point was scored for %s. slot: %s", player_name, player_slot)
         if player_name is not None:
             player = self.player_manager.players[player_name]
@@ -139,8 +200,6 @@ class Arena:
         logger.info(
             "Point was scored for %s. Their score is %s", player_name, player.score
         )
-        if player.score == MAXIMUM_SCORE:
-            self.conclude_game()
         return {PLAYER_NAME: player_name}
 
     def __get_player_name_by_paddle_slot(self, paddle_slot: int) -> str | None:
@@ -154,18 +213,17 @@ class Arena:
         self.game.reset()
 
     def __enter_local_mode(self, user_id: int):
-        if self.is_empty():
+        if not self.is_full():
             self.__register_player(user_id, PLAYER1)
             self.__register_player(user_id, PLAYER2)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
-            self.player_manager.change_player_status(user_id, PlayerStatus(ENABLED))
+            self.player_manager.enable_player(user_id)
         else:
             self.__register_player(user_id, player_name)
 
     def __register_player(self, user_id: int, player_name: str):
+        self.player_manager.finish_given_up_players()
         self.player_manager.add_player(user_id, player_name)
-        self.game.add_paddle(player_name, len(self.player_manager.players))
-        if self.is_full():
-            self.start_game()
+        self.game.add_paddle(player_name)

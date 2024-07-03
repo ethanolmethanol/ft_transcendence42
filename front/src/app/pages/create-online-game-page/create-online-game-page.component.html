@@ -2,22 +2,22 @@
   <app-header></app-header>
   <section class="game-selector">
     <h4>Ball Speed</h4>
-    <app-slider [options]="constants.BALL_SPEED_OPTIONS" 
-                [(optionIndex)]="options[constants.BALL_SPEED].optionIndex" 
+    <app-slider [options]="constants.BALL_SPEED_OPTIONS"
+                [(optionIndex)]="options[constants.BALL_SPEED].optionIndex"
                 (selectedOption)="handleOptionSelected($event, constants.BALL_SPEED)">
     </app-slider>
     <h4>Paddle size</h4>
-    <app-slider [options]="constants.PADDLE_SIZE_OPTIONS" 
-                [(optionIndex)]="options[constants.PADDLE_SIZE].optionIndex" 
+    <app-slider [options]="constants.PADDLE_SIZE_OPTIONS"
+                [(optionIndex)]="options[constants.PADDLE_SIZE].optionIndex"
                 (selectedOption)="handleOptionSelected($event, constants.PADDLE_SIZE)">
     </app-slider>
     <h4>Number players</h4>
-    <app-slider [options]="constants.NUMBER_PLAYERS_OPTIONS" 
-                [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex" 
+    <app-slider [options]="constants.NUMBER_PLAYERS_OPTIONS"
+                [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex"
                 (selectedOption)="handleOptionSelected($event, constants.NUMBER_PLAYERS)">
     </app-slider>
     <section class="save-settings">
-      <a (click)="navigateToJoinGame()">Join Game</a>
+      <a (click)="navigateToWaitPage()">Join Game</a>
       <label class="save-settings save-settings-box">
         <input type="checkbox" (change)="saveSettings($event)">Remember settings for later
       </label>

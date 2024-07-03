@@ -74,7 +74,7 @@ class UserDataView(APIView):
             return raw_config
         return default
     
-    def _update_profile(user: User, color_config: list, game_settings: list):
+    def _update_profile(self, user: User, color_config: list, game_settings: list):
         profile, _ = Profile.objects.get_or_create(user=user)
         profile.color_config = color_config
         profile.game_settings = game_settings

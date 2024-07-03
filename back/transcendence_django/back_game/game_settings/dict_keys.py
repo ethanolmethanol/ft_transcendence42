@@ -30,10 +30,18 @@ PLAYER = "player"
 DIRECTION = "direction"
 PADDLE = "paddle"
 
-# Game over
+# Game timers
+
+START_TIMER = "start_timer"
 GAME_OVER = "game_over"
 WINNER = "winner"
 TIME = "time"
+
+# Game callbacks
+
+UPDATE_CALLBACK = "update_callback"
+OVER_CALLBACK = "over_callback"
+START_TIMER_CALLBACK = "start_timer_callback"
 
 # Arena
 PLAYER_SPECS = "players_specs"

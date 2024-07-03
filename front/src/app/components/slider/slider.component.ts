@@ -43,7 +43,7 @@ export class SliderComponent implements OnChanges {
       const optionEl = this.el.nativeElement.querySelector(`option:nth-child(${index + 1})`);
       const optionRect = optionEl.getBoundingClientRect();
       const optionPos = optionRect.left - sliderRect.left;
-  
+
       if (cursorPos >= optionPos && cursorPos <= optionPos + optionRect.width) {
         this.renderer.setStyle(optionEl, 'color', '#e5f25a');  // Yellow when the cursor is over the option
       } else {

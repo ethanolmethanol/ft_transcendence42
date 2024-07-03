@@ -14,12 +14,10 @@
   position: relative;
 }
 
-.game-container {
+.game-area {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #aaaaaa;
-  scale: 100%;
   padding: 5px;
 }
 
@@ -54,8 +52,49 @@
 
 h6 {
     position: absolute;
+    text-align: center;
+    font-size: 2em;
+    width: 100vw;
     color: #e1e1e1;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+.waiting-players {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  font-size: 2em;
+  width: 100%;
+  padding: 0;
+  position: absolute;
+}
+
+.players {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 2em;
+  width: 100%;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.player-name {
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.player1 {
+  position: absolute;
+  left: -15%;
+}
+
+.player2 {
+  position: absolute;
+  right: -15%;
+}

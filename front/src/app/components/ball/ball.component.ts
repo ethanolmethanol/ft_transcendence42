@@ -1,6 +1,6 @@
-import {Component, Input, Renderer2, ElementRef} from '@angular/core';
-import {BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH} from "../../constants";
-import {Position} from "../../interfaces/position.interface";
+import { Component, Input, Renderer2, ElementRef } from '@angular/core';
+import { BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH } from "../../constants";
+import { Position } from "../../interfaces/position.interface";
 import * as Constants from '../../constants';
 
 @Component({
