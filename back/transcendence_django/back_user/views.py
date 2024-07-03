@@ -54,7 +54,11 @@ class UserDataView(APIView):
 
     def _handle_get_request(self, user: User, user_id: int) -> Response:
         profile, _ = Profile.objects.get_or_create(
-            user=user, defaults={"color_config": DEFAULT_COLORS, "game_settings": DEFAULT_SETTINGS}
+            user=user, 
+            defaults={
+                "color_config": DEFAULT_COLORS, 
+                "game_settings": DEFAULT_SETTINGS
+            },
         )
         user_data = {
             "id": user_id,
@@ -65,23 +69,27 @@ class UserDataView(APIView):
         }
         return Response(user_data, status=HTTPStatus.OK)
 
-    def _validate_list_of_type(self, lst, type):
-        return isinstance(lst, list) and all(isinstance(item, type) for item in lst)
+    def _validate_list_of_type(self, lst, item_type):
+        return isinstance(lst, list) and all(isinstance(item, item_type) for item in lst)
 
-    def _get_validated_config(self, data, key, default, type):
+    def _get_validated_config(self, data, key, default, item_type):
         raw_config = data.get(key)
-        if self._validate_list_of_type(raw_config, type):
+        if self._validate_list_of_type(raw_config, item_type):
             return raw_config
         return default
-    
-    def _update_profile(self, user: User, color_config: list, game_settings: list):
+
+    def _update_profile(self, user: User, color_config: list[str], game_settings: list[int]):
         profile, _ = Profile.objects.get_or_create(user=user)
         profile.color_config = color_config
         profile.game_settings = game_settings
         profile.save()
 
     def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
-        new_color_config = self._get_validated_config(data, "color_config", DEFAULT_COLORS, str)
-        new_game_settings = self._get_validated_config(data, "game_settings", DEFAULT_SETTINGS, int)
+        new_color_config = self._get_validated_config(
+            data, "color_config", DEFAULT_COLORS, str
+        )
+        new_game_settings = self._get_validated_config(
+            data, "game_settings", DEFAULT_SETTINGS, int
+        )
         self._update_profile(user, new_color_config, new_game_settings)
         return Response({"status": "success"}, status=HTTPStatus.OK)
