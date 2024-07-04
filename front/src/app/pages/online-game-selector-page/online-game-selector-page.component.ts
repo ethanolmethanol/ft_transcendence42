@@ -32,11 +32,13 @@ export class OnlineGameSelectorPageComponent {
     this.router.navigate([url]);
   }
 
-  public preventSpaces(event: KeyboardEvent): void {
-    if (event.key === ' ') {
+  public preventSpaces(event: KeyboardEvent | InputEvent): void {
+    if (event instanceof KeyboardEvent && (event.key === ' ' || event.key === 'Enter')) {
       event.preventDefault();
+    } else if (event instanceof InputEvent) {
+      this.gameID = this.gameID?.replace(/\s/g, '')!;
     }
-    }
+  }
 
     protected readonly CHANNEL_ID_LENGTH = CHANNEL_ID_LENGTH;
 }
