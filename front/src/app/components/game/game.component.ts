@@ -145,7 +145,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  private _setGameStyle() {
+  private _setGameStyle(): void {
     this._setStyle('.game-container', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
     this._setStyle('.game-container', 'border', `6px solid ${this.gameboardColors[Constants.LINE_COLOR]}`);
     this._setStyle('.game', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);

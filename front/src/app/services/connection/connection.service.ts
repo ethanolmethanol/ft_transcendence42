@@ -22,7 +22,7 @@ export class ConnectionService {
 
   public listenToWebSocketMessages(handleGameUpdate: (response: string) => void, handleGameError: (response: ErrorResponse) => void) {
     this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
-      console.log('Received WebSocket message:', message);
+      // console.log('Received WebSocket message:', message);
       const data = JSON.parse(message);
       if (data.type === 'game_update') {
         handleGameUpdate(data.update);
