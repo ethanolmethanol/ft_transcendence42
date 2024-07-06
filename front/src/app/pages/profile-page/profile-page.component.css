@@ -1,5 +1,4 @@
 body {
-    background-image: url("../../../assets/app-themes/game-background.gif");
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,8 +6,18 @@ body {
     height: 100vh;
     margin: 0;
     padding: 0;
-    overflow: auto;
+    overflow: hidden;
 }
+
+.profile-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+}  
 
 h4 {
     font-size: 1em;
@@ -16,8 +25,7 @@ h4 {
 }
 
 .preview-appearance {
-    position: absolute;
-    top: 15vh;
+    position: relative;
     height: 33.33vh;
     width: 100%;
     display: flex;
@@ -27,12 +35,11 @@ h4 {
 
 .appearance-settings {
     overflow: hidden;
-    position: absolute;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    top: 50vh;
     height : 45vh;
     width: 60vw;
     border-radius: 6px;

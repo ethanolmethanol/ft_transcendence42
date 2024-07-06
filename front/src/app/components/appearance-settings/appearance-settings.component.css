@@ -24,6 +24,7 @@
     border: none;
     border-radius: 0;
     width: 100%;
+    font-size: medium;
 }
 
 .game-settings .nav-link.active {

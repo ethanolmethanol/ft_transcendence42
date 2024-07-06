@@ -16,11 +16,12 @@
                 [(optionIndex)]="options[constants.NUMBER_PLAYERS].optionIndex"
                 (selectedOption)="handleOptionSelected($event, constants.NUMBER_PLAYERS)">
     </app-slider>
-    <section class="save-settings">
-      <a (click)="navigateToWaitPage()">Join Game</a>
-      <label class="save-settings save-settings-box">
-        <input type="checkbox" (change)="saveSettings($event)">Remember settings for later
-      </label>
-    </section>
+    <h4 *ngIf="isRemote">Visibility</h4>
+    <app-slider *ngIf="isRemote"
+                [options]="constants.IS_PRIVATE_OPTIONS"
+                [(optionIndex)]="options[constants.IS_PRIVATE].optionIndex"
+                (selectedOption)="handleOptionSelected($event, constants.IS_PRIVATE)">
+    </app-slider>
+    <a (click)="navigateToWaitPage()">Join Game</a>
   </section>
 </body>

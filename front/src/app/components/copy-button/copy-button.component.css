@@ -1,0 +1,38 @@
+.hidden {
+  display: none;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-direction: row;
+
+}
+
+span {
+  align-content: center;
+  justify-content: center;
+}
+
+i {
+  padding-left: 5%;
+}
+
+.copy-button {
+  width: 100%;
+}
+
+.copy-button:hover {
+  cursor: pointer;
+  width: 100%;
+}
+
+.activated {
+  background-color: green;
+}
+
+.deactivated {
+  background-color: cornflowerblue;
+}

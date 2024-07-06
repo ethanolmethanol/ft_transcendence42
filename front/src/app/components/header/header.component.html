@@ -1,5 +1,7 @@
 <header color="primary">
-  <button class="profile-button" routerLink="/profile">Profile</button>
-  <h1 class="banner-title"><a routerLink="/home">Transcendence</a></h1>
-  <app-logout></app-logout>
+  <button routerLink="/profile">Profile</button>
+  <a class="title" routerLink="/home">
+    <h1 class="banner-title">Transcendence</h1>
+  </a>
+  <button (click)="logOut()">Logout</button>
 </header>

@@ -15,8 +15,9 @@ export class ConnectionService {
   private WebSocketSubscription?: Subscription;
   private WebSocketMessagesSubscription?: Subscription;
   private joinSubscription?: Subscription;
+  private channelID: string = '';
 
-  constructor(private router: Router, private monitorService: MonitorService, private webSocketService: WebSocketService) {
+  constructor(private webSocketService: WebSocketService) {
     console.log('Connection service initialized');
   }
 
@@ -41,6 +42,7 @@ export class ConnectionService {
 
   private accessArena(channel_id: string, arena_id: number, arenaSetter: (response: ArenaResponse) => void) {
     this.webSocketService.connect(channel_id);
+    this.channelID = channel_id;
     this.handleWebSocketConnection(arena_id, arenaSetter);
   }
 
@@ -61,5 +63,9 @@ export class ConnectionService {
     this.WebSocketMessagesSubscription?.unsubscribe();
     this.joinSubscription?.unsubscribe();
     console.log('WebSocket connection closed');
+  }
+
+  public getChannelID(): string {
+    return this.channelID;
   }
 }

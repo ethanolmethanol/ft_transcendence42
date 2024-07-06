@@ -1,0 +1,11 @@
+<div class="copy-button">
+  <button [ngClass]="{'activated': isActivated, 'deactivated': !isActivated}" (click)="copyToClipboard()">
+    <span id="default-message" #defaultMessage>
+      Copy
+    </span>
+    <span id="success-message" #successMessage class="hidden">
+      Copied!
+    </span>
+    <i class="material-icons">content_copy</i>
+  </button>
+</div>
