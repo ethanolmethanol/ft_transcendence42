@@ -5,7 +5,8 @@ import * as Constants from '../../constants';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import { EventEmitter } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
-import {NgIf} from "@angular/common";
+import { NgIf } from "@angular/common";
+import { UserService } from "../../services/user/user.service";
 
 @Component({
   selector: 'app-create-game-page',
@@ -29,8 +30,16 @@ export class CreateGamePageComponent {
   ];
   isRemote = false;
   urlDestination = '/';
+  initialSettings: number[] = []/* this.gameSettingsFromBackend */;
+  // options: Option[] = [
+  //   new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.initialSettings[this.constants.BALL_SPEED]),
+  //   new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.initialSettings[this.constants.PADDLE_SIZE]),
+  //   new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.initialSettings[this.constants.NUMBER_PLAYERS])
+  // ];
+  saveConfig: boolean = false;
+  settingsSaved: number[] = [];
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(private router: Router, private route: ActivatedRoute, private userService: UserService) {
     const gameType = this.route.snapshot.data['gameType'];
     this.isRemote = (gameType === 'online');
     if (this.isRemote) {
@@ -51,6 +60,46 @@ export class CreateGamePageComponent {
   private _isBadSelection(): boolean {
     return false;
     // return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
+  }
+
+  get gameSettingsFromBackend(): number[] {
+    if (!this.userService) {
+      return [];
+    }
+    return this.userService.getGameSettings();
+  }
+
+  public saveSettings(event: Event): void {
+    return;
+    const inputElement = event.target as HTMLInputElement;
+    const save: boolean = inputElement.checked;
+    if (save) {
+        this.saveConfig = true;
+    }
+    else {
+      this.saveConfig = false;
+    }
+  }
+
+  private _setSavedSettings(): void {
+    this.settingsSaved = [
+      this.options[this.constants.BALL_SPEED].optionIndex, 
+      this.options[this.constants.PADDLE_SIZE].optionIndex, 
+      this.options[this.constants.NUMBER_PLAYERS].optionIndex,
+    ]
+  }
+
+  private _sendSettingsToBackend(): void {
+    this._setSavedSettings();
+    this.userService.setGameSettings(this.settingsSaved);
+  }
+
+  private _getSelectedOptions(): string[] {
+    return [
+/*       this.options[this.constants.BALL_SPEED].value(), 
+      this.options[this.constants.PADDLE_SIZE].value(), 
+      this.options[this.constants.NUMBER_PLAYERS].value() */
+    ];
   }
 
   public navigateToWaitPage(): void {

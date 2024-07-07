@@ -23,6 +23,7 @@ h4 {
     height: 100vh;
     overflow: auto;
     margin-top: 5%;
+    color: white;
 }
 
 .game-selector app-slider {
