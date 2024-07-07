@@ -37,7 +37,7 @@ export class UserService {
         id: Object.freeze(userData.id),
         email: Object.freeze(userData.email),
         username: Object.freeze(userData.username),
-        color_config: Object.freeze(userData.color_config),
+        color_config: userData.color_config,
         game_settings: Object.freeze(userData.game_settings),
       };
     } catch (error) {
