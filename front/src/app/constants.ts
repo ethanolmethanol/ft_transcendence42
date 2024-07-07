@@ -64,6 +64,7 @@ export const IS_PRIVATE_OPTIONS = ['public', 'private']
 export const BALL_SPEED_DEFAULT = 2
 export const PADDLE_SIZE_DEFAULT = 2
 export const NUMBER_PLAYERS_DEFAULT = 0
+export const IS_PRIVATE_DEFAULT = 0
 
 export const BALL_COLOR = 0
 export const PADDLE_COLOR = 1
@@ -72,4 +73,3 @@ export const BACKGROUND_COLOR2 = 3
 export const LINE_COLOR = 4
 export const SCORE_COLOR = 5
 export const DEFAULT_COLORS = ['#ffffff', '#ffffff', '#000000', '#000000', '#aaaaaa', '#dcdcdc80']
-export const IS_PRIVATE_DEFAULT = 0

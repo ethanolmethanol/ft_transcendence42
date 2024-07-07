@@ -22,20 +22,15 @@ import { UserService } from "../../services/user/user.service";
 })
 export class CreateGamePageComponent {
   constants = Constants;
-  options: Option[] = [
-    new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
-    new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
-    new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT),
-    new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.constants.IS_PRIVATE_DEFAULT)
-  ];
   isRemote = false;
   urlDestination = '/';
-  initialSettings: number[] = []/* this.gameSettingsFromBackend */;
-  // options: Option[] = [
-  //   new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.initialSettings[this.constants.BALL_SPEED]),
-  //   new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.initialSettings[this.constants.PADDLE_SIZE]),
-  //   new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.initialSettings[this.constants.NUMBER_PLAYERS])
-  // ];
+  initialSettings: number[] = this._gameSettingsFromBackend;
+  options: Option[] = [
+    new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.initialSettings[this.constants.BALL_SPEED]),
+    new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.initialSettings[this.constants.PADDLE_SIZE]),
+    new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.initialSettings[this.constants.NUMBER_PLAYERS]),
+    new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.initialSettings[this.constants.IS_PRIVATE]),
+  ];
   saveConfig: boolean = false;
   settingsSaved: number[] = [];
 
@@ -62,15 +57,16 @@ export class CreateGamePageComponent {
     // return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
   }
 
-  get gameSettingsFromBackend(): number[] {
+  get _gameSettingsFromBackend(): number[] {
     if (!this.userService) {
+      console.error('User service not found');
       return [];
     }
+    console.log('Settings from backend: ', this.userService.getGameSettings());
     return this.userService.getGameSettings();
   }
 
   public saveSettings(event: Event): void {
-    return;
     const inputElement = event.target as HTMLInputElement;
     const save: boolean = inputElement.checked;
     if (save) {
@@ -86,6 +82,7 @@ export class CreateGamePageComponent {
       this.options[this.constants.BALL_SPEED].optionIndex, 
       this.options[this.constants.PADDLE_SIZE].optionIndex, 
       this.options[this.constants.NUMBER_PLAYERS].optionIndex,
+      this.options[this.constants.IS_PRIVATE].optionIndex,
     ]
   }
 
@@ -94,28 +91,28 @@ export class CreateGamePageComponent {
     this.userService.setGameSettings(this.settingsSaved);
   }
 
-  private _getSelectedOptions(): string[] {
-    return [
-/*       this.options[this.constants.BALL_SPEED].value(), 
-      this.options[this.constants.PADDLE_SIZE].value(), 
-      this.options[this.constants.NUMBER_PLAYERS].value() */
-    ];
-  }
-
-  public navigateToWaitPage(): void {
-    console.log('Navigating to join game');
+  private _getSelectedOptions(): number[] {
     const selectedOptions = [
       this.options[this.constants.BALL_SPEED].value(),
       this.options[this.constants.PADDLE_SIZE].value(),
       this.options[this.constants.NUMBER_PLAYERS].value(),
       this.options[this.constants.IS_PRIVATE].value()
     ];
+    if (this.isRemote)
+      selectedOptions.pop();
+    return selectedOptions;
+  }
+
+  public navigateToWaitPage(): void {
+    console.log('Navigating to join game');
+    const selectedOptions = this._getSelectedOptions();
+    if (this.saveConfig)
+      this._sendSettingsToBackend();
     const navigationExtras: NavigationExtras = {
       state: {
         options: selectedOptions
       }
     };
-
     this.router.navigate([this.urlDestination], navigationExtras);
   }
 }
