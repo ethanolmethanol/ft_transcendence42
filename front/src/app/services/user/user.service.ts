@@ -61,7 +61,6 @@ export class UserService {
   }
 
   private getUserData(): User {
-    console.log('User data:', this._userData);
     return this._userData;
   }
 

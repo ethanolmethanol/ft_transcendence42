@@ -41,7 +41,7 @@ import { UserService } from "../../services/user/user.service";
 import { PlayerIconComponent } from "../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../constants";
-import {CopyButtonComponent} from "../copy-button/copy-button.component";
+import { CopyButtonComponent } from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -162,7 +162,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private _setStyle(selector: string, styleName: string, styleValue: string) {
     const element = this.el.nativeElement.querySelector(selector);
-    this.renderer.setStyle(element, styleName, styleValue);
+    if (element)
+      this.renderer.setStyle(element, styleName, styleValue);
   }
 
   public setArena(arena: ArenaResponse) {
@@ -344,7 +345,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       this.gameboardColors = this.userService.getColorConfig();
       this._setGameStyle();
     });
-
+    
     // Call this function again on the next frame
     requestAnimationFrame(() => this.gameLoop());
   }
