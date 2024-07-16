@@ -15,7 +15,6 @@ import * as Constants from '../../constants';
 })
 export class PaddleComponent {
   @Input() id: number = 0;
-  @Input() paddleColor: string = Constants.DEFAULT_COLORS[Constants.PADDLE_COLOR];
   playerName: string = '';
   width: number = PADDLE_WIDTH;
   height: number = PADDLE_HEIGHT;
@@ -25,8 +24,8 @@ export class PaddleComponent {
 
   constructor(private renderer: Renderer2, private el: ElementRef) {}
 
-  async ngOnChanges(changes: SimpleChanges) {
-    this._setStyle('.paddle', 'background-color', this.paddleColor);
+  public setColor(paddleColor: string) {
+    this._setStyle('.paddle', 'background-color', paddleColor);
   }
 
   private _setStyle(selector: string, styleName: string, styleValue: string) {

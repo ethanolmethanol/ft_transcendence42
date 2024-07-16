@@ -14,12 +14,11 @@ export class BallComponent {
   @Input() positionX: number = 150;
   @Input() positionY: number = 150;
   @Input() ballSize = BALL_RADIUS * 2;
-  @Input() ballColor: string = Constants.DEFAULT_COLORS[Constants.BALL_COLOR];
 
   constructor(private renderer: Renderer2, private el: ElementRef) {}
 
-  ngOnChanges() {
-    this._setStyle('.ball', 'background-color', this.ballColor);
+  public setColor(ballColor: string) {
+    this._setStyle('.ball', 'background-color', ballColor);
   }
 
   private _setStyle(selector: string, styleName: string, styleValue: string) {

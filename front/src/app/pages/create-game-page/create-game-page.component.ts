@@ -82,8 +82,8 @@ export class CreateGamePageComponent implements OnInit {
 
   private _setSavedSettings(): void {
     this.settingsSaved = [
-      this.options[this.constants.BALL_SPEED].optionIndex, 
-      this.options[this.constants.PADDLE_SIZE].optionIndex, 
+      this.options[this.constants.BALL_SPEED].optionIndex,
+      this.options[this.constants.PADDLE_SIZE].optionIndex,
       this.options[this.constants.NUMBER_PLAYERS].optionIndex,
       this.options[this.constants.IS_PRIVATE].optionIndex,
     ]
@@ -95,15 +95,12 @@ export class CreateGamePageComponent implements OnInit {
   }
 
   private _getSelectedOptions(): number[] {
-    const selectedOptions = [
+   return [
       this.options[this.constants.BALL_SPEED].value(),
       this.options[this.constants.PADDLE_SIZE].value(),
       this.options[this.constants.NUMBER_PLAYERS].value(),
       this.options[this.constants.IS_PRIVATE].value()
     ];
-    if (this.isRemote)
-      selectedOptions.pop();
-    return selectedOptions;
   }
 
   public navigateToWaitPage(): void {

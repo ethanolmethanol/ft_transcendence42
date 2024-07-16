@@ -103,7 +103,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() isRemote: boolean = false;
-  gameboardColors: string[] = Constants.DEFAULT_COLORS;
+  gameBoardColors: string[] = Constants.DEFAULT_COLORS;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -133,14 +133,14 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   };
   private _pressedKeys = new Set<string>();
   constructor (
-    private userService: UserService, 
-    private webSocketService: WebSocketService, 
-    private router: Router, 
-    private connectionService: ConnectionService, 
-    private renderer: Renderer2, 
+    private userService: UserService,
+    private webSocketService: WebSocketService,
+    private router: Router,
+    private connectionService: ConnectionService,
+    private renderer: Renderer2,
     private el: ElementRef
   ) {}
-  
+
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.isRemote && this.isRemote) {
       await this.userService.whenUserDataLoaded();
@@ -149,15 +149,22 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private _setGameStyle(): void {
-    this._setStyle('.game-container', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
-    this._setStyle('.game-container', 'border', `6px solid ${this.gameboardColors[Constants.LINE_COLOR]}`);
-    this._setStyle('.game', 'background', `linear-gradient(${this.gameboardColors[Constants.BACKGROUND_COLOR1]}, ${this.gameboardColors[Constants.BACKGROUND_COLOR2]})`);
+    const gameBoardColors: string[] = this.userService.getColorConfig();
+
+    this._setStyle('.game-area', 'background', `linear-gradient(${gameBoardColors[Constants.BACKGROUND_COLOR1]}, ${gameBoardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.game-area', 'border', `6px solid ${gameBoardColors[Constants.LINE_COLOR]}`);
+    this._setStyle('.game', 'background', `linear-gradient(${gameBoardColors[Constants.BACKGROUND_COLOR1]}, ${gameBoardColors[Constants.BACKGROUND_COLOR2]})`);
     this._setStyle('.dotted-line', '--line-thickness', `${this.lineThickness}px`);
-    this._setStyle('.dotted-line', 'background', `linear-gradient(to bottom, ${this.gameboardColors[Constants.LINE_COLOR]} 60%, transparent 10%)`);
+    this._setStyle('.dotted-line', 'background', `linear-gradient(to bottom, ${gameBoardColors[Constants.LINE_COLOR]} 60%, transparent 10%)`);
     this._setStyle('.dotted-line', 'background-size', '100% 40px');
-    this._setStyle('.score-display', 'color', this.gameboardColors[Constants.SCORE_COLOR]);
-    this._setStyle('.app-paddle', 'background-color', this.gameboardColors[Constants.PADDLE_COLOR]);
-    this._setStyle('.app-ball', 'background-color', this.gameboardColors[Constants.BALL_COLOR]);
+    this._setStyle('.score-display', 'color', gameBoardColors[Constants.SCORE_COLOR]);
+
+    this.paddles.forEach(paddle => {
+      paddle.setColor(gameBoardColors[Constants.PADDLE_COLOR]);
+    });
+    this.ball.forEach(ball => {
+      ball.setColor(gameBoardColors[Constants.BALL_COLOR]);
+    });
   }
 
   private _setStyle(selector: string, styleName: string, styleValue: string) {
@@ -342,10 +349,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         }
         this.movePaddle(playerName, bindingMap)
       }
-      this.gameboardColors = this.userService.getColorConfig();
-      this._setGameStyle();
     });
-    
+
     // Call this function again on the next frame
     requestAnimationFrame(() => this.gameLoop());
   }
@@ -367,6 +372,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.channelID = this.connectionService.getChannelID();
+    this._setGameStyle();
     this.gameLoop()
   }
 

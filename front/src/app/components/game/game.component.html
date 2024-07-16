@@ -8,9 +8,9 @@
         <div class="score-player1">{{ player1Score }}</div>
         <div class="score-player2">{{ player2Score }}</div>
       </section>
-      <app-ball [ballColor]="gameboardColors[constants.BALL_COLOR]"></app-ball>
-      <app-paddle [id]="1" [paddleColor]="gameboardColors[constants.PADDLE_COLOR]"></app-paddle>
-      <app-paddle [id]="2" [paddleColor]="gameboardColors[constants.PADDLE_COLOR]"></app-paddle>
+      <app-ball></app-ball>
+      <app-paddle [id]="1"></app-paddle>
+      <app-paddle [id]="2"></app-paddle>
     </section>
     <section *ngIf="paddles && paddles.first && paddles.last" class="players">
       <div class="player-name player1">{{ paddles.first.playerName }}</div>
