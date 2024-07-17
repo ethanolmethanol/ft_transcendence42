@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from typing import Union
 
 from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 from .models import Profile
@@ -18,7 +19,7 @@ class UserDataView(APIView):
     def get_user_id(self, request: Any) -> int:
         return request.session.get("_auth_user_id")
 
-    def get(self, request: Any) -> Response:
+    def findUserById(self, request: Any) -> Union[Response, User]:
         user_id = self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
@@ -27,19 +28,26 @@ class UserDataView(APIView):
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return self._respond_with_bad_request()
+
+        return user
+
+    def get(self, request: Any) -> Response:
+        result = self.findUserById(request)
+
+        if isinstance(result, Response):
+            return result
+        
+        user, user_id = result, self.get_user_id(request)
 
         return self._handle_get_request(user, user_id)
 
     def post(self, request: Any) -> Response:
-        user_id = self.get_user_id(request)
-        if user_id is None:
-            return self._respond_with_unauthorized()
+        result = self.findUserById(request)
 
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            return self._respond_with_bad_request()
-
+        if isinstance(result, Response):
+            return result
+        
+        user = result
         return self._handle_post_request(user, request.data)
 
     def _respond_with_unauthorized(self) -> Response:

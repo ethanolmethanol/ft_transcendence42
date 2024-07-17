@@ -24,7 +24,7 @@ export class CreateGamePageComponent implements OnInit {
   constants = Constants;
   isRemote = false;
   urlDestination = '/';
-  initialSettings: number[] = [];
+  settingsSaved: number[] = [];
   options: Option[] = [
     new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
     new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
@@ -32,7 +32,6 @@ export class CreateGamePageComponent implements OnInit {
     new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.constants.IS_PRIVATE_DEFAULT),
   ];
   saveConfig: boolean = false;
-  settingsSaved: number[] = [];
 
   constructor(private router: Router, private route: ActivatedRoute, private userService: UserService) {
     const gameType = this.route.snapshot.data['gameType'];
@@ -46,14 +45,14 @@ export class CreateGamePageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
-    this.initialSettings = this.userService.getGameSettings();
+    this.settingsSaved = this.userService.getGameSettings();
     this.options = [
-      new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.initialSettings[this.constants.BALL_SPEED]),
-      new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.initialSettings[this.constants.PADDLE_SIZE]),
-      new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.initialSettings[this.constants.NUMBER_PLAYERS]),
-      new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.initialSettings[this.constants.IS_PRIVATE]),
+      new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.settingsSaved[this.constants.BALL_SPEED]),
+      new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.settingsSaved[this.constants.PADDLE_SIZE]),
+      new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.settingsSaved[this.constants.NUMBER_PLAYERS]),
+      new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.settingsSaved[this.constants.IS_PRIVATE]),
     ];
-    console.log('Settings from backend: ', this.initialSettings);
+    console.log('Settings from backend: ', this.settingsSaved);
   }
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
@@ -71,13 +70,7 @@ export class CreateGamePageComponent implements OnInit {
 
   public saveSettings(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
-    const save: boolean = inputElement.checked;
-    if (save) {
-        this.saveConfig = true;
-    }
-    else {
-      this.saveConfig = false;
-    }
+    this.saveConfig = inputElement.checked;
   }
 
   private _setSavedSettings(): void {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { API_USER, DEFAULT_COLORS } from "../../constants";
+import { API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS } from "../../constants";
 
 interface User {
   id: number;
@@ -24,6 +24,7 @@ export class UserService {
       username: '',
       email: '',
       color_config: DEFAULT_COLORS,
+      game_settings: DEFAULT_SETTINGS,
     };
   }
 

@@ -18,7 +18,7 @@ export class AppearanceSettingsComponent {
   @Output() colors = new EventEmitter<string[]>();
   @Input() selectedColors: string[] = Constants.DEFAULT_COLORS;
 
-  tabs = [
+  readonly tabs = [
     { id: 'bg1', name: 'Bg1', title: 'Change top background color here', colorIndex: Constants.BACKGROUND_COLOR1 },
     { id: 'bg2', name: 'Bg2', title: 'Change bottom background color here', colorIndex: Constants.BACKGROUND_COLOR2 },
     { id: 'border', name: 'Lines', title: 'Change lines color here', colorIndex: Constants.LINE_COLOR },
