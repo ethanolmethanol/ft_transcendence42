@@ -23,4 +23,13 @@ export class HeaderComponent {
     logoutChannel.postMessage('logout');
     logoutChannel.close();
   }
+  constructor(private authService: AuthService, private userService: UserService) {}
+
+  public logOut() {
+    this.authService.logout();
+    this.userService.clearUserData();
+    const logoutChannel = new BroadcastChannel('logoutChannel');
+    logoutChannel.postMessage('logout');
+    logoutChannel.close();
+  }
 }

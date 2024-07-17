@@ -42,6 +42,7 @@ import { PlayerIconComponent } from "../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../constants";
 import { CopyButtonComponent } from "../copy-button/copy-button.component";
+import {CopyButtonComponent} from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -83,17 +84,18 @@ interface ErrorMapping {
 @Component({
   selector: 'app-game',
   standalone: true,
-    imports: [
-        PaddleComponent,
-        BallComponent,
-        GameOverComponent,
-        LoadingSpinnerComponent,
-        NgIf,
-        NgForOf,
-        PlayerIconComponent,
-        StartTimerComponent,
+      imports: [
+            PaddleComponent,
+            BallComponent,
+            GameOverComponent,
+            LoadingSpinnerComponent,
+            NgIf,
+            NgForOf,
+            PlayerIconComponent,
+            StartTimerComponent,
+        CopyButtonComponent,
         CopyButtonComponent
-    ],
+      ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
@@ -111,6 +113,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   player1Score: number = 0;
   player2Score: number = 0;
   maxPlayers: number = 2;
+  channelID: string = '';
   channelID: string = '';
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
@@ -306,7 +309,11 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       if (info.winner === "") {
         gameOverOverlay.message = "It's a tie! " + info.message
       } else {
+        if (info.winner === "") {
+        gameOverOverlay.message = "It's a tie! " + info.message
+      } else {
         gameOverOverlay.message = info.winner + " won! " + info.message
+      }
       }
       gameOverOverlay.time = info.time
       gameOverOverlay.show = true
@@ -373,6 +380,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.channelID = this.connectionService.getChannelID();
     this._setGameStyle();
+    this.channelID = this.connectionService.getChannelID();
     this.gameLoop()
   }
 
