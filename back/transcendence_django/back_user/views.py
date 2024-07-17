@@ -1,13 +1,12 @@
 # pylint: disable=no-member
 from http import HTTPStatus
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from typing import Union
 
 from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 from .models import Profile
@@ -19,7 +18,7 @@ class UserDataView(APIView):
     def get_user_id(self, request: Any) -> int:
         return request.session.get("_auth_user_id")
 
-    def findUserById(self, request: Any) -> Union[Response, User]:
+    def find_user_by_id(self, request: Any) -> Union[Response, User]:
         user_id = self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
@@ -32,21 +31,21 @@ class UserDataView(APIView):
         return user
 
     def get(self, request: Any) -> Response:
-        result = self.findUserById(request)
+        result = self.find_user_by_id(request)
 
         if isinstance(result, Response):
             return result
-        
+
         user, user_id = result, self.get_user_id(request)
 
         return self._handle_get_request(user, user_id)
 
     def post(self, request: Any) -> Response:
-        result = self.findUserById(request)
+        result = self.find_user_by_id(request)
 
         if isinstance(result, Response):
             return result
-        
+
         user = result
         return self._handle_post_request(user, request.data)
 
