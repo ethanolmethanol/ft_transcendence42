@@ -31,9 +31,10 @@ export class MonitorService {
     );
   }
 
-  public isUserInGame(postData: string): Observable<{isInChannel: boolean}> {
-    return this.http.post<{isInChannel: boolean}>(`${API_GAME}/is_user_in_channel/`, postData).pipe(
-      catchError(this.handleError<{isInChannel: boolean}>('isUserInGame'))
+  public joinSpecificWebSocketUrl(postData: string): Observable<WebSocketUrlResponse> {
+    console.log("Joining specific channel with data: " + postData);
+    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_specific_channel/`, postData).pipe(
+      catchError(this.handleError<WebSocketUrlResponse>('joinSpecificWebSocketUrl'))
     );
   }
 }

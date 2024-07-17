@@ -37,6 +37,7 @@ import {ConnectionService} from "../../services/connection/connection.service";
 import {UserService} from "../../services/user/user.service";
 import {PlayerIconComponent} from "../player-icon/player-icon.component";
 import {StartTimerComponent} from "../start-timer/start-timer.component";
+import {CopyButtonComponent} from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -78,16 +79,17 @@ interface ErrorMapping {
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [
-    PaddleComponent,
-    BallComponent,
-    GameOverComponent,
-    LoadingSpinnerComponent,
-    NgIf,
-    NgForOf,
-    PlayerIconComponent,
-    StartTimerComponent
-  ],
+    imports: [
+        PaddleComponent,
+        BallComponent,
+        GameOverComponent,
+        LoadingSpinnerComponent,
+        NgIf,
+        NgForOf,
+        PlayerIconComponent,
+        StartTimerComponent,
+        CopyButtonComponent
+    ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
@@ -104,6 +106,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   player1Score: number = 0;
   player2Score: number = 0;
   maxPlayers: number = 2;
+  channelID: string = '';
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   activePlayers: string[] = [];
@@ -262,7 +265,11 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       gameOverOverlay.hasRematched = true;
     }
     if (gameOverOverlay.hasRematched === false) {
-      gameOverOverlay.message = info.winner + " won! " + info.message
+      if (info.winner === "") {
+        gameOverOverlay.message = "It's a tie! " + info.message
+      } else {
+        gameOverOverlay.message = info.winner + " won! " + info.message
+      }
       gameOverOverlay.time = info.time
       gameOverOverlay.show = true
       // for online mode, use info.winner to update the user score db?
@@ -326,6 +333,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
+    this.channelID = this.connectionService.getChannelID();
     this.gameLoop();
   }
 

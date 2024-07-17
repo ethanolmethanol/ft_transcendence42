@@ -92,7 +92,7 @@ class Monitor:
     def give_up(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.player_gave_up(user_id)
-        self.channel_manager.delete_user(user_id)
+        self.channel_manager.delete_user(user_id, arena_id)
 
     def rematch(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)

@@ -51,16 +51,55 @@
   background-size: 100% 40px;
 }
 
-h6 {
-    position: absolute;
-    text-align: center;
-    font-size: 2em;
-    width: 100vw;
-    color: #e1e1e1;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+.remote-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transform: translate(0, -80%);
+  gap: 3em;
+}
+
+h4 {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  color: #e1e1e1;
+  font-size: 2em;
+}
+
+.share-code {
+  top: 20%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 2em;
+}
+
+h5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e1e1e1;
+  padding: 1em;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+app-copy-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  scale: 1.5;
+  height: 100%;
+}
 
 .waiting-players {
   display: flex;
@@ -69,8 +108,8 @@ h6 {
   text-align: center;
   font-size: 2em;
   width: 100%;
+  top: 40vh;
   padding: 0;
-  position: absolute;
 }
 
 .players {

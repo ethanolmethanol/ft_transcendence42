@@ -14,6 +14,7 @@ import {
   throwError
 } from "rxjs";
 import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
+import {SubsetOfKeys} from "@angular/compiler-cli/src/ngtsc/util/src/typescript";
 
 @Component({
   selector: 'app-monitor-page',
@@ -28,28 +29,35 @@ import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
   styleUrl: './monitor-page.component.css'
 })
 export class MonitorPageComponent implements OnInit, OnDestroy {
-  private gameType: string = "local";
-  private actionType: string = "join";
+  private readonly _optionsDict: any = {};
+  private _gameType: string = "local";
+  private _actionType: string = "join";
+  private _destroy$: Subject<void> = new Subject<void>();
   public errorMessage: string | null = null;
   public isLoading: boolean = false;
-  private destroy$ = new Subject<void>();
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute, private monitorService: MonitorService) {
-/*     const navigation = this.router.getCurrentNavigation();
+  constructor(private userService: UserService, private router: Router, private _route: ActivatedRoute, private monitorService: MonitorService) {
+    const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       const state = navigation.extras.state as {options: any};
+      this._optionsDict = {
+        "ball_speed": state.options[0],
+        "paddle_size": state.options[1],
+        "number_players": state.options[2],
+        "is_private": state.options[3]
+      }
       console.log("Selected options: ", state.options);
     } else {
       console.log('No options were passed.');
-    } */
+    }
   }
 
   async ngOnInit() : Promise<void> {
-    this.gameType = this.route.snapshot.data['gameType'];
-    this.actionType = this.route.snapshot.data['actionType'];
+    this._gameType = this._route.snapshot.data['gameType'];
+    this._actionType = this._route.snapshot.data['actionType'];
     await this.userService.whenUserDataLoaded();
     const postData: string = this.getPostData();
-    if (this.gameType === "local") {
+    if (this._gameType === "local") {
       this.requestLocalWebSocketUrl(postData);
     } else {
       await this.requestRemoteWebSocketUrl(postData)
@@ -57,21 +65,27 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   private getGameUrl(channel_id: string, arena_id: number): string {
-    return `/${this.gameType}/${channel_id}/${arena_id}`;
+    return `/${this._gameType}/${channel_id}/${arena_id}`;
   }
 
   private getPostData(): string {
-    const mode: 0 | 1 = this.gameType === "local" ? 0 : 1;
     const user_id: number = this.userService.getUserID();
-    return JSON.stringify({
-      "user_id": user_id,
-      "players_specs": {"nb_players": 2, "mode": mode}
-    });
+    if (this._actionType === "join_specific") {
+      return JSON.stringify({
+        "user_id": user_id,
+        "channel_id": this._route.snapshot.params['channel_id']
+      });
+    } else {
+      return JSON.stringify({
+        "user_id": user_id,
+        "players_specs": {"nb_players": 2, "type": this._gameType, "options": this._optionsDict}
+      });
+    }
   }
 
   private joinLocalGame(postData: string): Observable<any> {
@@ -96,7 +110,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
             this.navigateToGame(response.channel_id, response.arena.id);
           }),
           catchError((error) => {
-            if (error.error.error === 'No available channel') {
+            if (error.error.error === 'No available channel.') {
               console.log('No available channel. Retrying...');
               return of(null); // Signal to retry
             } else {
@@ -106,12 +120,12 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
           }),
         )
       ),
-      takeUntil(this.destroy$)
+      takeUntil(this._destroy$)
     );
   }
 
   private joinGame(postData: string): Observable<any> {
-    if (this.gameType === "local") {
+    if (this._gameType === "local") {
       return this.joinLocalGame(postData);
     } else {
       return this.joinRemoteGame(postData);
@@ -124,22 +138,24 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     }, error => this.handleError(error));
   }
 
+  private joinSpecificChannel(postData: string): void {
+    this.monitorService.joinSpecificWebSocketUrl(postData).subscribe(response => {
+      this.navigateToGame(response.channel_id, response.arena.id);
+    }, error => this.handleError(error));
+  }
+
   private async requestRemoteWebSocketUrl(postData: string): Promise<void> {
-    if (this.actionType == "join") {
+    if (this._actionType == "join") {
       this.joinGame(postData).subscribe();
-    } else if (this.actionType == "create") {
+    } else if (this._actionType == "join_specific") {
+      this.joinSpecificChannel(postData);
+    } else if (this._actionType == "create") {
       this.createGame(postData);
     }
   }
 
   private requestLocalWebSocketUrl(postData: string): void {
-    this.monitorService.isUserInGame(postData).subscribe(response => {
-      if (response.isInChannel) {
-        this.joinGame(postData).subscribe();
-      } else {
-        this.createGame(postData);
-      }
-    });
+    this.createGame(postData);
   }
 
   private handleError(error: any): void {
