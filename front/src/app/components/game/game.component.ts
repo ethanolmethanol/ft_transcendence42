@@ -42,7 +42,6 @@ import { PlayerIconComponent } from "../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../constants";
 import { CopyButtonComponent } from "../copy-button/copy-button.component";
-import {CopyButtonComponent} from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -113,7 +112,6 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   player1Score: number = 0;
   player2Score: number = 0;
   maxPlayers: number = 2;
-  channelID: string = '';
   channelID: string = '';
   dataLoaded: boolean = false;
   isWaiting: boolean = true;

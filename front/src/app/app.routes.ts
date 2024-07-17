@@ -16,7 +16,6 @@ export const routes: Routes = [
   { path: 'home', component: HomePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'profile', component: ProfilePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'local', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
-  { path: 'local/waiting', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'local/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'local/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'online', component: OnlineGameSelectorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' } },

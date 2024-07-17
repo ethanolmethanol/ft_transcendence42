@@ -16,10 +16,6 @@ export const API_GAME = 'https://localhost:8001/game';
 
 export const CHANNEL_ID_LENGTH = 10;
 
-// INTERFACES
-
-export const CHANNEL_ID_LENGTH = 10;
-
 // TIME
 
 export const JOIN_GAME_RETRY_DELAY_MS = 2000;
@@ -59,12 +55,10 @@ export const BALL_SPEED = 0
 export const PADDLE_SIZE = 1
 export const NUMBER_PLAYERS = 2
 export const IS_PRIVATE = 3
-export const IS_PRIVATE = 3
 
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
 export const NUMBER_PLAYERS_OPTIONS = ['2', '3', '4']
-export const IS_PRIVATE_OPTIONS = ['public', 'private']
 export const IS_PRIVATE_OPTIONS = ['public', 'private']
 
 export const BALL_SPEED_DEFAULT = 2
@@ -80,4 +74,3 @@ export const BACKGROUND_COLOR2 = 3
 export const LINE_COLOR = 4
 export const SCORE_COLOR = 5
 export const DEFAULT_COLORS = ['#ffffff', '#ffffff', '#000000', '#000000', '#aaaaaa', '#dcdcdc80']
-export const IS_PRIVATE_DEFAULT = 0
