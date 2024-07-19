@@ -59,7 +59,8 @@ export const IS_PRIVATE = 4
 
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
-export const NUMBER_PLAYERS_OPTIONS = ['2', '3', '4']
+export const HUMAN_PLAYERS_OPTIONS = ['2', '3', '4']
+export const ONLINE_PLAYERS_OPTIONS = ['2', '3', '4']
 export const IS_PRIVATE_OPTIONS = ['public', 'private']
 
 export const BALL_SPEED_DEFAULT = 2

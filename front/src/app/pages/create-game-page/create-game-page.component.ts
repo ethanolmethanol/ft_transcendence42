@@ -89,14 +89,30 @@ export class CreateGamePageComponent implements OnInit {
     ]
   }
 
-  private get _gameSettings(): any[] {
+  private get _localGameSettings(): any[] {
     return [
       { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS, optionType: this.constants.BALL_SPEED },
       { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS, optionType: this.constants.PADDLE_SIZE },
-      { label: 'Number Players', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.NUMBER_PLAYERS },
+      { label: 'Human Players', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.NUMBER_PLAYERS },
+      { label: 'AI Opponents', optionIndex: this.options[this.constants.AI_OPPONENTS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.AI_OPPONENTS },
+    ];
+  }
+
+  private get _remoteGameSettings(): any[] {
+    return [
+      { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS, optionType: this.constants.BALL_SPEED },
+      { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS, optionType: this.constants.PADDLE_SIZE },
+      { label: 'Online Opponents', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.NUMBER_PLAYERS },
       { label: 'AI Opponents', optionIndex: this.options[this.constants.AI_OPPONENTS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.AI_OPPONENTS },
       { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS, optionType: this.constants.IS_PRIVATE },
     ];
+  }
+
+  private get _gameSettings(): any[] {
+    if (this.isRemote) {
+      return this._remoteGameSettings;
+    }
+    return this._localGameSettings;
   }
 
   private _sendSettingsToBackend(): void {
