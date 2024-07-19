@@ -90,8 +90,8 @@ export class CreateGamePageComponent implements OnInit {
       { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS },
       { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS },
       { label: 'Number Players', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS },
-      { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
       { label: 'AI Opponents', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS },
+      { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
     ];
   }
 
