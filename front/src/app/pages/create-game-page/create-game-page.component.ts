@@ -30,6 +30,7 @@ export class CreateGamePageComponent implements OnInit {
     new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.constants.BALL_SPEED_DEFAULT),
     new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.constants.PADDLE_SIZE_DEFAULT),
     new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT),
+    new Option('aiOpponents', this.constants.NUMBER_PLAYERS_OPTIONS, this.constants.NUMBER_PLAYERS_DEFAULT),
     new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.constants.IS_PRIVATE_DEFAULT),
   ];
   saveConfig: boolean = false;
@@ -52,6 +53,7 @@ export class CreateGamePageComponent implements OnInit {
       new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.settingsSaved[this.constants.BALL_SPEED]),
       new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.settingsSaved[this.constants.PADDLE_SIZE]),
       new Option('numberPlayers', this.constants.NUMBER_PLAYERS_OPTIONS, this.settingsSaved[this.constants.NUMBER_PLAYERS]),
+      new Option('aiOpponents', this.constants.NUMBER_PLAYERS_OPTIONS, this.settingsSaved[this.constants.AI_OPPONENTS]),
       new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.settingsSaved[this.constants.IS_PRIVATE]),
     ];
     this.gameSettings = this._gameSettings;
@@ -59,6 +61,7 @@ export class CreateGamePageComponent implements OnInit {
   }
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
+    console.log('Option selected:', optionIndex, optionType);
     this.options[optionType].optionIndex = optionIndex;
 
     if (this._isBadSelection() && optionType === this.constants.PADDLE_SIZE) {
@@ -81,17 +84,18 @@ export class CreateGamePageComponent implements OnInit {
       this.options[this.constants.BALL_SPEED].optionIndex,
       this.options[this.constants.PADDLE_SIZE].optionIndex,
       this.options[this.constants.NUMBER_PLAYERS].optionIndex,
+      this.options[this.constants.AI_OPPONENTS].optionIndex,
       this.options[this.constants.IS_PRIVATE].optionIndex,
     ]
   }
 
   private get _gameSettings(): any[] {
     return [
-      { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS },
-      { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS },
-      { label: 'Number Players', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS },
-      { label: 'AI Opponents', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS },
-      { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
+      { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS, optionType: this.constants.BALL_SPEED },
+      { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS, optionType: this.constants.PADDLE_SIZE },
+      { label: 'Number Players', optionIndex: this.options[this.constants.NUMBER_PLAYERS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.NUMBER_PLAYERS },
+      { label: 'AI Opponents', optionIndex: this.options[this.constants.AI_OPPONENTS].optionIndex, options: this.constants.NUMBER_PLAYERS_OPTIONS, optionType: this.constants.AI_OPPONENTS },
+      { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS, optionType: this.constants.IS_PRIVATE },
     ];
   }
 
@@ -105,6 +109,7 @@ export class CreateGamePageComponent implements OnInit {
       this.options[this.constants.BALL_SPEED].value(),
       this.options[this.constants.PADDLE_SIZE].value(),
       this.options[this.constants.NUMBER_PLAYERS].value(),
+      this.options[this.constants.AI_OPPONENTS].value(),
       this.options[this.constants.IS_PRIVATE].value()
     ];
   }

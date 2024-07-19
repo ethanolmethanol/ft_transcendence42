@@ -54,7 +54,8 @@ export const BALL_RADIUS = 10;
 export const BALL_SPEED = 0
 export const PADDLE_SIZE = 1
 export const NUMBER_PLAYERS = 2
-export const IS_PRIVATE = 3
+export const AI_OPPONENTS = 3
+export const IS_PRIVATE = 4
 
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
@@ -65,7 +66,7 @@ export const BALL_SPEED_DEFAULT = 2
 export const PADDLE_SIZE_DEFAULT = 2
 export const NUMBER_PLAYERS_DEFAULT = 0
 export const IS_PRIVATE_DEFAULT = 0
-export const DEFAULT_SETTINGS = [BALL_SPEED_DEFAULT, PADDLE_SIZE_DEFAULT, NUMBER_PLAYERS_DEFAULT, IS_PRIVATE_DEFAULT]
+export const DEFAULT_SETTINGS = [BALL_SPEED_DEFAULT, PADDLE_SIZE_DEFAULT, NUMBER_PLAYERS_DEFAULT, NUMBER_PLAYERS_DEFAULT, IS_PRIVATE_DEFAULT]
 
 export const BALL_COLOR = 0
 export const PADDLE_COLOR = 1

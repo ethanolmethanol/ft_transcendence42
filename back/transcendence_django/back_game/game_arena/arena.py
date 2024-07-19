@@ -201,7 +201,7 @@ class Arena:
         )
 
     def __has_enough_players(self) -> bool:
-        logger.info("Checking if there are enough players in the arena %s", self.id)
+        # logger.info("Checking if there are enough players in the arena %s", self.id)
         return self.player_manager.has_enough_players()
 
     def __update_scores(self, player_slot: int) -> dict[str, str]:

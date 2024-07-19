@@ -6,7 +6,7 @@
       <app-slider *ngIf="!setting.condition || isRemote"
                   [options]="setting.options"
                   [(optionIndex)]="setting.optionIndex"
-                  (selectedOption)="handleOptionSelected($event, setting.constant)">
+                  (selectedOption)="handleOptionSelected($event, setting.optionType)">
       </app-slider>
     </div>
     <section class="save-settings">

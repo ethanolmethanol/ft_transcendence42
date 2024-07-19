@@ -11,7 +11,7 @@ class Profile(models.Model):
         models.CharField(max_length=20), default=list
     )  # type: ignore
     game_settings: List[int] = ArrayField(
-        models.IntegerField(max_length=20), default=list
+        models.IntegerField(), default=list
     )  # type: ignore
 
     def save(self, *args: Any, **kwargs: Any) -> None:
