@@ -184,7 +184,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
         paddle.afkLeftTime = null;
-        console.log(paddle.playerName + " joined the game.");
+        // console.log(paddle.playerName + " joined the game.");
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
@@ -240,7 +240,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
           }
         } else {
           const left_time = afkResponse.time_left;
-          console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
+          // console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
           paddle.afkLeftTime = left_time;
         }
       }
