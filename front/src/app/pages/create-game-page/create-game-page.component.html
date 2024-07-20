@@ -5,7 +5,7 @@
       <h4 *ngIf="!setting.condition || isRemote">{{ setting.label }}</h4>
       <app-slider *ngIf="!setting.condition || isRemote"
                   [options]="setting.options"
-                  [(optionIndex)]="setting.optionIndex"
+                  [(optionIndex)]="options[setting.optionType].optionIndex"
                   (selectedOption)="handleOptionSelected($event, setting.optionType)">
       </app-slider>
     </div>

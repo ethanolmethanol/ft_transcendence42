@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { SliderComponent } from '../../components/slider/slider.component';
 import * as Constants from '../../constants';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EventEmitter } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { NgIf, NgFor } from "@angular/common";
@@ -45,21 +45,51 @@ export class CreateGamePageComponent implements OnInit {
     this.settingsSaved = this.userService.getGameSettings();
     this.options = this._options;
     this.gameSettings = this._gameSettings;
-    console.log('Settings from backend: ', this.settingsSaved);
   }
 
   public handleOptionSelected(optionIndex: number, optionType: number): void {
-    console.log('Option selected:', optionIndex, optionType);
     this.options[optionType].optionIndex = optionIndex;
 
-    if (this._isBadSelection() && optionType === this.constants.PADDLE_SIZE) {
-      this.options[this.constants.BALL_SPEED].optionIndex = 4;
-    }
+    if (this._isBadSelection())
+      this._adjustSelection(optionType);
   }
 
   private _isBadSelection(): boolean {
-    return false;
-    // return (this.options[this.constants.BALL_SPEED].value() === 'snail' && this.options[this.constants.PADDLE_SIZE].value() === 'jumbo');
+    let totalOpponents: number = 0;
+    if (this.isRemote)
+      totalOpponents = this.options[this.constants.ONLINE_PLAYERS].value() + this.options[this.constants.AI_OPPONENTS_ONLINE].value();
+    else
+      totalOpponents = this.options[this.constants.HUMAN_PLAYERS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
+    return (totalOpponents > this.constants.MAX_OPPONENTS || (totalOpponents == 0 && !this.isRemote));
+  }
+
+  private _adjustLocalSelection(optionType: number): void {
+    const totalOpponents = this.options[this.constants.HUMAN_PLAYERS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
+
+    if (totalOpponents == 0 && optionType == this.constants.HUMAN_PLAYERS) {
+      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = 1;
+    } else if (totalOpponents == 0 && optionType == this.constants.AI_OPPONENTS_LOCAL) {
+      this.options[this.constants.HUMAN_PLAYERS].optionIndex = 1;
+    } else if (optionType === this.constants.HUMAN_PLAYERS) {
+      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.HUMAN_PLAYERS].optionIndex;
+    } else if (optionType === this.constants.AI_OPPONENTS_LOCAL) {
+      this.options[this.constants.HUMAN_PLAYERS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex;
+    }
+  }
+
+  private _adjustRemoteSelection(optionType: number): void {
+    if (optionType === this.constants.ONLINE_PLAYERS) {
+      this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.ONLINE_PLAYERS].optionIndex - 1;
+    } else if (optionType === this.constants.AI_OPPONENTS_ONLINE) {
+      this.options[this.constants.ONLINE_PLAYERS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex - 1;
+    }
+  }
+  
+  private _adjustSelection(optionType: number): void {
+    if (this.isRemote)
+      this._adjustRemoteSelection(optionType);
+    else
+      this._adjustLocalSelection(optionType);
   }
 
   public saveSettings(event: Event): void {
@@ -73,7 +103,8 @@ export class CreateGamePageComponent implements OnInit {
       this.options[this.constants.PADDLE_SIZE].optionIndex,
       this.options[this.constants.HUMAN_PLAYERS].optionIndex,
       this.options[this.constants.ONLINE_PLAYERS].optionIndex,
-      this.options[this.constants.AI_OPPONENTS].optionIndex,
+      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex,
+      this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex,
       this.options[this.constants.IS_PRIVATE].optionIndex,
     ]
   }
@@ -82,30 +113,31 @@ export class CreateGamePageComponent implements OnInit {
     return [
       new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.settingsSaved[this.constants.BALL_SPEED]),
       new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.settingsSaved[this.constants.PADDLE_SIZE]),
-      new Option('numberPlayers', this.constants.HUMAN_PLAYERS_OPTIONS, this.settingsSaved[this.constants.HUMAN_PLAYERS]),
-      new Option('numberPlayers', this.constants.ONLINE_PLAYERS_OPTIONS, this.settingsSaved[this.constants.ONLINE_PLAYERS]),
-      new Option('aiOpponents', this.constants.AI_OPPONENTS_OPTIONS, this.settingsSaved[this.constants.AI_OPPONENTS]),
+      new Option('humanPlayers', this.constants.HUMAN_PLAYERS_OPTIONS, this.settingsSaved[this.constants.HUMAN_PLAYERS]),
+      new Option('onlinePlayers', this.constants.ONLINE_PLAYERS_OPTIONS, this.settingsSaved[this.constants.ONLINE_PLAYERS]),
+      new Option('aiOpponentsLocal', this.constants.AI_OPPONENTS_LOCAL_OPTIONS, this.settingsSaved[this.constants.AI_OPPONENTS_LOCAL]),
+      new Option('aiOpponentsOnline', this.constants.AI_OPPONENTS_ONLINE_OPTIONS, this.settingsSaved[this.constants.AI_OPPONENTS_ONLINE]),
       new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.settingsSaved[this.constants.IS_PRIVATE]),
     ];
   }
 
   private get _localGameSettings(): any[] {
     return [
-      { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS, optionType: this.constants.BALL_SPEED },
-      { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS, optionType: this.constants.PADDLE_SIZE },
-      { label: 'Human Players', optionIndex: this.options[this.constants.HUMAN_PLAYERS].optionIndex, options: this.constants.HUMAN_PLAYERS_OPTIONS, optionType: this.constants.HUMAN_PLAYERS },
-      { label: 'AI Opponents', optionIndex: this.options[this.constants.AI_OPPONENTS].optionIndex, options: this.constants.AI_OPPONENTS_OPTIONS, optionType: this.constants.AI_OPPONENTS },
-      { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS, optionType: this.constants.IS_PRIVATE },
+      { label: 'Ball Speed', optionType: this.constants.BALL_SPEED, options: this.constants.BALL_SPEED_OPTIONS },
+      { label: 'Paddle Size', optionType: this.constants.PADDLE_SIZE, options: this.constants.PADDLE_SIZE_OPTIONS },
+      { label: 'Human Players', optionType: this.constants.HUMAN_PLAYERS, options: this.constants.HUMAN_PLAYERS_OPTIONS },
+      { label: 'AI Opponents', optionType: this.constants.AI_OPPONENTS_LOCAL, options: this.constants.AI_OPPONENTS_LOCAL_OPTIONS },
+      { label: 'Visibility', optionType: this.constants.IS_PRIVATE, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
     ];
   }
 
   private get _onlineGameSettings(): any[] {
     return [
-      { label: 'Ball Speed', optionIndex: this.options[this.constants.BALL_SPEED].optionIndex, options: this.constants.BALL_SPEED_OPTIONS, optionType: this.constants.BALL_SPEED },
-      { label: 'Paddle Size', optionIndex: this.options[this.constants.PADDLE_SIZE].optionIndex, options: this.constants.PADDLE_SIZE_OPTIONS, optionType: this.constants.PADDLE_SIZE },
-      { label: 'Online Opponents', optionIndex: this.options[this.constants.ONLINE_PLAYERS].optionIndex, options: this.constants.ONLINE_PLAYERS_OPTIONS, optionType: this.constants.ONLINE_PLAYERS },
-      { label: 'AI Opponents', optionIndex: this.options[this.constants.AI_OPPONENTS].optionIndex, options: this.constants.AI_OPPONENTS_OPTIONS, optionType: this.constants.AI_OPPONENTS },
-      { label: 'Visibility', optionIndex: this.options[this.constants.IS_PRIVATE].optionIndex, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS, optionType: this.constants.IS_PRIVATE },
+      { label: 'Ball Speed', optionType: this.constants.BALL_SPEED, options: this.constants.BALL_SPEED_OPTIONS },
+      { label: 'Paddle Size', optionType: this.constants.PADDLE_SIZE, options: this.constants.PADDLE_SIZE_OPTIONS },
+      { label: 'Online Opponents', optionType: this.constants.ONLINE_PLAYERS, options: this.constants.ONLINE_PLAYERS_OPTIONS },
+      { label: 'AI Opponents', optionType: this.constants.AI_OPPONENTS_ONLINE, options: this.constants.AI_OPPONENTS_ONLINE_OPTIONS },
+      { label: 'Visibility', optionType: this.constants.IS_PRIVATE, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
     ];
   }
 
@@ -123,12 +155,13 @@ export class CreateGamePageComponent implements OnInit {
 
   private _getSelectedOptions(): number[] {
    return [
-      this.options[this.constants.BALL_SPEED].value(),
-      this.options[this.constants.PADDLE_SIZE].value(),
-      this.options[this.constants.HUMAN_PLAYERS].value(),
-      this.options[this.constants.ONLINE_PLAYERS].value(),
-      this.options[this.constants.AI_OPPONENTS].value(),
-      this.options[this.constants.IS_PRIVATE].value()
+      this.options[this.constants.BALL_SPEED].optionIndex,
+      this.options[this.constants.PADDLE_SIZE].optionIndex,
+      this.options[this.constants.HUMAN_PLAYERS].optionIndex,
+      this.options[this.constants.ONLINE_PLAYERS].optionIndex,
+      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex,
+      this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex,
+      this.options[this.constants.IS_PRIVATE].optionIndex,
     ];
   }
 
@@ -136,7 +169,6 @@ export class CreateGamePageComponent implements OnInit {
     console.log('Navigating to join game');
     const selectedOptions = this._getSelectedOptions();
     console.log('Selected options:', selectedOptions);
-    console.log('Options:', this.options);
     if (this.saveConfig)
       this._sendSettingsToBackend();
     const navigationExtras: NavigationExtras = {
@@ -163,6 +195,6 @@ export class Option {
   }
 
   public value(): number {
-    return this._optionIndex;
+    return Number(this.options[this._optionIndex]);
   }
 }

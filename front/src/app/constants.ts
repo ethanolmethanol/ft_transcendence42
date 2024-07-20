@@ -55,14 +55,16 @@ export const BALL_SPEED = 0
 export const PADDLE_SIZE = 1
 export const HUMAN_PLAYERS = 2
 export const ONLINE_PLAYERS = 3
-export const AI_OPPONENTS = 4
-export const IS_PRIVATE = 5
+export const AI_OPPONENTS_LOCAL = 4
+export const AI_OPPONENTS_ONLINE = 5
+export const IS_PRIVATE = 6
 
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
-export const HUMAN_PLAYERS_OPTIONS = ['1', '2']
+export const HUMAN_PLAYERS_OPTIONS = ['0', '1', '2']
 export const ONLINE_PLAYERS_OPTIONS = ['1', '2', '3']
-export const AI_OPPONENTS_OPTIONS = ['0', '1', '2', '3']
+export const AI_OPPONENTS_LOCAL_OPTIONS = ['0', '1', '2', '3']
+export const AI_OPPONENTS_ONLINE_OPTIONS = ['0', '1', '2']
 export const IS_PRIVATE_OPTIONS = ['private', 'public']
 
 export const BALL_SPEED_DEFAULT = 2
@@ -71,6 +73,7 @@ export const NUMBER_PLAYERS_DEFAULT = 0
 export const AI_OPPONENTS_DEFAULT = 0
 export const IS_PRIVATE_DEFAULT = 0
 export const DEFAULT_SETTINGS = [BALL_SPEED_DEFAULT, PADDLE_SIZE_DEFAULT, NUMBER_PLAYERS_DEFAULT, AI_OPPONENTS_DEFAULT, IS_PRIVATE_DEFAULT]
+export const MAX_OPPONENTS = 3
 
 export const BALL_COLOR = 0
 export const PADDLE_COLOR = 1
