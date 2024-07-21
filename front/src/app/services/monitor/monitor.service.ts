@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { API_GAME } from "../../constants";
+import {API_GAME, API_USER} from "../../constants";
 import { WebSocketUrlResponse } from "../../interfaces/web-socket-url-response.interface";
 
 @Injectable({
@@ -40,7 +40,7 @@ export class MonitorService {
 
   public getSummaries(): Observable<any> {
     console.log("Getting summaries");
-    return this.http.get<WebSocketUrlResponse>(`${API_GAME}/get_game_summaries/`).pipe(
+    return this.http.get<WebSocketUrlResponse>(`${API_USER}/get_game_summaries/`).pipe(
       catchError(this.handleError<WebSocketUrlResponse>('getSummaries'))
     );
   }

@@ -33,7 +33,7 @@ class Monitor:
 
 
     def __init__(self):
-        from back_game.models import GameSummary
+        from transcendence_django.models import GameSummary
         self.GameSummary = GameSummary
         self.channel_manager = ChannelManager()
 
@@ -130,9 +130,11 @@ class Monitor:
         )
 
     async def save_game_summary(self, arena_id: str, winner: str, players: dict):
+        logger.info("Saving game summary")
         await sync_to_async(self.GameSummary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
+        logger.info("Game summary saved")
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():

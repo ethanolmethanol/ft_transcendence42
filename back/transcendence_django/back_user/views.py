@@ -3,9 +3,13 @@ import logging
 from http import HTTPStatus
 
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from transcendence_django.models import GameSummary
+
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -33,3 +37,8 @@ def user_data_view(request):
         return Response(user_data, status=HTTPStatus.OK)
     except User.DoesNotExist:
         return Response({"detail": "User does not exist."}, status=HTTPStatus.NOT_FOUND)
+
+@require_http_methods(["GET"])
+def get_game_summaries(request):
+    summaries = GameSummary.objects.all().values()
+    return JsonResponse(list(summaries), safe=False)
