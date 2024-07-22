@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subscription } from "rxjs";
-import { Router } from "@angular/router";
-import { MonitorService } from "../monitor/monitor.service";
 import { WebSocketService } from "../web-socket/web-socket.service";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
@@ -42,7 +40,6 @@ export class ConnectionService {
 
   private accessArena(channel_id: string, arena_id: number, arenaSetter: (response: ArenaResponse) => void) {
     this.webSocketService.connect(channel_id);
-    this.channelID = channel_id;
     this.channelID = channel_id;
     this.handleWebSocketConnection(arena_id, arenaSetter);
   }

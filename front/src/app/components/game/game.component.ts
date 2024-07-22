@@ -93,7 +93,6 @@ interface ErrorMapping {
             PlayerIconComponent,
             StartTimerComponent,
         CopyButtonComponent,
-        CopyButtonComponent
       ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -307,11 +306,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       if (info.winner === "") {
         gameOverOverlay.message = "It's a tie! " + info.message
       } else {
-        if (info.winner === "") {
-        gameOverOverlay.message = "It's a tie! " + info.message
-      } else {
         gameOverOverlay.message = info.winner + " won! " + info.message
-      }
       }
       gameOverOverlay.time = info.time
       gameOverOverlay.show = true

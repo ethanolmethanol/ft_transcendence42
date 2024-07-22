@@ -57,31 +57,31 @@ export class CreateGamePageComponent implements OnInit {
   private _isBadSelection(): boolean {
     let totalOpponents: number = 0;
     if (this.isRemote)
-      totalOpponents = this.options[this.constants.ONLINE_PLAYERS].value() + this.options[this.constants.AI_OPPONENTS_ONLINE].value();
+      totalOpponents = this.options[this.constants.ONLINE_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_ONLINE].value();
     else
-      totalOpponents = this.options[this.constants.HUMAN_PLAYERS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
+      totalOpponents = this.options[this.constants.HUMAN_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
     return (totalOpponents > this.constants.MAX_OPPONENTS || (totalOpponents == 0 && !this.isRemote));
   }
 
   private _adjustLocalSelection(optionType: number): void {
-    const totalOpponents = this.options[this.constants.HUMAN_PLAYERS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
+    const totalOpponents = this.options[this.constants.HUMAN_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
 
-    if (totalOpponents == 0 && optionType == this.constants.HUMAN_PLAYERS) {
+    if (totalOpponents == 0 && optionType == this.constants.HUMAN_OPPONENTS) {
       this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = 1;
     } else if (totalOpponents == 0 && optionType == this.constants.AI_OPPONENTS_LOCAL) {
-      this.options[this.constants.HUMAN_PLAYERS].optionIndex = 1;
-    } else if (optionType === this.constants.HUMAN_PLAYERS) {
-      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.HUMAN_PLAYERS].optionIndex;
+      this.options[this.constants.HUMAN_OPPONENTS].optionIndex = 1;
+    } else if (optionType === this.constants.HUMAN_OPPONENTS) {
+      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.HUMAN_OPPONENTS].optionIndex;
     } else if (optionType === this.constants.AI_OPPONENTS_LOCAL) {
-      this.options[this.constants.HUMAN_PLAYERS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex;
+      this.options[this.constants.HUMAN_OPPONENTS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex;
     }
   }
 
   private _adjustRemoteSelection(optionType: number): void {
-    if (optionType === this.constants.ONLINE_PLAYERS) {
-      this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.ONLINE_PLAYERS].optionIndex - 1;
+    if (optionType === this.constants.ONLINE_OPPONENTS) {
+      this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.ONLINE_OPPONENTS].optionIndex - 1;
     } else if (optionType === this.constants.AI_OPPONENTS_ONLINE) {
-      this.options[this.constants.ONLINE_PLAYERS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex - 1;
+      this.options[this.constants.ONLINE_OPPONENTS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex - 1;
     }
   }
   
@@ -101,8 +101,8 @@ export class CreateGamePageComponent implements OnInit {
     this.settingsSaved = [
       this.options[this.constants.BALL_SPEED].optionIndex,
       this.options[this.constants.PADDLE_SIZE].optionIndex,
-      this.options[this.constants.HUMAN_PLAYERS].optionIndex,
-      this.options[this.constants.ONLINE_PLAYERS].optionIndex,
+      this.options[this.constants.HUMAN_OPPONENTS].optionIndex,
+      this.options[this.constants.ONLINE_OPPONENTS].optionIndex,
       this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex,
       this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex,
       this.options[this.constants.IS_PRIVATE].optionIndex,
@@ -113,8 +113,8 @@ export class CreateGamePageComponent implements OnInit {
     return [
       new Option('ballSpeed', this.constants.BALL_SPEED_OPTIONS, this.settingsSaved[this.constants.BALL_SPEED]),
       new Option('paddleSize', this.constants.PADDLE_SIZE_OPTIONS, this.settingsSaved[this.constants.PADDLE_SIZE]),
-      new Option('humanPlayers', this.constants.HUMAN_PLAYERS_OPTIONS, this.settingsSaved[this.constants.HUMAN_PLAYERS]),
-      new Option('onlinePlayers', this.constants.ONLINE_PLAYERS_OPTIONS, this.settingsSaved[this.constants.ONLINE_PLAYERS]),
+      new Option('humanPlayers', this.constants.HUMAN_OPPONENTS_OPTIONS, this.settingsSaved[this.constants.HUMAN_OPPONENTS]),
+      new Option('onlinePlayers', this.constants.ONLINE_OPPONENTS_OPTIONS, this.settingsSaved[this.constants.ONLINE_OPPONENTS]),
       new Option('aiOpponentsLocal', this.constants.AI_OPPONENTS_LOCAL_OPTIONS, this.settingsSaved[this.constants.AI_OPPONENTS_LOCAL]),
       new Option('aiOpponentsOnline', this.constants.AI_OPPONENTS_ONLINE_OPTIONS, this.settingsSaved[this.constants.AI_OPPONENTS_ONLINE]),
       new Option('isPrivate', this.constants.IS_PRIVATE_OPTIONS, this.settingsSaved[this.constants.IS_PRIVATE]),
@@ -125,7 +125,7 @@ export class CreateGamePageComponent implements OnInit {
     return [
       { label: 'Ball Speed', optionType: this.constants.BALL_SPEED, options: this.constants.BALL_SPEED_OPTIONS },
       { label: 'Paddle Size', optionType: this.constants.PADDLE_SIZE, options: this.constants.PADDLE_SIZE_OPTIONS },
-      { label: 'Human Players', optionType: this.constants.HUMAN_PLAYERS, options: this.constants.HUMAN_PLAYERS_OPTIONS },
+      { label: 'Human Players', optionType: this.constants.HUMAN_OPPONENTS, options: this.constants.HUMAN_OPPONENTS_OPTIONS },
       { label: 'AI Opponents', optionType: this.constants.AI_OPPONENTS_LOCAL, options: this.constants.AI_OPPONENTS_LOCAL_OPTIONS },
       { label: 'Visibility', optionType: this.constants.IS_PRIVATE, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
     ];
@@ -135,7 +135,7 @@ export class CreateGamePageComponent implements OnInit {
     return [
       { label: 'Ball Speed', optionType: this.constants.BALL_SPEED, options: this.constants.BALL_SPEED_OPTIONS },
       { label: 'Paddle Size', optionType: this.constants.PADDLE_SIZE, options: this.constants.PADDLE_SIZE_OPTIONS },
-      { label: 'Online Opponents', optionType: this.constants.ONLINE_PLAYERS, options: this.constants.ONLINE_PLAYERS_OPTIONS },
+      { label: 'Online Opponents', optionType: this.constants.ONLINE_OPPONENTS, options: this.constants.ONLINE_OPPONENTS_OPTIONS },
       { label: 'AI Opponents', optionType: this.constants.AI_OPPONENTS_ONLINE, options: this.constants.AI_OPPONENTS_ONLINE_OPTIONS },
       { label: 'Visibility', optionType: this.constants.IS_PRIVATE, condition: this.isRemote, options: this.constants.IS_PRIVATE_OPTIONS },
     ];
@@ -157,8 +157,8 @@ export class CreateGamePageComponent implements OnInit {
    return [
       this.options[this.constants.BALL_SPEED].optionIndex,
       this.options[this.constants.PADDLE_SIZE].optionIndex,
-      this.options[this.constants.HUMAN_PLAYERS].optionIndex,
-      this.options[this.constants.ONLINE_PLAYERS].optionIndex,
+      this.options[this.constants.HUMAN_OPPONENTS].optionIndex,
+      this.options[this.constants.ONLINE_OPPONENTS].optionIndex,
       this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex,
       this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex,
       this.options[this.constants.IS_PRIVATE].optionIndex,

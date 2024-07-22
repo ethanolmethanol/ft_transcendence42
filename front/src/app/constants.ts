@@ -53,16 +53,16 @@ export const BALL_RADIUS = 10;
 // Game options
 export const BALL_SPEED = 0
 export const PADDLE_SIZE = 1
-export const HUMAN_PLAYERS = 2
-export const ONLINE_PLAYERS = 3
+export const HUMAN_OPPONENTS = 2
+export const ONLINE_OPPONENTS = 3
 export const AI_OPPONENTS_LOCAL = 4
 export const AI_OPPONENTS_ONLINE = 5
 export const IS_PRIVATE = 6
 
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
-export const HUMAN_PLAYERS_OPTIONS = ['0', '1', '2']
-export const ONLINE_PLAYERS_OPTIONS = ['1', '2', '3']
+export const HUMAN_OPPONENTS_OPTIONS = ['0', '1']
+export const ONLINE_OPPONENTS_OPTIONS = ['1', '2', '3']
 export const AI_OPPONENTS_LOCAL_OPTIONS = ['0', '1', '2', '3']
 export const AI_OPPONENTS_ONLINE_OPTIONS = ['0', '1', '2']
 export const IS_PRIVATE_OPTIONS = ['private', 'public']

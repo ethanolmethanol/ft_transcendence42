@@ -3,7 +3,6 @@ header {
   justify-content: space-between;
   align-items: center;
   width: 100vw;
-  width: 100vw;
   top: 0;
   left: 0;
   right: 0;
@@ -24,7 +23,6 @@ button {
   color: white;
   background-color: red;
   border: none;
-  padding: 0.5% 1%;
   padding: 0.5% 1%;
   cursor: pointer;
 }

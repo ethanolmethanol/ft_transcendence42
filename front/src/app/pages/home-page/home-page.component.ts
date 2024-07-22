@@ -17,8 +17,6 @@ import { ButtonWithIconComponent } from "../../components/button-with-icon/butto
     LoadingSpinnerComponent,
     NgStyle,
     ButtonWithIconComponent,
-    NgStyle,
-    ButtonWithIconComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
