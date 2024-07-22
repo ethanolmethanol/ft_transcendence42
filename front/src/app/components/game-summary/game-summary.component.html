@@ -1,11 +1,17 @@
-<section class="game-summary">
-  <div class="players">
-    Winner: {{winner}}
-  </div>
-  <div class="scores" *ngIf="gameSummary">
-    {{score1}}
-    <span> - </span>
-    {{score2}}
-  </div>
+<section class="game-summary-container" *ngIf="gameSummary">
+  <section class="score-section">
+    <div class="scores">
+      {{score1}} <span> - </span> {{score2}}
+    </div>
+  </section>
+  <section class="status-section" [ngClass]="{'win': win_status === 'Won', 'lose': win_status === 'Lose'}">
+    <div class="status">
+      {{win_status}}
+    </div>
+  </section>
+  <section class="opponent-section">
+    <div class="opponent">
+      {{opponent}}
+    </div>
+  </section>
 </section>
-

@@ -16,7 +16,7 @@
     </section>
     <app-leaderboard></app-leaderboard>
     <ul *ngIf="gameSummaries$ | async as gameSummaries">
-      <app-game-summary *ngFor="let summary of gameSummaries" [gameSummary]="summary"></app-game-summary>
+      <app-game-summary *ngFor="let summary of gameSummaries" [gameSummary]="summary" [userID]="userID"></app-game-summary>
     </ul>
   </section>
 </body>

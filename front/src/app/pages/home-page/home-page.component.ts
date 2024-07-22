@@ -32,12 +32,14 @@ import {Observable} from "rxjs";
 export class HomePageComponent implements OnInit {
   welcome: string = '';
   gameSummaries$: Observable<GameSummaryResponse[]> | undefined;
+  userID: number | undefined;
 
   constructor(private userService: UserService) { }
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
+    this.userID = this.userService.getUserID();
     this.gameSummaries$ = this.getSummaries();
  }
 

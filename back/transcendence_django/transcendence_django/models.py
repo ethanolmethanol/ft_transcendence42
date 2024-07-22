@@ -2,7 +2,7 @@ from django.db import models
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)
-    winner = models.CharField(max_length=255)
+    winner = models.JSONField()
     players = models.JSONField()
     end_time = models.DateTimeField(auto_now=True)
 

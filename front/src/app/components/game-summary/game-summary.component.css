@@ -1,5 +1,43 @@
-.scores {
+.status, .opponent {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.score-section, .status-section, .opponent-section {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  gap: 1em;
+}
+
+.game-summary-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+  border: 2px solid black;
+  background-color: #6e706f;
+  color: white;
+  padding: 1em;
+}
+
+/* Additional classes for win/lose status */
+.win, .lose {
+  justify-content: center;
+}
+
+.win {
+  color: green;
+}
+
+.lose {
+  color: red;
+}
+
+.score-section, .status-section, .opponent-section {
+  flex: 1;
 }
