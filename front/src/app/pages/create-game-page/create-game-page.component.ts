@@ -51,34 +51,49 @@ export class CreateGamePageComponent implements OnInit {
       this._adjustSelection(optionType);
   }
 
-  private _isBadSelection(): boolean {
+  private get _totalOpponents(): number {
     let totalOpponents: number = 0;
     if (this.isRemote)
       totalOpponents = this.options[this.constants.ONLINE_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_ONLINE].value();
     else
       totalOpponents = this.options[this.constants.HUMAN_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
-    return (totalOpponents > this.constants.MAX_OPPONENTS || (totalOpponents == 0 && !this.isRemote));
+    return totalOpponents;
+  }
+
+  private _isBadSelection(): boolean {
+    return (this._totalOpponents > this.constants.MAX_OPPONENTS || (this._totalOpponents == 0 && !this.isRemote));
+  }
+
+  private _addOpponent(toAdjust: number): void {
+    this.options[toAdjust].optionIndex = 1;
+  }
+
+  private _removeOpponent(toAdjust: number): void {
+    this.options[toAdjust].optionIndex -= this._totalOpponents - this.constants.MAX_OPPONENTS;
+  }
+
+  private _adjustSetting(toAdjust: number): void {
+    if (this._totalOpponents == 0) {
+      this._addOpponent(toAdjust);
+    } else {
+      this._removeOpponent(toAdjust);
+    }
   }
 
   private _adjustLocalSelection(optionType: number): void {
-    const totalOpponents = this.options[this.constants.HUMAN_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
-
-    if (totalOpponents == 0 && optionType == this.constants.HUMAN_OPPONENTS) {
-      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = 1;
-    } else if (totalOpponents == 0 && optionType == this.constants.AI_OPPONENTS_LOCAL) {
-      this.options[this.constants.HUMAN_OPPONENTS].optionIndex = 1;
-    } else if (optionType === this.constants.HUMAN_OPPONENTS) {
-      this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.HUMAN_OPPONENTS].optionIndex;
-    } else if (optionType === this.constants.AI_OPPONENTS_LOCAL) {
-      this.options[this.constants.HUMAN_OPPONENTS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex;
+    if (optionType === this.constants.HUMAN_OPPONENTS) {
+      this._adjustSetting(this.constants.AI_OPPONENTS_LOCAL);
+    }
+    else if (optionType === this.constants.AI_OPPONENTS_LOCAL) {
+      this._adjustSetting(this.constants.HUMAN_OPPONENTS);
     }
   }
 
   private _adjustRemoteSelection(optionType: number): void {
     if (optionType === this.constants.ONLINE_OPPONENTS) {
-      this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.ONLINE_OPPONENTS].optionIndex - 1;
+      this._adjustSetting(this.constants.AI_OPPONENTS_ONLINE);
     } else if (optionType === this.constants.AI_OPPONENTS_ONLINE) {
-      this.options[this.constants.ONLINE_OPPONENTS].optionIndex = this.constants.MAX_OPPONENTS - this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex - 1;
+      this._adjustSetting(this.constants.ONLINE_OPPONENTS);
     }
   }
   
