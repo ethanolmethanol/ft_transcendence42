@@ -10,6 +10,7 @@ import {MonitorService} from "../../services/monitor/monitor.service";
 import {GameSummaryResponse} from "../../interfaces/game-summary-response.interface";
 import {GameSummaryComponent} from "../../components/game-summary/game-summary.component";
 import {Observable} from "rxjs";
+import {GameSummaryListComponent} from "../../components/game-summary-list/game-summary-list.component";
 
 @Component({
   selector: 'app-home-page',
@@ -25,13 +26,13 @@ import {Observable} from "rxjs";
     GameSummaryComponent,
     AsyncPipe,
     NgIf,
+    GameSummaryListComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
 export class HomePageComponent implements OnInit {
   welcome: string = '';
-  gameSummaries$: Observable<GameSummaryResponse[]> | undefined;
   userID: number | undefined;
 
   constructor(private userService: UserService) { }
@@ -40,10 +41,5 @@ export class HomePageComponent implements OnInit {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
     this.userID = this.userService.getUserID();
-    this.gameSummaries$ = this.getSummaries();
  }
-
-  public getSummaries(): Observable<GameSummaryResponse[]> {
-    return this.userService.getSummaries();
-  }
 }

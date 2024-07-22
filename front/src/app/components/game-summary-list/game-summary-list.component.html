@@ -1,0 +1,3 @@
+<ul *ngIf="gameSummaries$ | async as gameSummaries">
+  <app-game-summary *ngFor="let summary of gameSummaries" [gameSummary]="summary" [userID]="userID"></app-game-summary>
+</ul>

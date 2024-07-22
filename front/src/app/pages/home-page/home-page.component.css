@@ -51,9 +51,8 @@ app-leaderboard {
   padding-bottom: 5vh;
 }
 
-ul {
+app-game-summary-list {
   list-style-type: none;
-  background-color: red;
   padding: 0;
   margin: 0;
   width: 65%;
