@@ -2,10 +2,9 @@
   <app-header></app-header>
   <section class="game-selector">
     <div *ngFor="let setting of gameSettings" class="slider-div">
-      <h4 *ngIf="!setting.condition || isRemote">{{ setting.label }}</h4>
-      <app-slider *ngIf="!setting.condition || isRemote"
-                  [options]="setting.options"
-                  [(optionIndex)]="options[setting.optionType].optionIndex"
+      <h4>{{ setting.label }}</h4>
+      <app-slider [options]="setting.options"
+                  [(optionIndex)]="setting.optionIndex"
                   (selectedOption)="handleOptionSelected($event, setting.optionType)">
       </app-slider>
     </div>
