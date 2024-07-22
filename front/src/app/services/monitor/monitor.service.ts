@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import {API_GAME, API_USER} from "../../constants";
 import { WebSocketUrlResponse } from "../../interfaces/web-socket-url-response.interface";
+import {UserService} from "../user/user.service";
 
 @Injectable({
   providedIn: 'root'
@@ -35,13 +36,6 @@ export class MonitorService {
     console.log("Joining specific channel with data: " + postData);
     return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_specific_channel/`, postData).pipe(
       catchError(this.handleError<WebSocketUrlResponse>('joinSpecificWebSocketUrl'))
-    );
-  }
-
-  public getSummaries(): Observable<any> {
-    console.log("Getting summaries");
-    return this.http.get<WebSocketUrlResponse>(`${API_USER}/get_game_summaries/`).pipe(
-      catchError(this.handleError<WebSocketUrlResponse>('getSummaries'))
     );
   }
 }

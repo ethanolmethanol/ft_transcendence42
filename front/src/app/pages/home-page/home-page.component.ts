@@ -25,7 +25,7 @@ import {MonitorService} from "../../services/monitor/monitor.service";
 export class HomePageComponent implements OnInit {
   welcome: string = '';
 
-  constructor(private userService: UserService, private monitorService: MonitorService) { }
+  constructor(private userService: UserService) { }
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
@@ -33,7 +33,7 @@ export class HomePageComponent implements OnInit {
  }
 
  public getSummaries(): string[] {
-    this.monitorService.getSummaries().subscribe((data) => {
+    this.userService.getSummaries().subscribe((data) => {
       console.log(data);
       return data;
     });

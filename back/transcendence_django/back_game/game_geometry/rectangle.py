@@ -2,7 +2,7 @@ from typing import Any
 
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
-from back_game.game_settings.dict_keys import HEIGHT, POSITION, WIDTH
+from transcendence_django.dict_keys import HEIGHT, POSITION, WIDTH
 from back_game.game_settings.game_constants import LEFT_SLOT, RIGHT_SLOT, TANGENT_FACTOR
 
 

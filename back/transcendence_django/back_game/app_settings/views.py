@@ -4,7 +4,7 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any
 
-from back_game.game_settings.dict_keys import (
+from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
     ERROR,

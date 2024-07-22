@@ -5,7 +5,7 @@ from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.dict_keys import (
+from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
     OVER_CALLBACK,

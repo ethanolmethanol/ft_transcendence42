@@ -7,7 +7,7 @@ import autobahn
 from back_game.app_settings.channel_error import ChannelError
 from back_game.app_settings.game_logic_interface import GameLogicInterface
 from back_game.game_arena.arena import Arena
-from back_game.game_settings.dict_keys import (
+from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     CHANNEL_ERROR_CODE,

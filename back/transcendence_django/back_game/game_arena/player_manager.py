@@ -10,15 +10,17 @@ from back_game.game_arena.player import (
     Player,
     PlayerStatus,
 )
-from back_game.game_settings.dict_keys import (
+from transcendence_django.dict_keys import (
     ARENA_FULL,
     INVALID_NB_PLAYERS,
     IS_REMOTE,
     NB_PLAYERS,
     PLAYERS,
     PLAYER_NAME,
+    SCORE,
     TIME_LEFT,
     UNKNOWN_USER,
+    USER_ID,
     WINNER,
 )
 from back_game.game_settings.game_constants import (
@@ -97,8 +99,7 @@ class PlayerManager:
     def get_game_summary(self) -> dict[str, Any]:
         winner = self.__get_winner()
         return {
-            PLAYERS: {player.player_name: player.score for player in self.players.values()},
-            WINNER: winner,
+PLAYERS: [{USER_ID: player.user_id, PLAYER_NAME: player.player_name, SCORE: player.score} for player in self.players.values()],            WINNER: winner,
         }
 
     def finish_given_up_players(self):

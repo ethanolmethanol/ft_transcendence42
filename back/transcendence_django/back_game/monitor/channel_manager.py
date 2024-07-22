@@ -6,7 +6,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.dict_keys import ID
+from transcendence_django.dict_keys import ID
 from back_game.game_settings.game_constants import DEAD, WAITING
 
 logger = logging.getLogger(__name__)

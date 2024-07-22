@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import {API_USER} from "../../constants";
+import {Observable} from "rxjs";
+import {WebSocketUrlResponse} from "../../interfaces/web-socket-url-response.interface";
+import {catchError} from "rxjs/operators";
 
 interface User {
   id: number;
@@ -49,5 +52,11 @@ export class UserService {
   public clearUserData(): void {
     this._userData = null;
     this._userDataLoaded = null;
+  }
+
+  public getSummaries(): Observable<any> {
+    console.log("Getting summaries");
+    const postData: string = JSON.stringify({'user_id': this.getUserID()});
+    return this.http.post<WebSocketUrlResponse>(`${API_USER}/get_game_summaries/`, postData);
   }
 }

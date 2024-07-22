@@ -5,7 +5,7 @@ from back_game.game_entities.ball_speed_randomizer import BallSpeedRandomizer
 from back_game.game_entities.paddle import Paddle
 from back_game.game_geometry.position import Position
 from back_game.game_physics.speed import Speed
-from back_game.game_settings.dict_keys import (
+from transcendence_django.dict_keys import (
     BALL_X_OUT_OF_BOUNDS,
     BALL_Y_OUT_OF_BOUNDS,
     POSITION,

@@ -5,7 +5,7 @@ from typing import Any, Callable, Coroutine, Optional
 from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
-from back_game.game_settings.dict_keys import (
+from transcendence_django.dict_keys import (
     ARENA,
     BALL,
     COLLIDED_SLOT,
