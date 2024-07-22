@@ -19,6 +19,10 @@ body {
   overflow: scroll;
 }
 
+.home-page-container::-webkit-scrollbar {
+  display: none;
+}
+
 .buttons {
   display: flex;
   gap: 1em;
@@ -31,7 +35,7 @@ body {
 
 h4 {
   font-size: 2em;
-  position: sticky;
+  position: relative;
   top: 25vh;
   color: white;
 }

@@ -15,7 +15,6 @@
       </app-button-with-icon>
     </section>
     <app-leaderboard></app-leaderboard>
-<!--    <button color="primary" (click)="getSummaries()">Get summaries</button>-->
     <ul *ngIf="gameSummaries$ | async as gameSummaries">
       <app-game-summary *ngFor="let summary of gameSummaries" [gameSummary]="summary"></app-game-summary>
     </ul>

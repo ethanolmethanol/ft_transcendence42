@@ -15,6 +15,10 @@ export class GameSummaryComponent {
 
   @Input() gameSummary!: GameSummaryResponse;
 
+  public get winner(): string {
+    return this.gameSummary?.winner;
+  }
+
   public get score1(): number {
     return this.gameSummary?.players[0]?.score;
   }
