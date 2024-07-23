@@ -21,6 +21,10 @@ export const API_AUTH = `${API_BASE_URL}:8000/auth`;
 export const API_USER = `${API_BASE_URL}:8002/user`;
 export const API_GAME = `${API_BASE_URL}:8001/game`;
 
+// TIMEZONE
+
+export const LOCALE = 'en-US';
+
 // INTERFACES
 
 export const CHANNEL_ID_LENGTH = 10;

@@ -1,13 +1,14 @@
 import {Component, Inject, Input} from '@angular/core';
 import { GameSummaryResponse} from "../../interfaces/game-summary-response.interface";
-import {NgClass, NgIf} from "@angular/common";
+import {DatePipe, NgClass, NgIf} from "@angular/common";
+import {LOCALE} from "../../constants";
 
 @Component({
   selector: 'app-game-summary',
   standalone: true,
   imports: [
     NgIf,
-    NgClass
+    NgClass,
   ],
   templateUrl: './game-summary.component.html',
   styleUrl: './game-summary.component.css'
@@ -31,5 +32,10 @@ export class GameSummaryComponent {
 
   public get opponent(): string {
     return this.gameSummary?.players.find(player => player.user_id !== this.userID)?.player_name!;
+  }
+
+  public get date(): string {
+    const datePipe = new DatePipe(LOCALE); // Use your locale
+    return datePipe.transform(this.gameSummary?.end_time, 'short')!;
   }
 }

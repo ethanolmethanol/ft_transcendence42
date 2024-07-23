@@ -1,21 +1,33 @@
-.status, .opponent {
+.status {
   font-size: 1.5em;
   font-weight: bold;
+  text-align: center;
 }
 
-.score-section, .status-section, .opponent-section {
+.opponent {
+  font-size: 1.5em;
+  font-style: italic;
+  text-align: center;
+}
+
+.date {
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.score-section, .status-section, .opponent-section .date-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 1em;
 }
 
 .game-summary-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   gap: 1em;
   width: 100%;
@@ -26,8 +38,8 @@
   opacity: 90%;
 }
 
-/* Additional classes for win/lose status */
-.win, .lose {
+ /*Additional classes for win/lose status*/
+.win, .lost {
   justify-content: center;
 }
 
