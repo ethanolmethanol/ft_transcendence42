@@ -1,7 +1,7 @@
 import {Component, Inject, Input} from '@angular/core';
 import { GameSummaryResponse} from "../../interfaces/game-summary-response.interface";
 import {DatePipe, NgClass, NgIf} from "@angular/common";
-import {LOCALE} from "../../constants";
+import {LOCALE, TIME_ZONE} from "../../constants";
 
 @Component({
   selector: 'app-game-summary',
@@ -36,6 +36,6 @@ export class GameSummaryComponent {
 
   public get date(): string {
     const datePipe = new DatePipe(LOCALE); // Use your locale
-    return datePipe.transform(this.gameSummary?.end_time, 'short')!;
+    return datePipe.transform(this.gameSummary?.end_time, 'short', TIME_ZONE)!;
   }
 }

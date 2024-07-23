@@ -23,6 +23,7 @@ export const API_GAME = `${API_BASE_URL}:8001/game`;
 
 // TIMEZONE
 
+export const TIME_ZONE = 'Europe/Paris';
 export const LOCALE = 'en-US';
 
 // INTERFACES
