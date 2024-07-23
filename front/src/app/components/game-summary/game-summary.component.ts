@@ -18,7 +18,7 @@ export class GameSummaryComponent {
   @Input() gameSummary!: GameSummaryResponse;
 
   public get win_status(): string {
-    return this.gameSummary?.winner_user_id === this.userID ? 'Won' : 'Lose';
+    return this.gameSummary?.winner.user_id === this.userID ? 'Won' : 'Lost';
   }
 
   public get score1(): number {

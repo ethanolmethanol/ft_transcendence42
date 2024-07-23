@@ -25,6 +25,7 @@ from transcendence_django.dict_keys import (
     OVER_CALLBACK,
     PADDLE,
     PLAYER,
+    PLAYER_NAME,
     PLAYERS,
     REMATCH,
     START_TIMER,
@@ -145,12 +146,11 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_game_over(self, time: float):
         summary = self.monitor.get_game_summary(self.game.channel_id, self.game.arena_id)
-        logger.info("Game over: %s wins. %s seconds left.", summary[WINNER], time)
         await self.send_update(
             {
                 GAME_OVER: {
                     PLAYERS: summary[PLAYERS],
-                    WINNER: summary[WINNER],
+                    WINNER: summary[WINNER][PLAYER_NAME] if summary[WINNER] else None,
                     TIME: time,
                     MESSAGE: "Game over. Thanks for playing!",
                 }

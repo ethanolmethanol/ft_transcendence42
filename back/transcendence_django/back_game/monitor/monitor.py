@@ -13,6 +13,7 @@ from transcendence_django.dict_keys import (
     START_TIMER_CALLBACK,
     UPDATE_CALLBACK,
     WINNER,
+    WINNER_USER_ID,
 )
 from back_game.game_settings.game_constants import (
     DYING,

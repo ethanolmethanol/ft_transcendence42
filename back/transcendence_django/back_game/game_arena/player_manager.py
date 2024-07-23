@@ -22,7 +22,6 @@ from transcendence_django.dict_keys import (
     UNKNOWN_USER,
     USER_ID,
     WINNER,
-    WINNER_USER_ID,
 )
 from back_game.game_settings.game_constants import (
     AFK_WARNING_THRESHOLD,
@@ -100,8 +99,8 @@ class PlayerManager:
     def get_game_summary(self) -> dict[str, Any]:
         winner = self.__get_winner()
         return {
-            PLAYERS: {{USER_ID: player.user_id, PLAYER_NAME: player.player_name, SCORE: player.score} for player in self.players.values()},
-            WINNER_USER_ID: winner.user_id if winner else None,
+            PLAYERS: [{USER_ID: player.user_id, PLAYER_NAME: player.player_name, SCORE: player.score} for player in self.players.values()],
+            WINNER: {PLAYER_NAME: winner.player_name, USER_ID: winner.user_id} if winner else None,
         }
 
     def finish_given_up_players(self):

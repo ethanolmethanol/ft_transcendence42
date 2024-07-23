@@ -4,7 +4,7 @@
       {{score1}} <span> - </span> {{score2}}
     </div>
   </section>
-  <section class="status-section" [ngClass]="{'win': win_status === 'Won', 'lose': win_status === 'Lose'}">
+  <section class="status-section" [ngClass]="{'win': win_status === 'Won', 'lost': win_status === 'Lost'}">
     <div class="status">
       {{win_status}}
     </div>
