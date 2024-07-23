@@ -54,3 +54,18 @@
 .score-section, .status-section, .opponent-section {
   flex: 1;
 }
+
+@media (max-width: 1200px) {
+  .game-summary-container {
+    flex-direction: column;
+    padding: 0.5em;
+  }
+
+  .status, .opponent, .date {
+    font-size: 0.8em;
+  }
+
+  .score-section, .status-section, .opponent-section, .date-section {
+    padding: 0.2em;
+  }
+}
