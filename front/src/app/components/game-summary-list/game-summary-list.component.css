@@ -21,3 +21,10 @@ ul {
   font-weight: bold;
   color: white;
 }
+
+.no-game {
+  text-align: center;
+  padding-bottom: 1em;
+  font-style: italic;
+  color: white;
+}
