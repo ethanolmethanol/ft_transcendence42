@@ -31,7 +31,7 @@
   align-items: center;
   gap: 1em;
   width: 100%;
-  background-color: #6e706f;
+  background-color: rgba(50, 50, 50, 0.7);
   border-radius: 5px;
   color: white;
   padding: 1em;
