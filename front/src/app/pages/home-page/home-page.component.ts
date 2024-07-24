@@ -4,8 +4,8 @@ import { HeaderComponent } from "../../components/header/header.component";
 import { LeaderboardComponent } from "../../components/leaderboard/leaderboard.component";
 import { UserService } from '../../services/user/user.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
-import {NgStyle} from "@angular/common";
-import {ButtonWithIconComponent} from "../../components/button-with-icon/button-with-icon.component";
+import { NgStyle } from "@angular/common";
+import { ButtonWithIconComponent } from "../../components/button-with-icon/button-with-icon.component";
 
 @Component({
   selector: 'app-home-page',
@@ -30,5 +30,6 @@ export class HomePageComponent implements OnInit {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
  }
+
 
 }

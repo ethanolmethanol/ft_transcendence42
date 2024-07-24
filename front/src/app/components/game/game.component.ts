@@ -6,7 +6,10 @@ import {
   QueryList,
   ViewChildren,
   Input,
-  SimpleChanges, OnChanges
+  SimpleChanges,
+  OnChanges,
+  Renderer2,
+  ElementRef,
 } from '@angular/core';
 import {
   CREATED,
@@ -23,21 +26,22 @@ import {
   GIVEN_UP,
   STARTED, READY_TO_START,
 } from "../../constants";
-import {PaddleComponent} from "../paddle/paddle.component";
-import {BallComponent} from "../ball/ball.component";
-import {WebSocketService} from "../../services/web-socket/web-socket.service";
+import { PaddleComponent } from "../paddle/paddle.component";
+import { BallComponent } from "../ball/ball.component";
+import { WebSocketService } from "../../services/web-socket/web-socket.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
-import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
-import {NgForOf, NgIf} from "@angular/common";
-import {ConnectionService} from "../../services/connection/connection.service";
-import {UserService} from "../../services/user/user.service";
-import {PlayerIconComponent} from "../player-icon/player-icon.component";
-import {StartTimerComponent} from "../start-timer/start-timer.component";
-import {CopyButtonComponent} from "../copy-button/copy-button.component";
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+import { NgForOf, NgIf } from "@angular/common";
+import { ConnectionService } from "../../services/connection/connection.service";
+import { UserService } from "../../services/user/user.service";
+import { PlayerIconComponent } from "../player-icon/player-icon.component";
+import { StartTimerComponent } from "../start-timer/start-timer.component";
+import * as Constants from "../../constants";
+import { CopyButtonComponent } from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -79,17 +83,17 @@ interface ErrorMapping {
 @Component({
   selector: 'app-game',
   standalone: true,
-    imports: [
-        PaddleComponent,
-        BallComponent,
-        GameOverComponent,
-        LoadingSpinnerComponent,
-        NgIf,
-        NgForOf,
-        PlayerIconComponent,
-        StartTimerComponent,
-        CopyButtonComponent
-    ],
+      imports: [
+            PaddleComponent,
+            BallComponent,
+            GameOverComponent,
+            LoadingSpinnerComponent,
+            NgIf,
+            NgForOf,
+            PlayerIconComponent,
+            StartTimerComponent,
+        CopyButtonComponent,
+      ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
@@ -99,6 +103,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() isRemote: boolean = false;
+  gameBoardColors: string[] = Constants.DEFAULT_COLORS;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -110,6 +115,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   activePlayers: string[] = [];
+  constants = Constants;
 
   private _localPaddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
@@ -126,13 +132,45 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
-  constructor (private userService: UserService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
+  constructor (
+    private userService: UserService,
+    private webSocketService: WebSocketService,
+    private router: Router,
+    private connectionService: ConnectionService,
+    private renderer: Renderer2,
+    private el: ElementRef
+  ) {}
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.isRemote && this.isRemote) {
       await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
     }
+  }
+
+  private _setGameStyle(): void {
+    const gameBoardColors: string[] = this.userService.getColorConfig();
+
+    this._setStyle('.game-area', 'background', `linear-gradient(${gameBoardColors[Constants.BACKGROUND_COLOR1]}, ${gameBoardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.game-area', 'border', `6px solid ${gameBoardColors[Constants.LINE_COLOR]}`);
+    this._setStyle('.game', 'background', `linear-gradient(${gameBoardColors[Constants.BACKGROUND_COLOR1]}, ${gameBoardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.dotted-line', '--line-thickness', `${this.lineThickness}px`);
+    this._setStyle('.dotted-line', 'background', `linear-gradient(to bottom, ${gameBoardColors[Constants.LINE_COLOR]} 60%, transparent 10%)`);
+    this._setStyle('.dotted-line', 'background-size', '100% 40px');
+    this._setStyle('.score-display', 'color', gameBoardColors[Constants.SCORE_COLOR]);
+
+    this.paddles.forEach(paddle => {
+      paddle.setColor(gameBoardColors[Constants.PADDLE_COLOR]);
+    });
+    this.ball.forEach(ball => {
+      ball.setColor(gameBoardColors[Constants.BALL_COLOR]);
+    });
+  }
+
+  private _setStyle(selector: string, styleName: string, styleValue: string) {
+    const element = this.el.nativeElement.querySelector(selector);
+    if (element)
+      this.renderer.setStyle(element, styleName, styleValue);
   }
 
   public setArena(arena: ArenaResponse) {
@@ -145,7 +183,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
         paddle.afkLeftTime = null;
-        console.log(paddle.playerName + " joined the game.");
+        // console.log(paddle.playerName + " joined the game.");
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
@@ -201,7 +239,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
           }
         } else {
           const left_time = afkResponse.time_left;
-          console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
+          // console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
           paddle.afkLeftTime = left_time;
         }
       }
@@ -334,7 +372,9 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.channelID = this.connectionService.getChannelID();
-    this.gameLoop();
+    this._setGameStyle();
+    this.channelID = this.connectionService.getChannelID();
+    this.gameLoop()
   }
 
   ngOnDestroy() {

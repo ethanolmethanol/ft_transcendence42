@@ -43,8 +43,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this._optionsDict = {
         "ball_speed": state.options[0],
         "paddle_size": state.options[1],
-        "number_players": state.options[2],
-        "is_private": state.options[3]
+        "human_players": state.options[2],
+        "online_players": state.options[3],
+        "ai_opponents_local": state.options[4],
+        "ai_opponents_online": state.options[5],
+        "is_private": state.options[6]
       }
       console.log("Selected options: ", state.options);
     } else {

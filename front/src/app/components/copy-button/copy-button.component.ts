@@ -1,5 +1,5 @@
-import {Component, ElementRef, ViewChild, AfterViewInit, input, Input} from '@angular/core';
-import {NgClass} from "@angular/common";
+import { Component, ElementRef, ViewChild, AfterViewInit, Input}  from '@angular/core';
+import { NgClass } from "@angular/common";
 
 @Component({
   selector: 'app-copy-button',

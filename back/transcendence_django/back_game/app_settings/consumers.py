@@ -166,7 +166,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
             logger.error("Serialization type error: %s", e)
         except ConnectionResetError as e:
             logger.error("Connection reset error: %s", e)
-        except autobahn.exception as e:
+        except autobahn.exception.Disconnected as e:
             logger.error("Connection closed error: %s", e)
 
     async def game_message(self, event: dict[str, str]):

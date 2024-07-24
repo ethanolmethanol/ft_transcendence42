@@ -1,0 +1,73 @@
+.game-settings {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+}
+  
+.game-settings .nav {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+  
+.game-settings .nav-item {
+    flex: 1;
+    text-align: center;
+    width: 33.33%;
+}
+  
+.game-settings .nav-link {
+    border: none;
+    border-radius: 0;
+    width: 100%;
+    font-size: medium;
+}
+
+.game-settings .nav-link.active {
+    color: red;
+    background-color: white;
+}
+
+.game-settings .nav-link:hover {
+    color: red;
+}
+
+.tab-content {
+    width: 100%;
+    padding: 20px;
+}
+
+.tab-content h3 {
+    position: absolute;
+    text-align: center;
+    top: 20%;
+    left: 5%;
+    width: 50%;
+}
+  
+.tab-pane {
+    display: none;
+}
+  
+.tab-pane.active {
+    display: block;
+}
+ 
+.game-settings a {
+    transition: unset;
+    animation: unset;
+    padding: unset;
+    margin-top: unset;
+    color: #0056b3;
+    background-color: unset;
+}
+
+.game-settings a:hover {
+    transition: unset;
+    background-color: unset;
+    color: #0056b3;
+}

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CopyButtonComponent } from './copy-button.component';
+import { GameboardComponent } from './gameboard.component';
 
-describe('CopyButtonComponent', () => {
-  let component: CopyButtonComponent;
-  let fixture: ComponentFixture<CopyButtonComponent>;
+describe('GameboardComponent', () => {
+  let component: GameboardComponent;
+  let fixture: ComponentFixture<GameboardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CopyButtonComponent]
+      imports: [GameboardComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(CopyButtonComponent);
+    fixture = TestBed.createComponent(GameboardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,4 +21,3 @@ describe('CopyButtonComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-
