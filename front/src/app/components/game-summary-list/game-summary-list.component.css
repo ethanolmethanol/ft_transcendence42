@@ -1,14 +1,16 @@
 ul {
   display: grid;
   list-style-type: none;
-  padding: 1em;
   margin: 0;
-  gap: 1em;
+  padding: 0.5em;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  justify-content: center;
+  gap: 2em;
+  column-gap: 0.7em;
 }
 
 .game-summary-list-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   width: 100%;
   gap: 1em;
   background-color: rgba(0, 0, 0, 0.3);
@@ -27,15 +29,4 @@ ul {
   padding-bottom: 1em;
   font-style: italic;
   color: white;
-}
-
-@media (max-width: 1200px) {
-  .game-summary-list-container {
-    padding: 0.5em;
-    gap: 0.5em;
-  }
-
-  ul {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
 }
