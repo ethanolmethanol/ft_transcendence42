@@ -38,7 +38,7 @@ export class CreateGamePageComponent implements OnInit {
     }
     this.options = this._options;
   }
-  
+
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.options = this._options;
@@ -54,9 +54,9 @@ export class CreateGamePageComponent implements OnInit {
   private get _totalOpponents(): number {
     let totalOpponents: number = 0;
     if (this.isRemote)
-      totalOpponents = this.options[this.constants.ONLINE_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_ONLINE].value();
+      totalOpponents = this.options[this.constants.OPPONENTS_ONLINE].value() + this.options[this.constants.AI_OPPONENTS_ONLINE].value();
     else
-      totalOpponents = this.options[this.constants.HUMAN_OPPONENTS].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
+      totalOpponents = this.options[this.constants.OPPONENTS_LOCAL].value() + this.options[this.constants.AI_OPPONENTS_LOCAL].value();
     return totalOpponents;
   }
 
@@ -81,22 +81,22 @@ export class CreateGamePageComponent implements OnInit {
   }
 
   private _adjustLocalSelection(optionType: number): void {
-    if (optionType === this.constants.HUMAN_OPPONENTS) {
+    if (optionType === this.constants.OPPONENTS_LOCAL) {
       this._adjustSetting(this.constants.AI_OPPONENTS_LOCAL);
     }
     else if (optionType === this.constants.AI_OPPONENTS_LOCAL) {
-      this._adjustSetting(this.constants.HUMAN_OPPONENTS);
+      this._adjustSetting(this.constants.OPPONENTS_LOCAL);
     }
   }
 
   private _adjustRemoteSelection(optionType: number): void {
-    if (optionType === this.constants.ONLINE_OPPONENTS) {
+    if (optionType === this.constants.OPPONENTS_ONLINE) {
       this._adjustSetting(this.constants.AI_OPPONENTS_ONLINE);
     } else if (optionType === this.constants.AI_OPPONENTS_ONLINE) {
-      this._adjustSetting(this.constants.ONLINE_OPPONENTS);
+      this._adjustSetting(this.constants.OPPONENTS_ONLINE);
     }
   }
-  
+
   private _adjustSelection(optionType: number): void {
     if (this.isRemote)
       this._adjustRemoteSelection(optionType);
@@ -109,7 +109,7 @@ export class CreateGamePageComponent implements OnInit {
     this.saveConfig = inputElement.checked;
   }
 
-  
+
   private get _options(): Option[] {
     const settingsSaved: number[] = this.userService.getGameSettings();
     const options: Option[] = [];
@@ -123,12 +123,12 @@ export class CreateGamePageComponent implements OnInit {
     }
     return options;
   }
-  
+
   private get _localGameSettings(): Option[] {
     return [
       this.options[this.constants.BALL_SPEED],
       this.options[this.constants.PADDLE_SIZE],
-      this.options[this.constants.HUMAN_OPPONENTS],
+      this.options[this.constants.OPPONENTS_LOCAL],
       this.options[this.constants.AI_OPPONENTS_LOCAL],
     ];
   }
@@ -136,35 +136,35 @@ export class CreateGamePageComponent implements OnInit {
     return [
       this.options[this.constants.BALL_SPEED],
       this.options[this.constants.PADDLE_SIZE],
-      this.options[this.constants.ONLINE_OPPONENTS],
+      this.options[this.constants.OPPONENTS_ONLINE],
       this.options[this.constants.AI_OPPONENTS_ONLINE],
       this.options[this.constants.IS_PRIVATE],
     ];
   }
-  
+
   public get gameSettings(): Option[] {
     if (this.isRemote) {
       return this._onlineGameSettings;
     }
     return this._localGameSettings;
   }
-  
+
   private _sendSettingsToBackend(): void {
     this.userService.setGameSettings(this._selectedOptions);
   }
-  
+
   private get _selectedOptions(): number[] {
     return [
       this.options[this.constants.BALL_SPEED].optionIndex,
       this.options[this.constants.PADDLE_SIZE].optionIndex,
-      this.options[this.constants.HUMAN_OPPONENTS].optionIndex,
-      this.options[this.constants.ONLINE_OPPONENTS].optionIndex,
+      this.options[this.constants.OPPONENTS_LOCAL].optionIndex,
+      this.options[this.constants.OPPONENTS_ONLINE].optionIndex,
       this.options[this.constants.AI_OPPONENTS_LOCAL].optionIndex,
       this.options[this.constants.AI_OPPONENTS_ONLINE].optionIndex,
       this.options[this.constants.IS_PRIVATE].optionIndex,
     ];
   }
-  
+
   public navigateToWaitPage(): void {
     console.log('Navigating to join game');
     console.log('Selected options:', this._selectedOptions);
