@@ -18,9 +18,11 @@ export class StatusIconComponent {
 
   onMouseOver() {
     this.showError = true;
+    console.log('onMouseOver');
   }
 
   onMouseOut() {
     this.showError = false;
+    console.log('onMouseOut');
   }
 }

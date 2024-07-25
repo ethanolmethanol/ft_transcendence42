@@ -67,15 +67,36 @@ export const BALL_RADIUS = 10;
 // Game options
 export const BALL_SPEED = 0
 export const PADDLE_SIZE = 1
-export const NUMBER_PLAYERS = 2
-export const IS_PRIVATE = 3
+export const OPPONENTS_LOCAL = 2
+export const OPPONENTS_ONLINE = 3
+export const AI_OPPONENTS_LOCAL = 4
+export const AI_OPPONENTS_ONLINE = 5
+export const IS_PRIVATE = 6
+
+export const OPTIONS_LABELS = ['Ball Speed', 'Paddle Size', 'Human Opponents', 'Online Opponents', 'AI Opponents', 'AI Opponents', 'Visibility']
 
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
-export const NUMBER_PLAYERS_OPTIONS = ['2', '3', '4']
-export const IS_PRIVATE_OPTIONS = ['public', 'private']
+export const OPPONENTS_LOCAL_OPTIONS = ['0', '1']
+export const OPPONENTS_ONLINE_OPTIONS = ['1', '2', '3']
+export const AI_OPPONENTS_LOCAL_OPTIONS = ['0', '1', '2', '3']
+export const AI_OPPONENTS_ONLINE_OPTIONS = ['0', '1', '2']
+export const IS_PRIVATE_OPTIONS = ['private', 'public']
+export const OPTIONS = [BALL_SPEED_OPTIONS, PADDLE_SIZE_OPTIONS, OPPONENTS_LOCAL_OPTIONS, OPPONENTS_ONLINE_OPTIONS, AI_OPPONENTS_LOCAL_OPTIONS, AI_OPPONENTS_ONLINE_OPTIONS, IS_PRIVATE_OPTIONS]
 
 export const BALL_SPEED_DEFAULT = 2
 export const PADDLE_SIZE_DEFAULT = 2
-export const NUMBER_PLAYERS_DEFAULT = 0
+export const NUMBER_PLAYERS_DEFAULT = 1
+export const ONLINE_PLAYERS_DEFAULT = 1
+export const AI_OPPONENTS_DEFAULT = 0
 export const IS_PRIVATE_DEFAULT = 0
+export const DEFAULT_SETTINGS = [BALL_SPEED_DEFAULT, PADDLE_SIZE_DEFAULT, NUMBER_PLAYERS_DEFAULT, ONLINE_PLAYERS_DEFAULT, AI_OPPONENTS_DEFAULT, AI_OPPONENTS_DEFAULT, IS_PRIVATE_DEFAULT]
+export const MAX_OPPONENTS = 3
+
+export const BALL_COLOR = 0
+export const PADDLE_COLOR = 1
+export const BACKGROUND_COLOR1 = 2
+export const BACKGROUND_COLOR2 = 3
+export const LINE_COLOR = 4
+export const SCORE_COLOR = 5
+export const DEFAULT_COLORS = ['#ffffff', '#ffffff', '#000000', '#000000', '#aaaaaa', '#dcdcdc80']

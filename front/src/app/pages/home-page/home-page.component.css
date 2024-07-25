@@ -31,6 +31,16 @@ body {
   top: 40vh;
 }
 
+/*.buttons {*/
+/*  display: flex;*/
+/*  gap: 1em;*/
+/*  flex-direction: column;*/
+/*  justify-content: center;*/
+/*  width: 30%;*/
+/*  top: 40vh;*/
+/*  position: relative;*/
+/*}*/
+
 h4 {
   font-size: 2em;
   top: 25vh;

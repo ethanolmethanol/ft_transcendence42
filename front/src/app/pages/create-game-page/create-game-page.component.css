@@ -22,15 +22,42 @@ h4 {
     width: 100vw;
     height: 100vh;
     overflow: auto;
-    margin-top: 5%;
+    color: white;
 }
 
-.game-selector app-slider {
-    margin-bottom: 3em;
+.slider-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5em;
     width: 100%;
 }
 
-.game-selector a {
+.save-settings {
+    width: 40vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.save-settings a {
     font-size: 2em;
     color: white;
+    width: 60%;
+    margin-bottom: 0.3em;
+}
+
+.save-settings-box {
+    color: white;
+    display: flex;
+    flex-direction: row;
+}
+
+.save-settings-box input[type="checkbox"] {
+    width: unset;
+    margin-right: 8px;
+    margin-top: 0;
+    margin-bottom: 0;
 }

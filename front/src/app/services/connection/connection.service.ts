@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import {Subscription} from "rxjs";
-import {MonitorService} from "../monitor/monitor.service";
-import {WebSocketService} from "../web-socket/web-socket.service";
-import {ErrorResponse} from "../../interfaces/error-response.interface";
-import {ArenaResponse} from "../../interfaces/arena-response.interface";
+import { Subscription } from "rxjs";
+import { WebSocketService } from "../web-socket/web-socket.service";
+import { ErrorResponse } from "../../interfaces/error-response.interface";
+import { ArenaResponse } from "../../interfaces/arena-response.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,7 @@ export class ConnectionService {
 
   public listenToWebSocketMessages(handleGameUpdate: (response: string) => void, handleGameError: (response: ErrorResponse) => void) {
     this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
-      console.log('Received WebSocket message:', message);
+      // console.log('Received WebSocket message:', message);
       const data = JSON.parse(message);
       if (data.type === 'game_update') {
         handleGameUpdate(data.update);
