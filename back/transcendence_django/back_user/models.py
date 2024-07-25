@@ -20,3 +20,6 @@ class Profile(models.Model):
             if orig.user != self.user:
                 raise ValueError("User can only update their color configuration.")
         super().save(*args, **kwargs)
+
+    class Meta:
+        db_table = "db"

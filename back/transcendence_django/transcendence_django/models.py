@@ -7,6 +7,6 @@ class GameSummary(models.Model):
     end_time = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "game summaries"
+#         verbose_name_plural = "game summaries"
         app_label = "transcendence_django"
-        db_table = "db"
+#         db_table = "game_summaries"
