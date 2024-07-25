@@ -8,6 +8,7 @@ from back_game.game_geometry.rectangle import Rectangle
 from back_game.game_settings.dict_keys import (
     END,
     HEIGHT,
+    PLAYER_NAME,
     POSITION,
     SLOT,
     SPEED,
@@ -28,14 +29,26 @@ log = logging.getLogger(__name__)
 
 PaddleStatus = NewType("PaddleStatus", int)
 
+size_factor: dict[int, float] = {
+    0: 0.1,
+    1: 0.5,
+    2: 1,
+    3: 2,
+    4: 3,
+}
+
 
 class Paddle:
-    def __init__(self, slot: int, num_players: int):
+    def __init__(self, slot: int, num_players: int, paddle_size: int):
         self.slot: int = slot
+        self.player_name: str | None = None
         self.status: PaddleStatus = PaddleStatus(LISTENING)
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
         self.rectangle: Rectangle = Rectangle(
-            slot, Position(0, 0), PADDLE_WIDTH, PADDLE_HEIGHT
+            slot,
+            Position(0, 0),
+            PADDLE_WIDTH,
+            int(PADDLE_HEIGHT * size_factor[paddle_size]),
         )
         self.rate: float = 0.5
         self.axis: dict[str, Position] = self.__calculate_axis(num_players)
@@ -87,9 +100,16 @@ class Paddle:
             self.axis[START].y + (self.axis[END].y - self.axis[START].y) * rate,
         ).round()
 
+    def set_player_name(self, player_name: str):
+        self.player_name = player_name
+
+    def unset_player_name(self):
+        self.player_name = None
+
     def to_dict(self) -> dict[str, Any]:
         return {
             SLOT: self.slot,
+            PLAYER_NAME: self.player_name,
             POSITION: self.rectangle.position.__dict__,
             SPEED: self.speed_rate,
             WIDTH: self.rectangle.width,

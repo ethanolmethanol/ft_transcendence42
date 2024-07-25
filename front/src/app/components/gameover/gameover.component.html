@@ -1,4 +1,4 @@
-<section *ngIf="show" class="gameover">
+<section *ngIf="show && message" class="gameover">
   <div class="message"><h3>{{message}}</h3></div>
   <section class="choices">
     <button (click)="backToHomePage()">Back to homepage</button>

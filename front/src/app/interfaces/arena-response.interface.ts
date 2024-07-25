@@ -10,6 +10,7 @@ interface Ball {
 
 interface Paddle {
   slot: number;
+  player_name: string;
   position: Position;
   speed: number;
   width: number;
@@ -21,12 +22,18 @@ interface Map {
   height: number;
 }
 
+interface PlayersSpecs {
+  nb_players: number;
+  mode: number;
+}
+
 export interface ArenaResponse {
-  id: string;
+  id: number;
   status: number;
-  players: number[];
+  players: string[];
   scores: number[];
   ball: Ball;
   paddles: Paddle[];
   map: Map;
+  players_specs: PlayersSpecs;
 }

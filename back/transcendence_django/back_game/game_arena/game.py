@@ -7,12 +7,12 @@ from back_game.game_entities.paddle import Paddle, PaddleStatus
 from back_game.game_physics.collision import Collision
 from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (
+    CREATED,
     LISTENING,
     OVER,
     PROCESSING,
     STARTED,
     VALID_DIRECTIONS,
-    WAITING,
 )
 
 logger = logging.getLogger(__name__)
@@ -22,16 +22,34 @@ GameStatus = NewType("GameStatus", int)
 
 
 class Game:
-    def __init__(self, nb_players: int):
-        self.status: GameStatus = GameStatus(WAITING)
+    def __init__(self, players_specs: dict[str, Any]):
+        try:
+            nb_players = players_specs["nb_players"]
+            options: dict[str, Any] = players_specs["options"]
+            paddle_size = options["paddle_size"]
+            ball_speed = options["ball_speed"]
+            self.is_private: bool = options["is_private"]
+        except KeyError as exc:
+            raise ValueError("Options are missing.") from exc
+        self.status: GameStatus = GameStatus(CREATED)
         self.paddles: dict[str, Paddle] = {
-            f"{i + 1}": Paddle(i + 1, nb_players) for i in range(nb_players)
+            f"{i + 1}": Paddle(i + 1, nb_players, paddle_size)
+            for i in range(nb_players)
         }
-        self.ball: Ball = Ball(self.paddles)
+        self.ball: Ball = Ball(self.paddles, ball_speed)
         self.map: Map = Map()  # depends on the number of players
 
-    def add_paddle(self, player_name: str, index: int):
-        self.paddles[player_name] = self.paddles.pop(f"{index}")
+    def add_paddle(self, player_name: str):
+        for key, paddle in list(self.paddles.items()):
+            if paddle.player_name is None:
+                paddle.set_player_name(player_name)
+                del self.paddles[key]
+                self.paddles[player_name] = paddle
+                break
+
+    def remove_paddle(self, player_name: str):
+        paddle = self.paddles[player_name]
+        paddle.unset_player_name()
 
     def start(self):
         self.set_status(GameStatus(STARTED))

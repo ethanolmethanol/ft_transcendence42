@@ -1,0 +1,63 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+h4 {
+    font-size: 1em;
+    color: white;
+}
+
+.game-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    color: white;
+}
+
+.slider-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5em;
+    width: 100%;
+}
+
+.save-settings {
+    width: 40vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.save-settings a {
+    font-size: 2em;
+    color: white;
+    width: 60%;
+    margin-bottom: 0.3em;
+}
+
+.save-settings-box {
+    color: white;
+    display: flex;
+    flex-direction: row;
+}
+
+.save-settings-box input[type="checkbox"] {
+    width: unset;
+    margin-right: 8px;
+    margin-top: 0;
+    margin-bottom: 0;
+}

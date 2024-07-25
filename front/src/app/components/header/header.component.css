@@ -2,25 +2,45 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
+  width: 100vw;
   top: 0;
   left: 0;
   right: 0;
   background-color: black;
   color: white;
-  padding: 10px;
+  padding: 1%;
+  overflow: hidden;
+  padding: 1%;
   z-index: 1000;
+  overflow: hidden;
 }
 
 .banner-title {
   font-size: 3em;
-  text-align: center;
 }
 
-.profile-button {
+button {
   color: white;
   background-color: red;
   border: none;
-  padding: 5px 10px;
+  padding: 0.5% 1%;
   cursor: pointer;
+}
+
+a {
+  display: unset;
+  padding: unset;
+  margin-top: unset;
+  background-color: unset;
+  color: unset;
+  text-align: unset;
+  text-decoration: unset;
+  font-size: unset;
+  border-radius: unset;
+  transition: unset;
+  animation: unset;
+}
+
+.title {
+  text-decoration: none;
 }

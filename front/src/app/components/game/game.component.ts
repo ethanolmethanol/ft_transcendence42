@@ -1,5 +1,18 @@
-import { OnDestroy, AfterViewInit, Component, HostListener, QueryList, ViewChildren} from '@angular/core';
 import {
+  OnDestroy,
+  AfterViewInit,
+  Component,
+  HostListener,
+  QueryList,
+  ViewChildren,
+  Input,
+  SimpleChanges,
+  OnChanges,
+  Renderer2,
+  ElementRef,
+} from '@angular/core';
+import {
+  CREATED,
   NOT_JOINED,
   INVALID_ARENA,
   INVALID_CHANNEL,
@@ -11,20 +24,24 @@ import {
   DYING,
   DEAD,
   GIVEN_UP,
+  STARTED, READY_TO_START,
 } from "../../constants";
-import {PaddleComponent} from "../paddle/paddle.component";
-import {BallComponent} from "../ball/ball.component";
-import {WebSocketService} from "../../services/web-socket/web-socket.service";
-import { MonitorService } from "../../services/monitor/monitor.service";
+import { PaddleComponent } from "../paddle/paddle.component";
+import { BallComponent } from "../ball/ball.component";
+import { WebSocketService } from "../../services/web-socket/web-socket.service";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
 import { Position } from "../../interfaces/position.interface";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
-import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
-import {NgIf} from "@angular/common";
-import {ConnectionService} from "../../services/connection/connection.service";
-import {UserService} from "../../services/user/user.service";
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+import { NgForOf, NgIf } from "@angular/common";
+import { ConnectionService } from "../../services/connection/connection.service";
+import { UserService } from "../../services/user/user.service";
+import { PlayerIconComponent } from "../player-icon/player-icon.component";
+import { StartTimerComponent } from "../start-timer/start-timer.component";
+import * as Constants from "../../constants";
+import { CopyButtonComponent } from "../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -37,6 +54,11 @@ interface BallUpdateResponse {
 
 interface ScoreUpdateResponse {
   player_name: string;
+}
+
+interface StartTimerResponse {
+  time: number;
+  message: string;
 }
 
 interface GameOverUpdateResponse {
@@ -61,30 +83,46 @@ interface ErrorMapping {
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [
-    PaddleComponent,
-    BallComponent,
-    GameOverComponent,
-    LoadingSpinnerComponent,
-    NgIf
-  ],
+      imports: [
+            PaddleComponent,
+            BallComponent,
+            GameOverComponent,
+            LoadingSpinnerComponent,
+            NgIf,
+            NgForOf,
+            PlayerIconComponent,
+            StartTimerComponent,
+        CopyButtonComponent,
+      ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit, OnDestroy {
-  readonly lineThickness = LINE_THICKNESS;
-  gameWidth = GAME_WIDTH;
-  gameHeight = GAME_HEIGHT;
+export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
-  @ViewChildren(GameOverComponent) overlay!: QueryList<GameOverComponent>;
-  player1Score = 0;
-  player2Score = 0;
-  dataLoaded = false;
+  @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
+  @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
+  @Input() isRemote: boolean = false;
+  gameBoardColors: string[] = Constants.DEFAULT_COLORS;
+  private playerName: string | null = null;
+  readonly lineThickness: number = LINE_THICKNESS;
+  gameWidth: number = GAME_WIDTH;
+  gameHeight: number = GAME_HEIGHT;
+  player1Score: number = 0;
+  player2Score: number = 0;
+  maxPlayers: number = 2;
+  channelID: string = '';
+  dataLoaded: boolean = false;
+  isWaiting: boolean = true;
+  activePlayers: string[] = [];
+  constants = Constants;
 
-  private _paddleBinding = [
+  private _localPaddleBinding = [
     { id: 1, upKey: 'w', downKey: 's' },
     { id: 2, upKey: 'ArrowUp', downKey: 'ArrowDown' },
+  ];
+  private _remotePaddleBinding = [
+    { id: 1, upKey: 'w', downKey: 's' },
   ];
   private readonly _errorMapping: ErrorMapping = {
     [NOT_JOINED]: this.redirectToHome.bind(this),
@@ -94,18 +132,58 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
-  constructor (private userService: UserService, private monitorService: MonitorService, private webSocketService: WebSocketService, private router: Router, private connectionService: ConnectionService) {}
+  constructor (
+    private userService: UserService,
+    private webSocketService: WebSocketService,
+    private router: Router,
+    private connectionService: ConnectionService,
+    private renderer: Renderer2,
+    private el: ElementRef
+  ) {}
+
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes.isRemote && this.isRemote) {
+      await this.userService.whenUserDataLoaded();
+      this.playerName = this.userService.getUsername();
+    }
+  }
+
+  private _setGameStyle(): void {
+    const gameBoardColors: string[] = this.userService.getColorConfig();
+
+    this._setStyle('.game-area', 'background', `linear-gradient(${gameBoardColors[Constants.BACKGROUND_COLOR1]}, ${gameBoardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.game-area', 'border', `6px solid ${gameBoardColors[Constants.LINE_COLOR]}`);
+    this._setStyle('.game', 'background', `linear-gradient(${gameBoardColors[Constants.BACKGROUND_COLOR1]}, ${gameBoardColors[Constants.BACKGROUND_COLOR2]})`);
+    this._setStyle('.dotted-line', '--line-thickness', `${this.lineThickness}px`);
+    this._setStyle('.dotted-line', 'background', `linear-gradient(to bottom, ${gameBoardColors[Constants.LINE_COLOR]} 60%, transparent 10%)`);
+    this._setStyle('.dotted-line', 'background-size', '100% 40px');
+    this._setStyle('.score-display', 'color', gameBoardColors[Constants.SCORE_COLOR]);
+
+    this.paddles.forEach(paddle => {
+      paddle.setColor(gameBoardColors[Constants.PADDLE_COLOR]);
+    });
+    this.ball.forEach(ball => {
+      ball.setColor(gameBoardColors[Constants.BALL_COLOR]);
+    });
+  }
+
+  private _setStyle(selector: string, styleName: string, styleValue: string) {
+    const element = this.el.nativeElement.querySelector(selector);
+    if (element)
+      this.renderer.setStyle(element, styleName, styleValue);
+  }
 
   public setArena(arena: ArenaResponse) {
     this.paddles.forEach(paddle => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
-        paddle.playerName = "Player" + paddle.id;
+        paddle.playerName = paddleData.player_name;
         paddle.positionX = paddleData.position.x;
         paddle.positionY = paddleData.position.y;
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
-		paddle.afkLeftTime = null;
+        paddle.afkLeftTime = null;
+        // console.log(paddle.playerName + " joined the game.");
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
@@ -115,8 +193,12 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
+    this.maxPlayers = arena.players_specs.nb_players;
     this.updateStatus(arena.status)
+    this.activePlayers = arena.players;
     this.dataLoaded = true;
+    this.startTimer.first.show = false;
+    this.gameOver.first.hasRematched = false;
   }
 
   private handleGameUpdate(gameState: any) {
@@ -124,7 +206,8 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
-        'game_over': (value: GameOverUpdateResponse) => { this.gameOver(value) },
+        'start_timer': (value: StartTimerResponse) => { this.updateStartTimer(value) },
+        'game_over': (value: GameOverUpdateResponse) => { this.updateGameOver(value) },
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
         'give_up': (value: number) => { this.giveUp(value) },
@@ -138,19 +221,26 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  private updateStartTimer(timer: StartTimerResponse) {
+    this.startTimer.first.message = timer.message;
+    this.startTimer.first.time = timer.time;
+    this.startTimer.first.show = true;
+  }
+
   private updateInactivity(kicked_players: Array<AFKResponse>) {
     kicked_players.forEach((afkResponse) => {
-      if (afkResponse.player_name === "Player1" || afkResponse.player_name === "Player2") {
+      const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
+      if (paddle) {
         if (afkResponse.time_left <= 0) {
-          console.log('You were kicked due to inactivity.');
-          this.redirectToHome();
+          if (afkResponse.player_name === this.playerName) {
+            console.log('You were kicked due to inactivity.');
+            this.redirectToHome();
+            this.webSocketService.giveUp();
+          }
         } else {
           const left_time = afkResponse.time_left;
-          console.log("Warning: You will be kicked in " + left_time + " seconds.");
-          const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
-          if (paddle) {
-            paddle.afkLeftTime = left_time;
-          }
+          // console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
+          paddle.afkLeftTime = left_time;
         }
       }
     });
@@ -170,12 +260,16 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateStatus(status: number) {
-    if (status == WAITING || status == DYING) {
-      this.overlay.first.show = true;
-    } else if (status == DEAD) {
-      this.redirectToHome();
-    } else {
-      this.overlay.first.show = false;
+    let gameOverOverlay = this.gameOver.first;
+    this.isWaiting = (status == CREATED || status == WAITING)
+    if (gameOverOverlay.hasRematched === false) {
+      if (status == DYING) {
+        gameOverOverlay.show = true;
+      } else if (status == DEAD) {
+        this.redirectToHome();
+      } else if (status == STARTED) {
+        gameOverOverlay.show = false;
+      }
     }
   }
 
@@ -192,26 +286,40 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateScore(score: ScoreUpdateResponse) {
-    if (this.paddles.length == 2) {
-      if (score.player_name == "Player1")
+    const paddleComponent = this.paddles.find(p => p.playerName === score.player_name);
+    if (paddleComponent) {
+      if (paddleComponent.id === 1) {
         this.player1Score += 1;
-      else this.player2Score += 1;
+      } else if (paddleComponent.id === 2) {
+        this.player2Score += 1;
+      }
     }
   }
 
-  private gameOver(info: GameOverUpdateResponse) {
-    this.overlay.first.message = info.winner + " won! " + info.message
-    this.overlay.first.time = info.time
-    this.overlay.first.show = true
-    // for online mode, use info.winner to update the user score db?
+  private updateGameOver(info: GameOverUpdateResponse) {
+    let gameOverOverlay = this.gameOver.first;
+    let player = this.activePlayers.find(name => name === this.playerName);
+    if (this.isRemote && player) {
+      gameOverOverlay.hasRematched = true;
+    }
+    if (gameOverOverlay.hasRematched === false) {
+      if (info.winner === "") {
+        gameOverOverlay.message = "It's a tie! " + info.message
+      } else {
+        gameOverOverlay.message = info.winner + " won! " + info.message
+      }
+      gameOverOverlay.time = info.time
+      gameOverOverlay.show = true
+      // for online mode, use info.winner to update the user score db?
 
-    if (info.time === 0) {
-      this.redirectToHome();
+      if (info.time === 0) {
+        this.redirectToHome();
+      }
     }
   }
 
   private redirectToHome() {
-    this.overlay.first.redirectToHome();
+    this.gameOver.first.redirectToHome();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -224,10 +332,22 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this._pressedKeys.delete(event.key);
   }
   private gameLoop() {
-    this._paddleBinding.forEach(_paddleBinding => {
-      const paddle = this.paddles.find(p => p.id === _paddleBinding.id);
+    let bindingMap;
+    if (this.isRemote) {
+      bindingMap = this._remotePaddleBinding;
+    } else {
+      bindingMap = this._localPaddleBinding;
+    }
+    bindingMap.forEach(bindingMap => {
+      const paddle = this.paddles.find(p => p.id === bindingMap.id);
       if (paddle) {
-        this.movePaddle(paddle, _paddleBinding)
+        let playerName;
+        if (this.isRemote) {
+          playerName = this.playerName!;
+        } else {
+          playerName = paddle.playerName;
+        }
+        this.movePaddle(playerName, bindingMap)
       }
     });
 
@@ -235,12 +355,15 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     requestAnimationFrame(() => this.gameLoop());
   }
 
-  private movePaddle(paddle: PaddleComponent, binding: { upKey: string; downKey: string }) {
-    const isMovingUp = this._pressedKeys.has(binding.upKey) && !this._pressedKeys.has(binding.downKey);
-    const isMovingDown = this._pressedKeys.has(binding.downKey) && !this._pressedKeys.has(binding.upKey);
+  private movePaddle(playerName: string, binding: { upKey: string; downKey: string }) {
+    const isMovingUp = this._pressedKeys.has(binding.upKey);
+    const isMovingDown = this._pressedKeys.has(binding.downKey);
+
+    if (isMovingUp && isMovingDown) {
+      return;
+    }
     const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;
     if (direction !== 0) {
-      const playerName = paddle.id === 1 ? "Player1" : "Player2";
       this.webSocketService.sendPaddleMovement(playerName, direction);
     }
   }
@@ -248,7 +371,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
-    this.gameLoop();
+    this.channelID = this.connectionService.getChannelID();
+    this._setGameStyle();
+    this.channelID = this.connectionService.getChannelID();
+    this.gameLoop()
   }
 
   ngOnDestroy() {

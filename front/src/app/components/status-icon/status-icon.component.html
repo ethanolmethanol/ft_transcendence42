@@ -2,5 +2,5 @@
   <image [ngStyle]="{'color': testPassed ? 'green' : 'red'}" class="material-icons">
     {{ testPassed ? 'check_circle' : 'error' }}
   </image>
-  <p *ngIf="!testPassed && showError" class="window-error-message">{{ errorMessage }}</p>
+  <p *ngIf="errorMessage && showError" class="window-error-message">{{ errorMessage }}</p>
 </section>

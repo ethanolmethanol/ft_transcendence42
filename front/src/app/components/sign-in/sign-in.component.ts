@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {NgIf} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { NgIf } from "@angular/common";
+import { Router, RouterLink } from "@angular/router";
 import { AuthService } from '../../services/auth/auth.service';
-import {ErrorMessageComponent} from "../error-message/error-message.component";
+import { ErrorMessageComponent } from "../error-message/error-message.component";
 
 @Component({
   selector: 'app-sign-in',

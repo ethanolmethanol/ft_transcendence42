@@ -1,0 +1,18 @@
+<body>
+  <app-header></app-header>
+  <section class="game-selector">
+    <div *ngFor="let setting of gameSettings" class="slider-div">
+      <h4>{{ setting.label }}</h4>
+      <app-slider [options]="setting.options"
+                  [(optionIndex)]="setting.optionIndex"
+                  (selectedOption)="handleOptionSelected($event, setting.optionType)">
+      </app-slider>
+    </div>
+    <section class="save-settings">
+      <a (click)="navigateToWaitPage()">Join Game</a>
+      <label class="save-settings-box">
+        <input type="checkbox" (change)="saveSettings($event)">Remember settings for later
+      </label>
+    </section>
+  </section>
+</body>

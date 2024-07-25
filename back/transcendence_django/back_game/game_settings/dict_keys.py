@@ -5,6 +5,9 @@ CHANNEL_ERROR_CODE = "code"
 MESSAGE = "message"
 TYPE = "type"
 
+# Channel
+CHANNEL_ID = "channel_id"
+
 # Game error
 GAME_ERROR = "game_error"
 ERROR = "error"
@@ -27,10 +30,18 @@ PLAYER = "player"
 DIRECTION = "direction"
 PADDLE = "paddle"
 
-# Game over
+# Game timers
+
+START_TIMER = "start_timer"
 GAME_OVER = "game_over"
 WINNER = "winner"
 TIME = "time"
+
+# Game callbacks
+
+UPDATE_CALLBACK = "update_callback"
+OVER_CALLBACK = "over_callback"
+START_TIMER_CALLBACK = "start_timer_callback"
 
 # Arena
 PLAYER_SPECS = "players_specs"
@@ -55,7 +66,7 @@ ARENA_FULL = "The arena is full."
 UNKNOWN_USER = "This user is unknown"
 INVALID_NB_PLAYERS = "The number of players is out of allowed range."
 NB_PLAYERS = "nb_players"
-MODE = "mode"
+IS_REMOTE = "type"
 PLAYER_NAME = "player_name"
 TIME_LEFT = "time_left"
 
@@ -63,6 +74,7 @@ TIME_LEFT = "time_left"
 POSITION = "position"
 SPEED = "speed"
 RADIUS = "radius"
+PLAYER_NAME = "player_name"
 BALL_X_OUT_OF_BOUNDS = "Ball x-coordinate is out of bounds."
 BALL_Y_OUT_OF_BOUNDS = "Ball y-coordinate is out of bounds."
 START = "start"
