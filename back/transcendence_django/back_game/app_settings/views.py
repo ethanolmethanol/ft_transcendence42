@@ -13,7 +13,6 @@ from transcendence_django.dict_keys import (
     USER_ID,
 )
 from back_game.monitor.monitor import Monitor, get_monitor
-from transcendence_django.models import GameSummary
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 

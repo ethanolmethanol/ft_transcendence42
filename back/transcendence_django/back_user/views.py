@@ -11,6 +11,7 @@ from transcendence_django.dict_keys import USER_ID
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from transcendence_django.models import GameSummary
+from transcendence_django.models import Profile
 
 # pylint: disable=no-member
 from http import HTTPStatus
@@ -23,7 +24,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
-from .models import Profile
 
 
 @method_decorator(csrf_protect, name="dispatch")
