@@ -34,7 +34,7 @@ class Monitor:
 
 
     def __init__(self):
-        from transcendence_django.models import GameSummary
+        from shared_models.models import GameSummary
         self.GameSummary = GameSummary
         self.channel_manager = ChannelManager()
 

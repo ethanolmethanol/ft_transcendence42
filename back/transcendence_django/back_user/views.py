@@ -10,8 +10,7 @@ from django.views.decorators.http import require_http_methods
 from transcendence_django.dict_keys import USER_ID
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from transcendence_django.models import GameSummary
-from transcendence_django.models import Profile
+from shared_models.models import GameSummary, Profile
 
 # pylint: disable=no-member
 from http import HTTPStatus

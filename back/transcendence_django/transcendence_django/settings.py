@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "health_check.storage",
     "health_check.contrib.migrations",
     "django_extensions",
-    "transcendence_django",
+    "shared_models",
 ]
 
 MIDDLEWARE = [

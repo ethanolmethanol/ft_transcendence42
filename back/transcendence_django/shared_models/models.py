@@ -10,9 +10,9 @@ class GameSummary(models.Model):
     players = models.JSONField()
     end_time = models.DateTimeField(auto_now=True)
 
-    class Meta:
+    # class Meta:
 #         verbose_name_plural = "game summaries"
-        app_label = "transcendence_django"
+        # app_label = "transcendence_django"
 #         db_table = "game_summaries"
 
 class Profile(models.Model):
@@ -31,5 +31,5 @@ class Profile(models.Model):
                 raise ValueError("User can only update their color configuration.")
         super().save(*args, **kwargs)
 
-    class Meta:
-        app_label = "transcendence_django"
+    # class Meta:
+        # app_label = "sh"
