@@ -2,7 +2,7 @@
 FROM python:3
 
 # Default healthcheck for image
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "python3", "transcendence_django/manage.py", "health_check" ]
+# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "python3", "transcendence_django/manage.py", "health_check" ]
 
 RUN apt-get update -y && \
 	apt-get install -y postgresql-client-15=15.6-0+deb12u1 --no-install-recommends && \
