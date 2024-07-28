@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
-from .models import Profile
+from shared_models.models import Profile
 
 
 @method_decorator(csrf_protect, name="dispatch")

@@ -16,15 +16,16 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   public signIn(login: string, password: string): Observable<SignInResponse> {
-    return this.http.post<SignInResponse>(`${API_AUTH}/signin/`, { login, password });
+    return this.http.post<SignInResponse>(`${API_AUTH}auth/signin/`, { login, password });
   }
 
   public signUp(username: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${API_AUTH}/signup/`, { username, email, password });
+    return this.http.post(`${API_AUTH}auth/signup/`, { username, email, password });
   }
 
   public isLoggedIn(): Observable<boolean> {
-    return this.http.get(`${API_AUTH}/is_logged/`, { observe: 'response' }).pipe(
+    console.log("API_AUTH: ", API_AUTH);
+    return this.http.get(`${API_AUTH}auth/is_logged/`, { observe: 'response' }).pipe(
       map((response: HttpResponse<any>) => {
         return (response.status === 200);
       }),
@@ -42,6 +43,6 @@ export class AuthService {
   }
 
   private processLogout() {
-    return this.http.post(`${API_AUTH}/logout/`, {});
+    return this.http.post(`${API_AUTH}auth/logout/`, {});
   }
 }

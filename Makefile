@@ -28,10 +28,8 @@ N				= \033[0m    # RESET
 
 TEST-ENGINE-TAGS = passed monitor paddle ball
 
-${NAME}: gen-cert up health
+${NAME}: initialize up health
 	$(call printname)
-
-# ${ENV_FILE}
 
 up: | ${DATADIRS} ${ENV_FILE}
 	@echo "Up-ing containers:"
@@ -174,6 +172,14 @@ install-mkcert:
 gen-cert: install-mkcert
 	@./scripts/gen_cert.sh
 
+set-env:
+	@./scripts/set_env.sh
+
+set-ip:
+	@./scripts/set_ip.sh
+
+initialize: set-env gen-cert set-ip
+
 clean:
 	@${COMPOSE} down -v
 
@@ -183,7 +189,7 @@ fclean: clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af
-	@ rm -rf ${DATADIRS}
+	@ rm -rf ${DATADIRS} ${ENV_FILE}
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all

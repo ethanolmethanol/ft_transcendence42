@@ -1,11 +1,11 @@
 {
   "/auth": {
-    "target": "https://localhost:8000",
+    "target": "https://192.168.1.164:8000",
     "secure": false,
     "changeOrigin": true
   },
   "/user": {
-    "target": "https://localhost:8002",
+    "target": "https://192.168.1.164:8002",
     "secure": false,
     "changeOrigin": true
   }
