@@ -6,7 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)
-    winner = models.JSONField()
+    winner = models.JSONField(null=True)
     players = models.JSONField()
     end_time = models.DateTimeField(auto_now=True)
 
