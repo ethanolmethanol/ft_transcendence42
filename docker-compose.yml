@@ -34,12 +34,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'ls'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 5s
 
     back_user:
         image: back_user
@@ -55,8 +49,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'ls'
 
     back_game:
         image: back_game
@@ -74,8 +66,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'ls'
 
     front:
         image: front
