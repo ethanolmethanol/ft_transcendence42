@@ -46,3 +46,4 @@ update_environment_ts() {
 
 create_nginx_config_file
 update_environment_ts
+update_gen_cert_script

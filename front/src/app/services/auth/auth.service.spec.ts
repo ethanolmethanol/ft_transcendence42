@@ -30,7 +30,7 @@ describe('AuthService', () => {
       expect(response).toEqual(loginResponse);
     });
 
-    const req = httpMock.expectOne(`${API_AUTH}auth/signin/`);
+    const req = httpMock.expectOne(`${API_AUTH}/signin/`);
     expect(req.request.method).toBe('POST');
     req.flush(loginResponse);
   });
@@ -41,7 +41,7 @@ describe('AuthService', () => {
       expect(response).toEqual(signUpResponse);
     });
 
-    const req = httpMock.expectOne(`${API_AUTH}auth/signup/`);
+    const req = httpMock.expectOne(`${API_AUTH}/signup/`);
     expect(req.request.method).toBe('POST');
     req.flush(signUpResponse);
   });
@@ -51,7 +51,7 @@ describe('AuthService', () => {
       expect(response).toBeTrue();
     });
 
-    const req = httpMock.expectOne(`${API_AUTH}auth/is_logged/`);
+    const req = httpMock.expectOne(`${API_AUTH}/is_logged/`);
     expect(req.request.method).toBe('GET');
     req.flush({}, { status: 200, statusText: 'OK' });
   });
@@ -59,7 +59,7 @@ describe('AuthService', () => {
   it('logout should send a POST request', () => {
     service.logout();
 
-    const req = httpMock.expectOne(`${API_AUTH}auth/logout/`);
+    const req = httpMock.expectOne(`${API_AUTH}/logout/`);
     expect(req.request.method).toBe('POST');
     req.flush({});
   });

@@ -10,9 +10,10 @@
 
 import { environment } from "../environments/environment";
 
-export const API_AUTH = `https://${environment.servIP}:8000/`;
-export const API_USER = `https://${environment.servIP}:8002/`;
-export const API_GAME = `https://${environment.servIP}:8001/`;
+export const API_AUTH = `https://${environment.servIP}:8000/auth`;
+export const API_USER = `https://${environment.servIP}:8002/user`;
+export const API_GAME = `https://${environment.servIP}:8001/game`;
+export const API_GAME_SOCKET = `wss://${environment.servIP}:8001`;
 
 // INTERFACES
 
