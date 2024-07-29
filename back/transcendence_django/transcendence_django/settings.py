@@ -109,7 +109,7 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'shared_models.CustomUser'
 
 server_name = os.environ.get('HOSTNAME').lower()
 

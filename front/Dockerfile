@@ -18,7 +18,7 @@ FROM nginx:1.25.4-alpine
 WORKDIR /
 
 # Default healthcheck for image
-HEALTHCHECK --interval=5s --timeout=30s --start-period=5s --retries=10 CMD [ "curl", "-kfsSL", "https://localhost:443/" ]
+HEALTHCHECK --interval=5s --timeout=60s --start-period=5s --retries=10 CMD [ "curl", "-kfsSL", "https://localhost:443/" ]
 
 RUN apk update && apk upgrade && apk add --no-cache 'curl' 'openssl'
 

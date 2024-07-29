@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods
 from transcendence_django.dict_keys import USER_ID
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from shared_models.models import GameSummary, Profile
+from shared_models.models import GameSummary, Profile, CustomUser
 
 # pylint: disable=no-member
 from http import HTTPStatus
@@ -31,14 +31,14 @@ class UserDataView(APIView):
     def get_user_id(self, request: Any) -> int:
         return request.session.get("_auth_user_id")
 
-    def find_user_by_id(self, request: Any) -> Union[Response, User]:
+    def find_user_by_id(self, request: Any) -> Union[Response, CustomUser]:
         user_id = self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
 
         try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+            user = CustomUser.objects.get(pk=user_id)
+        except CustomUser.DoesNotExist:
             return self._respond_with_bad_request()
 
         return user
@@ -72,9 +72,8 @@ class UserDataView(APIView):
             {"detail": "User does not exist."}, status=HTTPStatus.BAD_REQUEST
         )
 
-    def _handle_get_request(self, user: User, user_id: int) -> Response:
+    def _handle_get_request(self, user: CustomUser, user_id: int) -> Response:
         profile, _ = Profile.objects.get_or_create(
-            user=user,
             defaults={
                 "color_config": DEFAULT_COLORS,
                 "game_settings": DEFAULT_SETTINGS,
@@ -101,14 +100,14 @@ class UserDataView(APIView):
         return default
 
     def _update_profile(
-        self, user: User, color_config: list[str], game_settings: list[int]
+        self, user: CustomUser, color_config: list[str], game_settings: list[int]
     ):
         profile, _ = Profile.objects.get_or_create(user=user)
         profile.color_config = color_config
         profile.game_settings = game_settings
         profile.save()
 
-    def _handle_post_request(self, user: User, data: Dict[str, Any]) -> Response:
+    def _handle_post_request(self, user: CustomUser, data: Dict[str, Any]) -> Response:
         new_color_config = self._get_validated_config(
             data, "color_config", DEFAULT_COLORS, str
         )
