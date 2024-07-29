@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "shared_models",
     "back_auth",
     "back_user",
     "back_game",
@@ -51,7 +52,6 @@ INSTALLED_APPS = [
     "health_check.storage",
     "health_check.contrib.migrations",
     "django_extensions",
-    "shared_models",
 ]
 
 MIDDLEWARE = [

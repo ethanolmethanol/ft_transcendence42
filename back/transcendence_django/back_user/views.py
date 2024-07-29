@@ -124,7 +124,7 @@ def get_game_summaries(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = str(data[USER_ID])
-        summaries = GameSummary.objects.filter(players__contains=[{USER_ID: user_id}]).values()
+        summaries = CustomUser.objects.get(pk=user_id).game_summaries.values()
         return JsonResponse(list(summaries), safe=False)
     except (JSONDecodeError, TypeError) as e:
         return JsonResponse({"error": "This user doesn't exist"}, status=HTTPStatus.BAD_REQUEST)

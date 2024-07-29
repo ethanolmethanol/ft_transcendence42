@@ -73,10 +73,6 @@ services:
         build:
             context: front
         depends_on:
-            back_auth:
-                condition: service_healthy
-            back_user:
-                condition: service_healthy
             back_game:
                 condition: service_healthy
         volumes:

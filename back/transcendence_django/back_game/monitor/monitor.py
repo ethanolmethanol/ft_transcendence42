@@ -131,10 +131,16 @@ class Monitor:
         )
 
     async def save_game_summary(self, arena_id: str, winner: str, players: dict):
+        from shared_models.models import CustomUser
         logger.info("Saving game summary")
-        await sync_to_async(self.GameSummary.objects.create)(
+        game_summary = await sync_to_async(self.GameSummary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
+        for player in players:
+            user_id = player.get("user_id")
+            if user_id:
+                user = await sync_to_async(CustomUser.objects.get)(pk=user_id)
+                await sync_to_async(user.game_summaries.add)(game_summary)
         logger.info("Game summary saved")
 
     async def update_game_states(self, arenas: dict[str, Arena]):
