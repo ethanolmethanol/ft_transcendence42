@@ -1,7 +1,7 @@
 #!/bin/bash
 
 get_ip() {
-    ifconfig | awk '/inet / && !/127.0.0.1/ {print $2}' | head -n 1
+    ifconfig enp3s0f0 | grep 'inet ' | awk '{print $2}'
 }
 
 create_nginx_config_file() {
@@ -46,4 +46,3 @@ update_environment_ts() {
 
 create_nginx_config_file
 update_environment_ts
-update_gen_cert_script

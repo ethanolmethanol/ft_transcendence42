@@ -1,3 +1,3 @@
 export const environment = {
-  servIP: '192.168.1.164'
+  servIP: '10.11.6.2'
 };

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 get_ip() {
-    ifconfig | awk '/inet / && !/127.0.0.1/ {print $2}' | head -n 1
+    ifconfig enp3s0f0 | grep 'inet ' | awk '{print $2}'
 }
 
 clean_up() {
