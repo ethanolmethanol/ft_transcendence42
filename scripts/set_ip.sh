@@ -32,10 +32,6 @@ update_environment_ts() {
 	env_file="front/src/environments/environment.ts"
 	env_file_template="front/src/environments/environment.template.ts"
 
-	if [ -f $env_file ]; then
-		exit 0
-	fi
-
     if [ -f "$env_file_template" ]; then
     	sed "s/\${SERV_IP}/$serv_ip/g" "$env_file_template" > "$env_file"
     else
