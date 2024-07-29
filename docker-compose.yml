@@ -79,12 +79,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'curl -kfsSL https://localhost:443/'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 5s
 
     redis:
         image: "redis:latest"
