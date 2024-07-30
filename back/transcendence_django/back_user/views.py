@@ -24,6 +24,7 @@ from rest_framework.views import APIView
 
 from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 
+logger = logging.getLogger(__name__)
 
 @method_decorator(csrf_protect, name="dispatch")
 class UserDataView(APIView):
@@ -55,7 +56,6 @@ class UserDataView(APIView):
 
     def post(self, request: Any) -> Response:
         result = self.find_user_by_id(request)
-
         if isinstance(result, Response):
             return result
 
@@ -73,12 +73,14 @@ class UserDataView(APIView):
         )
 
     def _handle_get_request(self, user: CustomUser, user_id: int) -> Response:
-        profile, _ = Profile.objects.get_or_create(
-            defaults={
-                "color_config": DEFAULT_COLORS,
-                "game_settings": DEFAULT_SETTINGS,
-            },
-        )
+        profile: Profile = user.profile
+        if profile is None:
+            profile = Profile.objects.create(
+                color_config=DEFAULT_COLORS,
+                game_settings=DEFAULT_SETTINGS,
+            )
+            user.profile = profile
+            user.save()
         user_data = {
             "id": user_id,
             "username": user.username,
@@ -102,10 +104,15 @@ class UserDataView(APIView):
     def _update_profile(
         self, user: CustomUser, color_config: list[str], game_settings: list[int]
     ):
-        profile, _ = Profile.objects.get_or_create(user=user)
+        logger.info(f"Updating profile for user {user}")
+        profile: Profile = user.profile
+        if profile is None:
+            profile = Profile()
+        logger.info(f"Profile: {profile}")
         profile.color_config = color_config
         profile.game_settings = game_settings
         profile.save()
+        user.profile = profile
 
     def _handle_post_request(self, user: CustomUser, data: Dict[str, Any]) -> Response:
         new_color_config = self._get_validated_config(
