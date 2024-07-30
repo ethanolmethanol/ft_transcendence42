@@ -1,7 +1,11 @@
 #!/bin/bash
 
 get_ip() {
-    ifconfig enp3s0f0 | grep 'inet ' | awk '{print $2}'
+    if [ "$1" == "prod" ]; then
+        hostname -i | awk '{print $1}'
+    else
+        echo -n "localhost"
+    fi
 }
 
 create_nginx_config_file() {
@@ -10,7 +14,7 @@ create_nginx_config_file() {
     local nginx_config_template
     local nginx_config_file
 
-	serv_ip=$(get_ip)
+	serv_ip=$(get_ip "$1")
 	nginx_config_template="front/nginx/nginx.conf.template"
     nginx_config_file="front/nginx/nginx.conf"
 
@@ -28,7 +32,7 @@ update_environment_ts() {
     local env_file
     local env_file_template
 
-	serv_ip=$(get_ip)
+	serv_ip=$(get_ip $1)
 	env_file="front/src/environments/environment.ts"
 	env_file_template="front/src/environments/environment.template.ts"
 
@@ -40,5 +44,5 @@ update_environment_ts() {
     fi
 }
 
-create_nginx_config_file
-update_environment_ts
+create_nginx_config_file $1
+update_environment_ts $1

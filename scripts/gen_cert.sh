@@ -1,7 +1,11 @@
 #!/bin/bash
 
 get_ip() {
-    ifconfig enp3s0f0 | grep 'inet ' | awk '{print $2}'
+    if [ "$1" == "prod" ]; then
+        hostname -i | awk '{print $1}'
+    else
+        echo -n "localhost"
+    fi
 }
 
 clean_up() {
@@ -27,7 +31,7 @@ CERT_DIR="ssl/"
 CERT_PATH="${CERT_DIR}/serv.crt"
 KEY_PATH="${CERT_DIR}/serv.key"
 SSL_CONT_DIRS=(front/ssl back/ssl)
-IP_ADDR=$(get_ip)
+IP_ADDR=$(get_ip $1)
 
 if [ "$1" = "clean" ]; then
     clean_up

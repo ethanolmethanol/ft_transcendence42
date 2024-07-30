@@ -6,6 +6,10 @@ ENV_SRC			= ~/.env
 
 ENV_FILE		= .env
 
+FRONT_ENV_FILE	= front/src/environments/environment.ts
+
+NGINX_CONF		= front/nginx/nginx.conf
+
 # WIP
 # DB_NAME		= $$(grep POSTGRES_DB ${ENV_FILE} | sed "s.POSTGRES_DB='(.*)'.\1.")
 
@@ -180,6 +184,13 @@ set-ip:
 
 initialize: set-env gen-cert set-ip
 
+init-prod:
+	@./scripts/set_env.sh prod
+	@./scripts/gen_cert.sh prod
+	@./scripts/set_ip.sh prod
+
+prod: init-prod up health
+
 clean:
 	@${COMPOSE} down -v
 
@@ -189,7 +200,8 @@ fclean: clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af
-	@ rm -rf ${DATADIRS} ${ENV_FILE}
+	@ rm -rf ${DATADIRS} ${ENV_FILE} ${FRONT_ENV_FILE} ${NGINX_CONF}
+	
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all
