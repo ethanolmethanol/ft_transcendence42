@@ -3,6 +3,7 @@ from typing import Any, List
 
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from sortedm2m.fields import SortedManyToManyField
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)
@@ -48,7 +49,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
-    game_summaries = models.ManyToManyField(GameSummary, blank=True)
+    game_summaries = SortedManyToManyField(GameSummary, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

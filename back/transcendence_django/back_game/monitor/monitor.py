@@ -140,7 +140,8 @@ class Monitor:
             user_id = player.get("user_id")
             if user_id:
                 user = await sync_to_async(CustomUser.objects.get)(pk=user_id)
-                await sync_to_async(user.game_summaries.add)(game_summary)
+                user_game_summaries = await sync_to_async(list)(user.game_summaries.all())
+                await sync_to_async(user.game_summaries.set)([game_summary] + user_game_summaries)
         logger.info("Game summary saved")
 
     async def update_game_states(self, arenas: dict[str, Arena]):

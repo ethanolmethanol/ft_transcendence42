@@ -127,11 +127,15 @@ class UserDataView(APIView):
 @require_http_methods(["POST"])
 @csrf_protect
 def get_game_summaries(request) -> JsonResponse:
-    # logger.info(request.body.decode("utf-8"))
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = str(data[USER_ID])
-        summaries = CustomUser.objects.get(pk=user_id).game_summaries.values()
-        return JsonResponse(list(summaries), safe=False)
-    except (JSONDecodeError, TypeError) as e:
-        return JsonResponse({"error": "This user doesn't exist"}, status=HTTPStatus.BAD_REQUEST)
+        start_index = int(data.get("start_index", 0))
+        end_index = int(data.get("end_index", -1))
+
+        summaries = list(CustomUser.objects.get(pk=user_id).game_summaries.values())
+        sliced_summaries = summaries[start_index:end_index]
+
+        return JsonResponse(sliced_summaries, safe=False)
+    except (JSONDecodeError, TypeError, ValueError) as e:
+        return JsonResponse({"error": "Invalid request data"}, status=HTTPStatus.BAD_REQUEST)

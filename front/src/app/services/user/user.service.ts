@@ -100,7 +100,7 @@ export class UserService {
 
   public getSummaries(): Observable<GameSummaryResponse[]> {
     console.log("Getting summaries");
-    const postData: string = JSON.stringify({'user_id': this.getUserID()});
+    const postData: string = JSON.stringify({'user_id': this.getUserID(), 'start_index': 0, 'end_index': 5});
     return this.http.post<GameSummaryResponse[]>(`${API_USER}/get_game_summaries/`, postData);
   }
 }

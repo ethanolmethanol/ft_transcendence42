@@ -1,7 +1,7 @@
 <section class="game-summary-list-container">
   <h4 class="title">Game History</h4>
   <ul *ngIf="(gameSummaries$ | async)?.length; else noGame">
-    <app-game-summary *ngFor="let summary of (gameSummaries$ | async)?.reverse()" [gameSummary]="summary" [userID]="userID"></app-game-summary>
+    <app-game-summary *ngFor="let summary of (gameSummaries$ | async)" [gameSummary]="summary" [userID]="userID"></app-game-summary>
   </ul>
   <ng-template #noGame>
     <div class="no-game">
