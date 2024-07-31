@@ -151,9 +151,10 @@ class Monitor:
             elif arena.can_be_over():
                 arena.conclude_game()
                 summary = arena.get_game_summary()
-                await self.save_game_summary(
-                    arena.id, summary[WINNER], summary[PLAYERS]
-                )
+                if arena.is_remote():
+                    await self.save_game_summary(
+                        arena.id, summary[WINNER], summary[PLAYERS]
+                    )
                 if arena_status != GameStatus(STARTED):
                     self.channel_manager.delete_arena(arenas, arena.id)
                     break

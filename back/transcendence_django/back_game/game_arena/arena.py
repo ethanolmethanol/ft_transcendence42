@@ -76,6 +76,9 @@ class Arena:
             },
         }
 
+    def is_remote(self) -> bool:
+        return self.player_manager.is_remote
+
     def is_empty(self) -> bool:
         return self.player_manager.is_empty()
 

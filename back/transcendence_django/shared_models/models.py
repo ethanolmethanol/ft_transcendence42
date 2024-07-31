@@ -19,10 +19,6 @@ class Profile(models.Model):
     )  # type: ignore
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        if self.pk is not None:
-            orig: Profile = Profile.objects.get(pk=self.pk)  # pylint: disable=no-member
-            if orig.user != self.user:
-                raise ValueError("User can only update their color configuration.")
         super().save(*args, **kwargs)
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
