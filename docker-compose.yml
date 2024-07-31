@@ -21,7 +21,7 @@ services:
             start_period: 5s
 
     back_auth:
-        image: back_auth
+        image: back
         container_name: back_auth
         build:
             context: back
@@ -42,7 +42,7 @@ services:
             start_period: 5s
 
     back_user:
-        image: back_user
+        image: back
         container_name: back_user
         build:
             context: back
@@ -59,7 +59,7 @@ services:
             test: 'python3 manage.py health_check'
 
     back_game:
-        image: back_game
+        image: back
         container_name: back_game
         build:
             context: back
@@ -172,11 +172,12 @@ services:
             - transcendence
 
     cadvisor:
-        image: gcr.io/cadvisor/cadvisor:v0.47.1
+        image: gcr.io/cadvisor/cadvisor:v0.46.0
         container_name: cadvisor
+        # command: --logtostderr --v=4
         user: root
         group_add:
-            - 999
+            - 131
         restart: unless-stopped
         privileged: true
         healthcheck:
@@ -186,14 +187,9 @@ services:
             retries: 10
             start_period: 5s
         volumes:
-            - /:/rootfs:ro # why would it even need to mount on the host's root filesystem???
-            - /var/run:/var/run:ro
             - /var/run/docker.sock:/var/run/docker.sock:ro
-            - /dev/:/dev:rw
             - /sys:/sys:ro
-            # - /sys/fs/cgroup/cpu,cpuacct:/sys/fs/cgroup/cpuacct,cpu
             - /var/lib/docker/:/var/lib/docker:ro
-            - /dev/disk/:/dev/disk:ro
             - /etc/machine-id:/etc/machine-id:ro
         devices:
             - /dev/kmsg:/dev/kmsg

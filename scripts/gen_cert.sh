@@ -11,7 +11,7 @@ if [ "$1" = "clean" ]; then
 fi
 
 if [ ! -e "${CERT_DIR}" ]; then
-	mkcert serv localhost 127.0.0.1 ::1
+	~/bin/mkcert serv localhost 127.0.0.1 ::1
 	mkdir -p "${CERT_DIR}"
 	mv ./serv+3.pem "${CERT_PATH}"
 	mv ./serv+3-key.pem ./"${KEY_PATH}"
