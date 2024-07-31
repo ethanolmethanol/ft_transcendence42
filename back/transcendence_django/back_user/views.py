@@ -137,9 +137,6 @@ def get_game_summaries(request) -> JsonResponse:
         summaries = list(CustomUser.objects.get(pk=user_id).game_summaries.values())
         sliced_summaries = summaries[start_index:end_index]
         has_more = end_index < history_size
-        logger.info(f"User {user_id} has {history_size} game summaries")
-        logger.info(f"Returning game summaries from {start_index} to {end_index}")
-        logger.info(f"Has more? -> {has_more}")
         history = {"has_more": has_more, "summaries": sliced_summaries}
         return JsonResponse(history, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
