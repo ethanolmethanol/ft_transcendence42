@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import {API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS} from "../../constants";
 import {Observable} from "rxjs";
-import {GameSummaryResponse} from "../../interfaces/game-summary-response.interface"
+import {GameHistoryResponse, GameSummaryResponse} from "../../interfaces/game-history-response.interface"
 
 interface User {
   id: number;
@@ -98,9 +98,9 @@ export class UserService {
     this._userDataLoaded = null;
   }
 
-  public getSummaries(): Observable<GameSummaryResponse[]> {
+  public getSummaries(startIndex: number, endIndex: number): Observable<GameHistoryResponse> {
     console.log("Getting summaries");
-    const postData: string = JSON.stringify({'user_id': this.getUserID(), 'start_index': 0, 'end_index': 5});
-    return this.http.post<GameSummaryResponse[]>(`${API_USER}/get_game_summaries/`, postData);
+    const postData: string = JSON.stringify({'user_id': this.getUserID(), 'start_index': startIndex, 'end_index': endIndex});
+    return this.http.post<GameHistoryResponse>(`${API_USER}/get_game_summaries/`, postData);
   }
 }

@@ -14,5 +14,10 @@ export interface GameSummaryResponse {
   end_time: string;
   id: number;
   players: Player[];
-  winner: Winner;
+  winner: Winner | undefined;
+}
+
+export interface GameHistoryResponse {
+  has_more: boolean;
+  summaries: GameSummaryResponse[];
 }

@@ -133,9 +133,14 @@ def get_game_summaries(request) -> JsonResponse:
         start_index = int(data.get("start_index", 0))
         end_index = int(data.get("end_index", -1))
 
+        history_size = CustomUser.objects.get(pk=user_id).history_size
         summaries = list(CustomUser.objects.get(pk=user_id).game_summaries.values())
         sliced_summaries = summaries[start_index:end_index]
-
-        return JsonResponse(sliced_summaries, safe=False)
+        has_more = end_index < history_size
+        logger.info(f"User {user_id} has {history_size} game summaries")
+        logger.info(f"Returning game summaries from {start_index} to {end_index}")
+        logger.info(f"Has more? -> {has_more}")
+        history = {"has_more": has_more, "summaries": sliced_summaries}
+        return JsonResponse(history, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse({"error": "Invalid request data"}, status=HTTPStatus.BAD_REQUEST)

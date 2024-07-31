@@ -30,3 +30,12 @@ ul {
   font-style: italic;
   color: white;
 }
+
+button {
+  width: 30%;
+  align-content: center;
+  justify-content: center;
+  /* Center the button horizontally */
+  margin: 2% auto;
+  display: block; /* Ensure the button takes up the full width specified */
+}

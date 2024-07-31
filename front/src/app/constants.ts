@@ -51,6 +51,10 @@ export const OVER = 4
 export const DYING = 5
 export const DEAD = 6
 
+// Game History
+
+export const GAME_HISTORY_COUNT_REQUEST = 4
+
 //////////
 // GAME //
 //////////

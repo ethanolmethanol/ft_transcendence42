@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {NavigationEnd, Router, RouterLink} from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { LeaderboardComponent } from "../../components/leaderboard/leaderboard.component";
 import { UserService } from '../../services/user/user.service';
@@ -7,7 +7,7 @@ import { LoadingSpinnerComponent } from "../../components/loading-spinner/loadin
 import {AsyncPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
 import {ButtonWithIconComponent} from "../../components/button-with-icon/button-with-icon.component";
 import {MonitorService} from "../../services/monitor/monitor.service";
-import {GameSummaryResponse} from "../../interfaces/game-summary-response.interface";
+import {GameSummaryResponse} from "../../interfaces/game-history-response.interface";
 import {GameSummaryComponent} from "../../components/game-summary/game-summary.component";
 import {Observable} from "rxjs";
 import {GameSummaryListComponent} from "../../components/game-summary-list/game-summary-list.component";
@@ -34,14 +34,20 @@ import {GameSummaryListComponent} from "../../components/game-summary-list/game-
 export class HomePageComponent implements OnInit {
   welcome: string = '';
   userID: number | undefined;
+  @ViewChild(GameSummaryListComponent) gameSummaryListComponent!: GameSummaryListComponent;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
     this.userID = this.userService.getUserID();
- }
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd && event.url === '/home') {
+        this.gameSummaryListComponent.refreshSummaries();
+      }
+    })
+  }
 
 
 }

@@ -1,6 +1,7 @@
 from django.db import models
 from typing import Any, List
 
+from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from sortedm2m.fields import SortedManyToManyField
@@ -50,6 +51,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
+    history_size = models.IntegerField(default=0)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -61,3 +63,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    async def save_game_summary(self, game_summary: GameSummary) -> None:
+        user_game_summaries = await sync_to_async(list)(self.game_summaries.all())
+        await sync_to_async(self.game_summaries.set)([game_summary] + user_game_summaries)
+        self.history_size += 1
+        await sync_to_async(self.save)()

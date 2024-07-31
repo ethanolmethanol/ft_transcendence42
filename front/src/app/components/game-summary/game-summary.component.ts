@@ -1,5 +1,5 @@
 import {Component, Inject, Input} from '@angular/core';
-import { GameSummaryResponse} from "../../interfaces/game-summary-response.interface";
+import { GameSummaryResponse} from "../../interfaces/game-history-response.interface";
 import {DatePipe, NgClass, NgIf} from "@angular/common";
 import {LOCALE, TIME_ZONE} from "../../constants";
 
@@ -19,7 +19,10 @@ export class GameSummaryComponent {
   @Input() gameSummary!: GameSummaryResponse;
 
   public get win_status(): string {
-    return this.gameSummary?.winner.user_id === this.userID ? 'Won' : 'Lost';
+    if (this.gameSummary?.winner) {
+      return this.gameSummary?.winner.user_id === this.userID ? 'Won' : 'Lost';
+    }
+    return 'Tied';
   }
 
   public get score1(): number {
