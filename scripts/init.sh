@@ -25,12 +25,12 @@ prompt_for_env() {
 	echo
 	read -rp "Enter PostgreSQL Database Name: " postgres_db
 
-	echo "POSTGRES_USER='${postgres_user}'" > "${ENV_FILE_GLOBAL}"
+	echo "POSTGRES_USER='${postgres_user}'" >"${ENV_FILE_GLOBAL}"
 	{
 		echo "POSTGRES_PASSWORD='${postgres_password}'"
 		echo "POSTGRES_DB='${postgres_db}'"
 		echo "SERV_IP='${IP_ADDR}'"
-	} >> "${ENV_FILE_GLOBAL}"
+	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
 	cat "${ENV_FILE_GLOBAL}"
@@ -64,7 +64,7 @@ create_nginx_config_file() {
 	nginx_config_template="front/nginx/nginx.conf.template"
 
 	if [ -f "$nginx_config_template" ]; then
-		sed "s/\${SERV_IP}/$IP_ADDR/g" "$nginx_config_template" > "${NGINX_CONFIG_FILE}"
+		sed "s/\${SERV_IP}/$IP_ADDR/g" "$nginx_config_template" >"${NGINX_CONFIG_FILE}"
 	else
 		echo "Nginx config template file not found"
 		exit 1
@@ -77,7 +77,7 @@ update_environment_ts() {
 	env_file_template_front="front/src/environments/environment.template.ts"
 
 	if [ -f "${env_file_template_front}" ]; then
-		sed "s/\${SERV_IP}/$IP_ADDR/g" "${env_file_template_front}" > "${ENV_FILE_FRONT}"
+		sed "s/\${SERV_IP}/$IP_ADDR/g" "${env_file_template_front}" >"${ENV_FILE_FRONT}"
 	else
 		echo "environment.template.ts file not found"
 		exit 1
@@ -128,7 +128,7 @@ NGINX_CONFIG_FILE="front/nginx/nginx.conf"
 ENV_FILE_GLOBAL=".env"
 
 if [ "$1" == "clean" ]; then
-	 clean_up
+	clean_up
 else
 	prompt_for_env
 	install_mkcert
