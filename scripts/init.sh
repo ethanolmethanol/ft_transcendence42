@@ -2,27 +2,28 @@
 
 get_ip() {
     if [ "$1" == "prod" ]; then
-    	ip=$(hostname -i 2>/dev/null) || ip=$(ifconfig | awk '/inet / && !/127.0.0.1/ {print $2}' | head -n 1); echo $ip
+    	    ip=$(hostname -i 2>/dev/null) || ip=$(ifconfig | awk '/inet / && !/127.0.0.1/ {print $2}' | head -n 1)
+            echo "$ip"
     else
-        echo -n "localhost"
+            echo -n "localhost"
     fi
 }
 
 clean_up() {
-    rm -rf "${CERT_DIR}" "${SSL_CONT_DIRS[@]}" "${ENV_FILE_FRONT}" "${NGINX_CONFIG_FILE}" "${ENV_FILE_GLOBAL}"
-    exit 0
+        rm -rf "${CERT_DIR}" "${SSL_CONT_DIRS[@]}" "${ENV_FILE_FRONT}" "${NGINX_CONFIG_FILE}" "${ENV_FILE_GLOBAL}"
+        exit 0
 }
 
 prompt_for_env() {
 	if [ -f "${ENV_FILE_GLOBAL}" ]; then
-        echo "Found .env file"
-        return
+            echo "Found .env file"
+            return
     fi
 
-    read -p "Enter PostgreSQL User: " postgres_user
-    read -sp "Enter PostgreSQL Password: " postgres_password
+    read -rp "Enter PostgreSQL User: " postgres_user
+    read -rsp "Enter PostgreSQL Password: " postgres_password
     echo
-    read -p "Enter PostgreSQL Database Name: " postgres_db
+    read -rp "Enter PostgreSQL Database Name: " postgres_db
 
     echo "POSTGRES_USER='${postgres_user}'" > "${ENV_FILE_GLOBAL}"
     echo "POSTGRES_PASSWORD='${postgres_password}'" >> "${ENV_FILE_GLOBAL}"
@@ -50,8 +51,8 @@ generate_certificates() {
 
 	# distribute certificates
     for dir in "${SSL_CONT_DIRS[@]}"; do
-        mkdir -p "$dir"
-        cp -r "${CERT_DIR}" "$dir"
+            mkdir -p "$dir"
+            cp -r "${CERT_DIR}" "$dir"
     done
 }
 
@@ -117,7 +118,7 @@ install_mkcert() {
     mkcert -version
 }
 
-IP_ADDR=$(get_ip $1)
+IP_ADDR=$(get_ip "$1")
 CERT_DIR="ssl/"
 SSL_CONT_DIRS=(front/ssl back/ssl)
 ENV_FILE_FRONT="front/src/environments/environment.ts"

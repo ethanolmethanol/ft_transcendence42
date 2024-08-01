@@ -27,7 +27,7 @@ DEBUG = True
 
 SERV_IP = os.getenv("SERV_IP", "")
 
-ALLOWED_HOSTS = [SERV_IP, 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = [SERV_IP, "localhost", "0.0.0.0"]
 
 # Application definition
 
@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "back_auth",
     "back_user",
     "back_game",
-    "shared_models",
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",  # https://pypi.org/project/django-health-check/
@@ -174,4 +173,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
