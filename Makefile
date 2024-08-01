@@ -2,14 +2,6 @@ NAME			= ft_transcendence
 
 DATADIRS		= db/data/ front/dist/transcendence/browser/ ~/tr_certs
 
-ENV_SRC			= ~/.env
-
-ENV_FILE		= .env
-
-FRONT_ENV_FILE	= front/src/environments/environment.ts
-
-NGINX_CONF		= front/nginx/nginx.conf
-
 # WIP
 # DB_NAME		= $$(grep POSTGRES_DB ${ENV_FILE} | sed "s.POSTGRES_DB='(.*)'.\1.")
 
@@ -35,7 +27,7 @@ TEST-ENGINE-TAGS = passed monitor paddle ball
 ${NAME}: initialize up health
 	$(call printname)
 
-up: | ${DATADIRS} ${ENV_FILE}
+up: | ${DATADIRS}
 	@echo "Up-ing containers:"
 	${COMPOSE} up -d --build
 
@@ -47,11 +39,6 @@ down:
 	${COMPOSE} down
 
 all: ${NAME}
-
-${ENV_FILE}:
-	@if test -f ${ENV_SRC} && cp ${ENV_SRC} $@; then echo -e "$GFetched environment file [$C.env$G] from ..$N"; \
-	else echo -e "$RPlease make an environment file [$C.env$R] using .env_template file$N"; \
-	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
@@ -170,24 +157,11 @@ dev: all
 test:
 	cd front/; npm run test
 
-install-mkcert:
-	@./scripts/install_mkcert.sh
-
-gen-cert: install-mkcert
-	@./scripts/gen_cert.sh
-
-set-env:
-	@./scripts/set_env.sh
-
-set-ip:
-	@./scripts/set_ip.sh
-
-initialize: set-env gen-cert set-ip
+initialize:
+	@./scripts/init.sh
 
 init-prod:
-	@./scripts/set_env.sh prod
-	@./scripts/gen_cert.sh prod
-	@./scripts/set_ip.sh prod
+	@./scripts/init.sh prod
 
 prod: init-prod up health
 
@@ -196,11 +170,11 @@ clean:
 
 fclean: clean
 	@docker --log-level=warn system prune -f
-	@./scripts/gen_cert.sh clean
+	@./scripts/init.sh clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af
-	@ rm -rf ${DATADIRS} ${ENV_FILE} ${FRONT_ENV_FILE} ${NGINX_CONF}
+	@ rm -rf ${DATADIRS}
 	
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
