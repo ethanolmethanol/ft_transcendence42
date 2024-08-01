@@ -26,9 +26,11 @@ prompt_for_env() {
     read -rp "Enter PostgreSQL Database Name: " postgres_db
 
     echo "POSTGRES_USER='${postgres_user}'" > "${ENV_FILE_GLOBAL}"
-    echo "POSTGRES_PASSWORD='${postgres_password}'" >> "${ENV_FILE_GLOBAL}"
-    echo "POSTGRES_DB='${postgres_db}'" >> "${ENV_FILE_GLOBAL}"
-    echo "SERV_IP='${IP_ADDR}'" >> "${ENV_FILE_GLOBAL}"
+    {
+        echo "POSTGRES_PASSWORD='${postgres_password}'"
+        echo "POSTGRES_DB='${postgres_db}'"
+        echo "SERV_IP='${IP_ADDR}'"
+    } >> "${ENV_FILE_GLOBAL}"
 
     echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
     cat "${ENV_FILE_GLOBAL}"
