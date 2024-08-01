@@ -43,10 +43,10 @@ generate_certificates() {
 	local cert_path="${CERT_DIR}/serv.crt"
 
 	# generate certificates files
-    mkcert serv "${IP_ADDR}" localhost 127.0.0.1 ::1
+    mkcert serv "${IP_ADDR}" 127.0.0.1 ::1
     mkdir -p "${CERT_DIR}"
-    mv ./serv+4.pem "${cert_path}"
-    mv ./serv+4-key.pem "${key_path}"
+    mv ./serv+3.pem "${cert_path}"
+    mv ./serv+3-key.pem "${key_path}"
 
 	# distribute certificates
     for dir in "${SSL_CONT_DIRS[@]}"; do
