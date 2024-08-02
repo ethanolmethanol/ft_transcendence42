@@ -27,7 +27,7 @@ DEBUG = True
 
 SERV_IP = os.getenv("SERV_IP", "")
 
-ALLOWED_HOSTS = [SERV_IP, "localhost", "0.0.0.0"]
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0"]
 
 # Application definition
 
