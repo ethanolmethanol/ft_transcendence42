@@ -28,6 +28,7 @@
         </div>
       </section>
       <button type="submit" [class.hover-effect]="signupForm.valid" [class.disabled-button]="!signupForm.valid">Sign Up!</button>
+      <app-oauth42-button [text]="oauthText"></app-oauth42-button>
       <a routerLink="/sign-in">
         Already have an account?<br>
         Sign in here.

@@ -4,6 +4,7 @@ import { NgIf } from "@angular/common";
 import { Router, RouterLink } from "@angular/router";
 import { AuthService } from '../../services/auth/auth.service';
 import { ErrorMessageComponent } from "../error-message/error-message.component";
+import { Oauth42ButtonComponent } from "../oauth42-button/oauth42-button.component";
 
 @Component({
   selector: 'app-sign-in',
@@ -13,6 +14,7 @@ import { ErrorMessageComponent } from "../error-message/error-message.component"
     NgIf,
     RouterLink,
     ErrorMessageComponent,
+    Oauth42ButtonComponent,
   ],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css'
@@ -21,6 +23,7 @@ import { ErrorMessageComponent } from "../error-message/error-message.component"
 export class SignInComponent implements OnInit {
   signInForm!: FormGroup;
   errorMessage: string = "";
+  oauthText: string = "Sign in with";
 
   constructor(
     private formBuilder: FormBuilder,

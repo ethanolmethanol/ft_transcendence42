@@ -10,12 +10,7 @@
       <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password">
     </section>
     <button type="submit" [class.hover-effect]="signInForm.valid" [class.disabled-button]="!signInForm.valid">Sign In</button>
-
-    <a class="oauth42-button" href="#">
-      <span class="text-wrap">Sign in with</span>
-      <img id="42-logo" src="../../../assets/app-themes/42_Logo_white.png" alt="42">
-    </a>
-
+    <app-oauth42-button [text]="oauthText"></app-oauth42-button>
     <a routerLink="/sign-up">
       Don't have an account?<br>
       Sign up here.
