@@ -6,10 +6,7 @@ import { UserService } from '../../services/user/user.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import {AsyncPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
 import {ButtonWithIconComponent} from "../../components/button-with-icon/button-with-icon.component";
-import {MonitorService} from "../../services/monitor/monitor.service";
-import {GameSummaryResponse} from "../../interfaces/game-history-response.interface";
 import {GameSummaryComponent} from "../../components/game-summary/game-summary.component";
-import {Observable} from "rxjs";
 import {GameSummaryListComponent} from "../../components/game-summary-list/game-summary-list.component";
 
 @Component({

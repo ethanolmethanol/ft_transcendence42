@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {API_GAME, API_USER} from "../../constants";
+import { API_GAME } from "../../constants";
 import { WebSocketUrlResponse } from "../../interfaces/web-socket-url-response.interface";
-import {UserService} from "../user/user.service";
 
 @Injectable({
   providedIn: 'root'

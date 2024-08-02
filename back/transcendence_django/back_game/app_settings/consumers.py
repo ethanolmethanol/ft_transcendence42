@@ -3,9 +3,6 @@ import json
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
-import autobahn
-from back_game.app_settings.channel_error import ChannelError
-from back_game.app_settings.game_logic_interface import GameLogicInterface
 from back_game.game_arena.arena import Arena
 from transcendence_django.dict_keys import (
     ARENA,
@@ -37,6 +34,7 @@ from transcendence_django.dict_keys import (
     USER_ID,
     WINNER,
 )
+from back_game.app_settings.game_logic_interface import GameLogicInterface
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
 from back_game.monitor.monitor import Monitor, get_monitor
 from channels.generic.websocket import AsyncJsonWebsocketConsumer

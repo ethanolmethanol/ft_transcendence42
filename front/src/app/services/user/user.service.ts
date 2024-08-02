@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS} from "../../constants";
-import {Observable} from "rxjs";
-import {GameHistoryResponse, GameSummaryResponse} from "../../interfaces/game-history-response.interface"
+import { Observable } from "rxjs";
+import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
 
 interface User {
   id: number;

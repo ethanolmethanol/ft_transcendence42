@@ -3,6 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import {ArenaResponse} from "../../interfaces/arena-response.interface";
 import {UserService} from "../user/user.service";
 import { OnInit } from '@angular/core';
+import { API_GAME_SOCKET } from "../../constants";
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,7 @@ export class WebSocketService implements OnInit, OnDestroy {
     }
 
     console.log('Connecting to WebSocket -> ', channel_id);
-    const url = `wss://localhost:8001/ws/game/${channel_id}/`;
+    const url = `${API_GAME_SOCKET}/ws/game/${channel_id}/`;
 
     const socket = new WebSocket(url);
 

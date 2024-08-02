@@ -27,7 +27,9 @@ SECRET_KEY = "django-insecure-*6@dzmyjvs5+h)h1e)a!7rh*(u7%cb1g@zaad_p!a11n(k((zb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
+SERV_IP = os.getenv("SERV_IP", "")
+
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0"]
 
 # Application definition
 
@@ -111,36 +113,23 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'shared_models.CustomUser'
 
-server_name = os.environ.get('HOSTNAME').lower()
-
-print("Server name:", server_name)
-print(f"Server name: https://{server_name}:4200")
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{SERV_IP}:4200",
+    f"https://{SERV_IP}:1234",
+]
+CORS_ALLOWED_ORIGINS = [
+    f"https://{SERV_IP}:4200",
+]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
-
-# CORS_ORIGIN_WHITELIST = [
-#     "https://localhost:4200",
-#     f"https://{server_name}:4200",
-# ]
-
-CORS_ALLOW_HEADERS = default_headers + (
+AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
+CORS_ALLOW_HEADERS = [
     "CONTENT-TYPE",
     "X-CSRFToken",
-)
-
-ALLOWED_HOSTS = ["localhost", server_name]
-
-CSRF_TRUSTED_ORIGINS = ("https://localhost:4200", f"https://{server_name}:4200", "http://localhost:1234")
-CSRF_ALLOWED_ORIGINS = ["https://localhost:4200", f"https://{server_name}:4200", "http://localhost:1234"]
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
-
-AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
+]
 SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
 SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 print("Database settings:")
 print("Name:", DATABASES["default"]["NAME"])

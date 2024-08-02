@@ -12,7 +12,6 @@ import {
   ElementRef,
 } from '@angular/core';
 import {
-  CREATED,
   NOT_JOINED,
   INVALID_ARENA,
   INVALID_CHANNEL,
@@ -24,7 +23,7 @@ import {
   DYING,
   DEAD,
   GIVEN_UP,
-  STARTED, READY_TO_START,
+  STARTED, CREATED,
 } from "../../constants";
 import { PaddleComponent } from "../paddle/paddle.component";
 import { BallComponent } from "../ball/ball.component";
@@ -298,7 +297,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private updateGameOver(info: GameOverUpdateResponse) {
-    let gameOverOverlay: GameOverComponent = this.gameOver.first;
+    let gameOverOverlay = this.gameOver.first;
     let player = this.activePlayers.find(name => name === this.playerName);
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;

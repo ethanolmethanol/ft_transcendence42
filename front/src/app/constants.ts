@@ -8,18 +8,12 @@
 // API //
 /////////
 
-// Function to get the base URL based on the hostname
-function getBaseUrl() {
-//   const serverName = window.location.hostname;
-  return 'https://localhost';
-}
+import { environment } from "../environments/environment";
 
-export const API_BASE_URL = getBaseUrl();
-
-
-export const API_AUTH = `${API_BASE_URL}:8000/auth`;
-export const API_USER = `${API_BASE_URL}:8002/user`;
-export const API_GAME = `${API_BASE_URL}:8001/game`;
+export const API_AUTH = `https://${environment.servIP}:8000/auth`;
+export const API_USER = `https://${environment.servIP}:8002/user`;
+export const API_GAME = `https://${environment.servIP}:8001/game`;
+export const API_GAME_SOCKET = `wss://${environment.servIP}:8001`;
 
 // TIMEZONE
 
