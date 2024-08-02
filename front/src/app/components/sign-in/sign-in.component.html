@@ -10,6 +10,25 @@
       <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password">
     </section>
     <button type="submit" [class.hover-effect]="signInForm.valid" [class.disabled-button]="!signInForm.valid">Sign In</button>
+
+    <div class="flex flex-col gap-8 w-64"><form class="flex flex-col gap-6"><input type="text" placeholder="Email address" class="w-full h-14 px-3 py-2 focus:ring-0 focus:border-gray-500 rounded-md focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed border placeholder-gray-300 bg-white border-gray-500"> <button disabled="disabled" type="submit" class="w-full h-14 focus:ring-0 focus:outline-none disabled:cursor-not-allowed px-4 py-2 text-white rounded-md bg-nocBlue-600 hover:bg-nocOrange focus:bg-nocOrange disabled:bg-gray-400">Send a magic link</button></form> <div class="flex flex-row items-center"><hr class="border-gray-200 flex-1"> <p class="uppercase mx-4 text-gray-200 font-bold italic">
+      Or
+    </p>
+      <hr class="border-gray-200 flex-1">
+      </div>
+        <a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2af-f03c0be02198c075c3c75f62d48bfc35d0efed0d7299887fd9bdf8c9e461e7f2&amp;redirect_uri=https%3A%2F%2Fdorms.42paris.fr%2Flogin&amp;response_type=code"
+           class="w-full h-14 flex flex-row items-center justify-center gap-2 focus:ring-0 focus:outline-none disabled:cursor-not-allowed px-4 py-2 text-white rounded-md border-white border hover:bg-black hover:bg-opacity-50">
+          <svg aria-labelledby="42" viewBox="0 0 137.6 96.6" class="h-6 w-6" style="color: white;">
+            <title>42</title>
+            <polygon fill="currentColor" points="0,71.2 50.7,71.2 50.7,96.6 76,96.6 76,50.7 25.4,50.7 76,0 50.7,0 0,50.7"></polygon>
+            <polygon fill="currentColor" points="86.9,25.4 112.2,0 86.9,0"></polygon>
+            <polygon fill="currentColor" points="112.2,25.4 86.9,50.7 86.9,76 112.2,76 112.2,50.7 137.6,25.4 137.6,0 112.2,0"></polygon>
+            <polygon fill="currentColor" points="137.6,50.7 112.2,76 137.6,76"></polygon>
+          </svg>
+          <span>Connect</span>
+        </a>
+    </div>
+
     <a routerLink="/sign-up">
       Don't have an account?<br>
       Sign up here.
