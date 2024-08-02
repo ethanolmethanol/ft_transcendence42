@@ -8,9 +8,12 @@
 // API //
 /////////
 
-export const API_AUTH = 'https://localhost:8000/auth';
-export const API_USER = 'https://localhost:8002/user';
-export const API_GAME = 'https://localhost:8001/game';
+import { environment } from "../environments/environment";
+
+export const API_AUTH = `https://${environment.servIP}:8000/auth`;
+export const API_USER = `https://${environment.servIP}:8002/user`;
+export const API_GAME = `https://${environment.servIP}:8001/game`;
+export const API_GAME_SOCKET = `wss://${environment.servIP}:8001`;
 
 // INTERFACES
 

@@ -1,10 +1,5 @@
 import { Component, Input, Renderer2, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  GAME_HEIGHT,
-  GAME_WIDTH,
-  LINE_THICKNESS,
-} from "../../constants";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
 import * as Constants from '../../constants';
@@ -22,9 +17,9 @@ import * as Constants from '../../constants';
 })
 export class GameboardComponent {
   @Input() gameboardColors: string[] = Constants.DEFAULT_COLORS;
-  readonly lineThickness: number = LINE_THICKNESS;
-  gameWidth: number = GAME_WIDTH;
-  gameHeight: number = GAME_HEIGHT;
+  readonly lineThickness: number = Constants.LINE_THICKNESS;
+  gameWidth: number = Constants.GAME_WIDTH;
+  gameHeight: number = Constants.GAME_HEIGHT;
 
   constructor(private renderer: Renderer2, private el: ElementRef) {}
 

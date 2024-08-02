@@ -13,7 +13,7 @@ http {
     server {
         listen      443 ssl;
         listen	[::]:443 ssl;
-        server_name localhost;
+        server_name ${SERV_IP};
         ssl_certificate     /etc/ssl/serv.crt;
         ssl_certificate_key /etc/ssl/serv.key;
         ssl_protocols       TLSv1.2 TLSv1.3;
@@ -39,7 +39,7 @@ http {
         }
 
         location /wss/ {
-            proxy_pass https://back_game:443;
+            proxy_pass https://${SERV_IP}/back_game:443;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -49,7 +49,7 @@ http {
             proxy_next_upstream error timeout http_500 http_502 http_503 http_504;
             error_page 502 503 504 =200 @pong_error;
         }
-    
+
         location @pong_error {
             # You can specify a URI to serve an error message or JSON response
             # For example, a static JSON error message:
