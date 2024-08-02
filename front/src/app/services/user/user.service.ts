@@ -99,7 +99,6 @@ export class UserService {
   }
 
   public getSummaries(startIndex: number, endIndex: number): Observable<GameHistoryResponse> {
-    console.log("Getting summaries");
     const postData: string = JSON.stringify({'user_id': this.getUserID(), 'start_index': startIndex, 'end_index': endIndex});
     return this.http.post<GameHistoryResponse>(`${API_USER}/get_game_summaries/`, postData);
   }

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {NavigationEnd, Router, RouterLink} from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { LeaderboardComponent } from "../../components/leaderboard/leaderboard.component";
@@ -32,6 +32,7 @@ export class HomePageComponent implements OnInit {
   welcome: string = '';
   userID: number | undefined;
   @ViewChild(GameSummaryListComponent) gameSummaryListComponent!: GameSummaryListComponent;
+  @ViewChild('homePageContainer') homePageContainer!: ElementRef;
 
   constructor(private userService: UserService, private router: Router) { }
 
@@ -46,5 +47,10 @@ export class HomePageComponent implements OnInit {
     })
   }
 
-
+  scrollToTop(): void {
+    this.homePageContainer.nativeElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
 }

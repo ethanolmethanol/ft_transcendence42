@@ -35,7 +35,6 @@ export class GameSummaryListComponent implements AfterViewInit {
 
   public loadMoreSummaries(): void {
     this.userService.getSummaries(this.startIndex, this.endIndex + 1).subscribe(summaries => {
-      console.log(summaries);
       this.allSummaries = [...this.allSummaries, ...summaries.summaries];
       this.gameSummaries$ = of(this.allSummaries);
       if (summaries.has_more) {

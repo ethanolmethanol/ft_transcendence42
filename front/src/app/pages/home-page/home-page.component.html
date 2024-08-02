@@ -1,6 +1,6 @@
 <body>
-  <app-header></app-header>
-  <section class="home-page-container">
+  <app-header (scrollToTop)="scrollToTop()"></app-header>
+  <section class="home-page-container" #homePageContainer>
     <h4>{{welcome}}</h4>
     <section class="buttons">
       <app-button-with-icon
