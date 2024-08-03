@@ -66,7 +66,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
-        return self.email
+        return self.username
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         user_game_summaries = await sync_to_async(list)(self.game_summaries.all())

@@ -3,6 +3,7 @@ import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from asgiref.sync import sync_to_async
+from django.apps import apps
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
@@ -28,14 +29,13 @@ from transcendence_django.dict_keys import (
 
 logger = logging.getLogger(__name__)
 
-
 class Monitor:
     MONITOR_INSTANCE = None
 
     def __init__(self):
-        from shared_models.models import GameSummary
-
-        self.game_summary = GameSummary
+        if not apps.ready:
+            apps.populate(settings.INSTALLED_APPS)
+        self.game_summary = apps.get_model('shared_models', 'GameSummary')
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -131,11 +131,10 @@ class Monitor:
         )
 
     async def save_game_summary(self, arena_id: str, winner: str, players: dict):
-        from shared_models.models import CustomUser
-
         game_summary = await sync_to_async(self.game_summary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
+        CustomUser = apps.get_model('shared_models', 'CustomUser')
         for player in players:
             user_id = player.get("user_id")
             if user_id:
