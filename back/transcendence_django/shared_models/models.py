@@ -64,7 +64,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
     history_size = models.IntegerField(default=0)  # type: ignore
 
-    is_active = models.BooleanField(default=True)  # type: ignore
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore
 
     objects = CustomUserManager()
