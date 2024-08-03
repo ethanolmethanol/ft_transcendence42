@@ -3,7 +3,6 @@ import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from asgiref.sync import sync_to_async
-from django.apps import apps
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
@@ -17,6 +16,8 @@ from back_game.game_settings.game_constants import (
     WAITING,
 )
 from back_game.monitor.channel_manager import ChannelManager
+from django.apps import apps
+from django.conf import settings
 from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
@@ -29,13 +30,14 @@ from transcendence_django.dict_keys import (
 
 logger = logging.getLogger(__name__)
 
+
 class Monitor:
     MONITOR_INSTANCE = None
 
     def __init__(self):
         if not apps.ready:
             apps.populate(settings.INSTALLED_APPS)
-        self.game_summary = apps.get_model('shared_models', 'GameSummary')
+        self.game_summary = apps.get_model("shared_models", "GameSummary")
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -134,11 +136,11 @@ class Monitor:
         game_summary = await sync_to_async(self.game_summary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
-        CustomUser = apps.get_model('shared_models', 'CustomUser')
+        custom_user_model = apps.get_model("shared_models", "CustomUser")
         for player in players:
             user_id = player.get("user_id")
             if user_id:
-                user = await sync_to_async(CustomUser.objects.get)(pk=user_id)
+                user = await sync_to_async(custom_user_model.objects.get)(pk=user_id)
                 await user.save_game_summary(game_summary)
 
     async def update_game_states(self, arenas: dict[str, Arena]):
@@ -198,6 +200,7 @@ class Monitor:
         if cls.MONITOR_INSTANCE is None:
             cls.MONITOR_INSTANCE = cls()
         return cls.MONITOR_INSTANCE
+
 
 def get_monitor() -> Monitor:
     return Monitor.get_instance()
