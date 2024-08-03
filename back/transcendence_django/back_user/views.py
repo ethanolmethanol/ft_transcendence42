@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
+
 from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 
 # pylint: disable=no-member
@@ -97,11 +98,11 @@ class UserDataView(APIView):
     def _update_profile(
         self, user: CustomUser, color_config: list[str], game_settings: list[int]
     ):
-        logger.info(f"Updating profile for user {user}")
+        logger.info("Updating profile for user %s", user)
         profile: Profile = user.profile
         if profile is None:
             profile = Profile()
-        logger.info(f"Profile: {profile}")
+        logger.info("Profile: %s", profile)
         profile.color_config = color_config
         profile.game_settings = game_settings
         profile.save()

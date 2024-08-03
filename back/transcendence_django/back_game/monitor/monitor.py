@@ -30,11 +30,12 @@ logger = logging.getLogger(__name__)
 
 
 class Monitor:
+    MONITOR_INSTANCE = None
 
     def __init__(self):
         from shared_models.models import GameSummary
 
-        self.GameSummary = GameSummary
+        self.game_summary = GameSummary
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -132,7 +133,7 @@ class Monitor:
     async def save_game_summary(self, arena_id: str, winner: str, players: dict):
         from shared_models.models import CustomUser
 
-        game_summary = await sync_to_async(self.GameSummary.objects.create)(
+        game_summary = await sync_to_async(self.game_summary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
         for player in players:
@@ -193,12 +194,11 @@ class Monitor:
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
 
-
-_monitor_instance = None
-
+    @classmethod
+    def get_instance(cls):
+        if cls.MONITOR_INSTANCE is None:
+            cls.MONITOR_INSTANCE = cls()
+        return cls.MONITOR_INSTANCE
 
 def get_monitor() -> Monitor:
-    global _monitor_instance
-    if _monitor_instance is None:
-        _monitor_instance = Monitor()
-    return _monitor_instance
+    return Monitor.get_instance()
