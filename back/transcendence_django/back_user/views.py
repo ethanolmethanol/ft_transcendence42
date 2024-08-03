@@ -136,5 +136,5 @@ def get_game_summaries(request) -> JsonResponse:
         return JsonResponse(history, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse(
-            {"error": "Invalid request data: " + e}, status=HTTPStatus.BAD_REQUEST
+            {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
         )

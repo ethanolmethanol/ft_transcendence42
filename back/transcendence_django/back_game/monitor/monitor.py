@@ -109,7 +109,7 @@ class Monitor:
 
     def get_game_summary(self, channel_id: str, arena_id: str) -> dict[str, Any]:
         arena: Arena = self.get_arena(channel_id, arena_id)
-        summary: str = arena.get_game_summary()
+        summary: dict[str, Any] = arena.get_game_summary()
         return summary
 
     def move_paddle(
@@ -132,7 +132,7 @@ class Monitor:
             user_id, channel_id, arena_id
         )
 
-    async def save_game_summary(self, arena_id: str, winner: str, players: dict):
+    async def save_game_summary(self, arena_id: str, winner: str, players: dict[str, Any]):
         game_summary = await sync_to_async(self.game_summary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )

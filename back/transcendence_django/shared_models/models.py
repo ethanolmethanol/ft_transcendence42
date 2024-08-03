@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -12,10 +12,10 @@ from sortedm2m.fields import SortedManyToManyField
 
 
 class GameSummary(models.Model):
-    arena_id = models.CharField(max_length=255)
+    arena_id: str = models.CharField(max_length=255)
     winner = models.JSONField(null=True)
     players = models.JSONField()
-    end_time = models.DateTimeField(auto_now=True)
+    end_time: models.DateTimeField = models.DateTimeField(auto_now=True)
 
 
 class Profile(models.Model):
@@ -30,7 +30,9 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 
-class CustomUserManager(BaseUserManager):
+UserType = TypeVar('UserType', bound='CustomUser')
+
+class CustomUserManager(BaseUserManager[UserType]):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
             raise ValueError("The Email field must be set")
@@ -49,16 +51,16 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
-    profile = models.OneToOneField(
+    username: str = models.CharField(max_length=150, unique=True)
+    email: str = models.EmailField(unique=True)
+    profile: Optional[Profile] = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    history_size = models.IntegerField(default=0)
+    history_size: int = models.IntegerField(default=0)
 
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_active: bool = models.BooleanField(default=True)
+    is_staff: bool = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -66,7 +68,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["username"]
 
     def __str__(self):
-        return self.username
+        return str(self.username)
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         user_game_summaries = await sync_to_async(list)(self.game_summaries.all())
