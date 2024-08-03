@@ -2,27 +2,19 @@ import json
 import logging
 from http import HTTPStatus
 from json import JSONDecodeError
-
-from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.http import require_http_methods
-from transcendence_django.dict_keys import USER_ID
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from shared_models.models import GameSummary, Profile, CustomUser
-
-# pylint: disable=no-member
-from http import HTTPStatus
 from typing import Any, Dict, Union
 
-from django.contrib.auth.models import User
+from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from shared_models.models import Profile, CustomUser
+from transcendence_django.dict_keys import USER_ID
 
-from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
+# pylint: disable=no-member
 
 logger = logging.getLogger(__name__)
 
@@ -143,5 +135,5 @@ def get_game_summaries(request) -> JsonResponse:
         return JsonResponse(history, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse(
-            {"error": "Invalid request data"}, status=HTTPStatus.BAD_REQUEST
+            {"error": "Invalid request data: " + e}, status=HTTPStatus.BAD_REQUEST
         )

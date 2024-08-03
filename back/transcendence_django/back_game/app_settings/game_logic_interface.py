@@ -8,7 +8,7 @@ from back_game.game_settings.game_constants import (
     NOT_JOINED,
     UNKNOWN_ARENA_ID,
 )
-from back_game.monitor.monitor import Monitor, get_monitor
+from back_game.monitor.monitor import get_monitor
 
 logger = logging.getLogger(__name__)
 

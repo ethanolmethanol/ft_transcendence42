@@ -2,7 +2,6 @@ from django.db import models
 from typing import Any, List
 
 from asgiref.sync import sync_to_async
-from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from sortedm2m.fields import SortedManyToManyField
 from django.contrib.auth.models import (
