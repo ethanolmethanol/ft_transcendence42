@@ -67,7 +67,7 @@ class UserDataView(APIView):
         )
 
     def _handle_get_request(self, user: CustomUser, user_id: int) -> Response:
-        profile: Profile = user.profile
+        profile: Profile | None = user.profile
         if profile is None:
             profile = Profile.objects.create(
                 color_config=DEFAULT_COLORS,
@@ -99,7 +99,7 @@ class UserDataView(APIView):
         self, user: CustomUser, color_config: list[str], game_settings: list[int]
     ):
         logger.info("Updating profile for user %s", user)
-        profile: Profile = user.profile
+        profile: Profile | None = user.profile
         if profile is None:
             profile = Profile()
         logger.info("Profile: %s", profile)

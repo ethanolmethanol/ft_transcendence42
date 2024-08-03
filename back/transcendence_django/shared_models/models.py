@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, TypeVar
+from typing import Any, List, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -11,11 +11,11 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 
-class GameSummary(models.Model):
-    arena_id: str = models.CharField(max_length=255)
+class GameSummary(models.Model): # type: ignore
+    arena_id = models.CharField(max_length=255)
     winner = models.JSONField(null=True)
     players = models.JSONField()
-    end_time: models.DateTimeField = models.DateTimeField(auto_now=True)
+    end_time = models.DateTimeField(auto_now=True)
 
 
 class Profile(models.Model):
@@ -30,9 +30,10 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 
-UserType = TypeVar('UserType', bound='CustomUser')
+TUser = TypeVar("UserType", bound="CustomUser")
 
-class CustomUserManager(BaseUserManager[UserType]):
+
+class CustomUserManager(BaseUserManager[TUser]):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
             raise ValueError("The Email field must be set")
@@ -44,23 +45,23 @@ class CustomUserManager(BaseUserManager[UserType]):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password=None, **extra_fields):
+    def create_superuser(self, username, email, password=None, **extra_fields) -> TUser:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(username, email, password, **extra_fields)
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    username: str = models.CharField(max_length=150, unique=True)
-    email: str = models.EmailField(unique=True)
-    profile: Optional[Profile] = models.OneToOneField(
+class CustomUser(AbstractBaseUser, PermissionsMixin): # type: ignore
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    history_size: int = models.IntegerField(default=0)
+    history_size = models.IntegerField(default=0)
 
-    is_active: bool = models.BooleanField(default=True)
-    is_staff: bool = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 

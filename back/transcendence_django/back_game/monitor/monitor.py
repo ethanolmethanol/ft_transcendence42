@@ -132,7 +132,9 @@ class Monitor:
             user_id, channel_id, arena_id
         )
 
-    async def save_game_summary(self, arena_id: str, winner: str, players: dict[str, Any]):
+    async def save_game_summary(
+        self, arena_id: str, winner: str, players: dict[str, Any]
+    ):
         game_summary = await sync_to_async(self.game_summary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
