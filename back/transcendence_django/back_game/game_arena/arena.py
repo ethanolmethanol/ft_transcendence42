@@ -5,6 +5,15 @@ from typing import Any, Callable, Coroutine, Optional
 from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
+from back_game.game_settings.game_constants import (
+    CREATED,
+    MAXIMUM_SCORE,
+    READY_TO_START,
+    STARTED,
+    TIME_START,
+    TIME_START_INTERVAL,
+    WAITING,
+)
 from transcendence_django.dict_keys import (
     ARENA,
     BALL,
@@ -23,15 +32,6 @@ from transcendence_django.dict_keys import (
     SCORE,
     SCORES,
     STATUS,
-)
-from back_game.game_settings.game_constants import (
-    CREATED,
-    MAXIMUM_SCORE,
-    READY_TO_START,
-    STARTED,
-    TIME_START,
-    TIME_START_INTERVAL,
-    WAITING,
 )
 
 logger = logging.getLogger(__name__)

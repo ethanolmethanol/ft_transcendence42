@@ -1,6 +1,6 @@
-from shared_models.models import CustomUser
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from shared_models.models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer[CustomUser]):

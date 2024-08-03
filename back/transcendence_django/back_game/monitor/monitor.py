@@ -1,19 +1,10 @@
 import asyncio
 import logging
-from asgiref.sync import sync_to_async
 from typing import Any, Callable, Coroutine, Optional
 
+from asgiref.sync import sync_to_async
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from transcendence_django.dict_keys import (
-    ARENA,
-    CHANNEL_ID,
-    OVER_CALLBACK,
-    PLAYERS,
-    START_TIMER_CALLBACK,
-    UPDATE_CALLBACK,
-    WINNER,
-)
 from back_game.game_settings.game_constants import (
     DYING,
     MONITOR_LOOP_INTERVAL,
@@ -25,6 +16,15 @@ from back_game.game_settings.game_constants import (
     WAITING,
 )
 from back_game.monitor.channel_manager import ChannelManager
+from transcendence_django.dict_keys import (
+    ARENA,
+    CHANNEL_ID,
+    OVER_CALLBACK,
+    PLAYERS,
+    START_TIMER_CALLBACK,
+    UPDATE_CALLBACK,
+    WINNER,
+)
 
 logger = logging.getLogger(__name__)
 

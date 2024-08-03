@@ -10,23 +10,23 @@ from back_game.game_arena.player import (
     Player,
     PlayerStatus,
 )
+from back_game.game_settings.game_constants import (
+    AFK_WARNING_THRESHOLD,
+    MAX_PLAYER,
+    MIN_PLAYER,
+)
 from transcendence_django.dict_keys import (
     ARENA_FULL,
     INVALID_NB_PLAYERS,
     IS_REMOTE,
     NB_PLAYERS,
-    PLAYERS,
     PLAYER_NAME,
+    PLAYERS,
     SCORE,
     TIME_LEFT,
     UNKNOWN_USER,
     USER_ID,
     WINNER,
-)
-from back_game.game_settings.game_constants import (
-    AFK_WARNING_THRESHOLD,
-    MAX_PLAYER,
-    MIN_PLAYER,
 )
 
 logger = logging.getLogger(__name__)

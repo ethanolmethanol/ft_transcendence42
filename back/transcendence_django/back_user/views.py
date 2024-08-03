@@ -4,15 +4,15 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any, Dict, Union
 
-from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from shared_models.models import Profile, CustomUser
+from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
+from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 
 # pylint: disable=no-member
 

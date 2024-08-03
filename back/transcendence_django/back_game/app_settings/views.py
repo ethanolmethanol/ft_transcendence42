@@ -4,6 +4,9 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any
 
+from back_game.monitor.monitor import get_monitor
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
@@ -12,9 +15,6 @@ from transcendence_django.dict_keys import (
     PLAYER_SPECS,
     USER_ID,
 )
-from back_game.monitor.monitor import get_monitor
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
 
 logger = logging.getLogger(__name__)
 monitor = get_monitor()
