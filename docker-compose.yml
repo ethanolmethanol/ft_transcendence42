@@ -34,7 +34,7 @@ services:
         healthcheck:
             test: 'python3 manage.py health_check'
             interval: 5s
-            timeout: 1s
+            timeout: 30s
             retries: 10
             start_period: 5s
 
@@ -54,6 +54,10 @@ services:
         env_file: .env
         healthcheck:
             test: 'python3 manage.py health_check'
+            interval: 5s
+            timeout: 30s
+            retries: 10
+            start_period: 5s
 
     back_game:
         image: back_game
@@ -73,6 +77,10 @@ services:
         restart: unless-stopped
         healthcheck:
             test: 'python3 manage.py health_check'
+            interval: 5s
+            timeout: 30s
+            retries: 10
+            start_period: 5s
 
     front:
         image: front

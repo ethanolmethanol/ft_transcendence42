@@ -30,10 +30,13 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 
-T_CustomUser = TypeVar("T_CustomUser", bound="CustomUser")
+CustomUserType = TypeVar("CustomUserType", bound="CustomUser")
+
 
 class CustomUserManager(BaseUserManager[T_CustomUser]):
-    def create_user(self, username, email, password=None, **extra_fields) -> T_CustomUser:
+    def create_user(
+        self, username, email, password=None, **extra_fields
+    ) -> CustomUserType:
         if not email:
             raise ValueError("The Email field must be set")
         if not username:
@@ -44,7 +47,9 @@ class CustomUserManager(BaseUserManager[T_CustomUser]):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password=None, **extra_fields) -> T_CustomUser:
+    def create_superuser(
+        self, username, email, password=None, **extra_fields
+    ) -> CustomUserType:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(username, email, password, **extra_fields)
