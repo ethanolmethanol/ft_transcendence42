@@ -11,11 +11,11 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 
-class GameSummary(models.Model):  # type: ignore
-    arena_id: str = models.CharField(max_length=255)
-    winner: dict[str, Any] | None = models.JSONField(null=True)
-    players: List[str, Any] = models.JSONField()
-    end_time: datetime.datetime = models.DateTimeField(auto_now=True)
+class GameSummary(models.Model):
+    arena_id = models.CharField(max_length=255)  # type: ignore
+    winner = models.JSONField(null=True)  # type: ignore
+    players = models.JSONField()  # type: ignore
+    end_time = models.DateTimeField(auto_now=True)  # type: ignore
 
 class Profile(models.Model):
     color_config: List[str] = ArrayField(
@@ -54,17 +54,17 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
         return self.create_user(username, email, password, **extra_fields)
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):  # type: ignore
-    username: str = models.CharField(max_length=150, unique=True)
-    email: str = models.EmailField(unique=True)
-    profile: Profile | None = models.OneToOneField(
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField(max_length=150, unique=True)  # type: ignore
+    email = models.EmailField(unique=True)  # type: ignore
+    profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
-    )
-    game_summaries: 'SortedManyToManyField[GameSummary]' = SortedManyToManyField(GameSummary, blank=True)
-    history_size: int = models.IntegerField(default=0)
+    )  # type: ignore
+    game_summaries = SortedManyToManyField(GameSummary, blank=True)  # type: ignore
+    history_size = models.IntegerField(default=0)  # type: ignore
 
-    is_active: bool = models.BooleanField(default=True)
-    is_staff: bool = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)  # type: ignore
+    is_staff = models.BooleanField(default=False)  # type: ignore
 
     objects = CustomUserManager()
 
