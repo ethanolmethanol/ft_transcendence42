@@ -11,7 +11,7 @@ from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
 
-class GameSummary(models.Model): # type: ignore
+class GameSummary(models.Model):  # type: ignore
     arena_id = models.CharField(max_length=255)
     winner = models.JSONField(null=True)
     players = models.JSONField()
@@ -30,11 +30,10 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 
-TUser = TypeVar("UserType", bound="CustomUser")
+T_CustomUser = TypeVar("T_CustomUser", bound="CustomUser")
 
-
-class CustomUserManager(BaseUserManager[TUser]):
-    def create_user(self, username, email, password=None, **extra_fields):
+class CustomUserManager(BaseUserManager[T_CustomUser]):
+    def create_user(self, username, email, password=None, **extra_fields) -> T_CustomUser:
         if not email:
             raise ValueError("The Email field must be set")
         if not username:
@@ -45,13 +44,13 @@ class CustomUserManager(BaseUserManager[TUser]):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, password=None, **extra_fields) -> TUser:
+    def create_superuser(self, username, email, password=None, **extra_fields) -> T_CustomUser:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(username, email, password, **extra_fields)
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin): # type: ignore
+class CustomUser(AbstractBaseUser, PermissionsMixin):  # type: ignore
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     profile = models.OneToOneField(
