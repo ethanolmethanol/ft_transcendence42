@@ -99,8 +99,19 @@ class PlayerManager:
     def get_game_summary(self) -> dict[str, Any]:
         winner = self.__get_winner()
         return {
-            PLAYERS: [{USER_ID: player.user_id, PLAYER_NAME: player.player_name, SCORE: player.score} for player in self.players.values()],
-            WINNER: {PLAYER_NAME: winner.player_name, USER_ID: winner.user_id} if winner else None,
+            PLAYERS: [
+                {
+                    USER_ID: player.user_id,
+                    PLAYER_NAME: player.player_name,
+                    SCORE: player.score
+                }
+                for player in self.players.values()
+            ],
+            WINNER: (
+                {PLAYER_NAME: winner.player_name, USER_ID: winner.user_id}
+                if winner
+                else None
+            ),
         }
 
     def finish_given_up_players(self):
@@ -136,7 +147,7 @@ class PlayerManager:
         active_players = [
             player for player in self.players.values() if player.is_active()
         ]
-        if (not active_players):
+        if not active_players:
             return None
         winner = max(active_players, key=lambda player: player.score)
         return winner

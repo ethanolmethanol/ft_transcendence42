@@ -79,9 +79,6 @@ class Arena:
     def is_remote(self) -> bool:
         return self.player_manager.is_remote
 
-    def is_empty(self) -> bool:
-        return self.player_manager.is_empty()
-
     def is_full(self) -> bool:
         return self.player_manager.is_full()
 
@@ -180,7 +177,7 @@ class Arena:
     def can_be_over(self) -> bool:
         status = self.game.status
         if status == GameStatus(WAITING):
-            return self.is_empty()
+            return self.player_manager.is_empty()
         if status == GameStatus(STARTED):
             return self.__has_enough_players() is False or self.__did_player_win()
         return False

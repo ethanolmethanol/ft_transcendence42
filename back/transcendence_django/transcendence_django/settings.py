@@ -111,7 +111,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'shared_models.CustomUser'
+AUTH_USER_MODEL = "shared_models.CustomUser"
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{SERV_IP}:4200",

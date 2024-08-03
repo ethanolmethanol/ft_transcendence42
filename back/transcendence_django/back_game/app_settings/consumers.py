@@ -143,7 +143,9 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_game_over(self, time: float):
-        summary = self.monitor.get_game_summary(self.game.channel_id, self.game.arena_id)
+        summary = self.monitor.get_game_summary(
+            self.game.channel_id, self.game.arena_id
+        )
         await self.send_update(
             {
                 GAME_OVER: {
@@ -154,7 +156,6 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 }
             }
         )
-
 
     async def safe_send(self, data: dict[str, Any]):
         """

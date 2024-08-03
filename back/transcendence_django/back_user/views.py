@@ -26,6 +26,7 @@ from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
 
 logger = logging.getLogger(__name__)
 
+
 @method_decorator(csrf_protect, name="dispatch")
 class UserDataView(APIView):
 
@@ -124,6 +125,7 @@ class UserDataView(APIView):
         self._update_profile(user, new_color_config, new_game_settings)
         return Response({"status": "success"}, status=HTTPStatus.OK)
 
+
 @require_http_methods(["POST"])
 @csrf_protect
 def get_game_summaries(request) -> JsonResponse:
@@ -140,4 +142,6 @@ def get_game_summaries(request) -> JsonResponse:
         history = {"has_more": has_more, "summaries": sliced_summaries}
         return JsonResponse(history, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
-        return JsonResponse({"error": "Invalid request data"}, status=HTTPStatus.BAD_REQUEST)
+        return JsonResponse(
+            {"error": "Invalid request data"}, status=HTTPStatus.BAD_REQUEST
+        )

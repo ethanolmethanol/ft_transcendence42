@@ -32,9 +32,9 @@ logger = logging.getLogger(__name__)
 
 class Monitor:
 
-
     def __init__(self):
         from shared_models.models import GameSummary
+
         self.GameSummary = GameSummary
         self.channel_manager = ChannelManager()
 
@@ -132,7 +132,7 @@ class Monitor:
 
     async def save_game_summary(self, arena_id: str, winner: str, players: dict):
         from shared_models.models import CustomUser
-        logger.info("Saving game summary")
+
         game_summary = await sync_to_async(self.GameSummary.objects.create)(
             arena_id=arena_id, winner=winner, players=players
         )
@@ -141,7 +141,6 @@ class Monitor:
             if user_id:
                 user = await sync_to_async(CustomUser.objects.get)(pk=user_id)
                 await user.save_game_summary(game_summary)
-        logger.info("Game summary saved")
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
@@ -197,6 +196,7 @@ class Monitor:
 
 
 _monitor_instance = None
+
 
 def get_monitor() -> Monitor:
     global _monitor_instance
