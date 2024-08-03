@@ -12,11 +12,10 @@ from sortedm2m.fields import SortedManyToManyField
 
 
 class GameSummary(models.Model):  # type: ignore
-    arena_id = models.CharField(max_length=255)
-    winner = models.JSONField(null=True)
-    players = models.JSONField()
-    end_time = models.DateTimeField(auto_now=True)
-
+    arena_id: str = models.CharField(max_length=255)
+    winner: dict[str, Any] | None = models.JSONField(null=True)
+    players: List[str, Any] = models.JSONField()
+    end_time: datetime.datetime = models.DateTimeField(auto_now=True)
 
 class Profile(models.Model):
     color_config: List[str] = ArrayField(
@@ -33,7 +32,7 @@ class Profile(models.Model):
 CustomUserType = TypeVar("CustomUserType", bound="CustomUser")
 
 
-class CustomUserManager(BaseUserManager[T_CustomUser]):
+class CustomUserManager(BaseUserManager[CustomUserType]):
     def create_user(
         self, username, email, password=None, **extra_fields
     ) -> CustomUserType:
@@ -56,16 +55,16 @@ class CustomUserManager(BaseUserManager[T_CustomUser]):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):  # type: ignore
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
-    profile = models.OneToOneField(
+    username: str = models.CharField(max_length=150, unique=True)
+    email: str = models.EmailField(unique=True)
+    profile: Profile | None = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )
-    game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    history_size = models.IntegerField(default=0)
+    game_summaries: 'SortedManyToManyField[GameSummary]' = SortedManyToManyField(GameSummary, blank=True)
+    history_size: int = models.IntegerField(default=0)
 
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_active: bool = models.BooleanField(default=True)
+    is_staff: bool = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
