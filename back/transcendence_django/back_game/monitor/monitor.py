@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any, Callable, Coroutine, List, Optional
 
 from asgiref.sync import sync_to_async
 from back_game.game_arena.arena import Arena
@@ -133,7 +133,7 @@ class Monitor:
         )
 
     async def save_game_summary(
-        self, arena_id: str, winner: str, players: dict[str, Any]
+        self, arena_id: str, winner: str, players: List[dict[str, Any]]
     ):
         game_summary = await sync_to_async(self.game_summary.objects.create)(
             arena_id=arena_id, winner=winner, players=players

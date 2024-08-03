@@ -13,9 +13,10 @@ from sortedm2m.fields import SortedManyToManyField
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore
-    winner = models.JSONField(null=True)  # type: ignore
-    players = models.JSONField()  # type: ignore
+    winner = models.JSONField(null=True)
+    players = models.JSONField()
     end_time = models.DateTimeField(auto_now=True)  # type: ignore
+
 
 class Profile(models.Model):
     color_config: List[str] = ArrayField(
@@ -60,7 +61,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
-    game_summaries = SortedManyToManyField(GameSummary, blank=True)  # type: ignore
+    game_summaries = SortedManyToManyField(GameSummary, blank=True)
     history_size = models.IntegerField(default=0)  # type: ignore
 
     is_active = models.BooleanField(default=True)  # type: ignore
