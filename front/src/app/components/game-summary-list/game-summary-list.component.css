@@ -12,6 +12,7 @@ ul {
 .game-summary-list-container {
   display: grid;
   width: 100%;
+  min-height: 400px;
   gap: 1em;
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 0.5em;

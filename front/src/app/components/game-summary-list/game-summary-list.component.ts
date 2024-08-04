@@ -38,7 +38,7 @@ export class GameSummaryListComponent implements AfterViewInit {
     setTimeout(() => {
       this.refreshSummaries();
       this.isWaiting = false;
-    }, 500);
+    }, 1000);
   }
 
   public loadMoreSummaries(): void {
