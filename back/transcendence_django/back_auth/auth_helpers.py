@@ -42,12 +42,11 @@ def perform_logout(request):
 
 
 def get_csrf(request):
-    logger.info("Request META: %s", request.META)
-    logger.info("Csrf Token: %s", request.META.get("HTTP_X_CSRFTOKEN"))
     csrf = request.META.get("HTTP_X_CSRFTOKEN")
     if not csrf:
         logger.error("Csrf Token is missing.")
         raise ValueError("Csrf Token is missing!")
+    logger.info("Csrf Token was successfully retrieved.")
     return csrf
 
 

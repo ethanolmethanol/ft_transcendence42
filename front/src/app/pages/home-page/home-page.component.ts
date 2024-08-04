@@ -42,6 +42,7 @@ export class HomePageComponent implements OnInit {
     this.userID = this.userService.getUserID();
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd && event.url === '/home') {
+        console.log('refreshing game summaries');
         this.gameSummaryListComponent.refreshSummaries();
       }
     })
