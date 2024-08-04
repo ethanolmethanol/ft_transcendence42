@@ -124,17 +124,50 @@ class UserDataView(APIView):
 def get_game_summaries(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
-        user_id = str(data[USER_ID])
-        start_index = int(data.get("start_index", 0))
-        end_index = int(data.get("end_index", -1))
+        user_id = data.get(USER_ID)
+        start_index = data.get("start_index", 0)
+        end_index = data.get("end_index", -1)
 
-        history_size = CustomUser.objects.get(pk=user_id).history_size
-        summaries = list(CustomUser.objects.get(pk=user_id).game_summaries.values())
-        sliced_summaries = summaries[start_index:end_index]
+        if not isinstance(start_index, int) or not isinstance(end_index, int):
+            return JsonResponse(
+                {"error": "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."},
+                status=HTTPStatus.BAD_REQUEST
+            )
+
+        user = CustomUser.objects.get(pk=user_id)
+        history_size = user.history_size
+        summaries = list(user.game_summaries.values())
+
+        if start_index < 0 or end_index < 0 or start_index >= end_index:
+            return JsonResponse(
+                {"error": "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."},
+                status=HTTPStatus.BAD_REQUEST
+            )
+
         has_more = end_index < history_size
-        history = {"has_more": has_more, "summaries": sliced_summaries}
+
+        # Adjust end_index if it exceeds history_size
+        if end_index > history_size:
+            end_index = history_size
+
+        # Calculate the correct indices for slicing without reversing
+        actual_start_index = history_size - end_index
+        actual_end_index = history_size - start_index
+
+        sliced_summaries = summaries[actual_start_index:actual_end_index][::-1]
+
+        history = {
+            "has_more": has_more,
+            "summaries": sliced_summaries
+        }
         return JsonResponse(history, safe=False)
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User does not exist."},
+            status=HTTPStatus.NOT_FOUND
+        )
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse(
-            {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
+            {"error": "Invalid request data: " + str(e)},
+            status=HTTPStatus.BAD_REQUEST
         )

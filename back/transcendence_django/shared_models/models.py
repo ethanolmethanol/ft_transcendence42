@@ -76,9 +76,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return str(self.username)
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
-        user_game_summaries = await sync_to_async(list)(self.game_summaries.all())
-        await sync_to_async(self.game_summaries.set)(
-            [game_summary] + user_game_summaries
-        )
+        await sync_to_async(self.game_summaries.add)(game_summary)
         self.history_size += 1
         await sync_to_async(self.save)()
