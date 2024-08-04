@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   OnChanges,
   Renderer2,
-  ElementRef,
+  ElementRef, EventEmitter, Output,
 } from '@angular/core';
 import {
   NOT_JOINED,
@@ -103,6 +103,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() isRemote: boolean = false;
+  @Output() gameStarted = new EventEmitter<void>();
   gameBoardColors: string[] = Constants.DEFAULT_COLORS;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
@@ -268,6 +269,9 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       } else if (status == DEAD) {
         this.redirectToHome();
       } else if (status == STARTED) {
+        if (this.gameStarted.observed) {
+          this.gameStarted.emit();
+        }
         gameOverOverlay.show = false;
       }
     }

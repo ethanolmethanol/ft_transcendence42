@@ -1,12 +1,19 @@
 <section class="game-summary-list-container">
   <h4 class="title">Game History</h4>
-  <div *ngIf="(gameSummaries$ | async)?.length" class="game-summary-list-header">
-    <ul>
-      <app-game-summary *ngFor="let summary of (gameSummaries$ | async)" [gameSummary]="summary" [userID]="userID"></app-game-summary>
-    </ul>
-    <button *ngIf="!isComplete" (click)="loadMoreSummaries()">Load more</button>
-  </div>
-  <div *ngIf="(gameSummaries$ | async)?.length == 0" class="no-game">
-    <p>You haven't played yet!</p>
-  </div>
+  <section *ngIf="isWaiting; else loaded" class="loading">
+    <app-loading-spinner></app-loading-spinner>
+  </section>
+  <ng-template #loaded>
+    <div *ngIf="(gameSummaries$ | async)?.length; else noGame" class="game-summary-list-header">
+      <ul>
+        <app-game-summary *ngFor="let summary of (gameSummaries$ | async)" [gameSummary]="summary" [userID]="userID"></app-game-summary>
+      </ul>
+      <button *ngIf="!isComplete" (click)="loadMoreSummaries()">Load more</button>
+    </div>
+    <ng-template #noGame>
+      <div class="no-game">
+        <p>You haven't played yet!</p>
+      </div>
+    </ng-template>
+  </ng-template>
 </section>

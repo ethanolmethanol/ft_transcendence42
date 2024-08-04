@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {NavigationEnd, Router, RouterLink} from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { LeaderboardComponent } from "../../components/leaderboard/leaderboard.component";
@@ -28,10 +28,10 @@ import {GameSummaryListComponent} from "../../components/game-summary-list/game-
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit, AfterViewInit {
   welcome: string = '';
   userID: number | undefined;
-  @ViewChild(GameSummaryListComponent) gameSummaryListComponent!: GameSummaryListComponent;
+  @ViewChild('gameSummaryList') gameSummaryListComponent!: GameSummaryListComponent;
   @ViewChild('homePageContainer') homePageContainer!: ElementRef;
 
   constructor(private userService: UserService, private router: Router) { }
@@ -40,10 +40,15 @@ export class HomePageComponent implements OnInit {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
     this.userID = this.userService.getUserID();
+  }
+
+  async ngAfterViewInit(): Promise<void> {
+    console.log(this.gameSummaryListComponent);
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd && event.url === '/home') {
-        console.log('refreshing game summaries');
-        this.gameSummaryListComponent.refreshSummaries();
+        setTimeout(() => {
+          this.gameSummaryListComponent.refreshSummaries();
+        }, 6000);
       }
     })
   }
