@@ -45,9 +45,9 @@
 }
 
  /*Additional classes for win/lose status*/
-.win, .lost {
-  justify-content: center;
-}
+/*.win, .lost {*/
+/*  justify-content: center;*/
+/*}*/
 
 .win {
   color: limegreen;

@@ -33,7 +33,7 @@ import { NgIf } from "@angular/common";
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isRemote: boolean | null = null;
-  hasGameStarted: boolean = false;
+  canGiveUp: boolean = true;
 
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
@@ -61,8 +61,11 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('Channel ID:', channel_id);
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
     });
-    this.game.first.gameStarted.subscribe(() => {
-      this.hasGameStarted = true;
+    this.game.first.startCounterStarted.subscribe(() => {
+      this.canGiveUp = false;
+    });
+    this.game.first.hasStarted.subscribe(() => {
+      this.canGiveUp = true;
     });
   }
 
