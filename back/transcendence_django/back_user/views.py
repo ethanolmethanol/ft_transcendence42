@@ -2,7 +2,7 @@ import json
 import logging
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -30,7 +30,7 @@ class UserDataView(APIView):
     def find_user_by_id(self, user_id: int) -> CustomUser:
         return get_object_or_404(CustomUser, pk=user_id)
 
-    def get(self, request: Any, pk: int = None) -> Response:
+    def get(self, request: Any, pk: int | None = None) -> Response:
         user_id = pk if pk is not None else self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
@@ -120,7 +120,9 @@ def get_game_summaries(request) -> JsonResponse:
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
             return JsonResponse(
-                {"error": "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."},
+                {
+                    "error": "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."
+                },
                 status=HTTPStatus.BAD_REQUEST
             )
 
@@ -130,15 +132,16 @@ def get_game_summaries(request) -> JsonResponse:
 
         if start_index < 0 or end_index < 0 or start_index >= end_index:
             return JsonResponse(
-                {"error": "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."},
+                {
+                    "error": "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."
+                },
                 status=HTTPStatus.BAD_REQUEST
             )
 
         has_more = end_index < history_size
 
         # Adjust end_index if it exceeds history_size
-        if end_index > history_size:
-            end_index = history_size
+        end_index = min(end_index, history_size)
 
         # Calculate the correct indices for slicing without reversing
         actual_start_index = history_size - end_index
@@ -146,18 +149,13 @@ def get_game_summaries(request) -> JsonResponse:
 
         sliced_summaries = summaries[actual_start_index:actual_end_index][::-1]
 
-        history = {
-            "has_more": has_more,
-            "summaries": sliced_summaries
-        }
+        history = {"has_more": has_more, "summaries": sliced_summaries}
         return JsonResponse(history, safe=False)
     except CustomUser.DoesNotExist:
         return JsonResponse(
-            {"error": "User does not exist."},
-            status=HTTPStatus.NOT_FOUND
+            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse(
-            {"error": "Invalid request data: " + str(e)},
-            status=HTTPStatus.BAD_REQUEST
+            {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
         )
