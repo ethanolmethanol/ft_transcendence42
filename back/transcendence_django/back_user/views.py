@@ -117,6 +117,7 @@ def get_game_summaries(request) -> JsonResponse:
         user_id = data.get(USER_ID)
         start_index = data.get("start_index", 0)
         end_index = data.get("end_index", -1)
+        filter_by = data.get("filter")
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
             return JsonResponse(
@@ -126,10 +127,6 @@ def get_game_summaries(request) -> JsonResponse:
                 status=HTTPStatus.BAD_REQUEST
             )
 
-        user = CustomUser.objects.get(pk=user_id)
-        history_size = user.history_size
-        summaries = list(user.game_summaries.values())
-
         if start_index < 0 or end_index < 0 or start_index >= end_index:
             return JsonResponse(
                 {
@@ -137,7 +134,20 @@ def get_game_summaries(request) -> JsonResponse:
                 },
                 status=HTTPStatus.BAD_REQUEST
             )
+        if filter_by not in ["all", "local", "online"]:
+            return JsonResponse(
+                {
+                    "error": "Invalid 'filter'. Must be one of 'all', 'local', or 'online'."
+                },
+                status=HTTPStatus.BAD_REQUEST
+            )
 
+        user = CustomUser.objects.get(pk=user_id)
+        summaries = user.game_summaries.values()
+        if filter_by != "all":
+            summaries = summaries.filter(is_remote=(filter_by == "online"))
+
+        history_size = summaries.count()
         has_more = end_index < history_size
 
         # Adjust end_index if it exceeds history_size
@@ -147,7 +157,7 @@ def get_game_summaries(request) -> JsonResponse:
         actual_start_index = history_size - end_index
         actual_end_index = history_size - start_index
 
-        sliced_summaries = summaries[actual_start_index:actual_end_index][::-1]
+        sliced_summaries = list(summaries[actual_start_index:actual_end_index][::-1])
 
         history = {"has_more": has_more, "summaries": sliced_summaries}
         return JsonResponse(history, safe=False)

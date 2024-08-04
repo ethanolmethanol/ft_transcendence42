@@ -111,6 +111,7 @@ class PlayerManager:
                 if winner
                 else None
             ),
+            IS_REMOTE: self.is_remote,
         }
 
     def finish_given_up_players(self):

@@ -16,6 +16,7 @@ class GameSummary(models.Model):
     winner_user_id = models.JSONField(null=True)
     players = models.JSONField()
     end_time = models.DateTimeField(auto_now=True)  # type: ignore
+    is_remote = models.BooleanField(default=False)  # type: ignore
 
 
 class Profile(models.Model):

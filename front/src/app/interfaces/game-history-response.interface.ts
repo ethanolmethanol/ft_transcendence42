@@ -9,6 +9,7 @@ export interface GameSummaryResponse {
   id: number;
   players: Player[];
   winner_user_id: number | undefined;
+  is_remote: boolean;
 }
 
 export interface GameHistoryResponse {

@@ -21,6 +21,7 @@ from django.conf import settings
 from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
+    IS_REMOTE,
     OVER_CALLBACK,
     PLAYERS,
     START_TIMER_CALLBACK,
@@ -134,10 +135,14 @@ class Monitor:
         )
 
     async def save_game_summary(
-        self, arena_id: str, winner_user_id: int, players: List[dict[str, Any]]
+        self, arena_id: str, winner: dict[str, Any], players: List[dict[str, Any]], is_remote: bool
     ):
+        if winner is None:
+            winner_user_id = None
+        else:
+            winner_user_id = winner.get(USER_ID)
         game_summary = await sync_to_async(self.game_summary.objects.create)(
-            arena_id=arena_id, winner_user_id=winner_user_id, players=players
+            arena_id=arena_id, winner_user_id=winner_user_id, players=players, is_remote=is_remote
         )
         custom_user_model = apps.get_model("shared_models", "CustomUser")
         for player in players:
@@ -154,10 +159,9 @@ class Monitor:
             elif arena.can_be_over():
                 arena.conclude_game()
                 summary = arena.get_game_summary()
-                if arena.is_remote():
-                    await self.save_game_summary(
-                        arena.id, summary[WINNER][USER_ID], summary[PLAYERS]
-                    )
+                await self.save_game_summary(
+                    arena.id, summary[WINNER], summary[PLAYERS], summary[IS_REMOTE]
+                )
                 if arena_status != GameStatus(STARTED):
                     self.channel_manager.delete_arena(arenas, arena.id)
                     break

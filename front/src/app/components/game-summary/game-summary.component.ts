@@ -43,8 +43,6 @@ export class GameSummaryComponent implements OnInit {
 
   public async getOpponentUsername(): Promise<string> {
     const opponentUserID: number = this.gameSummary?.players.find(player => player.user_id !== this.userID)?.user_id!;
-    console.log(this.gameSummary);
-    console.log(opponentUserID);
     const user: User = await this.userService.getUser(opponentUserID);
     return user.username;
   }

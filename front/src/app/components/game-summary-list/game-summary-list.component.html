@@ -1,10 +1,20 @@
 <section class="game-summary-list-container">
-  <h4 class="title">Game History</h4>
+  <section class="game-summary-list-header">
+    <h4 class="title">Game History</h4>
+    <div class="filter-menu">
+      <label for="filter"></label>
+      <select id="filter" [(ngModel)]="filterType" (change)="applyFilterType()">
+        <option value="all">All</option>
+        <option value="local">Local</option>
+        <option value="online">Online</option>
+      </select>
+    </div>
+  </section>
   <section *ngIf="isWaiting; else loaded" class="loading">
     <app-loading-spinner></app-loading-spinner>
   </section>
   <ng-template #loaded>
-    <div *ngIf="(gameSummaries$ | async)?.length" class="game-summary-list-header">
+    <div *ngIf="(gameSummaries$ | async)?.length" class="game-summary-list">
       <ul>
         <app-game-summary *ngFor="let summary of (gameSummaries$ | async)" [gameSummary]="summary" [userID]="userID"></app-game-summary>
       </ul>
