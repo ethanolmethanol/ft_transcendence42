@@ -4,7 +4,7 @@ import {API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS} from "../../constants";
 import { Observable } from "rxjs";
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
 
-interface User {
+export interface User {
   id: number;
   username: string;
   email: string;
@@ -96,6 +96,19 @@ export class UserService {
   public clearUserData(): void {
     this._userData = null;
     this._userDataLoaded = null;
+  }
+
+  public async getUser(userID: number): Promise<User> {
+    try {
+      const userData = await this.http.get<User>(`${API_USER}/user_data/${userID}`).toPromise();
+      if (!userData) {
+        throw new Error('No user data found');
+      }
+      return userData;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
   }
 
   public getSummaries(startIndex: number, endIndex: number): Observable<GameHistoryResponse> {

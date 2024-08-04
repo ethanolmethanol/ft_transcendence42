@@ -13,7 +13,7 @@ from sortedm2m.fields import SortedManyToManyField
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore
-    winner = models.JSONField(null=True)
+    winner_user_id = models.JSONField(null=True)
     players = models.JSONField()
     end_time = models.DateTimeField(auto_now=True)  # type: ignore
 

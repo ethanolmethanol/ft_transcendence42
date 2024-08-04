@@ -1,7 +1,8 @@
-import {Component, Inject, Input} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 import { GameSummaryResponse} from "../../interfaces/game-history-response.interface";
 import {DatePipe, NgClass, NgIf} from "@angular/common";
 import {LOCALE, TIME_ZONE} from "../../constants";
+import {User, UserService} from "../../services/user/user.service";
 
 @Component({
   selector: 'app-game-summary',
@@ -13,14 +14,21 @@ import {LOCALE, TIME_ZONE} from "../../constants";
   templateUrl: './game-summary.component.html',
   styleUrl: './game-summary.component.css'
 })
-export class GameSummaryComponent {
+export class GameSummaryComponent implements OnInit {
 
   @Input() userID?: number;
   @Input() gameSummary!: GameSummaryResponse;
+  public opponentUsername!: string | undefined;
+
+  constructor(private userService: UserService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.loadOpponentUsername();
+  }
 
   public get win_status(): string {
-    if (this.gameSummary?.winner) {
-      return this.gameSummary?.winner.user_id === this.userID ? 'Won' : 'Lost';
+    if (this.gameSummary?.winner_user_id) {
+      return this.gameSummary?.winner_user_id === this.userID ? 'Won' : 'Lost';
     }
     return 'Tied';
   }
@@ -33,8 +41,16 @@ export class GameSummaryComponent {
     return this.gameSummary?.players[1]?.score;
   }
 
-  public get opponent(): string {
-    return this.gameSummary?.players.find(player => player.user_id !== this.userID)?.player_name!;
+  public async getOpponentUsername(): Promise<string> {
+    const opponentUserID: number = this.gameSummary?.players.find(player => player.user_id !== this.userID)?.user_id!;
+    console.log(this.gameSummary);
+    console.log(opponentUserID);
+    const user: User = await this.userService.getUser(opponentUserID);
+    return user.username;
+  }
+
+  private async loadOpponentUsername(): Promise<void> {
+    this.opponentUsername = await this.getOpponentUsername();
   }
 
   public get date(): string {

@@ -1,12 +1,6 @@
 interface Player {
   score: number;
   user_id: number;
-  player_name: string;
-}
-
-interface Winner {
-  user_id: number;
-  player_name: string;
 }
 
 export interface GameSummaryResponse {
@@ -14,7 +8,7 @@ export interface GameSummaryResponse {
   end_time: string;
   id: number;
   players: Player[];
-  winner: Winner | undefined;
+  winner_user_id: number | undefined;
 }
 
 export interface GameHistoryResponse {

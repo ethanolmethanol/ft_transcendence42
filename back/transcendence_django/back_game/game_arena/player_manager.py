@@ -102,7 +102,6 @@ class PlayerManager:
             PLAYERS: [
                 {
                     USER_ID: player.user_id,
-                    PLAYER_NAME: player.player_name,
                     SCORE: player.score,
                 }
                 for player in self.players.values()

@@ -5,6 +5,7 @@ from json import JSONDecodeError
 from typing import Any, Dict, Union
 
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
@@ -26,26 +27,15 @@ class UserDataView(APIView):
     def get_user_id(self, request: Any) -> int:
         return request.session.get("_auth_user_id")
 
-    def find_user_by_id(self, request: Any) -> Union[Response, CustomUser]:
-        user_id = self.get_user_id(request)
+    def find_user_by_id(self, user_id: int) -> CustomUser:
+        return get_object_or_404(CustomUser, pk=user_id)
+
+    def get(self, request: Any, pk: int = None) -> Response:
+        user_id = pk if pk is not None else self.get_user_id(request)
         if user_id is None:
             return self._respond_with_unauthorized()
 
-        try:
-            user = CustomUser.objects.get(pk=user_id)
-        except CustomUser.DoesNotExist:
-            return self._respond_with_bad_request()
-
-        return user
-
-    def get(self, request: Any) -> Response:
-        result = self.find_user_by_id(request)
-
-        if isinstance(result, Response):
-            return result
-
-        user, user_id = result, self.get_user_id(request)
-
+        user = self.find_user_by_id(user_id)
         return self._handle_get_request(user, user_id)
 
     def post(self, request: Any) -> Response:
