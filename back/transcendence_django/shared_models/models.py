@@ -79,4 +79,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
+        game_duration = (game_summary.end_time - game_summary.start_time).total_seconds()
+        self.time_played += game_duration
         await sync_to_async(self.save)()

@@ -69,6 +69,7 @@ class UserDataView(APIView):
             "id": user_id,
             "username": user.username,
             "email": user.email,
+            "time_played": user.time_played,
             "color_config": profile.color_config,
             "game_settings": profile.game_settings,
         }
