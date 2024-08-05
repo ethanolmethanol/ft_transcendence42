@@ -109,7 +109,9 @@ class UserDataView(APIView):
         return Response({"status": "success"}, status=HTTPStatus.OK)
 
 
-def get_history(user_id: int, start_index: int, end_index: int, filter_by: str) -> dict[str, Any]:
+def get_history(
+    user_id: int, start_index: int, end_index: int, filter_by: str
+) -> dict[str, Any]:
     user = CustomUser.objects.get(pk=user_id)
     summaries = user.game_summaries.values()
     if filter_by != ALL:
@@ -130,6 +132,7 @@ def get_history(user_id: int, start_index: int, end_index: int, filter_by: str) 
 
     return {"has_more": has_more, "summaries": sliced_summaries}
 
+
 @require_http_methods(["POST"])
 @csrf_protect
 def get_game_summaries(request) -> JsonResponse:
@@ -141,9 +144,7 @@ def get_game_summaries(request) -> JsonResponse:
         filter_by = data.get("filter")
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
-            raise TypeError(
-                "'start_index' and 'end_index' must be integers."
-            )
+            raise TypeError( "'start_index' and 'end_index' must be integers.")
         if start_index < 0 or end_index < 0 or start_index >= end_index:
             raise ValueError(
                 "Ensure 'start_index' is non-negative and less than 'end_index'."
