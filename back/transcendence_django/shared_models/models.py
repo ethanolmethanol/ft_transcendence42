@@ -15,6 +15,7 @@ class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore
     winner_user_id = models.JSONField(null=True)
     players = models.JSONField()
+    start_time = models.DateTimeField(null=True)  # type: ignore
     end_time = models.DateTimeField(auto_now=True)  # type: ignore
     is_remote = models.BooleanField(default=False)  # type: ignore
 
@@ -63,6 +64,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
+    time_played = models.IntegerField(default=0)  # type: ignore
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore

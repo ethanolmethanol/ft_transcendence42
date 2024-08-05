@@ -14,8 +14,10 @@ from back_game.game_settings.game_constants import (
     TIME_START_INTERVAL,
     WAITING,
 )
+from django.utils import timezone
 from transcendence_django.dict_keys import (
     ARENA,
+    ARENA_ID,
     BALL,
     COLLIDED_SLOT,
     ID,
@@ -31,6 +33,7 @@ from transcendence_django.dict_keys import (
     PLAYERS,
     SCORE,
     SCORES,
+    START_TIME,
     STATUS,
 )
 
@@ -52,6 +55,7 @@ class Arena:
         self.game_over_callback: Optional[
             Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
+        self.start_time: Any = None
 
     def to_dict(self) -> dict[str, Any]:
         if self.player_manager.is_remote:
@@ -91,7 +95,10 @@ class Arena:
         )
 
     def get_game_summary(self) -> dict[str, Any]:
-        return self.player_manager.get_game_summary()
+        summary = self.player_manager.get_game_summary()
+        summary[START_TIME] = self.start_time
+        summary[ARENA_ID] = self.id
+        return summary
 
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
@@ -122,6 +129,7 @@ class Arena:
             await asyncio.sleep(TIME_START_INTERVAL)
         self.game.start()
         logger.info("Game started. %s", self.id)
+        self.start_time = timezone.now()
         if self.game_update_callback is not None:
             await self.game_update_callback({ARENA: self.to_dict()})
 
