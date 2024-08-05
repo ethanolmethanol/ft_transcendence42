@@ -135,14 +135,21 @@ class Monitor:
         )
 
     async def save_game_summary(
-        self, arena_id: str, winner: dict[str, Any], players: List[dict[str, Any]], is_remote: bool
+        self,
+        arena_id: str,
+        winner: dict[str, Any],
+        players: List[dict[str, Any]],
+        is_remote: bool,
     ):
         if winner is None:
             winner_user_id = None
         else:
             winner_user_id = winner.get(USER_ID)
         game_summary = await sync_to_async(self.game_summary.objects.create)(
-            arena_id=arena_id, winner_user_id=winner_user_id, players=players, is_remote=is_remote
+            arena_id=arena_id,
+            winner_user_id=winner_user_id,
+            players=players,
+            is_remote=is_remote,
         )
         custom_user_model = apps.get_model("shared_models", "CustomUser")
         for player in players:

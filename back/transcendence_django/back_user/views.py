@@ -120,23 +120,22 @@ def get_game_summaries(request) -> JsonResponse:
         filter_by = data.get("filter")
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
-            return ValueError(
+            raise ValueError(
                 "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."
             )
 
         if start_index < 0 or end_index < 0 or start_index >= end_index:
-            return ValueError(
+            raise ValueError(
                 "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."
             )
         if filter_by not in FILTERS:
-            raise ValueError(
-                "Invalid 'filter'. Must be one of " + str(FILTERS) + "."
-            )
+            raise ValueError("Invalid 'filter'. Must be one of " + str(FILTERS) + ".")
 
         user = CustomUser.objects.get(pk=user_id)
         summaries = user.game_summaries.values()
         if filter_by != ALL:
-            summaries = summaries.filter(is_remote=(filter_by == ONLINE))
+            remote_filter = filter_by == ONLINE
+            summaries = summaries.filter(is_remote=remote_filter)
 
         history_size = summaries.count()
         has_more = end_index < history_size
