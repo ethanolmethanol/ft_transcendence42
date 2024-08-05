@@ -109,6 +109,27 @@ class UserDataView(APIView):
         return Response({"status": "success"}, status=HTTPStatus.OK)
 
 
+def get_history(user_id: int, start_index: int, end_index: int, filter_by: str) -> dict[str, Any]:
+    user = CustomUser.objects.get(pk=user_id)
+    summaries = user.game_summaries.values()
+    if filter_by != ALL:
+        remote_filter = filter_by == ONLINE
+        summaries = summaries.filter(is_remote=remote_filter)
+
+    history_size = summaries.count()
+    has_more = end_index < history_size
+
+    # Adjust end_index if it exceeds history_size
+    end_index = min(end_index, history_size)
+
+    # Calculate the correct indices for slicing without reversing
+    actual_start_index = history_size - end_index
+    actual_end_index = history_size - start_index
+
+    sliced_summaries = list(summaries[actual_start_index:actual_end_index][::-1])
+
+    return {"has_more": has_more, "summaries": sliced_summaries}
+
 @require_http_methods(["POST"])
 @csrf_protect
 def get_game_summaries(request) -> JsonResponse:
@@ -120,36 +141,17 @@ def get_game_summaries(request) -> JsonResponse:
         filter_by = data.get("filter")
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
-            raise ValueError(
-                "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."
+            raise TypeError(
+                "'start_index' and 'end_index' must be integers."
             )
-
         if start_index < 0 or end_index < 0 or start_index >= end_index:
             raise ValueError(
-                "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."
+                "Ensure 'start_index' is non-negative and less than 'end_index'."
             )
         if filter_by not in FILTERS:
             raise ValueError("Invalid 'filter'. Must be one of " + str(FILTERS) + ".")
 
-        user = CustomUser.objects.get(pk=user_id)
-        summaries = user.game_summaries.values()
-        if filter_by != ALL:
-            remote_filter = filter_by == ONLINE
-            summaries = summaries.filter(is_remote=remote_filter)
-
-        history_size = summaries.count()
-        has_more = end_index < history_size
-
-        # Adjust end_index if it exceeds history_size
-        end_index = min(end_index, history_size)
-
-        # Calculate the correct indices for slicing without reversing
-        actual_start_index = history_size - end_index
-        actual_end_index = history_size - start_index
-
-        sliced_summaries = list(summaries[actual_start_index:actual_end_index][::-1])
-
-        history = {"has_more": has_more, "summaries": sliced_summaries}
+        history = get_history(user_id, start_index, end_index, filter_by)
         return JsonResponse(history, safe=False)
     except CustomUser.DoesNotExist:
         return JsonResponse(
