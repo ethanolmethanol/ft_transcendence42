@@ -2,6 +2,7 @@
 # Stage 1: Build the Angular application
 FROM node:20-alpine as builder
 WORKDIR /app
+
 # Install Angular CLI and project dependencies
 RUN npm install -g @angular/cli@latest
 # Copy the app
@@ -26,3 +27,5 @@ COPY ./ssl/* /etc/ssl
 COPY --from=builder /app/dist/transcendence/browser /usr/share/nginx/html
 # Expose port 443
 EXPOSE 443
+
+HEALTHCHECK --interval=5s --timeout=10s --retries=10 CMD curl -kfsSL https://localhost:443/

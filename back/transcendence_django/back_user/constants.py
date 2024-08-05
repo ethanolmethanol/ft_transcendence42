@@ -17,3 +17,13 @@ DEFAULT_SETTINGS = [
     AI_OPPONENTS_ONLINE_DEFAULT,
     IS_PRIVATE_DEFAULT,
 ]
+
+ALL = "all"
+LOCAL = "local"
+ONLINE = "online"
+
+FILTERS = [
+    ALL,
+    LOCAL,
+    ONLINE,
+]

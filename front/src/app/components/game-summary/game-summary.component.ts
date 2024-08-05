@@ -27,10 +27,13 @@ export class GameSummaryComponent implements OnInit {
   }
 
   public get win_status(): string {
-    if (this.gameSummary?.winner_user_id) {
-      return this.gameSummary?.winner_user_id === this.userID ? 'Won' : 'Lost';
+    if (this.gameSummary.is_remote) {
+      if (this.gameSummary?.winner_user_id) {
+        return this.gameSummary?.winner_user_id === this.userID ? 'Won' : 'Lost';
+      }
+      return 'Tied';
     }
-    return 'Tied';
+    return 'Local';
   }
 
   public get score1(): number {
@@ -42,9 +45,12 @@ export class GameSummaryComponent implements OnInit {
   }
 
   public async getOpponentUsername(): Promise<string> {
-    const opponentUserID: number = this.gameSummary?.players.find(player => player.user_id !== this.userID)?.user_id!;
-    const user: User = await this.userService.getUser(opponentUserID);
-    return user.username;
+    if (this.gameSummary.is_remote) {
+      const opponentUserID: number = this.gameSummary?.players.find(player => player.user_id !== this.userID)?.user_id!;
+      const user: User = await this.userService.getUser(opponentUserID);
+      return user.username;
+    }
+    return '-';
   }
 
   private async loadOpponentUsername(): Promise<void> {

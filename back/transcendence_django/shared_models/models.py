@@ -63,7 +63,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    history_size = models.IntegerField(default=0)  # type: ignore
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore
@@ -78,5 +77,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
-        self.history_size += 1
         await sync_to_async(self.save)()

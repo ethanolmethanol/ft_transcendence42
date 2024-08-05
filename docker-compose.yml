@@ -31,12 +31,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'python3 manage.py health_check'
-            interval: 5s
-            timeout: 30s
-            retries: 10
-            start_period: 5s
 
     back_user:
         image: back_user
@@ -52,12 +46,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'python3 manage.py health_check'
-            interval: 5s
-            timeout: 30s
-            retries: 10
-            start_period: 5s
 
     back_game:
         image: back_game
@@ -75,12 +63,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'python3 manage.py health_check'
-            interval: 5s
-            timeout: 30s
-            retries: 10
-            start_period: 5s
 
     front:
         image: front
@@ -97,12 +79,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'curl -kfsSL https://localhost:443/'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 10s
 
     redis:
         image: "redis:latest"

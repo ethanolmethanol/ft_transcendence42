@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
-from .constants import DEFAULT_COLORS, DEFAULT_SETTINGS
+from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 
 # pylint: disable=no-member
 
@@ -120,32 +120,23 @@ def get_game_summaries(request) -> JsonResponse:
         filter_by = data.get("filter")
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
-            return JsonResponse(
-                {
-                    "error": "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."
-                },
-                status=HTTPStatus.BAD_REQUEST
+            return ValueError(
+                "Invalid input types. 'user_id', 'start_index', and 'end_index' must be integers."
             )
 
         if start_index < 0 or end_index < 0 or start_index >= end_index:
-            return JsonResponse(
-                {
-                    "error": "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."
-                },
-                status=HTTPStatus.BAD_REQUEST
+            return ValueError(
+                "Invalid 'start_index' or 'end_index'. Ensure 'start_index' is non-negative and less than 'end_index'."
             )
-        if filter_by not in ["all", "local", "online"]:
-            return JsonResponse(
-                {
-                    "error": "Invalid 'filter'. Must be one of 'all', 'local', or 'online'."
-                },
-                status=HTTPStatus.BAD_REQUEST
+        if filter_by not in FILTERS:
+            raise ValueError(
+                "Invalid 'filter'. Must be one of " + str(FILTERS) + "."
             )
 
         user = CustomUser.objects.get(pk=user_id)
         summaries = user.game_summaries.values()
-        if filter_by != "all":
-            summaries = summaries.filter(is_remote=(filter_by == "online"))
+        if filter_by != ALL:
+            summaries = summaries.filter(is_remote=(filter_by == ONLINE))
 
         history_size = summaries.count()
         has_more = end_index < history_size

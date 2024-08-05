@@ -1,5 +1,5 @@
 <section class="game-summary-container" *ngIf="gameSummary">
-  <section class="status-section" [ngClass]="{'win': win_status === 'Won', 'lost': win_status === 'Lost'}">
+  <section class="status-section" [ngClass]="{'win': win_status === 'Won', 'lost': win_status === 'Lost', 'local': win_status == 'Local'}">
     <div class="status">
       {{win_status}}
     </div>
