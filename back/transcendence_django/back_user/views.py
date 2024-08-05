@@ -144,7 +144,7 @@ def get_game_summaries(request) -> JsonResponse:
         filter_by = data.get("filter")
 
         if not isinstance(start_index, int) or not isinstance(end_index, int):
-            raise TypeError( "'start_index' and 'end_index' must be integers.")
+            raise TypeError("'start_index' and 'end_index' must be integers.")
         if start_index < 0 or end_index < 0 or start_index >= end_index:
             raise ValueError(
                 "Ensure 'start_index' is non-negative and less than 'end_index'."
