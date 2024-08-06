@@ -1,5 +1,4 @@
 import {Component, Input} from '@angular/core';
-import {ChartModule} from "primeng/chart";
 
 @Component({
   selector: 'app-time-played',
@@ -8,5 +7,5 @@ import {ChartModule} from "primeng/chart";
   styleUrl: './time-played.component.css'
 })
 export class TimePlayedComponent {
-  @Input() timePlayed: string = '';
+  @Input() timePlayed: { local: string, remote: string } = { local: '0', remote: '0' };
 }

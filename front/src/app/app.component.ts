@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {SignInPageComponent} from "./pages/sign-in-page/sign-in-page.component";
-import { ChartModule } from 'primeng/chart';
+import {UserService} from "./services/user/user.service";
 
 @Component({
   selector: 'app-root',
@@ -11,5 +11,19 @@ import { ChartModule } from 'primeng/chart';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'transcendence';
+  constructor(private router: Router, private userService: UserService) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        if (event.url === '/home') {
+          setTimeout(() => {
+            this.userService.refreshUserData().then(() => {
+              console.log('User data refreshed successfully.');
+            }).catch((error) => {
+              console.error('Failed to refresh user data:', error);
+            });
+          }, 500);
+        }
+      }
+    });
+  }
 }

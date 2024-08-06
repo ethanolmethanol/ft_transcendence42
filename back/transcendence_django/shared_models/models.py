@@ -20,7 +20,8 @@ class GameSummary(models.Model):
     start_time = models.DateTimeField(null=True)  # type: ignore
     end_time = models.DateTimeField(auto_now=True)  # type: ignore
     is_remote = models.BooleanField(default=False)  # type: ignore
-    result = models.CharField(max_length=10, choices=[('win', 'Win'), ('loss', 'Loss'), ('tie', 'Tie')], default='tie')  # New field
+
+
 class Profile(models.Model):
     color_config: List[str] = ArrayField(
         models.CharField(max_length=20), default=list
@@ -57,6 +58,12 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(username, email, password, **extra_fields)
 
+def get_default_time_played() -> dict[str, int]:
+    return {'local': 0, 'remote': 0}
+
+def get_default_win_loss_tie() -> dict[str, int]:
+    return {'win': 0, 'loss': 0, 'tie': 0}
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)  # type: ignore
@@ -65,8 +72,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    time_played = models.IntegerField(default=0)  # type: ignore
-    win_loss_tie = models.JSONField(default=dict)  # Change to dictionary
+    time_played: dict[str, int] = models.JSONField(default=get_default_time_played)
+    win_loss_tie: dict[str, int] = models.JSONField(default=get_default_win_loss_tie)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore
@@ -81,18 +88,23 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
-        game_duration = (game_summary.end_time - game_summary.start_time).total_seconds()
-        self.time_played += game_duration
-        self.update_win_dict(game_summary)
+        self.__update_time_played(game_summary)
+        if game_summary.is_remote:
+            self.__update_win_dict(game_summary)
         await sync_to_async(self.save)()
 
-    def update_win_dict(self, game_summary) -> None:
-        logger.info("Winner: %s", game_summary.winner_user_id)
-        logger.info("User: %s", self.id)
+    def __update_win_dict(self, game_summary) -> None:
         if str(game_summary.winner_user_id) == str(self.id):
-            self.win_loss_tie['win'] = self.win_loss_tie.get('win', 0) + 1
+            key = 'win'
         elif game_summary.winner_user_id is None:
-            self.win_loss_tie['tie'] = self.win_loss_tie.get('tie', 0) + 1
+            key = 'tie'
         else:
-            self.win_loss_tie['loss'] = self.win_loss_tie.get('loss', 0) + 1
-        logger.info("Win dict: %s", self.win_loss_tie)
+            key = 'loss'
+        self.win_loss_tie[key] += 1
+
+    def __update_time_played(self, game_summary) -> None:
+        game_duration: int = int((game_summary.end_time - game_summary.start_time).total_seconds())
+        if game_summary.is_remote:
+            self.time_played['remote'] += game_duration
+        else:
+            self.time_played['local'] += game_duration

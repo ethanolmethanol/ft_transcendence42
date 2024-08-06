@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS} from "../../constants";
 import { Observable } from "rxjs";
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
-import {User, Wins} from "../../interfaces/user";
+import {Times, User, Wins} from "../../interfaces/user";
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +19,13 @@ export class UserService {
       username: '',
       email: '',
       win_dict: {win: 0, loss: 0, tie: 0},
-      time_played: 0,
+      time_played: {local: 0, remote: 0},
       color_config: DEFAULT_COLORS,
       game_settings: DEFAULT_SETTINGS,
     };
   }
 
-  private async loadUserData(): Promise<void> {
+  public async refreshUserData(): Promise<void> {
     try {
       const userData = await this.http.get<User>(`${API_USER}/user_data/`).toPromise();
       if (!userData) {
@@ -55,7 +55,8 @@ export class UserService {
 
   public whenUserDataLoaded(): Promise<void> {
     if (!this._userDataLoaded) {
-      this._userDataLoaded = this.loadUserData();
+      console.log('Loading user data -> send request')
+      this._userDataLoaded = this.refreshUserData();
     }
     return this._userDataLoaded;
   }
@@ -76,7 +77,7 @@ export class UserService {
     return this.getUserData().color_config;
   }
 
-  public getTimePlayed(): number {
+  public getTimePlayed(): Times {
     return this.getUserData().time_played;
   }
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { UserService } from '../../services/user/user.service';
@@ -28,7 +28,7 @@ import {DashboardComponent} from "../../components/stats/dashboard/dashboard.com
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements AfterViewInit {
   welcome: string = '';
   userID: number | undefined;
   @ViewChild('gameSummaryList') gameSummaryListComponent!: GameSummaryListComponent;
@@ -36,7 +36,7 @@ export class HomePageComponent implements OnInit {
 
   constructor(private userService: UserService, private router: Router) { }
 
-  async ngOnInit(): Promise<void> {
+  async ngAfterViewInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
     this.userID = this.userService.getUserID();

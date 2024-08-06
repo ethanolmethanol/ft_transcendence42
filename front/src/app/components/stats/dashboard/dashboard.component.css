@@ -19,23 +19,14 @@
 
 .content {
   display: grid;
-  list-style-type: circle;
+  list-style-type: none;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   padding: 0.5em;
   justify-content: center;
+  justify-items: center;
+  align-content: space-evenly;
+  align-items: center;
   gap: 2em;
   margin: 1em 0;
   width: 100%;
-}
-
-app-time-played {
-  display: flex;
-  width: 40%;
-  margin: 0 0;
-}
-
-
-grid-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
