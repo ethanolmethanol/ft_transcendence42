@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import {NgIf} from "@angular/common";
-import { WebSocketService } from '../../services/web-socket/web-socket.service';
+import { WebSocketService } from '../../../services/web-socket/web-socket.service';
 import { Router } from '@angular/router';
 
 @Component({

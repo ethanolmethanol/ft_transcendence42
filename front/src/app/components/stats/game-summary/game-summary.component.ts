@@ -1,8 +1,8 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
-import { GameSummaryResponse} from "../../interfaces/game-history-response.interface";
+import { GameSummaryResponse} from "../../../interfaces/game-history-response.interface";
 import {DatePipe, NgClass, NgIf} from "@angular/common";
-import {LOCALE, TIME_ZONE} from "../../constants";
-import {User, UserService} from "../../services/user/user.service";
+import {LOCALE, TIME_ZONE} from "../../../constants";
+import {User, UserService} from "../../../services/user/user.service";
 
 @Component({
   selector: 'app-game-summary',

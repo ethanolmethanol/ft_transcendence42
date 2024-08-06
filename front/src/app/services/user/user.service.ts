@@ -8,6 +8,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  time_played: number;
   color_config: string[];
   game_settings: number[];
 }
@@ -16,7 +17,7 @@ export interface User {
   providedIn: 'root'
 })
 export class UserService {
-  private _userData: any;
+  private _userData: User | null;
   private _userDataLoaded: Promise<void> | null;
 
   constructor(private http: HttpClient) {
@@ -25,6 +26,7 @@ export class UserService {
       id: -1,
       username: '',
       email: '',
+      time_played: 0,
       color_config: DEFAULT_COLORS,
       game_settings: DEFAULT_SETTINGS,
     };
@@ -40,8 +42,9 @@ export class UserService {
         id: Object.freeze(userData.id),
         email: Object.freeze(userData.email),
         username: Object.freeze(userData.username),
+        time_played: userData.time_played,
         color_config: userData.color_config,
-        game_settings: Object.freeze(userData.game_settings),
+        game_settings: userData.game_settings,
       };
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -64,7 +67,7 @@ export class UserService {
   }
 
   private getUserData(): User {
-    return this._userData;
+    return this._userData!;
   }
 
   public getUsername(): string {
@@ -77,6 +80,10 @@ export class UserService {
 
   public getColorConfig(): string[] {
     return this.getUserData().color_config;
+  }
+
+  public getTimePlayed(): number {
+    return this.getUserData().time_played;
   }
 
   public setColorConfig(colors: string[]): void {

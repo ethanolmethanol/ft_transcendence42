@@ -1,0 +1,41 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  width: 100%;
+  min-height: 300px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 0.5em;
+}
+
+.title {
+  padding: 1em;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: white;
+  width: 50%;
+}
+
+.content {
+  display: grid;
+  list-style-type: circle;
+  padding: 0.5em;
+  justify-content: center;
+  gap: 2em;
+  margin: 1em 0;
+  width: 100%;
+}
+
+app-time-played {
+  display: flex;
+  width: 40%;
+  margin: 0 0;
+}
+
+
+grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

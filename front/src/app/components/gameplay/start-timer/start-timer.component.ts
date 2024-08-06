@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {WebSocketService} from "../../services/web-socket/web-socket.service";
+import {WebSocketService} from "../../../services/web-socket/web-socket.service";
 import {Router} from "@angular/router";
 import {NgIf} from "@angular/common";
 

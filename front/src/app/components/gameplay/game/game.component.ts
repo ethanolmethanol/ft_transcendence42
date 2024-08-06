@@ -24,23 +24,23 @@ import {
   DEAD,
   GIVEN_UP,
   STARTED, CREATED,
-} from "../../constants";
+} from "../../../constants";
 import { PaddleComponent } from "../paddle/paddle.component";
 import { BallComponent } from "../ball/ball.component";
-import { WebSocketService } from "../../services/web-socket/web-socket.service";
-import { ArenaResponse } from "../../interfaces/arena-response.interface";
-import { Position } from "../../interfaces/position.interface";
-import { ErrorResponse } from "../../interfaces/error-response.interface";
+import { WebSocketService } from "../../../services/web-socket/web-socket.service";
+import { ArenaResponse } from "../../../interfaces/arena-response.interface";
+import { Position } from "../../../interfaces/position.interface";
+import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { Router } from '@angular/router';
-import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
 import { NgForOf, NgIf } from "@angular/common";
-import { ConnectionService } from "../../services/connection/connection.service";
-import { UserService } from "../../services/user/user.service";
-import { PlayerIconComponent } from "../player-icon/player-icon.component";
+import { ConnectionService } from "../../../services/connection/connection.service";
+import { UserService } from "../../../services/user/user.service";
+import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
-import * as Constants from "../../constants";
-import { CopyButtonComponent } from "../copy-button/copy-button.component";
+import * as Constants from "../../../constants";
+import { CopyButtonComponent } from "../../copy-button/copy-button.component";
 
 interface PaddleUpdateResponse {
   slot: number;

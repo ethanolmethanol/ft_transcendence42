@@ -1,6 +1,6 @@
 import { Component, Input, Renderer2, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GameOverComponent } from '../gameover/gameover.component';
+import { GameOverComponent } from '../gameplay/gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
 import * as Constants from '../../constants';
 

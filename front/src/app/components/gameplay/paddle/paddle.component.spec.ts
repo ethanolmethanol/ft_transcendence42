@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PaddleComponent } from './paddle.component';
-import {GAME_HEIGHT, PADDLE_HEIGHT} from "../../constants";
+import {GAME_HEIGHT, PADDLE_HEIGHT} from "../../../constants";
 
 describe('PaddleComponent', () => {
   let component: PaddleComponent;
