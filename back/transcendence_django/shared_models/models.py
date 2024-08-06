@@ -1,5 +1,4 @@
 from typing import Any, List, TypeVar
-import logging
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -11,7 +10,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
-logger = logging.getLogger(__name__)
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore

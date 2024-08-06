@@ -61,7 +61,6 @@ export class GameSummaryListComponent implements AfterViewInit {
   }
 
   public refreshSummaries(): void {
-    console.log('refreshing game summaries');
     this.startIndex = 0;
     this.endIndex = GAME_HISTORY_COUNT_REQUEST - 1;
     this.allSummaries = [];
