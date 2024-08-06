@@ -39,11 +39,11 @@ class UserDataView(APIView):
         return self._handle_get_request(user, user_id)
 
     def post(self, request: Any) -> Response:
-        result = self.find_user_by_id(request)
-        if isinstance(result, Response):
-            return result
+        user_id = self.get_user_id(request)
+        if user_id is None:
+            return self._respond_with_unauthorized()
 
-        user = result
+        user = self.find_user_by_id(user_id)
         return self._handle_post_request(user, request.data)
 
     def _respond_with_unauthorized(self) -> Response:

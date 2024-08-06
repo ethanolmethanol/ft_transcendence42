@@ -42,6 +42,7 @@ export class UserService {
         color_config: userData.color_config,
         game_settings: userData.game_settings,
       };
+      console.log('User data loaded:', this._userData);
     } catch (error) {
       console.error('Error loading user data:', error);
     }
