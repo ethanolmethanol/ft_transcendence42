@@ -1,4 +1,5 @@
 from typing import Any, List, TypeVar
+import logging
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -10,6 +11,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
 
+logger = logging.getLogger(__name__)
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore
@@ -18,8 +20,7 @@ class GameSummary(models.Model):
     start_time = models.DateTimeField(null=True)  # type: ignore
     end_time = models.DateTimeField(auto_now=True)  # type: ignore
     is_remote = models.BooleanField(default=False)  # type: ignore
-
-
+    result = models.CharField(max_length=10, choices=[('win', 'Win'), ('loss', 'Loss'), ('tie', 'Tie')], default='tie')  # New field
 class Profile(models.Model):
     color_config: List[str] = ArrayField(
         models.CharField(max_length=20), default=list
@@ -65,6 +66,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
     time_played = models.IntegerField(default=0)  # type: ignore
+    win_loss_tie = models.JSONField(default=dict)  # Change to dictionary
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore
@@ -81,4 +83,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         await sync_to_async(self.game_summaries.add)(game_summary)
         game_duration = (game_summary.end_time - game_summary.start_time).total_seconds()
         self.time_played += game_duration
+        self.update_win_dict(game_summary)
         await sync_to_async(self.save)()
+
+    def update_win_dict(self, game_summary) -> None:
+        logger.info("Winner: %s", game_summary.winner_user_id)
+        logger.info("User: %s", self.id)
+        if str(game_summary.winner_user_id) == str(self.id):
+            self.win_loss_tie['win'] = self.win_loss_tie.get('win', 0) + 1
+        elif game_summary.winner_user_id is None:
+            self.win_loss_tie['tie'] = self.win_loss_tie.get('tie', 0) + 1
+        else:
+            self.win_loss_tie['loss'] = self.win_loss_tie.get('loss', 0) + 1
+        logger.info("Win dict: %s", self.win_loss_tie)

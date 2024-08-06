@@ -1,0 +1,13 @@
+.win-rate-container {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  background-color: rgba(50, 50, 50, 0.7);
+  justify-content: center;
+  align-items: center;
+  gap: 10%;
+  border-radius: 5%;
+  padding: 5%;
+  min-width: 300px;
+  width: 100%;
+}

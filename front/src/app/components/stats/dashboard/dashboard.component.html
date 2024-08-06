@@ -2,6 +2,7 @@
   <h4 class="title">Statistics</h4>
   <section *ngIf="!isWaiting; else loading" class="content">
     <app-time-played [timePlayed]="timePlayed"></app-time-played>
+    <app-win-rate *ngIf="winDict" [winDict]="winDict"></app-win-rate>
   </section>
   <ng-template #loading>
     <app-loading-spinner></app-loading-spinner>
