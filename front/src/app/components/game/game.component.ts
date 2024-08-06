@@ -9,10 +9,9 @@ import {
   SimpleChanges,
   OnChanges,
   Renderer2,
-  ElementRef,
+  ElementRef, EventEmitter, Output,
 } from '@angular/core';
 import {
-  CREATED,
   NOT_JOINED,
   INVALID_ARENA,
   INVALID_CHANNEL,
@@ -24,7 +23,7 @@ import {
   DYING,
   DEAD,
   GIVEN_UP,
-  STARTED, READY_TO_START,
+  STARTED, CREATED,
 } from "../../constants";
 import { PaddleComponent } from "../paddle/paddle.component";
 import { BallComponent } from "../ball/ball.component";
@@ -62,6 +61,7 @@ interface StartTimerResponse {
 }
 
 interface GameOverUpdateResponse {
+  players: string[];
   winner: string;
   time: number;
   message: string;
@@ -103,6 +103,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() isRemote: boolean = false;
+  @Output() hasStarted = new EventEmitter<void>();
+  @Output() startCounterStarted = new EventEmitter<void>();
   gameBoardColors: string[] = Constants.DEFAULT_COLORS;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
@@ -225,6 +227,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.startTimer.first.message = timer.message;
     this.startTimer.first.time = timer.time;
     this.startTimer.first.show = true;
+    this.startCounterStarted.emit();
   }
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
@@ -259,6 +262,12 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
+  private handleStartCounterCompletion() {
+    if (this.hasStarted.observed) {
+      this.hasStarted.emit();
+    }
+  }
+
   private updateStatus(status: number) {
     let gameOverOverlay = this.gameOver.first;
     this.isWaiting = (status == CREATED || status == WAITING)
@@ -268,6 +277,9 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       } else if (status == DEAD) {
         this.redirectToHome();
       } else if (status == STARTED) {
+        if (this.hasStarted.observed) {
+          this.hasStarted.emit();
+        }
         gameOverOverlay.show = false;
       }
     }

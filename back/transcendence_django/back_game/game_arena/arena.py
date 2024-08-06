@@ -5,7 +5,16 @@ from typing import Any, Callable, Coroutine, Optional
 from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
-from back_game.game_settings.dict_keys import (
+from back_game.game_settings.game_constants import (
+    CREATED,
+    MAXIMUM_SCORE,
+    READY_TO_START,
+    STARTED,
+    TIME_START,
+    TIME_START_INTERVAL,
+    WAITING,
+)
+from transcendence_django.dict_keys import (
     ARENA,
     BALL,
     COLLIDED_SLOT,
@@ -23,15 +32,6 @@ from back_game.game_settings.dict_keys import (
     SCORE,
     SCORES,
     STATUS,
-)
-from back_game.game_settings.game_constants import (
-    CREATED,
-    MAXIMUM_SCORE,
-    READY_TO_START,
-    STARTED,
-    TIME_START,
-    TIME_START_INTERVAL,
-    WAITING,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,8 +76,8 @@ class Arena:
             },
         }
 
-    def is_empty(self) -> bool:
-        return self.player_manager.is_empty()
+    def is_remote(self) -> bool:
+        return self.player_manager.is_remote
 
     def is_full(self) -> bool:
         return self.player_manager.is_full()
@@ -90,8 +90,8 @@ class Arena:
             for player in self.player_manager.players.values()
         )
 
-    def get_winner(self) -> str:
-        return self.player_manager.get_winner()
+    def get_game_summary(self) -> dict[str, Any]:
+        return self.player_manager.get_game_summary()
 
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
@@ -177,7 +177,7 @@ class Arena:
     def can_be_over(self) -> bool:
         status = self.game.status
         if status == GameStatus(WAITING):
-            return self.is_empty()
+            return self.player_manager.is_empty()
         if status == GameStatus(STARTED):
             return self.__has_enough_players() is False or self.__did_player_win()
         return False

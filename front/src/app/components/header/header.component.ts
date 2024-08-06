@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { UserService } from "../../services/user/user.service";
 import { AuthService } from "../../services/auth/auth.service";
@@ -13,8 +13,13 @@ import { AuthService } from "../../services/auth/auth.service";
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
+  @Output() scrollToTop = new EventEmitter<void>();
 
   constructor(private authService: AuthService, private userService: UserService) {}
+
+  onTitleClick(): void {
+    this.scrollToTop.emit();
+  }
 
   public logOut() {
     this.authService.logout();

@@ -9,8 +9,6 @@ header {
   background-color: black;
   color: white;
   padding: 1%;
-  overflow: hidden;
-  padding: 1%;
   z-index: 1000;
   overflow: hidden;
 }
@@ -25,20 +23,6 @@ button {
   border: none;
   padding: 0.5% 1%;
   cursor: pointer;
-}
-
-a {
-  display: unset;
-  padding: unset;
-  margin-top: unset;
-  background-color: unset;
-  color: unset;
-  text-align: unset;
-  text-decoration: unset;
-  font-size: unset;
-  border-radius: unset;
-  transition: unset;
-  animation: unset;
 }
 
 .title {

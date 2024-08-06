@@ -10,19 +10,23 @@ from back_game.game_arena.player import (
     Player,
     PlayerStatus,
 )
-from back_game.game_settings.dict_keys import (
+from back_game.game_settings.game_constants import (
+    AFK_WARNING_THRESHOLD,
+    MAX_PLAYER,
+    MIN_PLAYER,
+)
+from transcendence_django.dict_keys import (
     ARENA_FULL,
     INVALID_NB_PLAYERS,
     IS_REMOTE,
     NB_PLAYERS,
     PLAYER_NAME,
+    PLAYERS,
+    SCORE,
     TIME_LEFT,
     UNKNOWN_USER,
-)
-from back_game.game_settings.game_constants import (
-    AFK_WARNING_THRESHOLD,
-    MAX_PLAYER,
-    MIN_PLAYER,
+    USER_ID,
+    WINNER,
 )
 
 logger = logging.getLogger(__name__)
@@ -92,17 +96,23 @@ class PlayerManager:
         except KeyError:
             return False
 
-    def get_winner(self) -> str:
-        active_players = [
-            player for player in self.players.values() if player.is_active()
-        ]
-        if (
-            not active_players
-            or len(set(player.score for player in active_players)) == 1
-        ):
-            return ""
-        winner = max(active_players, key=lambda player: player.score)
-        return winner.player_name
+    def get_game_summary(self) -> dict[str, Any]:
+        winner = self.__get_winner()
+        return {
+            PLAYERS: [
+                {
+                    USER_ID: player.user_id,
+                    SCORE: player.score,
+                }
+                for player in self.players.values()
+            ],
+            WINNER: (
+                {PLAYER_NAME: winner.player_name, USER_ID: winner.user_id}
+                if winner
+                else None
+            ),
+            IS_REMOTE: self.is_remote,
+        }
 
     def finish_given_up_players(self):
         for player in self.players.values():
@@ -132,6 +142,15 @@ class PlayerManager:
 
     def get_player_name(self, user_id: int) -> str:
         return self.__get_player_from_user_id(user_id).player_name
+
+    def __get_winner(self) -> Player | None:
+        active_players = [
+            player for player in self.players.values() if player.is_active()
+        ]
+        if not active_players:
+            return None
+        winner = max(active_players, key=lambda player: player.score)
+        return winner
 
     def __count_players(self, state: PlayerStatus = PlayerStatus(ENABLED)) -> int:
         return sum(player.status == state for player in self.players.values())

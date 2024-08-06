@@ -11,7 +11,7 @@ services:
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            test: "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
             interval: 5s
             timeout: 1s
             retries: 20
@@ -31,12 +31,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'python3 manage.py health_check'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 5s
 
     back_user:
         image: back_user
@@ -52,8 +46,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'python3 manage.py health_check'
 
     back_game:
         image: back_game
@@ -71,14 +63,15 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'python3 manage.py health_check'
 
     front:
         image: front
         container_name: front
         build:
             context: front
+        depends_on:
+            back_game:
+                condition: service_healthy
         volumes:
             - front-data:/usr/share/nginx/html
         ports:
@@ -86,12 +79,6 @@ services:
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'curl -kfsSL https://localhost:443/'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 10s
 
     redis:
         image: "redis:latest"
@@ -209,4 +196,3 @@ volumes:
 
 networks:
     transcendence:
-        name: transcendence

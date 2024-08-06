@@ -35,6 +35,7 @@ PADDLE = "paddle"
 START_TIMER = "start_timer"
 GAME_OVER = "game_over"
 WINNER = "winner"
+WINNER_USER_ID = "winner_user_id"
 TIME = "time"
 
 # Game callbacks

@@ -5,16 +5,6 @@ from typing import Any, NewType
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
 from back_game.game_geometry.rectangle import Rectangle
-from back_game.game_settings.dict_keys import (
-    END,
-    HEIGHT,
-    PLAYER_NAME,
-    POSITION,
-    SLOT,
-    SPEED,
-    START,
-    WIDTH,
-)
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,
@@ -23,6 +13,16 @@ from back_game.game_settings.game_constants import (
     PADDLE_INITIAL_SPEED_RATE,
     PADDLE_OFFSET,
     PADDLE_WIDTH,
+)
+from transcendence_django.dict_keys import (
+    END,
+    HEIGHT,
+    PLAYER_NAME,
+    POSITION,
+    SLOT,
+    SPEED,
+    START,
+    WIDTH,
 )
 
 log = logging.getLogger(__name__)

@@ -1,8 +1,12 @@
 body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 a {
@@ -16,6 +20,7 @@ a {
 }
 
 img {
+  display: flex;
   border-radius: 1%;
   border-style: solid;
   border-width: 0.5em;

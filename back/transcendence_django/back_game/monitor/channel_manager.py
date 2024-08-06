@@ -6,8 +6,8 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.dict_keys import ID
 from back_game.game_settings.game_constants import DEAD, WAITING
+from transcendence_django.dict_keys import ID
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ class ChannelManager:
     def __get_available_channel(self) -> dict[str, Any] | None:
         for channel_id, channel in self.channels.items():
             arenas_id: list[str] = list(channel.keys())
-            if arenas_id is None:
+            if not arenas_id:
                 return None
             arena_id: str = arenas_id[0]
             arena: Arena = channel[arena_id]

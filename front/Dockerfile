@@ -2,6 +2,7 @@
 # Stage 1: Build the Angular application
 FROM node:20-alpine as builder
 WORKDIR /app
+
 # Install Angular CLI and project dependencies
 RUN npm install -g @angular/cli@latest
 # Copy the app
@@ -17,9 +18,6 @@ FROM nginx:1.25.4-alpine
 
 WORKDIR /
 
-# Default healthcheck for image
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "curl" "-kfsSL" "https://localhost:443/" ]
-
 RUN apk update && apk upgrade && apk add --no-cache 'curl' 'openssl'
 
 # Copy the Nginx configuration file
@@ -29,3 +27,5 @@ COPY ./ssl/* /etc/ssl
 COPY --from=builder /app/dist/transcendence/browser /usr/share/nginx/html
 # Expose port 443
 EXPOSE 443
+
+HEALTHCHECK --interval=5s --timeout=10s --retries=10 CMD curl -kfsSL https://localhost:443/

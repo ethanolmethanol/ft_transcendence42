@@ -1,6 +1,6 @@
 <body>
-  <app-header></app-header>
-  <section class="home-page-container">
+  <app-header (scrollToTop)="scrollToTop()"></app-header>
+  <section class="home-page-container" #homePageContainer>
     <h4>{{welcome}}</h4>
     <section class="buttons">
       <app-button-with-icon
@@ -14,6 +14,7 @@
         [icon]="'public'">
       </app-button-with-icon>
     </section>
+    <app-game-summary-list [userID]="userID" #gameSummaryList></app-game-summary-list>
     <app-leaderboard></app-leaderboard>
   </section>
 </body>
