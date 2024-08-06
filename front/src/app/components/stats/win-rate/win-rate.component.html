@@ -1,3 +1,8 @@
 <section class="win-rate-container">
+  <header>
+    <h5>Win Rate</h5>
+    <span class="material-icons">emoji_events</span>
+  </header>
   <p-chart type="doughnut" [data]="data" [options]="options" />
+  <p class="win-rate"> {{winRate}}% </p>
 </section>

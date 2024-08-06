@@ -15,11 +15,18 @@ import {NgIf} from "@angular/common";
 })
 export class WinRateComponent implements OnInit {
   @Input() winDict!: Wins;
+  winRate: number = 0;
   data: any;
   options: any;
 
   ngOnInit() {
     this.setChart();
+    this.winRate = this.calculateWinRate();
+  }
+
+  private calculateWinRate(): number {
+    const total = this.winDict.win + this.winDict.loss + this.winDict.tie;
+    return Math.round((this.winDict.win / total) * 100);
   }
 
   private setChart() {

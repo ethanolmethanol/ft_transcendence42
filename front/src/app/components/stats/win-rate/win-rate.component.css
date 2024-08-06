@@ -11,3 +11,26 @@
   min-width: 300px;
   width: 100%;
 }
+
+header {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  gap: 20%;
+  padding: 10%;
+}
+
+.material-icons {
+  font-size: 2em;
+}
+
+.win-rate {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 2em;
+  margin-top: 10%;
+}

@@ -1,8 +1,8 @@
 <section class="dashboard-container">
   <h4 class="title">Statistics</h4>
   <section *ngIf="!isWaiting; else loading" class="content">
-    <app-time-played *ngIf="timePlayed" [timePlayed]="timePlayed!"></app-time-played>
     <app-win-rate *ngIf="!isWinDictEmpty()" [winDict]="winDict!"></app-win-rate>
+    <app-time-played *ngIf="timePlayed" [timePlayed]="timePlayed!"></app-time-played>
   </section>
   <ng-template #loading>
     <app-loading-spinner></app-loading-spinner>
