@@ -18,6 +18,7 @@ class Player:
         self.score: int = 0
         self.status: PlayerStatus = PlayerStatus(ENABLED)
         self.last_activity_time: float = time.time()
+        self.is_bot: bool = player_name == f"bot{user_id}"
 
     def update_activity_time(self):
         self.last_activity_time = time.time()

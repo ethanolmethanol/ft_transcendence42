@@ -69,6 +69,8 @@ INVALID_NB_PLAYERS = "The number of players is out of allowed range."
 NB_PLAYERS = "nb_players"
 IS_REMOTE = "type"
 PLAYER_NAME = "player_name"
+AI_OPPONENTS_LOCAL = "ai_opponents_local"
+AI_OPPONENTS_ONLINE = "ai_opponents_online"
 TIME_LEFT = "time_left"
 
 # Ball && Paddle

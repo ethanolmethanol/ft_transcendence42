@@ -2,12 +2,14 @@ import logging
 import random
 import string
 from typing import Any
+from requests import get as http_get, Response
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import DEAD, WAITING
-from transcendence_django.dict_keys import ID
+from transcendence_django.dict_keys import (ID, AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE)
+from transcendence_django.settings import SERV_IP
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +48,10 @@ class ChannelManager:
         self.channels[channel_id] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
+        if (int)(players_specs['options'][AI_OPPONENTS_LOCAL]) > 0 \
+            or (int)(players_specs['options'][AI_OPPONENTS_ONLINE]) > 0:
+            aipi_response: Response = http_get(url = f"https://{SERV_IP}:8003/aipi/spawn/", json = {"channel_id": channel_id})
+            self.add_user_to_channel(0, channel_id, new_arena.id)
         return self.user_game_table[user_id]
 
     def get_channel_from_user_id(self, user_id: int) -> dict[str, Any] | None:

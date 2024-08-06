@@ -23,4 +23,5 @@ urlpatterns = [
     path("auth/", include("back_auth.urls")),
     path("user/", include("back_user.urls")),
     path("game/", include("back_game.app_settings.urls")),
+    path("aipi/", include("back_aipi.urls")),
 ]
