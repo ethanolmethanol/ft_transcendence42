@@ -15,16 +15,15 @@ import {NgIf} from "@angular/common";
 })
 export class WinRateComponent implements OnInit {
   @Input() winDict!: Wins;
-  isEmpty: boolean = true;
   data: any;
   options: any;
 
   ngOnInit() {
-    if (this.winDict.win === 0 && this.winDict.loss === 0 && this.winDict.tie === 0) {
-      this.isEmpty = true;
-      return
-    }
-    this.isEmpty = false;
+    this.setChart();
+  }
+
+  private setChart() {
+
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
 

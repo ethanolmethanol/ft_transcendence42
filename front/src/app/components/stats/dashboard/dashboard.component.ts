@@ -22,8 +22,8 @@ import {Times, Wins} from "../../../interfaces/user";
 export class DashboardComponent implements OnInit {
 
   isWaiting = true;
-  timePlayed: { local: string, remote: string } = { local: '0', remote: '0' };
-  winDict: Wins | null = null
+  timePlayed: Times | null = null; // = { local: '0', remote: '0' };
+  winDict: Wins | null = null;
 
   constructor(private userService: UserService) {
     console.log('DashboardComponent created');
@@ -40,10 +40,7 @@ export class DashboardComponent implements OnInit {
 
 
   private initTimePlayed(): void {
-    const timePlayedInSeconds = this.userService.getTimePlayed();
-    this.timePlayed.local = formatTimePlayed(timePlayedInSeconds.local);
-    this.timePlayed.remote = formatTimePlayed(timePlayedInSeconds.remote);
-    console.log(this.timePlayed.local, this.timePlayed.remote)
+    this.timePlayed = this.userService.getTimePlayed();
   }
 
   private initWinDict(): void {

@@ -103,7 +103,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.win_loss_tie[key] += 1
 
     def __update_time_played(self, game_summary) -> None:
-        game_duration: int = int((game_summary.end_time - game_summary.start_time).total_seconds())
+        start_time = game_summary.start_time or datetime.min
+        end_time = game_summary.end_time or datetime.max
+        game_duration: int = int((end_time - start_time).total_seconds())
         if game_summary.is_remote:
             self.time_played['remote'] += game_duration
         else:

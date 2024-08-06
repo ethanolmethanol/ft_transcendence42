@@ -4,9 +4,11 @@
 @import './assets/fonts/custom-font.css';
 
 :root {
+  --blue-500: #007bff;
   --red-500: #ff1b00;
   --yellow-500: #ffc107;
   --green-500: #28a745;
+  --blue-400: #006abb;
   --red-400: #bb1b00;
   --yellow-400: #e0a800;
   --green-400: #218838;
