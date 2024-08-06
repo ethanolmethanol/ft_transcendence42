@@ -3,6 +3,16 @@
 /* You can add global styles to this file, and also import other style files */
 @import './assets/fonts/custom-font.css';
 
+:root {
+  --blue-500: #007bff;
+  --yellow-500: #ffc107;
+  --green-500: #28a745;
+  --blue-400: #0056b3;
+  --yellow-400: #e0a800;
+  --green-400: #218838;
+  --text-color: #212529;
+}
+
 body {
   background-image: url("assets/app-themes/game-background_light.gif");
   height: 100vh; /* Full viewport height */
