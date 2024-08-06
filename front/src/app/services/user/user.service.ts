@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS} from "../../constants";
 import { Observable } from "rxjs";
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
-import {Times, User, Wins} from "../../interfaces/user";
+import {GameCounter, Times, User, Wins} from "../../interfaces/user";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,7 @@ export class UserService {
       id: -1,
       username: '',
       email: '',
+      game_counter: {local: 0, remote: 0, total: 0},
       win_dict: {win: 0, loss: 0, tie: 0},
       time_played: {local: 0, remote: 0},
       color_config: DEFAULT_COLORS,
@@ -35,6 +36,7 @@ export class UserService {
         id: Object.freeze(userData.id),
         email: Object.freeze(userData.email),
         username: Object.freeze(userData.username),
+        game_counter: userData.game_counter,
         win_dict: userData.win_dict,
         time_played: userData.time_played,
         color_config: userData.color_config,
@@ -83,6 +85,10 @@ export class UserService {
 
   public getWinDict(): Wins {
     return this.getUserData().win_dict;
+  }
+
+  public getGameCounter(): GameCounter {
+    return this.getUserData().game_counter;
   }
 
   public setColorConfig(colors: string[]): void {

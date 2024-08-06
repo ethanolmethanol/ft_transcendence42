@@ -1,0 +1,8 @@
+<section class="count-games">
+  <header>
+    <h5>Games count</h5>
+    <span class="material-icons">calendar_month</span>
+  </header>
+  <p-chart *ngIf="totalCount > 0" type="pie" [data]="data" [options]="options" />
+  <p class="count"> {{totalCount}} </p>
+</section>

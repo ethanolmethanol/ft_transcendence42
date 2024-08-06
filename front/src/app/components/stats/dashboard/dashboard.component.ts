@@ -4,7 +4,8 @@ import {NgIf} from "@angular/common";
 import {TimePlayedComponent} from "../time-played/time-played.component";
 import {LoadingSpinnerComponent} from "../../loading-spinner/loading-spinner.component";
 import {WinRateComponent} from "../win-rate/win-rate.component";
-import {Times, Wins} from "../../../interfaces/user";
+import {GameCounter, Times, Wins} from "../../../interfaces/user";
+import {CountGamesComponent} from "../count-games/count-games.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,8 @@ import {Times, Wins} from "../../../interfaces/user";
     TimePlayedComponent,
     LoadingSpinnerComponent,
     NgIf,
-    WinRateComponent
+    WinRateComponent,
+    CountGamesComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -23,6 +25,7 @@ export class DashboardComponent implements OnInit {
   isWaiting: boolean = true;
   timePlayed: Times | null = null;
   winDict: Wins | null = null;
+  gameCounter: GameCounter | null = null;
 
   constructor(private userService: UserService) {
     console.log('DashboardComponent created');
@@ -33,6 +36,7 @@ export class DashboardComponent implements OnInit {
     setTimeout(() => {
       this.initTimePlayed();
       this.initWinDict();
+      this.initGameCounter();
       this.isWaiting = false;
     }, 1000);
   }
@@ -46,8 +50,14 @@ export class DashboardComponent implements OnInit {
     this.winDict = this.userService.getWinDict();
   }
 
+  private initGameCounter(): void {
+    this.gameCounter = this.userService.getGameCounter();
+  }
+
   public isWinDictEmpty(): boolean {
-    return this.winDict === null
-      || Object.keys(this.winDict).length === 0;
+    return this.winDict === null ||
+      this.winDict.win === 0 &&
+      this.winDict.loss === 0 &&
+      this.winDict.tie === 0;
   }
 }

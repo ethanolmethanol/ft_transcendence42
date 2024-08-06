@@ -29,8 +29,15 @@ class HistoryManager:
             is_remote=summary[IS_REMOTE],
             start_time=summary[START_TIME],
         )
-        for player in summary[PLAYERS]:
-            user_id = player.get(USER_ID)
-            if user_id:
-                user = await sync_to_async(self.custom_user_model.objects.get)(pk=user_id)
-                await user.save_game_summary(game_summary)
+        if summary[IS_REMOTE]:
+            for player in summary[PLAYERS]:
+                await self.__save_game_summary_for_player(player, game_summary)
+        else:
+            player = summary[PLAYERS][0]
+            await self.__save_game_summary_for_player(player, game_summary)
+
+    async def __save_game_summary_for_player(self, player, game_summary):
+        user_id = player.get(USER_ID)
+        if user_id:
+            user = await sync_to_async(self.custom_user_model.objects.get)(pk=user_id)
+            await user.save_game_summary(game_summary)

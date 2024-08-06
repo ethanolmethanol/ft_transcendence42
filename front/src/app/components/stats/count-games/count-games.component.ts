@@ -1,32 +1,31 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {GameCounter} from "../../../interfaces/user";
 import {ChartModule} from "primeng/chart";
 import {NgIf} from "@angular/common";
-import {Times} from "../../../interfaces/user";
-import {formatTimePlayed} from "../../../utils/time";
 
 @Component({
-  selector: 'app-time-played',
+  selector: 'app-count-games',
   standalone: true,
-  templateUrl: './time-played.component.html',
   imports: [
     ChartModule,
     NgIf
   ],
-  styleUrl: './time-played.component.css'
+  templateUrl: './count-games.component.html',
+  styleUrl: './count-games.component.css'
 })
-export class TimePlayedComponent implements OnInit {
-  @Input() timePlayed!: Times;
-  totalTimePlayed: string = '';
+export class CountGamesComponent implements OnInit {
+  @Input() gameCounter!: GameCounter;
+  totalCount: number = 0;
+
   data: any;
   options: any;
 
   ngOnInit() {
     this.setChart();
-    this.totalTimePlayed = formatTimePlayed(this.timePlayed.local + this.timePlayed.remote);
+    this.totalCount = this.gameCounter.total;
   }
 
   private setChart() {
-
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
 
@@ -34,7 +33,7 @@ export class TimePlayedComponent implements OnInit {
       labels: ['Local', 'Online'],
       datasets: [
         {
-          data: [this.timePlayed.local, this.timePlayed.remote],
+          data: [this.gameCounter.local, this.gameCounter.remote],
           backgroundColor: [
             documentStyle.getPropertyValue('--blue-500'),
             documentStyle.getPropertyValue('--yellow-500')
@@ -47,21 +46,11 @@ export class TimePlayedComponent implements OnInit {
       ]
     };
 
-
     this.options = {
       plugins: {
         legend: {
           labels: {
             color: textColor
-          }
-        },
-        tooltip: {
-          enabled: true,
-          callbacks: {
-            label: (context: { dataIndex: number }) => {
-              const timePlayedKey = context.dataIndex === 0 ? 'local' : 'remote';
-              return formatTimePlayed(this.timePlayed[timePlayedKey]);
-            }
           }
         }
       }

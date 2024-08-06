@@ -61,6 +61,9 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
 def get_default_time_played() -> dict[str, int]:
     return {'local': 0, 'remote': 0}
 
+def get_default_game_counter() -> dict[str, int]:
+    return {'local': 0, 'remote': 0, 'total': 0}
+
 def get_default_win_loss_tie() -> dict[str, int]:
     return {'win': 0, 'loss': 0, 'tie': 0}
 
@@ -74,6 +77,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
     time_played: dict[str, int] = models.JSONField(default=get_default_time_played)
     win_loss_tie: dict[str, int] = models.JSONField(default=get_default_win_loss_tie)
+    game_counter: dict[str, int] = models.JSONField(default=get_default_game_counter)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore
@@ -89,6 +93,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
         self.__update_time_played(game_summary)
+        self.__update_count(game_summary)
         if game_summary.is_remote:
             self.__update_win_dict(game_summary)
         await sync_to_async(self.save)()
@@ -110,3 +115,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             self.time_played['remote'] += game_duration
         else:
             self.time_played['local'] += game_duration
+
+    def __update_count(self, game_summary) -> None:
+        if game_summary.is_remote:
+            self.game_counter['remote'] += 1
+        else:
+            self.game_counter['local'] += 1
+        self.game_counter['total'] += 1

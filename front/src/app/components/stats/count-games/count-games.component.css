@@ -1,0 +1,35 @@
+.count-games {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(50, 50, 50, 0.7);
+  justify-content: center;
+  align-items: center;
+  gap: 10%;
+  border-radius: 5%;
+  padding: 5%;
+  min-width: 300px;
+  width: 100%;
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  gap: 20%;
+  padding: 10%;
+}
+
+.material-icons {
+  font-size: 2em;
+}
+
+.count {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 2em;
+  margin-top: 10%;
+}

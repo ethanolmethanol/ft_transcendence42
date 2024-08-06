@@ -9,10 +9,17 @@ export interface Times {
   remote: number;
 }
 
+export interface GameCounter {
+  local: number;
+  remote: number;
+  total: number;
+}
+
 export interface User {
   id: number;
   username: string;
   email: string;
+  game_counter: GameCounter;
   win_dict: Wins;
   time_played: Times;
   color_config: string[];
