@@ -107,3 +107,7 @@ a:hover:not(.title) {
     transform: translateY(0px)
   }
 }
+
+.hidden {
+  visibility: hidden;
+}
