@@ -1,13 +1,13 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
 import { UserService } from '../../services/user/user.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
-import {AsyncPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
-import {ButtonWithIconComponent} from "../../components/button-with-icon/button-with-icon.component";
-import {GameSummaryComponent} from "../../components/stats/game-summary/game-summary.component";
-import {GameSummaryListComponent} from "../../components/stats/game-summary-list/game-summary-list.component";
-import {DashboardComponent} from "../../components/stats/dashboard/dashboard.component";
+import { AsyncPipe, NgForOf, NgIf, NgStyle } from "@angular/common";
+import { ButtonWithIconComponent } from "../../components/button-with-icon/button-with-icon.component";
+import { GameSummaryComponent } from "../../components/stats/game-summary/game-summary.component";
+import { GameSummaryListComponent } from "../../components/stats/game-summary-list/game-summary-list.component";
+import { DashboardComponent } from "../../components/stats/dashboard/dashboard.component";
 
 @Component({
   selector: 'app-home-page',

@@ -2,11 +2,13 @@ export interface Wins {
   win: number;
   loss: number;
   tie: number;
+  total: number;
 }
 
 export interface Times {
   local: number;
   remote: number;
+  total: number;
 }
 
 export interface GameCounter {

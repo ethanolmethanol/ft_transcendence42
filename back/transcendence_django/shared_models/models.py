@@ -9,6 +9,7 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from shared_models.constants import DEFAULT_GAME_COUNTER, DEFAULT_TIME_PLAYED, DEFAULT_WIN_LOSS_TIE
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
 
@@ -59,18 +60,6 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
         return self.create_user(username, email, password, **extra_fields)
 
 
-def get_default_time_played() -> dict[str, int]:
-    return {LOCAL: 0, REMOTE: 0}
-
-
-def get_default_game_counter() -> dict[str, int]:
-    return {LOCAL: 0, REMOTE: 0, TOTAL: 0}
-
-
-def get_default_win_loss_tie() -> dict[str, int]:
-    return {WIN: 0, LOSS: 0, TIE: 0}
-
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)  # type: ignore
     username = models.CharField(max_length=150, unique=True)  # type: ignore
@@ -79,9 +68,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    time_played = models.JSONField(default=get_default_time_played)
-    win_loss_tie = models.JSONField(default=get_default_win_loss_tie)
-    game_counter = models.JSONField(default=get_default_game_counter)
+    time_played = models.JSONField(default=DEFAULT_TIME_PLAYED)
+    win_loss_tie = models.JSONField(default=DEFAULT_WIN_LOSS_TIE)
+    game_counter = models.JSONField(default=DEFAULT_GAME_COUNTER)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore
@@ -110,6 +99,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         else:
             key = LOSS
         self.win_loss_tie[key] += 1
+        self.win_loss_tie[TOTAL] += 1
 
     def __update_time_played(self, game_summary) -> None:
         start_time = game_summary.start_time or datetime.min
@@ -119,6 +109,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             self.time_played[REMOTE] += game_duration
         else:
             self.time_played[LOCAL] += game_duration
+        self.time_played[TOTAL] += game_duration
 
     def __update_count(self, game_summary) -> None:
         if game_summary.is_remote:

@@ -4,16 +4,16 @@ import {ChartModule} from "primeng/chart";
 import {NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-count-games',
+  selector: 'app-game-counter',
   standalone: true,
   imports: [
     ChartModule,
     NgIf
   ],
-  templateUrl: './count-games.component.html',
-  styleUrl: './count-games.component.css'
+  templateUrl: './game-counter.component.html',
+  styleUrl: './game-counter.component.css'
 })
-export class CountGamesComponent implements OnInit {
+export class GameCounterComponent implements OnInit {
   @Input() gameCounter!: GameCounter;
   totalCount: number = 0;
 
@@ -22,7 +22,6 @@ export class CountGamesComponent implements OnInit {
 
   ngOnInit() {
     this.setChart();
-    this.totalCount = this.gameCounter.total;
   }
 
   private setChart() {

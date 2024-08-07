@@ -3,7 +3,7 @@
   <section *ngIf="!isWaiting; else loading" class="content">
     <app-time-played *ngIf="timePlayed" [timePlayed]="timePlayed!"></app-time-played>
     <app-win-rate *ngIf="!isWinDictEmpty()" [winDict]="winDict!"></app-win-rate>
-    <app-count-games *ngIf="gameCounter" [gameCounter]="gameCounter!"></app-count-games>
+    <app-game-counter *ngIf="gameCounter" [gameCounter]="gameCounter!"></app-game-counter>
   </section>
   <ng-template #loading>
     <app-loading-spinner></app-loading-spinner>

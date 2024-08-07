@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CountGamesComponent } from './count-games.component';
+import { GameCounterComponent } from './game-counter.component';
 
-describe('CountGamesComponent', () => {
-  let component: CountGamesComponent;
-  let fixture: ComponentFixture<CountGamesComponent>;
+describe('GameCounterComponent', () => {
+  let component: GameCounterComponent;
+  let fixture: ComponentFixture<GameCounterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CountGamesComponent]
+      imports: [GameCounterComponent]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(CountGamesComponent);
+
+    fixture = TestBed.createComponent(GameCounterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

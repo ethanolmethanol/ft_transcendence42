@@ -1,4 +1,4 @@
-.count-games {
+.game-counter {
   display: flex;
   flex-direction: column;
   background-color: rgba(50, 50, 50, 0.7);

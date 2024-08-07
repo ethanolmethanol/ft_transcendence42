@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
@@ -55,7 +56,7 @@ class Arena:
         self.game_over_callback: Optional[
             Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
-        self.start_time: Any = None
+        self.start_time: datetime.datetime = None
 
     def to_dict(self) -> dict[str, Any]:
         if self.player_manager.is_remote:

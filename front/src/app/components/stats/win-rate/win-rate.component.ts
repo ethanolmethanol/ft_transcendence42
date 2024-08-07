@@ -25,8 +25,7 @@ export class WinRateComponent implements OnInit {
   }
 
   private calculateWinRate(): number {
-    const total = this.winDict.win + this.winDict.loss + this.winDict.tie;
-    return Math.round((this.winDict.win / total) * 100);
+    return Math.round((this.winDict.win / this.winDict.total) * 100);
   }
 
   private setChart() {

@@ -5,7 +5,7 @@ import {TimePlayedComponent} from "../time-played/time-played.component";
 import {LoadingSpinnerComponent} from "../../loading-spinner/loading-spinner.component";
 import {WinRateComponent} from "../win-rate/win-rate.component";
 import {GameCounter, Times, Wins} from "../../../interfaces/user";
-import {CountGamesComponent} from "../count-games/count-games.component";
+import {GameCounterComponent} from "../game-counter/game-counter.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +15,7 @@ import {CountGamesComponent} from "../count-games/count-games.component";
     LoadingSpinnerComponent,
     NgIf,
     WinRateComponent,
-    CountGamesComponent
+    GameCounterComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -56,8 +56,6 @@ export class DashboardComponent implements OnInit {
 
   public isWinDictEmpty(): boolean {
     return this.winDict === null ||
-      this.winDict.win === 0 &&
-      this.winDict.loss === 0 &&
-      this.winDict.tie === 0;
+      this.winDict.total === 0;
   }
 }

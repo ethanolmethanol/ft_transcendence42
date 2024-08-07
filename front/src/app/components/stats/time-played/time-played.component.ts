@@ -22,7 +22,7 @@ export class TimePlayedComponent implements OnInit {
 
   ngOnInit() {
     this.setChart();
-    this.totalTimePlayed = formatTimePlayed(this.timePlayed.local + this.timePlayed.remote);
+    this.totalTimePlayed = formatTimePlayed(this.timePlayed.total);
   }
 
   private setChart() {

@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {API_USER, DEFAULT_COLORS, DEFAULT_SETTINGS} from "../../constants";
+import {
+  API_USER,
+  DEFAULT_COLORS,
+  DEFAULT_GAME_COUNTER,
+  DEFAULT_SETTINGS,
+  DEFAULT_TIME_PLAYED,
+  DEFAULT_WIN_DICT
+} from "../../constants";
 import { Observable } from "rxjs";
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
 import {GameCounter, Times, User, Wins} from "../../interfaces/user";
@@ -18,9 +25,9 @@ export class UserService {
       id: -1,
       username: '',
       email: '',
-      game_counter: {local: 0, remote: 0, total: 0},
-      win_dict: {win: 0, loss: 0, tie: 0},
-      time_played: {local: 0, remote: 0},
+      game_counter: DEFAULT_GAME_COUNTER,
+      win_dict: DEFAULT_WIN_DICT,
+      time_played: DEFAULT_TIME_PLAYED,
       color_config: DEFAULT_COLORS,
       game_settings: DEFAULT_SETTINGS,
     };
