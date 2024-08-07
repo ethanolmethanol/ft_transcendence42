@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.permissions import IsAuthenticated
 
 # get_user_id,
 from .auth_helpers import get_session_from_request, perform_logout
@@ -55,9 +57,11 @@ def signin(request):
         {"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED
     )
 
+@api_view(["POST"])
+def oauth2(request):
+    pass
 
 # Logout
-
 
 @api_view(["POST"])
 @csrf_protect

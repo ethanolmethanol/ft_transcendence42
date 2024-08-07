@@ -24,11 +24,18 @@ prompt_for_env() {
 	read -rsp "Enter PostgreSQL Password: " postgres_password
 	echo
 	read -rp "Enter PostgreSQL Database Name: " postgres_db
+	read -rp "Enter Django Superuser Name: " django_superuser_name
+	read -rp "Enter Django Superuser Email: " django_superuser_email
+	read -rsp "Enter Django Superuser Password: " django_superuser_password
+	echo
 
 	echo "POSTGRES_USER='${postgres_user}'" >"${ENV_FILE_GLOBAL}"
 	{
 		echo "POSTGRES_PASSWORD='${postgres_password}'"
 		echo "POSTGRES_DB='${postgres_db}'"
+		echo "DJANGO_SUPERUSER_USERNAME='${django_superuser_name}'"
+		echo "DJANGO_SUPERUSER_EMAIL='${django_superuser_email}'"
+		echo "DJANGO_SUPERUSER_PASSWORD='${django_superuser_password}'"
 		echo "SERV_IP='${IP_ADDR}'"
 	} >>"${ENV_FILE_GLOBAL}"
 

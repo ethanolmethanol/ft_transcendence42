@@ -5,6 +5,11 @@ body {
   align-items: center;
 }
 
+app-header {
+  top: 0;
+  position: absolute;
+}
+
 a {
   color: white;
   font-size: 2em;

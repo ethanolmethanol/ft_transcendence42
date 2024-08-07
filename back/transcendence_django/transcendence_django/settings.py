@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "rest_framework",
     "back_auth",
     "back_user",
@@ -51,7 +52,11 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     "corsheaders",
     "django_extensions",
+    "oauth2_provider",
 ]
+
+SITE_ID = 1
+LOGIN_URL = '/admin/login/'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -127,6 +132,10 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 1209600,
+}
 
 print("Database settings:")
 print("Name:", DATABASES["default"]["NAME"])

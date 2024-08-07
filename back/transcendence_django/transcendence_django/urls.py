@@ -17,10 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
+from oauth2_provider import urls as oauth2_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("back_auth.urls")),
     path("user/", include("back_user.urls")),
     path("game/", include("back_game.app_settings.urls")),
+    path('o/', include(oauth2_urls)),
 ]

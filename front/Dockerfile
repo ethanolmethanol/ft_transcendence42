@@ -9,6 +9,7 @@ COPY . .
 
 RUN npm install && \
 	# npm update && \
+    npm install @auth0/angular-jwt angular-oauth2-oidc && \
 # Build the application
 	npm run build
 

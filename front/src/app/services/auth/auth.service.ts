@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import {catchError, map, Observable, of} from 'rxjs';
 import { Router } from "@angular/router";
 import { API_AUTH } from "../../constants";
-
+// import { OAuthService } from 'angular-oauth-oidc';
 interface SignInResponse {
   detail: string;
 }
@@ -19,9 +19,17 @@ export class AuthService {
     return this.http.post<SignInResponse>(`${API_AUTH}/signin/`, { login, password });
   }
 
+  // public signIn42() {
+  //   this.oauthService.initCodeFlow();
+  // }
+
   public signUp(username: string, email: string, password: string): Observable<any> {
     return this.http.post(`${API_AUTH}/signup/`, { username, email, password });
   }
+
+  // public signUp42() {
+  //   this.oauthService.initCodeFlow();
+  // }
 
   public isLoggedIn(): Observable<boolean> {
     return this.http.get(`${API_AUTH}/is_logged/`, { observe: 'response' }).pipe(
@@ -40,6 +48,10 @@ export class AuthService {
       this.router.navigate(['/sign-in']);
     });
   }
+
+  // public logout42() {
+  //   this.oauthService.logOut();
+  // }
 
   private processLogout() {
     return this.http.post(`${API_AUTH}/logout/`, {});
