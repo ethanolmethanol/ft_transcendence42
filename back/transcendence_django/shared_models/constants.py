@@ -1,4 +1,4 @@
-from transcendence_django.dict_keys import LOCAL, REMOTE, TOTAL, WIN, LOSS, TIE
+from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
 
 DEFAULT_TIME_PLAYED = {LOCAL: 0, REMOTE: 0, TOTAL: 0}
 DEFAULT_GAME_COUNTER = {LOCAL: 0, REMOTE: 0, TOTAL: 0}

@@ -56,7 +56,7 @@ class Arena:
         self.game_over_callback: Optional[
             Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
-        self.start_time: datetime.datetime = None
+        self.start_time: datetime.datetime | None = None
 
     def to_dict(self) -> dict[str, Any]:
         if self.player_manager.is_remote:
