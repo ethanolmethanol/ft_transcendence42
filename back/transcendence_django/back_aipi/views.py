@@ -2,8 +2,8 @@
 from http import HTTPStatus
 from typing import Any, Dict, Union
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
+# from django.utils.decorators import method_decorator
+# from django.views.decorators.csrf import csrf_protect
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .client import client
@@ -18,12 +18,12 @@ API_GAME = f'https://{SERV_IP}:8001/game';
 API_GAME_SOCKET = f'wss://{SERV_IP}:8001';
 
 
-@method_decorator(csrf_protect, name="dispatch")
+# @method_decorator(csrf_protect, name="dispatch")
 class AipiView(APIView):
 
     def get(self, request) -> Response:
 
-        channel_id = request.json["channel_id"]
+        channel_id = request.session.get("channel_id")
 
         wss_address = f"{API_GAME_SOCKET}/ws/game/{channel_id}/"
 

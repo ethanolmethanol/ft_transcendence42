@@ -114,10 +114,16 @@ AUTH_USER_MODEL = "shared_models.CustomUser"
 CSRF_TRUSTED_ORIGINS = [
     f"https://{SERV_IP}:4200",
     f"https://{SERV_IP}:8001",
+    f"https://{SERV_IP}:8003",
+    f"https://172.18.0.10:443",
+    f"https://172.18.0.11:443",
 ]
 CORS_ALLOWED_ORIGINS = [
     f"https://{SERV_IP}:4200",
     f"https://{SERV_IP}:8001",
+    f"https://{SERV_IP}:8003",
+    f"https://172.18.0.10:443",
+    f"https://172.18.0.11:443",
 ]
 CORS_ALLOW_CREDENTIALS = True
 AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]

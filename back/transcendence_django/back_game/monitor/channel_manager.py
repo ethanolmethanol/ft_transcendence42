@@ -1,8 +1,9 @@
 import logging
 import random
 import string
+import json
 from typing import Any
-from requests import get as http_get, Response
+from requests import get as http_get, Response, JSONDecodeError
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
@@ -50,8 +51,16 @@ class ChannelManager:
         logger.info("New arena: %s", new_arena.to_dict())
         if (int)(players_specs['options'][AI_OPPONENTS_LOCAL]) > 0 \
             or (int)(players_specs['options'][AI_OPPONENTS_ONLINE]) > 0:
-            aipi_response: Response = http_get(url = f"https://{SERV_IP}:8003/aipi/spawn/", json = {"channel_id": channel_id})
-            self.add_user_to_channel(0, channel_id, new_arena.id)
+            try:
+                aipi_response: Response = http_get(
+                    url = f"https://back_aipi/aipi/spawn/",
+                    verify = False, # does not work otherwise
+                    cert = ('/etc/ssl/serv.crt', '/etc/ssl/serv.key'),
+                    json = {"channel_id": channel_id}
+                )
+                self.add_user_to_channel(aipi_response.json()['user_id'], channel_id, new_arena.id)
+            except (ConnectionRefusedError, JSONDecodeError) as e:
+                logger.error(e)
         return self.user_game_table[user_id]
 
     def get_channel_from_user_id(self, user_id: int) -> dict[str, Any] | None:
