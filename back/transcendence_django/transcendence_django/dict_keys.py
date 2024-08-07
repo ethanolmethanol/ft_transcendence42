@@ -87,3 +87,12 @@ RIGHT = "right"
 LEFT = "left"
 TOP = "top"
 BOTTOM = "bottom"
+
+# User Stats
+
+WIN = "win"
+LOSS = "loss"
+TIE = "tie"
+LOCAL = "local"
+REMOTE = "remote"
+TOTAL = "total"

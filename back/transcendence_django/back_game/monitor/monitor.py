@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Any, Callable, Coroutine, List, Optional
+from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
@@ -21,13 +21,9 @@ from django.conf import settings
 from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
-    IS_REMOTE,
     OVER_CALLBACK,
-    PLAYERS,
     START_TIMER_CALLBACK,
     UPDATE_CALLBACK,
-    USER_ID,
-    WINNER,
 )
 
 logger = logging.getLogger(__name__)

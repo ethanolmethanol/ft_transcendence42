@@ -8,8 +8,9 @@ from transcendence_django.dict_keys import (
     PLAYERS,
     START_TIME,
     USER_ID,
-    WINNER
+    WINNER,
 )
+
 
 class HistoryManager:
 

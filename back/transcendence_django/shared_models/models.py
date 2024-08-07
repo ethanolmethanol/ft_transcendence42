@@ -9,7 +9,14 @@ from django.contrib.auth.models import (
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
-
+from transcendence_django.dict_keys import (
+    LOCAL,
+    LOSS,
+    REMOTE,
+    TIE,
+    TOTAL,
+    WIN,
+)
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore
@@ -56,14 +63,17 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(username, email, password, **extra_fields)
 
+
 def get_default_time_played() -> dict[str, int]:
-    return {'local': 0, 'remote': 0}
+    return {LOCAL: 0, REMOTE: 0}
+
 
 def get_default_game_counter() -> dict[str, int]:
-    return {'local': 0, 'remote': 0, 'total': 0}
+    return {LOCAL: 0, REMOTE: 0, TOTAL: 0}
+
 
 def get_default_win_loss_tie() -> dict[str, int]:
-    return {'win': 0, 'loss': 0, 'tie': 0}
+    return {WIN: 0, LOSS: 0, TIE: 0}
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -98,11 +108,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __update_win_dict(self, game_summary) -> None:
         if str(game_summary.winner_user_id) == str(self.id):
-            key = 'win'
+            key = WIN
         elif game_summary.winner_user_id is None:
-            key = 'tie'
+            key = TIE
         else:
-            key = 'loss'
+            key = LOSS
         self.win_loss_tie[key] += 1
 
     def __update_time_played(self, game_summary) -> None:
@@ -110,13 +120,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         end_time = game_summary.end_time or datetime.max
         game_duration: int = int((end_time - start_time).total_seconds())
         if game_summary.is_remote:
-            self.time_played['remote'] += game_duration
+            self.time_played[REMOTE] += game_duration
         else:
-            self.time_played['local'] += game_duration
+            self.time_played[LOCAL] += game_duration
 
     def __update_count(self, game_summary) -> None:
         if game_summary.is_remote:
-            self.game_counter['remote'] += 1
+            self.game_counter[REMOTE] += 1
         else:
-            self.game_counter['local'] += 1
-        self.game_counter['total'] += 1
+            self.game_counter[LOCAL] += 1
+        self.game_counter[TOTAL] += 1
