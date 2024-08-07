@@ -1,5 +1,5 @@
-from typing import Any, List, TypeVar
 from datetime import datetime
+from typing import Any, List, TypeVar
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -72,7 +72,7 @@ def get_default_win_loss_tie() -> dict[str, int]:
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)  # type: ignore
     username = models.CharField(max_length=150, unique=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
     profile = models.OneToOneField(
