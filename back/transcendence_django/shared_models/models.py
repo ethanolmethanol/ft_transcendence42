@@ -1,4 +1,5 @@
 from typing import Any, List, TypeVar
+from datetime import datetime
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -9,14 +10,8 @@ from django.contrib.auth.models import (
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from sortedm2m.fields import SortedManyToManyField
-from transcendence_django.dict_keys import (
-    LOCAL,
-    LOSS,
-    REMOTE,
-    TIE,
-    TOTAL,
-    WIN,
-)
+from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
+
 
 class GameSummary(models.Model):
     arena_id = models.CharField(max_length=255)  # type: ignore
@@ -77,15 +72,16 @@ def get_default_win_loss_tie() -> dict[str, int]:
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=150, unique=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
-    time_played: dict[str, int] = models.JSONField(default=get_default_time_played)
-    win_loss_tie: dict[str, int] = models.JSONField(default=get_default_win_loss_tie)
-    game_counter: dict[str, int] = models.JSONField(default=get_default_game_counter)
+    time_played = models.JSONField(default=get_default_time_played)
+    win_loss_tie = models.JSONField(default=get_default_win_loss_tie)
+    game_counter = models.JSONField(default=get_default_game_counter)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # type: ignore

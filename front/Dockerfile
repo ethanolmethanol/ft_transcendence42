@@ -4,14 +4,11 @@ FROM node:20-alpine as builder
 WORKDIR /app
 
 # Install Angular CLI and project dependencies
-RUN npm install -g @angular/cli@latest && \
-    npm install primeng --save && \
-    npm install chart.js --save
+RUN npm install -g @angular/cli@latest
 # Copy the app
 COPY . .
 
 RUN npm install && \
-	# npm update && \
 # Build the application
 	npm run build
 
