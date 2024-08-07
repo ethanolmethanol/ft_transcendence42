@@ -12,7 +12,7 @@ from django.db import models
 from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
-    DEFAULT_WIN_LOSS_TIE
+    DEFAULT_WIN_LOSS_TIE,
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
