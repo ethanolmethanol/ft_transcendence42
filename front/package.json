@@ -20,6 +20,7 @@
     "@angular/router": "^18.1.3",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.3",
+    "crypto-js": "^4.1.1",
     "ngx-hide-on-scroll": "^0.2.1",
     "primeng": "^17.18.7",
     "rxjs": "~7.8.0",
