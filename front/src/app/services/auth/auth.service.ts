@@ -17,14 +17,13 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   public signIn(login: string, password: string): Observable<SignInResponse> {
-    const hashedPassword = CryptoJS.SHA256(password).toString();
-    return this.http.post<SignInResponse>(`${API_AUTH}/signin/`, { login, password: hashedPassword });
+    password = this.hashPassword(password);
+    return this.http.post<SignInResponse>(`${API_AUTH}/signin/`, { login, password });
   }
 
   public signUp(username: string, email: string, password: string): Observable<any> {
-    const hashedPassword = CryptoJS.SHA256(password).toString();
-    console.log(`Hash password: ${hashedPassword}`)
-    return this.http.post(`${API_AUTH}/signup/`, { username, email, password: hashedPassword });
+    password = this.hashPassword(password);
+    return this.http.post(`${API_AUTH}/signup/`, { username, email, password });
   }
 
   public isLoggedIn(): Observable<boolean> {
@@ -47,5 +46,9 @@ export class AuthService {
 
   private processLogout() {
     return this.http.post(`${API_AUTH}/logout/`, {});
+  }
+
+  private hashPassword(password: string): string {
+    return CryptoJS.SHA256(password).toString();
   }
 }

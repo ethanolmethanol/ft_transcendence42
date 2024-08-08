@@ -22,6 +22,7 @@ from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
     OVER_CALLBACK,
+    START_TIME,
     START_TIMER_CALLBACK,
     UPDATE_CALLBACK,
 )
@@ -135,7 +136,8 @@ class Monitor:
         self,
         summary: dict[str, Any],
     ):
-        await self.history_manager.save_game_summary(summary)
+        if summary[START_TIME] != None:
+            await self.history_manager.save_game_summary(summary)
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():

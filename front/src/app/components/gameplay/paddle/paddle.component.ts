@@ -36,6 +36,5 @@ export class PaddleComponent {
   public updatePaddlePosition(position: Position) {
     this.positionX = position.x;
     this.positionY = position.y;
-    console.debug(`Paddle ${this.id} position updated:`, this.positionX, this.positionY);
   }
 }

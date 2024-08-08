@@ -93,7 +93,6 @@ export class WebSocketService implements OnInit, OnDestroy {
   }
 
   public sendPaddleMovement(playerName: string, direction: number): void {
-    console.log('Sending paddle movement:', { playerName, direction });
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('move_paddle', {"player": playerName, "direction": direction});
     } else {

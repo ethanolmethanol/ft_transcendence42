@@ -32,7 +32,6 @@ import { ArenaResponse } from "../../../interfaces/arena-response.interface";
 import { Position } from "../../../interfaces/position.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
-import { Router } from '@angular/router';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
 import { NgForOf, NgIf } from "@angular/common";
 import { ConnectionService } from "../../../services/connection/connection.service";
@@ -105,7 +104,6 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() isRemote: boolean = false;
   @Output() hasStarted = new EventEmitter<void>();
   @Output() startCounterStarted = new EventEmitter<void>();
-  gameBoardColors: string[] = Constants.DEFAULT_COLORS;
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -134,16 +132,16 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
   private _pressedKeys = new Set<string>();
+
   constructor (
     private userService: UserService,
     private webSocketService: WebSocketService,
-    private router: Router,
     private connectionService: ConnectionService,
     private renderer: Renderer2,
-    private el: ElementRef
+    private el: ElementRef,
   ) {}
 
-  async ngOnChanges(changes: SimpleChanges) {
+  async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.isRemote && this.isRemote) {
       await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
@@ -185,7 +183,6 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
         paddle.afkLeftTime = null;
-        // console.log(paddle.playerName + " joined the game.");
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
@@ -242,7 +239,6 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
           }
         } else {
           const left_time = afkResponse.time_left;
-          // console.log("Warning: " + afkResponse.player_name + " will be kicked in " + left_time + " seconds.");
           paddle.afkLeftTime = left_time;
         }
       }
@@ -277,9 +273,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       } else if (status == DEAD) {
         this.redirectToHome();
       } else if (status == STARTED) {
-        if (this.hasStarted.observed) {
-          this.hasStarted.emit();
-        }
+        this.handleStartCounterCompletion()
         gameOverOverlay.show = false;
       }
     }
