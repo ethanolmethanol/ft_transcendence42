@@ -3,7 +3,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -13,10 +12,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   width: 100vw;
-  height: 100vh;
   overflow: scroll;
+  gap: 10em;
+}
+
+.home-page-container::-webkit-scrollbar {
+  display: none;
 }
 
 .buttons {
@@ -26,23 +28,27 @@ body {
   justify-content: center;
   width: 30%;
   top: 40vh;
-  position: relative;
 }
 
 h4 {
   font-size: 2em;
-  position: sticky;
   top: 25vh;
   color: white;
+  padding-top: 15%;
 }
 
-app-leaderboard {
+app-game-summary-list {
   display: flex;
-  align-items: center;
-  position: relative;
-  top: 100vh;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding-bottom: 5vh;
+  list-style-type: none;
+  padding: 0;
+  width: 65%;
+  margin-bottom: 5%;
 }
+
+app-dashboard {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  width: 65%;
+}
+

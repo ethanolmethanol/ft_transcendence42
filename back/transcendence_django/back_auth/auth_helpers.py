@@ -46,6 +46,7 @@ def get_csrf(request):
     if not csrf:
         logger.error("Csrf Token is missing.")
         raise ValueError("Csrf Token is missing!")
+    logger.info("Csrf Token was successfully retrieved.")
     return csrf
 
 

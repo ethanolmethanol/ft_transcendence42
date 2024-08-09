@@ -4,13 +4,6 @@ from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.dict_keys import (
-    ARENA,
-    CHANNEL_ID,
-    OVER_CALLBACK,
-    START_TIMER_CALLBACK,
-    UPDATE_CALLBACK,
-)
 from back_game.game_settings.game_constants import (
     DYING,
     MONITOR_LOOP_INTERVAL,
@@ -22,13 +15,29 @@ from back_game.game_settings.game_constants import (
     WAITING,
 )
 from back_game.monitor.channel_manager import ChannelManager
+from back_game.monitor.history_manager import HistoryManager
+from django.apps import apps
+from django.conf import settings
+from transcendence_django.dict_keys import (
+    ARENA,
+    CHANNEL_ID,
+    OVER_CALLBACK,
+    START_TIME,
+    START_TIMER_CALLBACK,
+    UPDATE_CALLBACK,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class Monitor:
+    MONITOR_INSTANCE = None
 
     def __init__(self):
+        if not apps.ready:
+            apps.populate(settings.INSTALLED_APPS)
+        self.game_summary = apps.get_model("shared_models", "GameSummary")
+        self.history_manager = HistoryManager()
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -39,8 +48,8 @@ class Monitor:
         )
         channel_id: str = new_channel[CHANNEL_ID]
         arenas = self.channel_manager.channels[channel_id]
-        asyncio.create_task(self.monitor_arenas_loop(channel_id, arenas))
-        asyncio.create_task(self.run_game_loop(arenas))
+        asyncio.create_task(self.__monitor_arenas_loop(channel_id, arenas))
+        asyncio.create_task(self.__run_game_loop(arenas))
         return new_channel
 
     async def join_channel(
@@ -98,10 +107,10 @@ class Monitor:
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.rematch(user_id)
 
-    def get_winner(self, channel_id: str, arena_id: str) -> str:
+    def get_game_summary(self, channel_id: str, arena_id: str) -> dict[str, Any]:
         arena: Arena = self.get_arena(channel_id, arena_id)
-        winner: str = arena.get_winner()
-        return winner
+        summary: dict[str, Any] = arena.get_game_summary()
+        return summary
 
     def move_paddle(
         self,
@@ -123,11 +132,12 @@ class Monitor:
             user_id, channel_id, arena_id
         )
 
-    async def monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
-        while arenas:
-            await self.update_game_states(arenas)
-            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        self.channel_manager.delete_channel(channel_id)
+    async def save_game_summary(
+        self,
+        summary: dict[str, Any],
+    ):
+        if summary[START_TIME] is not None:
+            await self.history_manager.save_game_summary(summary)
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
@@ -136,15 +146,23 @@ class Monitor:
                 await arena.start_game()
             elif arena.can_be_over():
                 arena.conclude_game()
+                summary = arena.get_game_summary()
+                await self.save_game_summary(summary)
                 if arena_status != GameStatus(STARTED):
                     self.channel_manager.delete_arena(arenas, arena.id)
                     break
             elif arena_status == GameStatus(OVER):
                 logger.info("Game over in arena %s", arena.id)
-                await self.game_over(arenas, arena)
+                await self.__game_over(arenas, arena)
                 break
 
-    async def run_game_loop(self, arenas: dict[str, Arena]):
+    async def __monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
+        while arenas:
+            await self.update_game_states(arenas)
+            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+        self.channel_manager.delete_channel(channel_id)
+
+    async def __run_game_loop(self, arenas: dict[str, Arena]):
         while arenas:
             for arena in arenas.values():
                 if arena.get_status() == GameStatus(STARTED):
@@ -153,7 +171,7 @@ class Monitor:
                         await arena.game_update_callback(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
-    async def game_over(self, arenas: dict[str, Arena], arena: Arena):
+    async def __game_over(self, arenas: dict[str, Arena], arena: Arena):
         arena.set_status(GameStatus(DYING))
         if arena.game_update_callback is not None:
             logger.info("Sending game over message to arena %s", arena.id)
@@ -170,5 +188,12 @@ class Monitor:
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
 
+    @classmethod
+    def get_instance(cls):
+        if cls.MONITOR_INSTANCE is None:
+            cls.MONITOR_INSTANCE = cls()
+        return cls.MONITOR_INSTANCE
 
-monitor = Monitor()
+
+def get_monitor() -> Monitor:
+    return Monitor.get_instance()

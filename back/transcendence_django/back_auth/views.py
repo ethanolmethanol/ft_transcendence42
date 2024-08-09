@@ -1,6 +1,5 @@
 # import the logging library
 import logging
-import os
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -8,12 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-from rest_framework.permissions import IsAuthenticated
 from .oauth import OAuthBackend
-from django.conf import settings
-from django.shortcuts import redirect
-import requests
 
 # get_user_id,
 from .auth_helpers import get_session_from_request, perform_logout

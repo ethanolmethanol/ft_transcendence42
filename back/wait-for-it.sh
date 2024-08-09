@@ -5,10 +5,11 @@ set -e
 
 cmd="$*"
 
+python3 manage.py makemigrations shared_models
+python3 manage.py migrate shared_models
 python3 manage.py makemigrations
 python3 manage.py migrate
-python manage.py createsuperuser --no-input || true
+python3 manage.py showmigrations
 
 echo "command is " "$cmd"
-
 exec $cmd

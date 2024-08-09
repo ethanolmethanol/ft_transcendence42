@@ -1,0 +1,22 @@
+<section class="game-summary-container" *ngIf="gameSummary">
+  <section class="status-section" [ngClass]="{'win': win_status === 'Won', 'lost': win_status === 'Lost', 'local': win_status == 'Local'}">
+    <div class="status">
+      {{win_status}}
+    </div>
+  </section>
+  <section class="score-section">
+    <div class="scores">
+      {{score1}} <span> - </span> {{score2}}
+    </div>
+  </section>
+  <section class="opponent-section">
+    <div class="opponent">
+      {{opponentUsername}}
+    </div>
+  </section>
+  <section class="date-section">
+    <div class="date">
+      {{date}}
+    </div>
+  </section>
+</section>

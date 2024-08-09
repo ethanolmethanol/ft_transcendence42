@@ -175,7 +175,6 @@ fclean: clean
 ffclean: fclean
 	@docker --log-level=warn system prune -af
 	@ rm -rf ${DATADIRS}
-	
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all

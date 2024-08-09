@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [SERV_IP, "0.0.0.0"]
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "daphne",
     "channels",
     "django.contrib.admin",
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "rest_framework",
+    "shared_models",
     "back_auth",
     "back_user",
     "back_game",
@@ -56,15 +58,11 @@ INSTALLED_APPS = [
     "health_check.cache",  # https://pypi.org/project/django-health-check/
     "health_check.storage",
     "health_check.contrib.migrations",
-    "corsheaders",
     "django_extensions",
-    "oauth2_provider",
 ]
 
-SITE_ID = 1
-LOGIN_URL = '/admin/login/'
-
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -72,7 +70,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
 
@@ -129,7 +126,7 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = "shared_models.CustomUser"
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{SERV_IP}:4200",
@@ -148,10 +145,6 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-OAUTH2_PROVIDER = {
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
-    'REFRESH_TOKEN_EXPIRE_SECONDS': 1209600,
-}
 
 print("Database settings:")
 print("Name:", DATABASES["default"]["NAME"])

@@ -5,7 +5,7 @@ from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_geometry.position import Position
 from back_game.game_physics.collision import Collision
-from back_game.game_settings.dict_keys import BALL, POSITION
+from transcendence_django.dict_keys import BALL, POSITION
 
 logger = logging.getLogger(__name__)
 
