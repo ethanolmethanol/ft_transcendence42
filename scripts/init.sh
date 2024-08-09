@@ -28,6 +28,8 @@ prompt_for_env() {
 	read -rp "Enter Django Superuser Email: " django_superuser_email
 	read -rsp "Enter Django Superuser Password: " django_superuser_password
 	echo
+	read -rp "Enter OAuth Client UID: " oauth_client_uid
+	read -rp "Enter OAuth Client Secret: " oauth_client_secret
 
 	echo "POSTGRES_USER='${postgres_user}'" >"${ENV_FILE_GLOBAL}"
 	{
@@ -37,11 +39,9 @@ prompt_for_env() {
 		echo "DJANGO_SUPERUSER_EMAIL='${django_superuser_email}'"
 		echo "DJANGO_SUPERUSER_PASSWORD='${django_superuser_password}'"
 		echo "SERV_IP='${IP_ADDR}'"
+		echo "OAUTH_CLIENT_UID='${oauth_client_uid}'"
+		echo "OAUTH_CLIENT_SECRET='${oauth_client_secret}'"
 	} >>"${ENV_FILE_GLOBAL}"
-
-	if [ -f "api_keys.env" ]; then
-    		cat "api_keys.env" >>"${ENV_FILE_GLOBAL}"
-    fi
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
 	cat "${ENV_FILE_GLOBAL}"

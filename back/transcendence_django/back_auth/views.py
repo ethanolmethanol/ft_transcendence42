@@ -114,10 +114,13 @@ def exchange_code(request):
     code = request.data.get('code')
 
     if not code:
+        logger.error("No code provided")
         return Response({"error": "No code provided"}, status=400)
 
+    logger.info(f"Exchanging code: {code}")
     response = OAuthBackend.request_for_token(state, code)
 
+    logger.info(f"Exchanging token: {response}")
     if response.status_code == 200:
         OAuthBackend.clear_cache(state)
         token_data = response.json()
@@ -125,4 +128,5 @@ def exchange_code(request):
         # username, email = OAuthBackend.get_user_info(token_data)
         return Response(token_data)
     else:
+        logger.error("Failed to exchange code, error: %s", response.text)
         return Response({"error": "Failed to exchange code for token"}, status=response.status_code)

@@ -169,7 +169,6 @@ celerybeat.pid
 
 # Environments
 .env
-api_keys.env
 .venv
 env/
 venv/

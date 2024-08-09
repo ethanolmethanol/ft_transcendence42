@@ -18,14 +18,17 @@ class OAuthBackend(object):
 	def get_authorize_url(self) -> str:
 		self.__generate_code()
 		url: str = f"https://api.intra.42.fr/oauth/authorize?client_id={settings.OAUTH_CLIENT_UID}&redirect_uri={settings.OAUTH_REDIRECT_URI}&response_type=code&scope=public&state={self.state}'"
+		logger.info("url: %s", url)
 		return url
 
 	@staticmethod
 	def clear_cache(state: str):
+		logger.info("Clearing cache")
 		cache.delete(state)
 
 	@staticmethod
 	def request_for_token(state: str, code: str):
+		logger.info("Requesting token")
 		data = {
 			"grant_type": "authorization_code",
 			"client_id": settings.OAUTH_CLIENT_UID,
@@ -34,12 +37,8 @@ class OAuthBackend(object):
 			"redirect_uri": settings.OAUTH_REDIRECT_URI,
 			"state":  cache.get(state),
 		}
+		logger.info("data: %s", data)
 		return requests.post(settings.OAUTH_TOKEN_URL, data=data)
-
-
-	# @staticmethod
-	# def get_user_info(token_data: dict):
-	# 	email
 
 	def __generate_code(self):
 		code_verifier = "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randint(43, 128)))
