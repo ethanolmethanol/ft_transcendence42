@@ -8,9 +8,9 @@ import {
   QueryList,
   AfterViewInit
 } from '@angular/core';
-import { PaddleComponent } from "../../components/paddle/paddle.component";
+import { PaddleComponent } from "../../components/gameplay/paddle/paddle.component";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { GameComponent } from "../../components/game/game.component";
+import { GameComponent } from "../../components/gameplay/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import { ConnectionService } from "../../services/connection/connection.service";
@@ -33,6 +33,8 @@ import { NgIf } from "@angular/common";
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isRemote: boolean | null = null;
+  canGiveUp: boolean = true;
+
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
   public onResize(event: Event) {
@@ -58,6 +60,12 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
       const arena_id = params['arena_id'];
       console.log('Channel ID:', channel_id);
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
+    });
+    this.game.first.startCounterStarted.subscribe(() => {
+      this.canGiveUp = false;
+    });
+    this.game.first.hasStarted.subscribe(() => {
+      this.canGiveUp = true;
     });
   }
 

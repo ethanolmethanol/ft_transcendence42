@@ -1,0 +1,64 @@
+.status {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.scores {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.opponent {
+  font-size: 0.8em;
+  font-style: italic;
+  text-align: center;
+}
+
+.date {
+  font-size: 0.8em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.score-section, .status-section, .opponent-section .date-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.game-summary-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+  background-color: rgba(50, 50, 50, 0.7);
+  border-radius: 5px;
+  color: white;
+  opacity: 90%;
+}
+
+.win {
+  color: limegreen;
+}
+
+.local {
+  color: dodgerblue;
+}
+
+.lost {
+  color: darkred;
+}
+
+.score-section, .status-section, .opponent-section {
+  flex: 1;
+  padding: 0.2em;
+  min-width: 100px;
+  text-align: center;
+}

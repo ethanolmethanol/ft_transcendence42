@@ -25,11 +25,14 @@ SECRET_KEY = "django-insecure-*6@dzmyjvs5+h)h1e)a!7rh*(u7%cb1g@zaad_p!a11n(k((zb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
+SERV_IP = os.getenv("SERV_IP", "")
+
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "daphne",
     "channels",
     "django.contrib.admin",
@@ -39,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "shared_models",
     "back_auth",
     "back_user",
     "back_game",
@@ -47,11 +51,11 @@ INSTALLED_APPS = [
     "health_check.cache",  # https://pypi.org/project/django-health-check/
     "health_check.storage",
     "health_check.contrib.migrations",
-    "corsheaders",
     "django_extensions",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -59,7 +63,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
 
@@ -106,10 +109,15 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = "shared_models.CustomUser"
 
-CSRF_TRUSTED_ORIGINS = ["https://localhost:4200", "http://localhost:1234"]
-CORS_ALLOWED_ORIGINS = ["https://localhost:4200"]
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{SERV_IP}:4200",
+    f"https://{SERV_IP}:1234",
+]
+CORS_ALLOWED_ORIGINS = [
+    f"https://{SERV_IP}:4200",
+]
 CORS_ALLOW_CREDENTIALS = True
 AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]
 CORS_ALLOW_HEADERS = [
@@ -166,22 +174,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, 'debug.log'),
-#         },
-#     },
-#     'root': {
-#         'handlers': ['console', 'file'],
-#         'level': 'DEBUG',
-#     },
-# }

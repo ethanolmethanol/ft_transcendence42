@@ -3,6 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import {catchError, map, Observable, of} from 'rxjs';
 import { Router } from "@angular/router";
 import { API_AUTH } from "../../constants";
+import * as CryptoJS from 'crypto-js';
 
 interface SignInResponse {
   detail: string;
@@ -16,10 +17,12 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   public signIn(login: string, password: string): Observable<SignInResponse> {
+    password = this.hashPassword(password);
     return this.http.post<SignInResponse>(`${API_AUTH}/signin/`, { login, password });
   }
 
   public signUp(username: string, email: string, password: string): Observable<any> {
+    password = this.hashPassword(password);
     return this.http.post(`${API_AUTH}/signup/`, { username, email, password });
   }
 
@@ -43,5 +46,9 @@ export class AuthService {
 
   private processLogout() {
     return this.http.post(`${API_AUTH}/logout/`, {});
+  }
+
+  private hashPassword(password: string): string {
+    return CryptoJS.SHA256(password).toString();
   }
 }

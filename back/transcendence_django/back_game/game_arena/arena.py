@@ -1,12 +1,24 @@
 import asyncio
+import datetime
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
-from back_game.game_settings.dict_keys import (
+from back_game.game_settings.game_constants import (
+    CREATED,
+    MAXIMUM_SCORE,
+    READY_TO_START,
+    STARTED,
+    TIME_START,
+    TIME_START_INTERVAL,
+    WAITING,
+)
+from django.utils import timezone
+from transcendence_django.dict_keys import (
     ARENA,
+    ARENA_ID,
     BALL,
     COLLIDED_SLOT,
     ID,
@@ -22,16 +34,8 @@ from back_game.game_settings.dict_keys import (
     PLAYERS,
     SCORE,
     SCORES,
+    START_TIME,
     STATUS,
-)
-from back_game.game_settings.game_constants import (
-    CREATED,
-    MAXIMUM_SCORE,
-    READY_TO_START,
-    STARTED,
-    TIME_START,
-    TIME_START_INTERVAL,
-    WAITING,
 )
 
 logger = logging.getLogger(__name__)
@@ -52,6 +56,7 @@ class Arena:
         self.game_over_callback: Optional[
             Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
+        self.start_time: datetime.datetime | None = None
 
     def to_dict(self) -> dict[str, Any]:
         if self.player_manager.is_remote:
@@ -76,9 +81,6 @@ class Arena:
             },
         }
 
-    def is_empty(self) -> bool:
-        return self.player_manager.is_empty()
-
     def is_full(self) -> bool:
         return self.player_manager.is_full()
 
@@ -90,8 +92,11 @@ class Arena:
             for player in self.player_manager.players.values()
         )
 
-    def get_winner(self) -> str:
-        return self.player_manager.get_winner()
+    def get_game_summary(self) -> dict[str, Any]:
+        summary = self.player_manager.get_game_summary()
+        summary[START_TIME] = self.start_time
+        summary[ARENA_ID] = self.id
+        return summary
 
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
@@ -122,6 +127,7 @@ class Arena:
             await asyncio.sleep(TIME_START_INTERVAL)
         self.game.start()
         logger.info("Game started. %s", self.id)
+        self.start_time = timezone.now()
         if self.game_update_callback is not None:
             await self.game_update_callback({ARENA: self.to_dict()})
 
@@ -177,7 +183,7 @@ class Arena:
     def can_be_over(self) -> bool:
         status = self.game.status
         if status == GameStatus(WAITING):
-            return self.is_empty()
+            return self.player_manager.is_empty()
         if status == GameStatus(STARTED):
             return self.__has_enough_players() is False or self.__did_player_win()
         return False

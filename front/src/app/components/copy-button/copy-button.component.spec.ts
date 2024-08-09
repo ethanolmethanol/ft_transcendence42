@@ -11,7 +11,7 @@ describe('CopyButtonComponent', () => {
       imports: [CopyButtonComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(CopyButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -2,10 +2,6 @@ NAME			= ft_transcendence
 
 DATADIRS		= db/data/ front/dist/transcendence/browser/ ~/tr_certs
 
-ENV_SRC			= ~/.env
-
-ENV_FILE		= .env
-
 # WIP
 # DB_NAME		= $$(grep POSTGRES_DB ${ENV_FILE} | sed "s.POSTGRES_DB='(.*)'.\1.")
 
@@ -28,12 +24,10 @@ N				= \033[0m    # RESET
 
 TEST-ENGINE-TAGS = passed monitor paddle ball
 
-${NAME}: gen-cert up health
+${NAME}: initialize up health
 	$(call printname)
 
-# ${ENV_FILE}
-
-up: | ${DATADIRS} ${ENV_FILE}
+up: | ${DATADIRS}
 	@echo "Up-ing containers:"
 	${COMPOSE} up -d --build
 
@@ -168,22 +162,25 @@ dev: all
 test:
 	cd front/; npm run test
 
-install-mkcert:
-	@./scripts/install_mkcert.sh
+initialize:
+	@./scripts/init.sh
 
-gen-cert: install-mkcert
-	@./scripts/gen_cert.sh
+init-prod:
+	@./scripts/init.sh prod
+
+prod: init-prod up health
 
 clean:
 	@${COMPOSE} down -v
 
 fclean: clean
 	@docker --log-level=warn system prune -f
-	@./scripts/gen_cert.sh clean
+	@./scripts/init.sh clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af
 	@ rm -rf ${DATADIRS}
+
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all
