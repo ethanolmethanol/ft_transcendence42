@@ -1,12 +1,12 @@
 import {AfterViewInit, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {Observable, of} from "rxjs";
-import {GameSummaryResponse} from "../../interfaces/game-history-response.interface";
+import {GameSummaryResponse} from "../../../interfaces/game-history-response.interface";
 import {AsyncPipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {GameSummaryComponent} from "../game-summary/game-summary.component";
-import {UserService} from "../../services/user/user.service";
-import {GAME_HISTORY_COUNT_REQUEST} from "../../constants";
+import {UserService} from "../../../services/user/user.service";
+import {GAME_HISTORY_COUNT_REQUEST} from "../../../constants";
 import {ChangeDetection} from "@angular/cli/lib/config/workspace-schema";
-import {LoadingSpinnerComponent} from "../loading-spinner/loading-spinner.component";
+import {LoadingSpinnerComponent} from "../../loading-spinner/loading-spinner.component";
 import {FormsModule} from "@angular/forms";
 
 @Component({
@@ -61,7 +61,6 @@ export class GameSummaryListComponent implements AfterViewInit {
   }
 
   public refreshSummaries(): void {
-    console.log('refreshing game summaries');
     this.startIndex = 0;
     this.endIndex = GAME_HISTORY_COUNT_REQUEST - 1;
     this.allSummaries = [];

@@ -8,9 +8,9 @@ import {
   QueryList,
   AfterViewInit
 } from '@angular/core';
-import { PaddleComponent } from "../../components/paddle/paddle.component";
+import { PaddleComponent } from "../../components/gameplay/paddle/paddle.component";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { GameComponent } from "../../components/game/game.component";
+import { GameComponent } from "../../components/gameplay/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import { ConnectionService } from "../../services/connection/connection.service";

@@ -1,0 +1,8 @@
+<section class="time-played">
+  <header>
+    <h5>Time played</h5>
+    <span class="material-icons">schedule</span>
+  </header>
+  <p-chart *ngIf="timePlayed.total > 0" type="pie" [data]="data" [options]="options" />
+  <p class="time"> {{totalTimePlayed}} </p>
+</section>

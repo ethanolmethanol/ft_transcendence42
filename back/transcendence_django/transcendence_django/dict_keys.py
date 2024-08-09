@@ -35,7 +35,7 @@ PADDLE = "paddle"
 START_TIMER = "start_timer"
 GAME_OVER = "game_over"
 WINNER = "winner"
-WINNER_USER_ID = "winner_user_id"
+START_TIME = "start_time"
 TIME = "time"
 
 # Game callbacks
@@ -87,3 +87,12 @@ RIGHT = "right"
 LEFT = "left"
 TOP = "top"
 BOTTOM = "bottom"
+
+# User Stats
+
+WIN = "win"
+LOSS = "loss"
+TIE = "tie"
+LOCAL = "local"
+REMOTE = "remote"
+TOTAL = "total"

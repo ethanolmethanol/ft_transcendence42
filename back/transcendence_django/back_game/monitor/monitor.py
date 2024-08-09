@@ -1,8 +1,7 @@
 import asyncio
 import logging
-from typing import Any, Callable, Coroutine, List, Optional
+from typing import Any, Callable, Coroutine, Optional
 
-from asgiref.sync import sync_to_async
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
@@ -16,18 +15,16 @@ from back_game.game_settings.game_constants import (
     WAITING,
 )
 from back_game.monitor.channel_manager import ChannelManager
+from back_game.monitor.history_manager import HistoryManager
 from django.apps import apps
 from django.conf import settings
 from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
-    IS_REMOTE,
     OVER_CALLBACK,
-    PLAYERS,
+    START_TIME,
     START_TIMER_CALLBACK,
     UPDATE_CALLBACK,
-    USER_ID,
-    WINNER,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,6 +37,7 @@ class Monitor:
         if not apps.ready:
             apps.populate(settings.INSTALLED_APPS)
         self.game_summary = apps.get_model("shared_models", "GameSummary")
+        self.history_manager = HistoryManager()
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -136,27 +134,10 @@ class Monitor:
 
     async def save_game_summary(
         self,
-        arena_id: str,
-        winner: dict[str, Any],
-        players: List[dict[str, Any]],
-        is_remote: bool,
+        summary: dict[str, Any],
     ):
-        if winner is None:
-            winner_user_id = None
-        else:
-            winner_user_id = winner.get(USER_ID)
-        game_summary = await sync_to_async(self.game_summary.objects.create)(
-            arena_id=arena_id,
-            winner_user_id=winner_user_id,
-            players=players,
-            is_remote=is_remote,
-        )
-        custom_user_model = apps.get_model("shared_models", "CustomUser")
-        for player in players:
-            user_id = player.get("user_id")
-            if user_id:
-                user = await sync_to_async(custom_user_model.objects.get)(pk=user_id)
-                await user.save_game_summary(game_summary)
+        if summary[START_TIME] is not None:
+            await self.history_manager.save_game_summary(summary)
 
     async def update_game_states(self, arenas: dict[str, Arena]):
         for arena in arenas.values():
@@ -166,9 +147,7 @@ class Monitor:
             elif arena.can_be_over():
                 arena.conclude_game()
                 summary = arena.get_game_summary()
-                await self.save_game_summary(
-                    arena.id, summary[WINNER], summary[PLAYERS], summary[IS_REMOTE]
-                )
+                await self.save_game_summary(summary)
                 if arena_status != GameStatus(STARTED):
                     self.channel_manager.delete_arena(arenas, arena.id)
                     break
