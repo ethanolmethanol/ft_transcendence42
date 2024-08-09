@@ -136,7 +136,7 @@ class Monitor:
         self,
         summary: dict[str, Any],
     ):
-        if summary[START_TIME] != None:
+        if summary[START_TIME] is not None:
             await self.history_manager.save_game_summary(summary)
 
     async def update_game_states(self, arenas: dict[str, Arena]):
