@@ -232,8 +232,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       const paddle = this.paddles.find(p => p.playerName === afkResponse.player_name);
       if (paddle) {
         if (afkResponse.time_left <= 0) {
-          if (afkResponse.player_name === this.playerName) {
-            console.log('You were kicked due to inactivity.');
+          if (!this.isRemote || afkResponse.player_name === this.playerName) {
             this.redirectToHome();
             this.webSocketService.giveUp();
           }
