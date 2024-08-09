@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { API_42_REDIRECT_URL } from "../../constants";
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-oauth42-button',
@@ -11,7 +11,13 @@ import { API_42_REDIRECT_URL } from "../../constants";
 export class Oauth42ButtonComponent {
   @Input() text: string = "";
 
+  constructor(private authService: AuthService) {}
+
   public navigate_to_42_api(): void {
-    window.open(API_42_REDIRECT_URL, '_self');
+    this.authService.authorize42().subscribe( {
+      next: url => {
+        window.open(url, '_self');
+      }
+    });
   }
 }

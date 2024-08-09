@@ -39,6 +39,10 @@ prompt_for_env() {
 		echo "SERV_IP='${IP_ADDR}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
+	if [ -f "api_keys.env" ]; then
+    		cat "api_keys.env" >>"${ENV_FILE_GLOBAL}"
+    fi
+
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
 	cat "${ENV_FILE_GLOBAL}"
 }
@@ -140,7 +144,6 @@ else
 	prompt_for_env
 	install_mkcert
 	generate_certificates
-	distribute_certificates
 	create_nginx_config_file
 	update_environment_ts
 fi

@@ -1,5 +1,6 @@
 # import the logging library
 import logging
+import os
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -9,6 +10,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.permissions import IsAuthenticated
+from .oauth import OAuthBackend
+from django.conf import settings
+from django.shortcuts import redirect
+import requests
 
 # get_user_id,
 from .auth_helpers import get_session_from_request, perform_logout
@@ -95,3 +100,29 @@ def is_logged_view(request):
             {"detail": "User isn't logged in: " + str(e)},
             status=status.HTTP_401_UNAUTHORIZED,
         )
+
+
+@api_view(["GET"])
+def get_authorize_url(request):
+    oauth_backend: OAuthBackend = OAuthBackend()
+    return Response(oauth_backend.get_authorize_url())
+
+
+@api_view(["POST"])
+def exchange_code(request):
+    state = request.data.get('state')
+    code = request.data.get('code')
+
+    if not code:
+        return Response({"error": "No code provided"}, status=400)
+
+    response = OAuthBackend.request_for_token(state, code)
+
+    if response.status_code == 200:
+        OAuthBackend.clear_cache(state)
+        token_data = response.json()
+        logger.info("Token data: %s", token_data)
+        # username, email = OAuthBackend.get_user_info(token_data)
+        return Response(token_data)
+    else:
+        return Response({"error": "Failed to exchange code for token"}, status=response.status_code)

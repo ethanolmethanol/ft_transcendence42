@@ -14,7 +14,6 @@ export const API_AUTH: string = `https://${environment.servIP}:8000/auth`;
 export const API_USER: string = `https://${environment.servIP}:8002/user`;
 export const API_GAME: string = `https://${environment.servIP}:8001/game`;
 export const API_GAME_SOCKET: string = `wss://${environment.servIP}:8001`;
-export const API_42_REDIRECT_URL: string = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-ad9f3ec54af15b20b1f9e3e6d81be07d974d068c2d26ed3d05a371190a8d6d50&redirect_uri=https%3A%2F%2Flocalhost%3A4200%2F&response_type=code`;
 
 // INTERFACES
 
