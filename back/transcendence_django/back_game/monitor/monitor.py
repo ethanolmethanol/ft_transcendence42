@@ -48,7 +48,7 @@ class Monitor:
         )
         logger.info("New channel (created): %s", new_channel)
         channel_id: str = new_channel[CHANNEL_ID]
-        arenas = self.channel_manager.channels[channel_id]
+        arenas = self.channel_manager.channels[channel_id]["arenas"]
         asyncio.create_task(self.__monitor_arenas_loop(channel_id, arenas))
         asyncio.create_task(self.__run_game_loop(arenas))
         return new_channel
@@ -69,6 +69,7 @@ class Monitor:
 
         channel = self.channel_manager.join_already_created_channel(user_id, is_remote=True, is_tournament=True)
         if channel is not None:
+            logging.info("User %s joined a tournament", user_id)
             return channel
         channel = await self.create_new_channel(user_id, players_specs, is_tournament=True)
         return channel

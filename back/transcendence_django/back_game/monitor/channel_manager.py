@@ -83,7 +83,7 @@ class ChannelManager:
         logger.info("Trying to get arena %s in channel %s", arena_id, channel_id)
         channel = self.channels.get(channel_id)
         if channel:
-            return channel.get(arena_id)
+            return channel["arenas"].get(arena_id)
         return None
 
     def leave_arena(self, user_id: int, channel_id: str, arena_id: str):
@@ -123,14 +123,11 @@ class ChannelManager:
             pass
 
     def __get_available_channel(self, is_tournament: bool) -> dict[str, Any] | None:
-        if is_tournament:
-            channels = {
-                channel_id: channel
-                for channel in self.channels.values()
-                if channel.values()["is_tournament"]
-            }
-        else:
-            channels = self.channels
+        channels = {
+            channel_id: channel
+            for channel_id, channel in self.channels.items()
+            if channel["is_tournament"] == is_tournament
+        }
         for channel_id, channel in channels.items():
             arenas_id: list[str] = list(channel["arenas"].keys())
             if not arenas_id:
