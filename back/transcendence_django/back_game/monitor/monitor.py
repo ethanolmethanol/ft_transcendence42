@@ -41,11 +41,12 @@ class Monitor:
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
-        self, user_id: int, players_specs: dict[str, int]
+        self, user_id: int, players_specs: dict[str, int], is_tournament: bool
     ) -> dict[str, Any]:
         new_channel = await self.channel_manager.create_new_channel(
-            user_id, players_specs
+            user_id, players_specs, is_tournament
         )
+        logger.info("New channel (created): %s", new_channel)
         channel_id: str = new_channel[CHANNEL_ID]
         arenas = self.channel_manager.channels[channel_id]
         asyncio.create_task(self.__monitor_arenas_loop(channel_id, arenas))
@@ -60,7 +61,17 @@ class Monitor:
     def join_already_created_channel(
         self, user_id: int, is_remote: bool
     ) -> dict[str, Any] | None:
-        return self.channel_manager.join_already_created_channel(user_id, is_remote)
+        return self.channel_manager.join_already_created_channel(user_id, is_remote, False)
+
+    async def create_or_join_tournament(
+        self, user_id: int, players_specs: dict[str, int]
+    ) -> dict[str, Any]:
+
+        channel = self.channel_manager.join_already_created_channel(user_id, is_remote=True, is_tournament=True)
+        if channel is not None:
+            return channel
+        channel = await self.create_new_channel(user_id, players_specs, is_tournament=True)
+        return channel
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena:
         arena: Arena | None = self.channel_manager.get_arena(channel_id, arena_id)

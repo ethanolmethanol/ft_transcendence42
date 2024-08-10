@@ -4,6 +4,7 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any
 
+from back_game.game_settings.game_constants import DEFAULT_TOURNAMENT_SPECS
 from back_game.monitor.monitor import get_monitor
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
@@ -82,6 +83,18 @@ async def join_specific_channel(request) -> JsonResponse:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
+
+@require_http_methods(["POST"])
+async def create_or_join_tournament(request) -> JsonResponse:
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data[USER_ID]
+        players_specs = DEFAULT_TOURNAMENT_SPECS
+        channel = await MONITOR.create_or_join_tournament(user_id, players_specs)
+        return JsonResponse(channel, status=HTTPStatus.OK)
+    except (JSONDecodeError, TypeError, KeyError, ValueError) as e:
+        logger.error(e)
+        return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
 @require_http_methods(["POST"])
 def is_user_in_channel(request) -> JsonResponse:

@@ -29,23 +29,32 @@ class ChannelManager:
         return self.get_channel_from_user_id(user_id)
 
     def join_already_created_channel(
-        self, user_id: int, is_remote: bool
+        self, user_id: int, is_remote: bool, is_tournament: bool
     ) -> dict[str, Any] | None:
         channel = self.get_channel_from_user_id(user_id)
         if channel is None and is_remote:
-            channel = self.__get_available_channel()
+            channel = self.__get_available_channel(is_tournament)
         if channel is None:
             return None
         return channel
 
     async def create_new_channel(
-        self, user_id: int, players_specs: dict[str, int]
+        self, user_id: int, players_specs: dict[str, int], is_tournament: bool = False
     ) -> dict[str, Any]:
-        new_arena: Arena = Arena(players_specs)
+        arena_count = 1
+        if is_tournament:
+            arena_count = 4
+        arenas = []
+        for _ in range(arena_count):
+            new_arena: Arena = Arena(players_specs)
+            arenas.append(new_arena)
         channel_id: str = self.__generate_random_id(10)
-        self.channels[channel_id] = {new_arena.id: new_arena}
-        self.add_user_to_channel(user_id, channel_id, new_arena.id)
-        logger.info("New arena: %s", new_arena.to_dict())
+        self.channels[channel_id] = {
+            "is_tournament": is_tournament,
+            "arenas": {arena.id: arena for arena in arenas}
+        }
+        self.add_user_to_channel(user_id, channel_id, arenas[0].id)
+        logger.info("New arenas: %s", arenas)
         return self.user_game_table[user_id]
 
     def get_channel_from_user_id(self, user_id: int) -> dict[str, Any] | None:
@@ -55,7 +64,7 @@ class ChannelManager:
         return channel
 
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
-        arena: Arena = self.channels[channel_id][arena_id]
+        arena: Arena = self.channels[channel_id]["arenas"][arena_id]
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
             "arena": arena.to_dict(),
@@ -113,17 +122,25 @@ class ChannelManager:
         except KeyError:
             pass
 
-    def __get_available_channel(self) -> dict[str, Any] | None:
-        for channel_id, channel in self.channels.items():
-            arenas_id: list[str] = list(channel.keys())
+    def __get_available_channel(self, is_tournament: bool) -> dict[str, Any] | None:
+        if is_tournament:
+            channels = {
+                channel_id: channel
+                for channel in self.channels.values()
+                if channel.values()["is_tournament"]
+            }
+        else:
+            channels = self.channels
+        for channel_id, channel in channels.items():
+            arenas_id: list[str] = list(channel["arenas"].keys())
             if not arenas_id:
                 return None
-            arena_id: str = arenas_id[0]
-            arena: Arena = channel[arena_id]
-            if arena.is_private():
-                continue
-            if arena.get_status() == GameStatus(WAITING):
-                return {"channel_id": channel_id, "arena": arena.to_dict()}
+            for arena_id in arenas_id:
+                arena: Arena = channel["arenas"][arena_id]
+                if arena.is_private():
+                    continue
+                if arena.get_status() == GameStatus(WAITING):
+                    return {"channel_id": channel_id, "arena": arena.to_dict()}
         return None
 
     def __generate_random_id(self, length: int) -> str:

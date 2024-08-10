@@ -146,6 +146,12 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     }, error => this.handleError(error));
   }
 
+  private joinTournament(postData: string): void {
+    this.monitorService.joinTournament(postData).subscribe(response => {
+      this.navigateToGame(response.channel_id, response.arena.id);
+    }, error => this.handleError(error));
+  }
+
   private async requestRemoteWebSocketUrl(postData: string): Promise<void> {
     if (this._actionType == "join") {
       this.joinGame(postData).subscribe();
@@ -153,6 +159,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this.joinSpecificChannel(postData);
     } else if (this._actionType == "create") {
       this.createGame(postData);
+    } else if (this._actionType == "tournament") {
+      this.joinTournament(postData);
     }
   }
 

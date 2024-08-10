@@ -37,4 +37,10 @@ export class MonitorService {
       catchError(this.handleError<WebSocketUrlResponse>('joinSpecificWebSocketUrl'))
     );
   }
+
+  public joinTournament(postData: string): Observable<WebSocketUrlResponse> {
+    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_tournament/`, postData).pipe(
+      catchError(this.handleError<WebSocketUrlResponse>('joinTournament'))
+    );
+  }
 }
