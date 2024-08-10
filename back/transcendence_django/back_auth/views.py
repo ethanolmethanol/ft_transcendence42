@@ -21,6 +21,13 @@ from .serializers import UserSerializer
 logger = logging.getLogger(__name__)
 # SignUp
 
+def authenticate_user(request, username, password) -> bool:
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return True
+    return False
+
 
 @api_view(["POST"])
 def signup(request):
@@ -103,24 +110,17 @@ def get_authorize_url(request):
 
 
 @api_view(["POST"])
-def exchange_code(request):
+def exchange_code_and_signin(request):
     state = request.data.get('state')
     code = request.data.get('code')
 
     if not code:
-        logger.error("No code provided")
         return Response({"error": "No code provided"}, status=400)
 
-    logger.info(f"Exchanging code: {code}")
-    response = OAuthBackend.request_for_token(state, code)
+    oauth_backend: OAuthBackend = OAuthBackend()
+    status_code = oauth_backend.signin(request, code, state)
 
-    logger.info(f"Exchanging token: {response}")
-    if response.status_code == 200:
-        OAuthBackend.clear_cache(state)
-        token_data = response.json()
-        logger.info("Token data: %s", token_data)
-        # username, email = OAuthBackend.get_user_info(token_data)
-        return Response(token_data)
+    if status_code == 200:
+        return Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
     else:
-        logger.error("Failed to exchange code, error: %s", response.text)
-        return Response({"error": "Failed to exchange code for token"}, status=response.status_code)
+        return Response({"error": "Failed to exchange code and sign in"}, status=status_code)

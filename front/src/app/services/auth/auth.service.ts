@@ -30,8 +30,8 @@ export class AuthService {
     return this.http.get<string>(`${API_AUTH}/authorize/`);
   }
 
-  public exchangeCodeForToken(code: string): Observable<string> {
-    return this.http.post<any>(`${API_AUTH}/exchange_code/`, { code });
+  public exchange_code_and_signin(code: string): Observable<string> {
+    return this.http.post<any>(`${API_AUTH}/exchange_code_and_signin/`, { code });
   }
 
   public isLoggedIn(): Observable<boolean> {

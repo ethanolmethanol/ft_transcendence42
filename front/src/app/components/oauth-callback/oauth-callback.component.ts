@@ -21,7 +21,7 @@ export class OauthCallbackComponent implements OnInit {
       const code = params["code"];
       if (code) {
         console.log("Code received: ", code);
-        this.authService.exchangeCodeForToken(code).subscribe({
+        this.authService.exchange_code_and_signin(code).subscribe({
           next: () => {
             this.router.navigate(["/home"]);
           },

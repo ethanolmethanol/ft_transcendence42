@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, List, TypeVar
+from django.utils import timezone
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -39,6 +40,18 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 
+class OauthToken(models.Model):
+    access_token: str = models.CharField(max_length=255)
+    refresh_token: str = models.CharField(max_length=255)
+    token_expires_at: datetime = models.DateTimeField(default=timezone.now)
+
+    def store_tokens(self, token_data):
+        self.access_token = token_data['access_token']
+        self.refresh_token = token_data['refresh_token']
+        self.token_expires_at = timezone.now() + timedelta(seconds=token_data['expires_in'])
+        self.save()
+
+
 CustomUserType = TypeVar("CustomUserType", bound="CustomUser")
 
 
@@ -67,9 +80,13 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)  # type: ignore
     username = models.CharField(max_length=150, unique=True)  # type: ignore
+    login42 = models.CharField(max_length=150, unique=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
+    )  # type: ignore
+    oauth_token = models.OneToOneField(
+        OauthToken, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
     time_played = models.JSONField(default=DEFAULT_TIME_PLAYED)
@@ -86,6 +103,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.username)
+
+    def store_tokens(self, token_data):
+        if self.oauth_token is None:
+            self.oauth_token = OauthToken.objects.create()
+        self.oauth_token.store_tokens(token_data)
+        self.save()
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
