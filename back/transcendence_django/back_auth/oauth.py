@@ -23,22 +23,23 @@ class OAuthBackend(object):
 		logger.info("url: %s", url)
 		return url
 
-	def signin(self, request, code: str, state: str) -> int:
+	def register_user(self, request, code: str, state: str):
 		response_token = self.__request_for_token(state, code)
 
 		if response_token.status_code == 200:
 			self.clear_cache(state)
 			token_data = response_token.json()
 			user = self.process_token_data(token_data)
+			response_token.user_id = user.id
 			login(request, user)
-		return response_token.status_code
+		return response_token
 
 	def clear_cache(self, state: str):
 		cache.delete(state)
 
 	def process_token_data(self, token_data: dict):
 		login42 = self.__get_username(token_data["access_token"])
-		user, created = CustomUser.objects.get_or_create(username=login42, login42=login42)
+		user, created = CustomUser.objects.get_or_create(login42=login42)
 
 		if created:
 			user.store_tokens(token_data)

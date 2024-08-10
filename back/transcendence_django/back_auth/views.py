@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .oauth import OAuthBackend
+from shared_models.models import CustomUser
 
 # get_user_id,
 from .auth_helpers import get_session_from_request, perform_logout
@@ -39,7 +40,6 @@ def signup(request):
         email = serializer.validated_data.get("email")
         password = serializer.validated_data.get("password")
         logger.error("username: %s\nemail: %s\npassword: %s", username, email, password)
-        # User.objects.create_user(username='newuser', password='password')
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     logger.error("Signup Error: %s", serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -110,17 +110,39 @@ def get_authorize_url(request):
 
 
 @api_view(["POST"])
-def exchange_code_and_signin(request):
+def exchange_code_for_user_id(request):
     state = request.data.get('state')
     code = request.data.get('code')
 
+    logger.info(f"code: {code}")
     if not code:
+        logger.error(f"code is empty")
         return Response({"error": "No code provided"}, status=400)
 
     oauth_backend: OAuthBackend = OAuthBackend()
-    status_code = oauth_backend.signin(request, code, state)
+    response = oauth_backend.register_user(request, code, state)
 
-    if status_code == 200:
-        return Response({"detail": "Successfully signed in."}, status=status.HTTP_200_OK)
+    logger.info(f"response: {response}")
+    if response.status_code == 200:
+        logger.info(f"user_id: {response.user_id}")
+        return Response(response.user_id)
     else:
-        return Response({"error": "Failed to exchange code and sign in"}, status=status_code)
+        logger.error(f"error : {response.text}")
+        return Response({"error": response.text}, status=response.status_code)
+
+
+@api_view(["POST"])
+def set_username(request):
+    username = request.data.get('username')
+    user_id = request.data.get('user_id')
+
+    try:
+        user = CustomUser.objects.get(username=username)
+        logger.info("user is already taken")
+        return Response({"error": "Username already taken."}, status=400)
+    except CustomUser.DoesNotExist:
+        user = CustomUser.objects.get(id=user_id)
+        user.username = username
+        user.save()
+        logger.info(f"new username: {user.username}")
+        return Response({"success": True}, status=status.HTTP_200_OK)

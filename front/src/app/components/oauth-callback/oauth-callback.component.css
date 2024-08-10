@@ -1,0 +1,51 @@
+body {
+  background-image: url("../../../assets/app-themes/red_vortex_light.gif");
+}
+
+.header {
+  font-size: 5vw; /* Proportional font size */
+  margin-bottom: 6vh; /* Proportional margin */
+  text-align: center;
+  color: rgb(200, 250, 230);
+}
+
+.form-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+}
+
+form-group {
+  position: relative;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.input-error-container {
+  position: relative;
+  display: flex;
+  align-items: center; /* This ensures the input and error message are vertically aligned */
+  justify-content: space-between;
+  width: 100%;
+}
+
+.form-group input {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.disabled-button {
+  background-color: #ccc; /* Light grey background */
+  color: #666; /* Darker grey text */
+  cursor: not-allowed; /* Cursor style to indicate not clickable */
+}
+
+.error-message-container {
+  height: 50px; /* Adjust this value based on the height of your error message */
+}
+
