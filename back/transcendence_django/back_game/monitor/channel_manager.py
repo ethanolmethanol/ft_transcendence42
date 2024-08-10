@@ -19,6 +19,7 @@ class ChannelManager:
     def __init__(self):
         self.channels: dict[str, dict[str, Arena]] = {}
         self.user_game_table: dict[int, dict[str, Any]] = {}
+        self.ai_game_table: dict[int, dict[str, Any]] = {}
 
     async def join_channel(
         self, user_id: int, channel_id: str
@@ -53,12 +54,14 @@ class ChannelManager:
             or (int)(players_specs['options'][AI_OPPONENTS_ONLINE]) > 0:
             try:
                 aipi_response: Response = http_get(
-                    url = f"https://back_aipi/aipi/spawn/",
+                    url = f"https://back-aipi/aipi/spawn/",
                     verify = False, # does not work otherwise
                     cert = ('/etc/ssl/serv.crt', '/etc/ssl/serv.key'),
-                    json = {"channel_id": channel_id}
+                    json = {"channel_id": channel_id, "arena_id": new_arena.id}
                 )
-                self.add_user_to_channel(aipi_response.json()['user_id'], channel_id, new_arena.id)
+                ai_user_id: int = aipi_response.json()['user_id']
+                logger.info(f"AIPI responded user id {ai_user_id} for channel id {channel_id}")
+                self.add_ai_to_channel(ai_user_id, channel_id, new_arena.id)
             except (ConnectionRefusedError, JSONDecodeError) as e:
                 logger.error(e)
         return self.user_game_table[user_id]
@@ -70,8 +73,14 @@ class ChannelManager:
         return channel
 
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
+        self.__add_to_channel(self.user_game_table, user_id, channel_id, arena_id)
+
+    def add_ai_to_channel(self, user_id: int, channel_id: str, arena_id: str):
+        self.__add_to_channel(self.ai_game_table, user_id, channel_id, arena_id)
+
+    def __add_to_channel(self, game_table: dict[int, dict[str, Any]], user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.channels[channel_id][arena_id]
-        self.user_game_table[user_id] = {
+        game_table[user_id] = {
             "channel_id": channel_id,
             "arena": arena.to_dict(),
         }
@@ -86,7 +95,7 @@ class ChannelManager:
         arenas.pop(arena_id)
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
-        logger.info("Trying to get arena %s in channel %s", arena_id, channel_id)
+        # logger.info("Trying to get arena %s in channel %s", arena_id, channel_id)
         channel = self.channels.get(channel_id)
         if channel:
             return channel.get(arena_id)

@@ -12,13 +12,13 @@ PlayerStatus = NewType("PlayerStatus", int)
 
 
 class Player:
-    def __init__(self, user_id: int, player_name: str):
+    def __init__(self, user_id: int, player_name: str, is_bot: bool):
         self.user_id: int = user_id
         self.player_name: str = player_name
         self.score: int = 0
         self.status: PlayerStatus = PlayerStatus(ENABLED)
         self.last_activity_time: float = time.time()
-        self.is_bot: bool = player_name == f"bot{user_id}"
+        self.is_bot: bool = is_bot
 
     def update_activity_time(self):
         self.last_activity_time = time.time()

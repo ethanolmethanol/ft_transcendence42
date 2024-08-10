@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 class Arena:
 
-    def __init__(self, players_specs: dict[str, int]):
+    def __init__(self, players_specs: dict[str, Any]):
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(players_specs)
@@ -62,7 +62,7 @@ class Arena:
             ID: self.id,
             STATUS: self.game.status,
             PLAYERS: [
-                player.player_name
+                player.player_name #FIXME shouldn't this be the IDs of the players?
                 for player in self.player_manager.players.values()
                 if player.status == PlayerStatus(ENABLED)
             ],
@@ -229,16 +229,19 @@ class Arena:
 
     def __enter_local_mode(self, user_id: int):
         if not self.is_full():
-            self.__register_player(user_id, PLAYER1)
-            self.__register_player(user_id, PLAYER2)
+            self.__register_player(user_id, PLAYER1, False)
+            if (self.player_manager.nb_humans):
+                self.__register_player(user_id, PLAYER2, False)
+            if (self.player_manager.nb_robots):
+                self.__register_player(user_id, f"bot{user_id}", True)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.enable_player(user_id)
         else:
-            self.__register_player(user_id, player_name)
+            self.__register_player(user_id, player_name, True)
 
-    def __register_player(self, user_id: int, player_name: str):
+    def __register_player(self, user_id: int, player_name: str, is_bot: bool):
         self.player_manager.finish_given_up_players()
-        self.player_manager.add_player(user_id, player_name)
+        self.player_manager.add_player(user_id, player_name, is_bot)
         self.game.add_paddle(player_name)

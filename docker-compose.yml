@@ -59,7 +59,9 @@ services:
         ports:
             - "8003:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-aipi
         restart: unless-stopped
 
     back_game:
@@ -76,7 +78,9 @@ services:
         ports:
             - "8001:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-game
         restart: unless-stopped
 
     front:

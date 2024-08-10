@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 class PlayerManager:
-    def __init__(self, player_specs: dict[str, int]):
+    def __init__(self, player_specs: dict[str, Any]):
         self.__fill_player_specs(player_specs)
         self.players: dict[str, Player] = {}
         self.last_kick_check: float = time.time()
@@ -46,8 +46,8 @@ class PlayerManager:
         disable_players_count = self.__count_players(PlayerStatus(DISABLED))
         return enable_players_count + disable_players_count == self.nb_players
 
-    def add_player(self, user_id: int, player_name: str):
-        player = Player(user_id, player_name)
+    def add_player(self, user_id: int, player_name: str, is_bot: bool):
+        player = Player(user_id, player_name, is_bot)
         self.players[player_name] = player
 
     def remove_player(self, player_name):
@@ -167,8 +167,11 @@ class PlayerManager:
     def __finish_player(self, user_id: int):
         self.__change_player_status(user_id, PlayerStatus(OVER))
 
-    def __fill_player_specs(self, players_specs: dict[str, int]):
+    def __fill_player_specs(self, players_specs: dict[str, Any]):
         self.nb_players = players_specs[NB_PLAYERS]
+        self.nb_humans = players_specs["options"]["human_players"] or players_specs["options"]["online_players"]
+        self.nb_robots = players_specs["options"]["ai_opponents_local"] or players_specs["options"]["ai_opponents_online"]
+        logger.info(f"NB PLAYERS {self.nb_players} -- HUMANS {self.nb_humans} -- ROBOTS {self.nb_robots}")
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
         self.is_remote = players_specs[IS_REMOTE] == "online"

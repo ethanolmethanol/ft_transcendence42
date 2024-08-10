@@ -86,7 +86,12 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     } else {
       return JSON.stringify({
         "user_id": user_id,
-        "players_specs": {"nb_players": 2, "type": this._gameType, "options": this._optionsDict}
+        "players_specs":
+        {
+          "nb_players": this._optionsDict["human_players"] + this._optionsDict["ai_opponents_local"]
+            + this._optionsDict["online_players"] + this._optionsDict["ai_opponents_online"],
+          "type": this._gameType, "options": this._optionsDict
+        }
       });
     }
   }
