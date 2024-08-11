@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
@@ -165,3 +166,48 @@ def get_game_summaries(request) -> JsonResponse:
         return JsonResponse(
             {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
         )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class UpdateUsernameView(APIView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.username: str = ""
+        self.user_id: str = ""
+
+    def write_username_in_db(self):
+        try:
+            user = CustomUser.objects.get(id=self.user_id)
+            user.username = self.username
+            user.save()
+            logger.info(f"New username set: {user.username}")
+            return user
+        except CustomUser.DoesNotExist:
+            logger.error("User with the provided ID does not exist.")
+            return None
+
+    def username_already_taken(self) -> bool:
+        if CustomUser.objects.filter(username=self.username).exists():
+            logger.info("Username is already taken")
+            return True
+        return False
+
+    def update_username(self):
+        if self.username_already_taken():
+            return None, Response({"error": "Username already taken."}, status=400)
+
+        user = self.write_username_in_db()
+        if user:
+            return user, Response({"success": True}, status=status.HTTP_200_OK)
+        else:
+            return None, Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        self.username = request.data.get("username")
+        self.user_id = request.data.get("user_id")
+
+        if not self.username or not self.user_id:
+            return Response({"error": "Username and user ID are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        _, response = self.update_username()
+        return response

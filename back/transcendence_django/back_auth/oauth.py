@@ -30,11 +30,10 @@ class OAuthBackend(object):
 			self.clear_cache(state)
 			token_data = response_token.json()
 			user, created = self.process_token_data(token_data)
-			if not created and user.username is None:
-				created = True
+			if not created:
+				login(request, user)
 			response_token.user_id = user.id
 			response_token.new_user_created = created
-			login(request, user)
 		return response_token
 
 	def clear_cache(self, state: str):
@@ -46,6 +45,11 @@ class OAuthBackend(object):
 
 		if created:
 			user.store_tokens(token_data)
+		elif user.username is None or user.username == "":
+			created = True
+			logger.info("User created but username not found")
+		else:
+			logger.info("User already exists, username is: %s", user.username)
 		return user, created
 
 	def __request_for_token(self, state: str, code: str):

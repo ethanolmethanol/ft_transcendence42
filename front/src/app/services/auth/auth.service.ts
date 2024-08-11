@@ -34,8 +34,8 @@ export class AuthService {
     return this.http.post<any>(`${API_AUTH}/exchange_code_for_user_id/`, { code });
   }
 
-  public setUsername(username: string, user_id: number): Observable<any> {
-    return this.http.post<any>(`${API_AUTH}/set_username/`, { username, user_id });
+  public setUsername42(username: string, user_id: number): Observable<any> {
+    return this.http.post<any>(`${API_AUTH}/set_username_42/`, { username, user_id });
   }
 
   public isLoggedIn(): Observable<boolean> {

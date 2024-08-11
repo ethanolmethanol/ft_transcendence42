@@ -70,7 +70,7 @@ export class OauthCallbackComponent implements OnInit {
     if (this.pickUsernameForm.valid) {
       const username = this.pickUsernameForm.value.username;
       console.log(username);
-      this._authService.setUsername(username, this.userID).subscribe({
+      this._authService.setUsername42(username, this.userID).subscribe({
         next: (response) => {
           console.log("Account created: ", response);
           this._router.navigate(["/home"]);

@@ -135,24 +135,19 @@ def exchange_code_for_user_id(request):
 
 
 @api_view(["POST"])
-def set_username(request):
-    username = request.data.get('username')
-    user_id = request.data.get('user_id')
-
-    logger.info("Set username to %s, from user_id %s", username, user_id)
+def set_username_42(request):
+    username, user_id = request.data.get('username'), request.data.get('user_id')
 
     try:
         if CustomUser.objects.filter(username=username).exists():
-            logger.info("Username is already taken")
             return Response({"error": "Username already taken."}, status=400)
 
         user = CustomUser.objects.get(id=user_id)
         user.username = username
         user.save()
 
-        logger.info(f"New username set: {user.username}")
+        login(request, user)
         return Response({"success": True}, status=status.HTTP_200_OK)
 
     except CustomUser.DoesNotExist:
-        logger.error("User with the provided ID does not exist.")
         return Response({"error": "User not found."}, status=404)
