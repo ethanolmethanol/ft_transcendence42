@@ -56,10 +56,6 @@ export class AuthService {
     });
   }
 
-  // public logout42() {
-  //   this.oauthService.logOut();
-  // }
-
   private processLogout() {
     return this.http.post(`${API_AUTH}/logout/`, {});
   }

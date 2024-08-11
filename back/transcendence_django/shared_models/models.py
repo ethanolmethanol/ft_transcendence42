@@ -110,6 +110,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.oauth_token.store_tokens(token_data)
         self.save()
 
+    def clear_tokens(self):
+        if self.oauth_token is not None:
+            self.oauth_token = None
+        self.save()
+
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
         self.__update_time_played(game_summary)

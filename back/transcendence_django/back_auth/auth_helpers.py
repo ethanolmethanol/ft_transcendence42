@@ -3,6 +3,7 @@ import logging
 from django.contrib.auth import logout
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
+from shared_models.models import CustomUser
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,8 @@ def get_user_id(session):
 
 def perform_logout(request):
     try:
+        user = request.user
+        user.clear_tokens()
         logout(request)
         logger.info("User successfully logged out.")
     except Exception as e:
