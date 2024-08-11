@@ -1,22 +1,20 @@
-<script src="../start-timer/start-timer.component.ts"></script>
-<section class="game-container">
-  <app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
-  <section class="game-area" [class.hidden]="!dataLoaded || isWaiting">
-    <section class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
-      <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
-      <section class="score-display">
-        <div class="score-player1">{{ player1Score }}</div>
-        <div class="score-player2">{{ player2Score }}</div>
-      </section>
-      <app-ball></app-ball>
-      <app-paddle [id]="1"></app-paddle>
-      <app-paddle [id]="2"></app-paddle>
+<app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
+<section class="game-area" [class.hidden]="!dataLoaded || isWaiting">
+  <section class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
+    <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
+    <section class="score-display">
+      <div class="score-player1">{{ player1Score }}</div>
+      <div class="score-player2">{{ player2Score }}</div>
     </section>
-    <section *ngIf="paddles && paddles.first && paddles.last" class="players">
-      <div class="player-name player1">{{ paddles.first.playerName }}</div>
-      <div class="player-name player2">{{ paddles.last.playerName }}</div>
-    </section>
+    <app-ball></app-ball>
+    <app-paddle [id]="1"></app-paddle>
+    <app-paddle [id]="2"></app-paddle>
+  </section>
+  <section *ngIf="paddles && paddles.first && paddles.last" class="players">
+    <div class="player-name player1">{{ paddles.first.playerName }}</div>
+    <div class="player-name player2">{{ paddles.last.playerName }}</div>
   </section>
 </section>
 <app-start-timer></app-start-timer>
 <app-gameover></app-gameover>
+
