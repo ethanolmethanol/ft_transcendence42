@@ -1,4 +1,3 @@
-# import the logging library
 import logging
 
 from django.contrib.auth import authenticate, login
@@ -10,51 +9,45 @@ from rest_framework.response import Response
 from .oauth import OAuthBackend
 from shared_models.models import CustomUser
 
-# get_user_id,
 from .auth_helpers import get_session_from_request, perform_logout
 from .serializers import UserSerializer
 
-# import libraries for username and email availability checks
 
-# import libraries for username and email availability checks
-
-# Get an instance of a logger
 logger = logging.getLogger(__name__)
-# SignUp
 
-def authenticate_user(request, username, password) -> bool:
+
+def login_user(request, username, password):
     user = authenticate(request, username=username, password=password)
+
     if user is not None:
         login(request, user)
         return True
+
     return False
 
 
 @api_view(["POST"])
 def signup(request):
     serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        # Access validated data directly from the serializer
-        username = serializer.validated_data.get("username")
-        email = serializer.validated_data.get("email")
-        password = serializer.validated_data.get("password")
-        logger.error("username: %s\nemail: %s\npassword: %s", username, email, password)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    logger.error("Signup Error: %s", serializer.errors)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    if not serializer.is_valid():
+        logger.error("Signup Error: %s", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# SignIn
+    serializer.save()
+    # Access validated data directly from the serializer
+    username = serializer.validated_data.get("username")
+    password = serializer.validated_data.get("password")
+    login_user(request, username, password)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["POST"])
 def signin(request):
-    user_login = request.data.get("login")
+    username = request.data.get("login")
     password = request.data.get("password")
-    user = authenticate(request, username=user_login, password=password)
-    if user is not None:
-        login(request, user)
+
+    if login_user(request, username, password):
         response = Response(
             {"detail": "Successfully signed in."}, status=status.HTTP_200_OK
         )
@@ -63,11 +56,6 @@ def signin(request):
         {"detail": "Invalid username or password."}, status=status.HTTP_401_UNAUTHORIZED
     )
 
-@api_view(["POST"])
-def oauth2(request):
-    pass
-
-# Logout
 
 @api_view(["POST"])
 @csrf_protect
@@ -85,9 +73,6 @@ def logout_view(request):
         return Response(
             {"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
-# Is logged
 
 
 @api_view(["GET"])

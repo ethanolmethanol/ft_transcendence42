@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from typing import Any, List, TypeVar
 from django.utils import timezone
@@ -17,6 +18,9 @@ from shared_models.constants import (
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
+
+
+logger = logging.getLogger(__name__)
 
 
 class GameSummary(models.Model):
@@ -46,6 +50,7 @@ class OauthToken(models.Model):
     token_expires_at: datetime = models.DateTimeField(default=timezone.now)
 
     def store_tokens(self, token_data):
+        logger.info(f"Token data: {token_data}")
         self.access_token = token_data['access_token']
         self.refresh_token = token_data['refresh_token']
         self.token_expires_at = timezone.now() + timedelta(seconds=token_data['expires_in'])
