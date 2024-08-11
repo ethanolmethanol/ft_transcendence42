@@ -29,7 +29,6 @@ import { PaddleComponent } from "../paddle/paddle.component";
 import { BallComponent } from "../ball/ball.component";
 import { WebSocketService } from "../../../services/web-socket/web-socket.service";
 import { ArenaResponse } from "../../../interfaces/arena-response.interface";
-import { Position } from "../../../interfaces/position.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
@@ -40,36 +39,13 @@ import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
-
-interface PaddleUpdateResponse {
-  slot: number;
-  position: Position;
-}
-
-interface BallUpdateResponse {
-  position: Position;
-}
-
-interface ScoreUpdateResponse {
-  player_name: string;
-}
-
-interface StartTimerResponse {
-  time: number;
-  message: string;
-}
-
-interface GameOverUpdateResponse {
-  players: string[];
-  winner: string;
-  time: number;
-  message: string;
-}
-
-interface AFKResponse {
-  player_name: string;
-  time_left: number;
-}
+import {
+  AFKResponse,
+  BallUpdateResponse, GameOverUpdateResponse,
+  PaddleUpdateResponse,
+  ScoreUpdateResponse,
+  StartTimerResponse
+} from "../../../interfaces/game.interface";
 
 interface VariableMapping {
   [key: string]: (value: any) => void;
@@ -200,7 +176,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.gameOver.first.hasRematched = false;
   }
 
-  private handleGameUpdate(gameState: any) {
+  public handleGameUpdate(gameState: any) {
     const variableMapping : VariableMapping = {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
@@ -244,7 +220,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     });
   }
 
-  private handleGameError(error: ErrorResponse) {
+  public handleGameError(error: ErrorResponse) {
     console.error('Game error:', error);
     if (error.code in this._errorMapping) {
       this._errorMapping[error.code](error);
@@ -375,7 +351,6 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
-    this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
     this.channelID = this.connectionService.getChannelID();
     this._setGameStyle();
     this.channelID = this.connectionService.getChannelID();

@@ -14,7 +14,11 @@ import { GameComponent } from "../../components/gameplay/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import { ConnectionService } from "../../services/connection/connection.service";
-import { NgIf } from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
+import {CopyButtonComponent} from "../../components/copy-button/copy-button.component";
+import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
+import {ArenaResponse} from "../../interfaces/arena-response.interface";
+import {WAITING} from "../../constants";
 
 @Component({
   selector: 'app-game-page',
@@ -25,17 +29,21 @@ import { NgIf } from "@angular/common";
     GameComponent,
     LoadingSpinnerComponent,
     NgIf,
+    CopyButtonComponent,
+    NgForOf,
+    PlayerIconComponent,
   ],
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
 })
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
-
   isRemote: boolean | null = null;
   canGiveUp: boolean = true;
+  hasLoaded: boolean = false;
 
-  @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
+  @ViewChildren(GameComponent) gameComponent!: QueryList<GameComponent>;
+  game?: GameComponent;
   @HostListener('window:resize', ['$event'])
   public onResize(event: Event) {
     this.updateGameContainerScale();
@@ -54,19 +62,25 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public ngAfterViewInit() {
+    console.log('Game Component initializing...');
+    this.game = this.gameComponent.first;
     this.updateGameContainerScale();
     this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
       console.log('Channel ID:', channel_id);
-      this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
+      this._connectionService.establishConnection(this.game!.setArena.bind(this.game), channel_id, arena_id);
     });
-    this.game.first.startCounterStarted.subscribe(() => {
+    this.game!.startCounterStarted.subscribe(() => {
       this.canGiveUp = false;
     });
-    this.game.first.hasStarted.subscribe(() => {
+    this.game!.hasStarted.subscribe(() => {
       this.canGiveUp = true;
     });
+    this._connectionService.listenToWebSocketMessages(
+      this.game!.handleGameUpdate.bind(this.game),
+      this.game!.handleGameError.bind(this.game));
+    this.hasLoaded = true;
   }
 
   public ngOnDestroy() {
