@@ -23,7 +23,7 @@ class ChannelManager:
         channel = self.channels.get(channel_id)
         if channel is None:
             return None
-        arena_id: str = list(self.channels[channel_id].keys())[0]
+        arena_id: str = list(self.channels[channel_id]["arenas"])[0]
         logger.info("Arena id: %s", arena_id)
         self.add_user_to_channel(user_id, channel_id, arena_id)
         return self.get_channel_from_user_id(user_id)
@@ -64,6 +64,7 @@ class ChannelManager:
         return channel
 
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
+        logger.info("Adding user %s to channel %s in arena %s", user_id, channel_id, arena_id)
         arena: Arena = self.channels[channel_id]["arenas"][arena_id]
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
