@@ -17,11 +17,20 @@ class ChannelManager:
         self.channels: dict[str, dict[str, Arena]] = {}
         self.user_game_table: dict[int, dict[str, Any]] = {}
 
+    def can_channel_be_joined(self, channel_id: str, user_id: int) -> bool:
+        if channel_id not in self.channels:
+            return False
+        channel = self.channels[channel_id]
+        if channel["is_tournament"]:
+            return False
+        arena_id: str = list(channel["arenas"])[0]
+        arena: Arena = channel["arenas"][arena_id]
+        return arena.get_status() == GameStatus(WAITING)
+
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> dict[str, Any] | None:
-        channel = self.channels.get(channel_id)
-        if channel is None:
+        if not self.can_channel_be_joined(channel_id, user_id):
             return None
         arena_id: str = list(self.channels[channel_id]["arenas"])[0]
         logger.info("Arena id: %s", arena_id)

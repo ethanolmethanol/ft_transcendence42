@@ -72,6 +72,9 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   private getGameUrl(channel_id: string, arena_id: number): string {
+    if (this._actionType === "join-tournament") {
+      return `/online/tournament/${channel_id}/${arena_id}`;
+    }
     return `/${this._gameType}/${channel_id}/${arena_id}`;
   }
 
@@ -159,7 +162,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this.joinSpecificChannel(postData);
     } else if (this._actionType == "create") {
       this.createGame(postData);
-    } else if (this._actionType == "tournament") {
+    } else if (this._actionType == "join-tournament") {
       this.joinTournament(postData);
     }
   }
