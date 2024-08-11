@@ -170,7 +170,8 @@ class Monitor:
 
     async def __monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
         while arenas:
-            await self.update_game_states(arenas)
+            if self.channel_manager.are_all_arenas_ready(channel_id):
+                await self.update_game_states(arenas)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
         self.channel_manager.delete_channel(channel_id)
 

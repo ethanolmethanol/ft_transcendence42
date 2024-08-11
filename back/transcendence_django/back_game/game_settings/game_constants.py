@@ -37,6 +37,8 @@ VALID_DIRECTIONS = [-1, 1]
 # LOCAL_MODE = 0
 # ONLINE_MODE = 1
 
+# Tournament
+
 DEFAULT_TOURNAMENT_SPECS = {
     "nb_players": 2,
     "type": "online",
@@ -50,6 +52,8 @@ DEFAULT_TOURNAMENT_SPECS = {
         "is_private": 0
     },
 }
+
+TOURNAMENT_ARENA_COUNT = 2
 
 # Game status
 CREATED = 0

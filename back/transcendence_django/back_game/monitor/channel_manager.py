@@ -6,7 +6,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.game_constants import DEAD, WAITING
+from back_game.game_settings.game_constants import CREATED, DEAD, TOURNAMENT_ARENA_COUNT, WAITING
 from transcendence_django.dict_keys import ID
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ class ChannelManager:
     ) -> dict[str, Any]:
         arena_count = 1
         if is_tournament:
-            arena_count = 4
+            arena_count = TOURNAMENT_ARENA_COUNT
         arenas = []
         for _ in range(arena_count):
             new_arena: Arena = Arena(players_specs)
@@ -79,6 +79,11 @@ class ChannelManager:
             "channel_id": channel_id,
             "arena": arena.to_dict(),
         }
+
+    def are_all_arenas_ready(self, channel_id: str) -> bool:
+        channel = self.channels[channel_id]
+        arenas = channel["arenas"]
+        return all(arena.is_full() for arena in arenas.values())
 
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
         arena = arenas[arena_id]
@@ -144,9 +149,9 @@ class ChannelManager:
                 return None
             for arena_id in arenas_id:
                 arena: Arena = channel["arenas"][arena_id]
-                if arena.is_private():
+                if arena.is_private() or arena.is_full():
                     continue
-                if arena.get_status() == GameStatus(WAITING):
+                if arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
                     return {"channel_id": channel_id, "arena": arena.to_dict()}
         return None
 
