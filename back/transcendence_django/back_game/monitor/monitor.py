@@ -21,6 +21,7 @@ from django.conf import settings
 from transcendence_django.dict_keys import (
     ARENA,
     CHANNEL_ID,
+    IS_BOT,
     IS_REMOTE,
     OVER_CALLBACK,
     PLAYERS,
@@ -153,8 +154,9 @@ class Monitor:
         )
         custom_user_model = apps.get_model("shared_models", "CustomUser")
         for player in players:
-            user_id = player.get("user_id")
-            if user_id:
+            user_id = player.get(USER_ID)
+            is_bot = player.get(IS_BOT)
+            if user_id and not is_bot:
                 user = await sync_to_async(custom_user_model.objects.get)(pk=user_id)
                 await user.save_game_summary(game_summary)
 

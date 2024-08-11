@@ -18,6 +18,7 @@ from back_game.game_settings.game_constants import (
 from transcendence_django.dict_keys import (
     ARENA_FULL,
     INVALID_NB_PLAYERS,
+    IS_BOT,
     IS_REMOTE,
     NB_PLAYERS,
     PLAYER_NAME,
@@ -103,6 +104,7 @@ class PlayerManager:
                 {
                     USER_ID: player.user_id,
                     SCORE: player.score,
+                    IS_BOT: player.is_bot,
                 }
                 for player in self.players.values()
             ],
