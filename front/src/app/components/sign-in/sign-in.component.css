@@ -1,5 +1,5 @@
 form-group {
-  position:relative;
+  position: relative;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -23,8 +23,8 @@ form-group {
 }
 
 .signin-header {
-  font-size: 5em;
-  margin-bottom: 60px;
+  font-size: 5vw; /* Proportional font size */
+  margin-bottom: 6vh; /* Proportional margin */
   text-align: center;
-  color: rgb(200 250 230);
+  color: rgb(200, 250, 230);
 }

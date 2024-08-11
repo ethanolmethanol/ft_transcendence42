@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameComponent } from './game.component';
 import {PaddleComponent} from "../paddle/paddle.component";
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { WebSocketService } from '../../services/web-socket/web-socket.service';
+import { WebSocketService } from '../../../services/web-socket/web-socket.service';
 
 describe('GameComponent', () => {
   let component: GameComponent;

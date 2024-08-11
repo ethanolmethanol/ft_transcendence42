@@ -10,7 +10,6 @@ from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import DEAD, WAITING
 from transcendence_django.dict_keys import (ID, AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE)
-from transcendence_django.settings import SERV_IP
 
 logger = logging.getLogger(__name__)
 

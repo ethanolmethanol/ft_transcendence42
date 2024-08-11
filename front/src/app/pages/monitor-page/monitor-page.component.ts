@@ -14,7 +14,6 @@ import {
   throwError
 } from "rxjs";
 import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
-import {SubsetOfKeys} from "@angular/compiler-cli/src/ngtsc/util/src/typescript";
 
 @Component({
   selector: 'app-monitor-page',

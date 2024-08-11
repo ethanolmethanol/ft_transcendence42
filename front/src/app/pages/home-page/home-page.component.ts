@@ -1,13 +1,13 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { HeaderComponent } from "../../components/header/header.component";
-import { LeaderboardComponent } from "../../components/leaderboard/leaderboard.component";
 import { UserService } from '../../services/user/user.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
-import {AsyncPipe, NgForOf, NgIf, NgStyle} from "@angular/common";
-import {ButtonWithIconComponent} from "../../components/button-with-icon/button-with-icon.component";
-import {GameSummaryComponent} from "../../components/game-summary/game-summary.component";
-import {GameSummaryListComponent} from "../../components/game-summary-list/game-summary-list.component";
+import { AsyncPipe, NgForOf, NgIf, NgStyle } from "@angular/common";
+import { ButtonWithIconComponent } from "../../components/button-with-icon/button-with-icon.component";
+import { GameSummaryComponent } from "../../components/stats/game-summary/game-summary.component";
+import { GameSummaryListComponent } from "../../components/stats/game-summary-list/game-summary-list.component";
+import { DashboardComponent } from "../../components/stats/dashboard/dashboard.component";
 
 @Component({
   selector: 'app-home-page',
@@ -15,7 +15,6 @@ import {GameSummaryListComponent} from "../../components/game-summary-list/game-
   imports: [
     RouterLink,
     HeaderComponent,
-    LeaderboardComponent,
     LoadingSpinnerComponent,
     NgStyle,
     ButtonWithIconComponent,
@@ -24,11 +23,12 @@ import {GameSummaryListComponent} from "../../components/game-summary-list/game-
     AsyncPipe,
     NgIf,
     GameSummaryListComponent,
+    DashboardComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css'
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements AfterViewInit {
   welcome: string = '';
   userID: number | undefined;
   @ViewChild('gameSummaryList') gameSummaryListComponent!: GameSummaryListComponent;
@@ -36,7 +36,7 @@ export class HomePageComponent implements OnInit {
 
   constructor(private userService: UserService, private router: Router) { }
 
-  async ngOnInit(): Promise<void> {
+  async ngAfterViewInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.welcome = `Welcome, ${this.userService.getUsername()}`;
     this.userID = this.userService.getUserID();
