@@ -30,11 +30,11 @@ export class AuthService {
     return this.http.get<string>(`${API_AUTH}/authorize/`);
   }
 
-  public exchangeCodeForUserID(code: string): Observable<string> {
+  public exchangeCodeForUserID(code: string): Observable<any> {
     return this.http.post<any>(`${API_AUTH}/exchange_code_for_user_id/`, { code });
   }
 
-  public setUsername(username: string, user_id: string): Observable<any> {
+  public setUsername(username: string, user_id: number): Observable<any> {
     return this.http.post<any>(`${API_AUTH}/set_username/`, { username, user_id });
   }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { NgIf } from "@angular/common"
-import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule, NgStyle } from "@angular/common"
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { UsernameErrorComponent } from "../sign-up/username-error/username-error.component";
 import { ErrorMessageComponent } from "../error-message/error-message.component";
@@ -12,9 +12,11 @@ import { usernameValidator } from '../../validators/username.validator';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    NgIf,
+    NgStyle,
+    CommonModule,
     ErrorMessageComponent,
     UsernameErrorComponent,
+    RouterLink,
   ],
   templateUrl: './oauth-callback.component.html',
   styleUrl: './oauth-callback.component.css'
@@ -22,7 +24,8 @@ import { usernameValidator } from '../../validators/username.validator';
 export class OauthCallbackComponent implements OnInit {
   pickUsernameForm!: FormGroup;
   errorMessage: string = "";
-  userID: string = "";
+  userID: number = 0;
+  displayForm: boolean = false;
 
   constructor(
     private _route: ActivatedRoute,
@@ -41,7 +44,15 @@ export class OauthCallbackComponent implements OnInit {
         console.log("Code received: ", code);
         this._authService.exchangeCodeForUserID(code).subscribe({
           next: response => {
-            this.userID = response;
+            console.log("Code received. Response: ", response);
+            if (response.new_user_created == false) {
+              console.log("User already exists");
+              this._router.navigate(["/home"]);
+            }
+            else {
+              this.userID = response.user_id;
+              this.displayForm = true;
+            }
           },
           error: (err): void => {
             console.error("Error exchanging code", err);

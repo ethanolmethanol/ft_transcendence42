@@ -29,8 +29,11 @@ class OAuthBackend(object):
 		if response_token.status_code == 200:
 			self.clear_cache(state)
 			token_data = response_token.json()
-			user = self.process_token_data(token_data)
+			user, created = self.process_token_data(token_data)
+			if not created and user.username is None:
+				created = True
 			response_token.user_id = user.id
+			response_token.new_user_created = created
 			login(request, user)
 		return response_token
 
@@ -43,7 +46,7 @@ class OAuthBackend(object):
 
 		if created:
 			user.store_tokens(token_data)
-		return user
+		return user, created
 
 	def __request_for_token(self, state: str, code: str):
 		data = {

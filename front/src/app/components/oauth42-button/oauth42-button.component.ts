@@ -13,7 +13,7 @@ export class Oauth42ButtonComponent {
 
   constructor(private authService: AuthService) {}
 
-  public navigate_to_42_api(): void {
+  public connectWith42(): void {
     this.authService.authorize42().subscribe( {
       next: url => {
         window.open(url, '_self');

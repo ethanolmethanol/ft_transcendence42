@@ -125,7 +125,10 @@ def exchange_code_for_user_id(request):
     logger.info(f"response: {response}")
     if response.status_code == 200:
         logger.info(f"user_id: {response.user_id}")
-        return Response(response.user_id)
+        return Response(data={
+            "user_id": response.user_id,
+            "new_user_created": response.new_user_created,
+        }, status=status.HTTP_200_OK)
     else:
         logger.error(f"error : {response.text}")
         return Response({"error": response.text}, status=response.status_code)
@@ -136,13 +139,20 @@ def set_username(request):
     username = request.data.get('username')
     user_id = request.data.get('user_id')
 
+    logger.info("Set username to %s, from user_id %s", username, user_id)
+
     try:
-        user = CustomUser.objects.get(username=username)
-        logger.info("user is already taken")
-        return Response({"error": "Username already taken."}, status=400)
-    except CustomUser.DoesNotExist:
+        if CustomUser.objects.filter(username=username).exists():
+            logger.info("Username is already taken")
+            return Response({"error": "Username already taken."}, status=400)
+
         user = CustomUser.objects.get(id=user_id)
         user.username = username
         user.save()
-        logger.info(f"new username: {user.username}")
+
+        logger.info(f"New username set: {user.username}")
         return Response({"success": True}, status=status.HTTP_200_OK)
+
+    except CustomUser.DoesNotExist:
+        logger.error("User with the provided ID does not exist.")
+        return Response({"error": "User not found."}, status=404)

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
-import {SignInPageComponent} from "./pages/sign-in-page/sign-in-page.component";
-import {UserService} from "./services/user/user.service";
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { SignInPageComponent } from "./pages/sign-in-page/sign-in-page.component";
+import { UserService } from "./services/user/user.service";
 
 @Component({
   selector: 'app-root',
