@@ -69,6 +69,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
       console.log('Channel ID:', channel_id);
+      this.game!.setArenaID(arena_id);
       this._connectionService.establishConnection(this.game!.setArena.bind(this.game), channel_id, arena_id);
     });
     this.game!.startCounterStarted.subscribe(() => {

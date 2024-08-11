@@ -187,15 +187,18 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.safe_send({TYPE: GAME_UPDATE, UPDATE: message})
 
     async def send_error(self, error: dict[str, Any]):
+        error = {**{ARENA_ID: self.game.arena_id}, **error}
         logger.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
         await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def send_update(self, update: dict[str, Any]):
         # logger.info("Sending update: %s", update)
+        update = {**{ARENA_ID: self.game.arena_id}, **update}
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):
         logger.info("Sending message: %s", message)
+#         message = {**{ARENA_ID: self.game.arena_id}, **message}
         await self.send_data({TYPE: GAME_MESSAGE, MESSAGE: message})
 
     async def send_data(self, data: dict[str, Any]):

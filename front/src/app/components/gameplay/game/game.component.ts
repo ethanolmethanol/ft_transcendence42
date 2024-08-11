@@ -82,6 +82,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Output() startCounterStarted = new EventEmitter<void>();
   private playerName: string | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
+  arenaID: string = '';
   gameWidth: number = GAME_WIDTH;
   gameHeight: number = GAME_HEIGHT;
   player1Score: number = 0;
@@ -122,6 +123,10 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
       await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
     }
+  }
+
+  public setArenaID(arenaID: string) {
+    this.arenaID = arenaID;
   }
 
   private _setGameStyle(): void {
@@ -189,6 +194,9 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
     };
 
+    if (gameState['arena_id'] !== this.arenaID) {
+      return;
+    }
     for (const variable in gameState) {
         if (variable in variableMapping) {
             variableMapping[variable](gameState[variable]);

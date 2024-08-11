@@ -83,7 +83,8 @@ class ChannelManager:
     def are_all_arenas_ready(self, channel_id: str) -> bool:
         channel = self.channels[channel_id]
         arenas = channel["arenas"]
-        return all(arena.is_full() for arena in arenas.values())
+        return all(arena.is_full()
+            for arena in arenas.values())
 
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
         arena = arenas[arena_id]

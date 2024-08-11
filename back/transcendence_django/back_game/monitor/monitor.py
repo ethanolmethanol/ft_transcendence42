@@ -50,7 +50,8 @@ class Monitor:
         channel_id: str = new_channel[CHANNEL_ID]
         arenas = self.channel_manager.channels[channel_id]["arenas"]
         asyncio.create_task(self.__monitor_arenas_loop(channel_id, arenas))
-        asyncio.create_task(self.__run_game_loop(arenas))
+        for arena in arenas.values():
+            asyncio.create_task(self.__run_game_loop(arena))
         return new_channel
 
     async def join_channel(
@@ -168,20 +169,27 @@ class Monitor:
                 await self.__game_over(arenas, arena)
                 break
 
+    async def wait_for_tournament_start(self, channel_id: str):
+        channel = self.channel_manager.channels[channel_id]
+        while self.channel_manager.are_all_arenas_ready(channel_id) is False:
+            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+
     async def __monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
+        channel = self.channel_manager.channels[channel_id]
+        if channel["is_tournament"]:
+            await self.wait_for_tournament_start(channel_id)
         while arenas:
-            if self.channel_manager.are_all_arenas_ready(channel_id):
-                await self.update_game_states(arenas)
+            await self.update_game_states(arenas)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
         self.channel_manager.delete_channel(channel_id)
 
-    async def __run_game_loop(self, arenas: dict[str, Arena]):
-        while arenas:
-            for arena in arenas.values():
-                if arena.get_status() == GameStatus(STARTED):
-                    update_message = arena.update_game()
-                    if arena.game_update_callback is not None:
-                        await arena.game_update_callback(update_message)
+    async def __run_game_loop(self, arena: Arena):
+        while arena:
+            logger.info("Checking arena %s", arena.id)
+            if arena.get_status() == GameStatus(STARTED):
+                update_message = arena.update_game()
+                if arena.game_update_callback is not None:
+                    await arena.game_update_callback(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
     async def __game_over(self, arenas: dict[str, Arena], arena: Arena):
