@@ -124,9 +124,11 @@ install_mkcert() {
 }
 
 export_env_instructions() {
-    echo -e "\nTo apply the environment variables to your current zsh shell, please run:"
-    echo "[ZSH]    set -a; source ${ENV_FILE_GLOBAL}; set +a"
-    echo "[BSH]    source ${ENV_FILE_GLOBAL}"
+	echo -e "\n**************************** EXPORT ENV INSTRUCTIONS ****************************"
+    echo "*  To apply the environment variables to your current zsh shell, please run:    *"
+    echo "*  [ZSH]    set -a; source ${ENV_FILE_GLOBAL}; set +a                                         *"
+    echo "*  [BSH]    source ${ENV_FILE_GLOBAL}                                                         *"
+    echo -e "*********************************************************************************\n"
 }
 
 IP_ADDR=$(get_ip "$1")
