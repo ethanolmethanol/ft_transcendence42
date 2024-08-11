@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-from datetime import timedelta
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -113,22 +111,6 @@ CACHES = {
         },
     }
 }
-
-# CELERY_BROKER_URL = 'redis://redis:6379/2'
-# CELERY_RESULT_BACKEND = 'redis://redis:6379/2'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = 'UTC'
-# CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-#
-#
-# CELERY_BEAT_SCHEDULE = {
-#     'refresh-tokens-every-10-minutes': {
-#         'task': 'back_auth.tasks.refresh_tokens',
-#         'schedule': timedelta(minutes=10),
-#     },
-# }
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
