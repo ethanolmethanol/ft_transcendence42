@@ -19,7 +19,7 @@ urlpatterns = [
     path(
         "exchange_code_for_user_id/",
         exchange_code_for_user_id,
-        name="exchange_code_for_user_id"
+        name="exchange_code_for_user_id",
     ),
     path("set_username_42/", set_username_42, name="set_username_42"),
 ]

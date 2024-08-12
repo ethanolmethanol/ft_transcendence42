@@ -96,32 +96,30 @@ def get_authorize_url(request):
 
 @api_view(["POST"])
 def exchange_code_for_user_id(request):
-    state = request.data.get('state')
-    code = request.data.get('code')
+    state = request.data.get("state")
+    code = request.data.get("code")
 
-    logger.info(f"code: {code}")
     if not code:
-        logger.error("code is empty")
         return Response({"error": "No code provided"}, status=400)
 
     oauth_backend: OAuthBackend = OAuthBackend()
     response = oauth_backend.register_user(request, code, state)
 
-    logger.info(f"response: {response}")
     if response.status_code == 200:
-        logger.info(f"user_id: {response.user_id}")
-        return Response(data={
+        return Response(
+            data={
             "user_id": response.user_id,
             "new_user_created": response.new_user_created,
-        }, status=status.HTTP_200_OK)
+            },
+            status=status.HTTP_200_OK,
+        )
     else:
-        logger.error(f"error : {response.text}")
         return Response({"error": response.text}, status=response.status_code)
 
 
 @api_view(["POST"])
 def set_username_42(request):
-    username, user_id = request.data.get('username'), request.data.get('user_id')
+    username, user_id = request.data.get("username"), request.data.get("user_id")
 
     try:
         if CustomUser.objects.filter(username=username).exists():

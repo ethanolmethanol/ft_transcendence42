@@ -53,9 +53,13 @@ class OauthToken(models.Model):
 
     def store_tokens(self, token_data):
         logger.info(f"Token data: {token_data}")
-        self.access_token = token_data['access_token']
-        self.refresh_token = token_data['refresh_token']
-        self.token_expires_at = timezone.now() + timedelta(seconds=token_data['expires_in']) - timedelta(minutes=5)
+        self.access_token = token_data["access_token"]
+        self.refresh_token = token_data["refresh_token"]
+        self.token_expires_at = (
+                timezone.now()
+                + timedelta(seconds=token_data["expires_in"])
+                - timedelta(minutes=5)
+        )
         self.save()
 
     def is_token_expired(self) -> bool:
@@ -80,7 +84,6 @@ class OauthToken(models.Model):
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to refresh token: {e}")
         return self.access_token
-
 
 
 CustomUserType = TypeVar("CustomUserType", bound="CustomUser")

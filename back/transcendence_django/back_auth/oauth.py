@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 class OAuthBackend:
     STATE_TIMEOUT = 600
+
     def __init__(self):
         self.state = ""
 
@@ -76,11 +77,17 @@ class OAuthBackend:
         cache.set(self.state, code_verifier, timeout=self.STATE_TIMEOUT)
 
     def _generate_code_verifier(self) -> str:
-        return "".join(random.choices(string.ascii_uppercase + string.digits, k=random.randint(43, 128)))
+        return "".join(
+            random.choices(
+                string.ascii_uppercase + string.digits, k=random.randint(43, 128)
+            )
+        )
 
     def _encode_state(self, code_verifier: str) -> str:
-        state_bytes = hashlib.sha256(code_verifier.encode('utf-8')).digest()
-        state_encoded = base64.urlsafe_b64encode(state_bytes).decode('utf-8').rstrip('=')
+        state_bytes = hashlib.sha256(code_verifier.encode("utf-8")).digest()
+        state_encoded = (
+            base64.urlsafe_b64encode(state_bytes).decode("utf-8").rstrip("=")
+        )
         return state_encoded
 
     def _fetch_username(self, access_token: str) -> str:

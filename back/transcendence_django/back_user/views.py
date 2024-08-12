@@ -200,14 +200,19 @@ class UpdateUsernameView(APIView):
         if user:
             return user, Response({"success": True}, status=status.HTTP_200_OK)
         else:
-            return None, Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return None, Response(
+                {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
 
     def post(self, request):
         self.username = request.data.get("username")
         self.user_id = request.data.get("user_id")
 
         if not self.username or not self.user_id:
-            return Response({"error": "Username and user ID are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Username and user ID are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         _, response = self.update_username()
         return response
