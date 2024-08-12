@@ -27,10 +27,21 @@ interface PlayersSpecs {
   mode: number;
 }
 
+export interface Player {
+  user_id: string;
+  player_name: string;
+  score: number;
+}
+
+export interface ChannelPlayersResponse {
+  players: Player[];
+  capacity: number;
+}
+
 export interface ArenaResponse {
   id: number;
   status: number;
-  players: string[];
+  players: Player[];
   scores: number[];
   ball: Ball;
   paddles: Paddle[];

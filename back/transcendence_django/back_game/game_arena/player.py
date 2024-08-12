@@ -1,5 +1,5 @@
 import time
-from typing import NewType
+from typing import Any, NewType
 
 from back_game.game_settings.game_constants import AFK_TIMEOUT
 
@@ -18,6 +18,15 @@ class Player:
         self.score: int = 0
         self.status: PlayerStatus = PlayerStatus(ENABLED)
         self.last_activity_time: float = time.time()
+
+    def to_dict(self) -> dict[str, Any]:
+        if self.status == PlayerStatus(ENABLED):
+            return {
+                "user_id": self.user_id,
+                "player_name": self.player_name,
+                "score": self.score,
+            }
+        return {}
 
     def update_activity_time(self):
         self.last_activity_time = time.time()

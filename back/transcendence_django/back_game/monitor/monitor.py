@@ -91,6 +91,12 @@ class Monitor:
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         self.channel_manager.add_user_to_channel(user_id, channel_id, arena_id)
 
+    def get_players_from_channel(self, channel_id: str) -> list[dict[str, Any]]:
+        return self.channel_manager.get_players_from_channel(channel_id)
+
+    def get_channel_capacity(self, channel_id: str) -> int:
+        return self.channel_manager.get_channel_capacity(channel_id)
+
     def init_arena(
         self,
         channel_id: str,

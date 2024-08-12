@@ -14,10 +14,10 @@
       </section>
       <h4>
         Waiting for players to join... <br><br>
-        {{ gameComponent.first.activePlayers.length }} / {{ gameComponent.first.maxPlayers }}
+        {{ getPlayerCount() }} / {{ getCapacity() }}
       </h4>
       <ul class="waiting-players">
-        <li *ngFor="let player of gameComponent.first.activePlayers">
+        <li *ngFor="let player of gameComponent.first.channelPlayers">
           <app-player-icon [playerName]="player"></app-player-icon>
         </li>
       </ul>

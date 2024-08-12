@@ -6,7 +6,9 @@ MESSAGE = "message"
 TYPE = "type"
 
 # Channel
+CHANNEL_CAPACITY = "capacity"
 CHANNEL_ID = "channel_id"
+CHANNEL_PLAYERS = "channel_players"
 
 # Game error
 GAME_ERROR = "game_error"

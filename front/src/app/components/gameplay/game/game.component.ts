@@ -28,7 +28,7 @@ import {
 import { PaddleComponent } from "../paddle/paddle.component";
 import { BallComponent } from "../ball/ball.component";
 import { WebSocketService } from "../../../services/web-socket/web-socket.service";
-import { ArenaResponse } from "../../../interfaces/arena-response.interface";
+import {ArenaResponse, ChannelPlayersResponse, Player} from "../../../interfaces/arena-response.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
@@ -92,6 +92,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   activePlayers: string[] = [];
+  channelPlayers: string[] = [];
+  channelCapacity: number = 2;
   constants = Constants;
 
   private _localPaddleBinding = [
@@ -175,7 +177,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.player2Score = arena.scores[1];
     this.maxPlayers = arena.players_specs.nb_players;
     this.updateStatus(arena.status)
-    this.activePlayers = arena.players;
+    this.activePlayers = arena.players.map(player => player.player_name);
+    console.log('Active players:', this.activePlayers)
     this.dataLoaded = true;
     this.startTimer.first.show = false;
     this.gameOver.first.hasRematched = false;
@@ -191,7 +194,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
         'give_up': (value: number) => { this.giveUp(value) },
-        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
+        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) },
+        'channel_players': (value: ChannelPlayersResponse) => { this.updateChannelPlayers(value) },
     };
 
     if (gameState['arena_id'] !== this.arenaID) {
@@ -307,6 +311,14 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
+  private updateChannelPlayers(channelPlayers: ChannelPlayersResponse) {
+    if (channelPlayers.players && Array.isArray(channelPlayers.players)) {
+      this.channelPlayers = channelPlayers.players.map(player => player.player_name);
+      this.channelCapacity = channelPlayers.capacity;
+    } else {
+      console.error('Invalid channelPlayers data:', channelPlayers);
+    }
+  }
   private redirectToHome() {
     this.gameOver.first.redirectToHome();
   }

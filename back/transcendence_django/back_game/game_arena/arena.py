@@ -67,9 +67,8 @@ class Arena:
             ID: self.id,
             STATUS: self.game.status,
             PLAYERS: [
-                player.player_name
+                player.to_dict()
                 for player in self.player_manager.players.values()
-                if player.status == PlayerStatus(ENABLED)
             ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),

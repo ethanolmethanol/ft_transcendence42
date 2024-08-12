@@ -13,7 +13,9 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
+    CHANNEL_CAPACITY,
     CHANNEL_ERROR_CODE,
+    CHANNEL_PLAYERS,
     DIRECTION,
     ERROR,
     GAME_ERROR,
@@ -60,6 +62,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
         else:
+            self.channel_capacity = self.monitor.get_channel_capacity(self.game.channel_id)
             await self.add_user_to_channel_group()
 
     async def add_user_to_channel_group(self):
@@ -107,6 +110,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         self.game.join(user_id, player_name, arena_id, callbacks)
         await self.send_message(f"{self.game.user_id} has joined the game.")
         await self.send_arena_data()
+        await self.send_players()
 
     async def leave(self, _):
         self.game.leave()
@@ -117,17 +121,24 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_message(f"{self.game.user_id} has given up.")
         await self.send_update({GIVE_UP: self.game.user_id})
         await self.send_arena_data()
+        await self.send_players()
 
     async def rematch(self, _):
         self.game.rematch()
         await self.send_message(f"{self.game.user_id} asked for a rematch.")
         await self.send_arena_data()
+        await self.send_players()
 
     async def move_paddle(self, message: dict[str, Any]):
         player_name: str = message[PLAYER]
         direction: int = message[DIRECTION]
         paddle_data = self.game.move_paddle(player_name, direction)
         await self.send_update({PADDLE: paddle_data})
+
+    async def send_players(self):
+        players = self.monitor.get_players_from_channel(self.game.channel_id)
+        channel_players = {PLAYERS: players, CHANNEL_CAPACITY: self.channel_capacity}
+        await self.send_update({CHANNEL_PLAYERS: channel_players})
 
     async def send_arena_data(self):
         arena: Arena = self.monitor.get_arena(self.game.channel_id, self.game.arena_id)

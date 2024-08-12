@@ -77,6 +77,17 @@ class ChannelManager:
             "arena": arena.to_dict(),
         }
 
+    def get_players_from_channel(self, channel_id: str) -> list[dict[str, Any]]:
+        arenas = self.get_arenas(channel_id)
+        players = []
+        for arena in arenas.values():
+            players.extend(arena.get_players().values())
+        return [player.to_dict() for player in players]
+
+    def get_channel_capacity(self, channel_id: str) -> int:
+        arenas = self.get_arenas(channel_id)
+        return sum(arena.game.nb_players for arena in arenas.values())
+
     def are_all_arenas_ready(self, channel_id: str) -> bool:
         arenas = self.get_arenas(channel_id)
         return all(arena.is_full()

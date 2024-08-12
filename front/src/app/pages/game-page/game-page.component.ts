@@ -97,4 +97,12 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     this._router.navigate(['/home']);
     this._webSocketService.giveUp();
   }
+
+  public getPlayerCount(): number {
+    return this.game!.channelPlayers.length;
+  }
+
+  public getCapacity(): number {
+    return this.game!.channelCapacity;
+  }
 }
