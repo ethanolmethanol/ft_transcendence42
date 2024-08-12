@@ -2,7 +2,7 @@
 FROM python:3
 
 RUN apt-get update -y && \
-	apt-get install -y postgresql-client-15 --no-install-recommends && \
+	apt-get install -y postgresql-client-15=15.8-0+deb12u1 --no-install-recommends && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 

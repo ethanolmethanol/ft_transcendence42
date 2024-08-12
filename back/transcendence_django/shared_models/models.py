@@ -76,7 +76,11 @@ class OauthToken(models.Model):
         }
 
         try:
-            token_response = requests.post(settings.OAUTH_TOKEN_URL, data=data, timeout=5)
+            token_response = requests.post(
+                settings.OAUTH_TOKEN_URL,
+                data=data,
+                timeout=5
+            )
             token_response.raise_for_status()
             self.store_tokens(token_response.json())
         except requests.exceptions.RequestException as e:
