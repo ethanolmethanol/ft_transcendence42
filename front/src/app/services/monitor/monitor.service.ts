@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { API_GAME } from "../../constants";
 import { WebSocketUrlResponse } from "../../interfaces/web-socket-url-response.interface";

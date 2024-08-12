@@ -10,6 +10,7 @@ import { GamePageComponent } from "./pages/game-page/game-page.component";
 import { MonitorPageComponent } from "./pages/monitor-page/monitor-page.component";
 import { OnlineGameSelectorPageComponent } from "./pages/online-game-selector-page/online-game-selector-page.component";
 import { CreateGamePageComponent } from './pages/create-game-page/create-game-page.component';
+import {TournamentPageComponent} from "./pages/tournament-page/tournament-page.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -17,16 +18,17 @@ export const routes: Routes = [
   { path: 'profile', component: ProfilePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'local', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'local/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
-  { path: 'local/:channel_id', component: MonitorPageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'local', actionType: 'join_specific' } },
-  { path: 'local/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'local' } },
+  { path: 'local/classic/:channel_id', component: MonitorPageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'local', actionType: 'join_specific' } },
+  { path: 'local/classic/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'online', component: OnlineGameSelectorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' } },
   { path: 'online/create/options', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' } },
   { path: 'online/create/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'create'} },
   { path: 'online/join', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' , actionType: 'join'} },
-  { path: 'online/:channel_id', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_specific'} },
-  { path: 'online/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },
   { path: 'online/tournament', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_tournament' } },
+  { path: 'online/tournament/:channel_id', component: TournamentPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'online/tournament/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },
+  { path: 'online/classic/:channel_id', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_specific'} },
+  { path: 'online/classic/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },
   { path: 'sign-in', component: SignInPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: 'sign-up', component: SignUpPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: '404', component: NotFoundPageComponent, pathMatch: 'full' },

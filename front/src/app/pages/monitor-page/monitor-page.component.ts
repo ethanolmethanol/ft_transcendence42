@@ -76,7 +76,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     if (this._actionType === "join_tournament") {
       return `/online/tournament/${channel_id}/${arenaID}`;
     }
-    return `/${this._gameType}/${channel_id}/${arenaID}`;
+    return `/${this._gameType}/classic/${channel_id}/${arenaID}`;
   }
 
   private getPostData(): string {
@@ -151,6 +151,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   }
 
   private joinTournament(postData: string): void {
+    console.log('Joining tournament...')
     this.monitorService.joinTournament(postData).subscribe(response => {
       this.navigateToGame(response.channel_id);
     }, error => this.handleError(error));

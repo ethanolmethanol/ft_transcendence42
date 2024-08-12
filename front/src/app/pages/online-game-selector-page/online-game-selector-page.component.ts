@@ -27,7 +27,7 @@ export class OnlineGameSelectorPageComponent {
 
   public joinGame() {
     console.log("Joining game with ID: " + this.gameID);
-    const url = `/online/join/${this.gameID}`;
+    const url = `/online/classic/${this.gameID}`;
     console.log("Navigating to: " + url);
     this.router.navigate([url]);
   }
