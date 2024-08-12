@@ -24,7 +24,7 @@ class ChannelManager:
         if channel["is_tournament"]:
             return False
         arena_id: str = list(channel["arenas"])[0]
-        arena: Arena = channel["arenas"][arena_id]
+        arena = self.get_arena(channel_id, arena_id)
         return arena.get_status() == GameStatus(WAITING)
 
     async def join_channel(
@@ -74,20 +74,24 @@ class ChannelManager:
 
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         logger.info("Adding user %s to channel %s in arena %s", user_id, channel_id, arena_id)
-        arena: Arena = self.channels[channel_id]["arenas"][arena_id]
+        arena = self.get_arena(channel_id, arena_id)
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
             "arena": arena.to_dict(),
         }
 
     def are_all_arenas_ready(self, channel_id: str) -> bool:
-        channel = self.channels[channel_id]
-        arenas = channel["arenas"]
+        arenas = self.get_arenas(channel_id)
         return all(arena.is_full()
             for arena in arenas.values())
 
-    def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
-        arena = arenas[arena_id]
+    def are_all_arenas_over(self, channel_id: str) -> bool:
+        arenas = self.get_arenas(channel_id)
+        return len(arenas) == 0
+
+    def delete_arena(self, channel_id: str, arena_id: str):
+        arenas = self.get_arenas(channel_id)
+        arena = self.get_arena(channel_id, arena_id)
         arena.set_status(GameStatus(DEAD))
         logger.info("Arena %s is dead", arena.id)
         player_list: dict[str, Player] = arena.get_players()
@@ -102,11 +106,11 @@ class ChannelManager:
             return channel["arenas"].get(arena_id)
         return None
 
+    def get_arenas(self, channel_id: str) -> dict[str, Arena] | None:
+        return self.channels[channel_id].get("arenas")
+
     def leave_arena(self, user_id: int, channel_id: str, arena_id: str):
-        channel = self.channels.get(channel_id)
-        if channel is None:
-            return
-        arena = channel.get(arena_id)
+        arena = self.get_arena(channel_id, arena_id)
         if arena is None:
             return
         if arena and not arena.did_player_give_up(user_id):
@@ -122,7 +126,7 @@ class ChannelManager:
             "channel_id": channel_id,
             "arena": arena_id,
         }:
-            arena: Arena = self.channels[channel_id][arena_id]
+            arena = self.get_arena(channel_id, arena_id)
             return arena.is_user_active_in_game(user_id)
         return False
 
@@ -145,11 +149,8 @@ class ChannelManager:
             if channel["is_tournament"] == is_tournament
         }
         for channel_id, channel in channels.items():
-            arenas_id: list[str] = list(channel["arenas"].keys())
-            if not arenas_id:
-                return None
-            for arena_id in arenas_id:
-                arena: Arena = channel["arenas"][arena_id]
+            arenas = self.get_arenas(channel_id)
+            for arena in arenas.values():
                 if arena.is_private() or arena.is_full():
                     continue
                 if arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
