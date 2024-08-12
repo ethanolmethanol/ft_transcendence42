@@ -20,18 +20,18 @@ class ChannelManager:
     def can_channel_be_joined(self, channel_id: str, user_id: int) -> bool:
         if channel_id not in self.channels or self.is_tournament(channel_id):
             return False
-        arena_id: str = list(channel["arenas"])[0]
-        arena = self.get_arena(channel_id, arena_id)
-        return arena.get_status() == GameStatus(WAITING)
+        channel: dict[str, Any] = self.channels[channel_id]
+        arena: Arena = self.get_available_arena(channel_id)
+        return arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]
 
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> dict[str, Any] | None:
         if not self.can_channel_be_joined(channel_id, user_id):
             return None
-        arena_id: str = list(self.channels[channel_id]["arenas"])[0]
-        logger.info("Arena id: %s", arena_id)
-        self.add_user_to_channel(user_id, channel_id, arena_id)
+        arena: Arena = self.get_available_arena(channel_id)
+        logger.info("Arena id: %s", arena.id)
+        self.add_user_to_channel(user_id, channel_id, arena.id)
         return self.get_channel_from_user_id(user_id)
 
     def join_already_created_channel(
@@ -59,7 +59,7 @@ class ChannelManager:
             "is_tournament": is_tournament,
             "arenas": {arena.id: arena for arena in arenas}
         }
-        self.add_user_to_channel(user_id, channel_id, arenas[0].id)
+        self.add_user_to_channel(user_id, channel_id)
         logger.info("New arenas: %s", arenas)
         return self.user_game_table[user_id]
 
@@ -69,12 +69,27 @@ class ChannelManager:
             return None
         return channel
 
-    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
+    def get_available_arena(self, channel_id: str) -> Arena | None:
+        arenas = self.get_arenas(channel_id)
+        for arena in arenas.values():
+            if arena.is_full():
+                continue
+            if arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
+                return arena
+        return None
+
+    def is_user_in_channel(self, user_id: int) -> bool:
+        user_data = self.user_game_table.get(user_id)
+        if user_data is None:
+            return False
+        return user_data["arena"] is not None
+
+    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str = None):
         logger.info("Adding user %s to channel %s in arena %s", user_id, channel_id, arena_id)
         arena = self.get_arena(channel_id, arena_id)
         self.user_game_table[user_id] = {
             "channel_id": channel_id,
-            "arena": arena.to_dict(),
+            "arena": arena.to_dict() if arena else None,
         }
 
     def get_players_from_channel(self, channel_id: str) -> list[dict[str, Any]]:
@@ -103,6 +118,7 @@ class ChannelManager:
     def delete_arena(self, channel_id: str, arena_id: str):
         arenas = self.get_arenas(channel_id)
         arena = self.get_arena(channel_id, arena_id)
+        logger.info("Deleting arena %s in channel %s (%s)", arena_id, channel_id, arena)
         arena.set_status(GameStatus(DEAD))
         logger.info("Arena %s is dead", arena.id)
         player_list: dict[str, Player] = arena.get_players()
@@ -110,7 +126,7 @@ class ChannelManager:
             self.delete_user(player.user_id, arena_id)
         arenas.pop(arena_id)
 
-    def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
+    def get_arena(self, channel_id: str, arena_id: str | None) -> Arena | None:
         logger.info("Trying to get arena %s in channel %s", arena_id, channel_id)
         channel = self.channels.get(channel_id)
         if channel:

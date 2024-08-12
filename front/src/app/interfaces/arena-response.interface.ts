@@ -33,11 +33,6 @@ export interface Player {
   score: number;
 }
 
-export interface ChannelPlayersResponse {
-  players: Player[];
-  capacity: number;
-}
-
 export interface ArenaResponse {
   id: number;
   status: number;

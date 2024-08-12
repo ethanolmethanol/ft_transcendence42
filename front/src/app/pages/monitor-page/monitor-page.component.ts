@@ -14,6 +14,7 @@ import {
   throwError
 } from "rxjs";
 import {JOIN_GAME_RETRY_DELAY_MS} from "../../constants";
+import {ArenaResponse} from "../../interfaces/arena-response.interface";
 
 @Component({
   selector: 'app-monitor-page',
@@ -71,11 +72,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
-  private getGameUrl(channel_id: string, arena_id: number): string {
-    if (this._actionType === "join-tournament") {
-      return `/online/tournament/${channel_id}/${arena_id}`;
+  private getGameUrl(channel_id: string, arenaID: string): string {
+    if (this._actionType === "join_tournament") {
+      return `/online/tournament/${channel_id}/${arenaID}`;
     }
-    return `/${this._gameType}/${channel_id}/${arena_id}`;
+    return `/${this._gameType}/${channel_id}/${arenaID}`;
   }
 
   private getPostData(): string {
@@ -96,7 +97,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   private joinLocalGame(postData: string): Observable<any> {
     return this.monitorService.joinWebSocketUrl(postData).pipe(
       tap(response => {
-        this.navigateToGame(response.channel_id, response.arena.id);
+        this.navigateToGame(response.channel_id);
       }),
       catchError((error) => {
         this.handleError(error);
@@ -112,7 +113,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       switchMap(() =>
         this.monitorService.joinWebSocketUrl(postData).pipe(
           tap(response => {
-            this.navigateToGame(response.channel_id, response.arena.id);
+            this.navigateToGame(response.channel_id);
           }),
           catchError((error) => {
             if (error.error.error === 'No available channel.') {
@@ -139,19 +140,19 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
 
   private createGame(postData: string): void {
     this.monitorService.createWebSocketUrl(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
+      this.navigateToGame(response.channel_id);
     }, error => this.handleError(error));
   }
 
   private joinSpecificChannel(postData: string): void {
     this.monitorService.joinSpecificWebSocketUrl(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
+      this.navigateToGame(response.channel_id, response.arena?.id);
     }, error => this.handleError(error));
   }
 
   private joinTournament(postData: string): void {
     this.monitorService.joinTournament(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
+      this.navigateToGame(response.channel_id);
     }, error => this.handleError(error));
   }
 
@@ -162,13 +163,17 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this.joinSpecificChannel(postData);
     } else if (this._actionType == "create") {
       this.createGame(postData);
-    } else if (this._actionType == "join-tournament") {
+    } else if (this._actionType == "join_tournament") {
       this.joinTournament(postData);
     }
   }
 
   private requestLocalWebSocketUrl(postData: string): void {
-    this.createGame(postData);
+    if (this._actionType == "join_specific") {
+      this.joinSpecificChannel(postData);
+    } else {
+      this.createGame(postData);
+    }
   }
 
   private handleError(error: any): void {
@@ -176,8 +181,13 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     console.log('Error joining game: ' + this.errorMessage);
   }
 
-  private navigateToGame(channelID: string, arenaID : number): void {
-    const gameUrl: string = this.getGameUrl(channelID, arenaID);
-    this.router.navigateByUrl(gameUrl);
+  private navigateToGame(channelID: string, arenaID: number | null = null): void {
+    var arenaIDString = "";
+    if (arenaID !== null) {
+      arenaIDString = `${arenaID}`;
+    }
+    const url = this.getGameUrl(channelID, arenaIDString)
+    console.log('Navigating to: ' + url)
+    this.router.navigate([url]);
   }
 }

@@ -17,7 +17,7 @@
         {{ getPlayerCount() }} / {{ getCapacity() }}
       </h4>
       <ul class="waiting-players">
-        <li *ngFor="let player of gameComponent.first.channelPlayers">
+        <li *ngFor="let player of gameComponent.first.activePlayers">
           <app-player-icon [playerName]="player"></app-player-icon>
         </li>
       </ul>

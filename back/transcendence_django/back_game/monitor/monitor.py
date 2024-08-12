@@ -86,7 +86,7 @@ class Monitor:
         return self.channel_manager.channels.get(channel_id) is not None
 
     def is_user_in_channel(self, user_id: int) -> bool:
-        return self.channel_manager.get_channel_from_user_id(user_id) is not None
+        self.channel_manager.is_user_in_channel(user_id)
 
     def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         self.channel_manager.add_user_to_channel(user_id, channel_id, arena_id)
@@ -164,9 +164,11 @@ class Monitor:
         if arena.can_be_started():
             await arena.start_game()
         elif arena.can_be_over():
+            logger.info("Concluding game in arena %s", arena.id)
             arena.conclude_game()
             summary = arena.get_game_summary()
             await self.save_game_summary(summary)
+            logger.info("status was %s and now is %s", arena_status, arena.get_status())
             if arena_status != GameStatus(STARTED):
                 self.channel_manager.delete_arena(channel_id, arena.id)
         elif arena_status == GameStatus(OVER):
