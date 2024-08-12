@@ -45,6 +45,8 @@ class PlayerManager:
     def is_full(self) -> bool:
         enable_players_count = self.__count_players(PlayerStatus(ENABLED))
         disable_players_count = self.__count_players(PlayerStatus(DISABLED))
+        logger.info(f"IS FULL? {enable_players_count} + {disable_players_count} vs"
+                    + f" {self.nb_players}")
         return enable_players_count + disable_players_count == self.nb_players
 
     def add_player(self, user_id: int, player_name: str, is_bot: bool):
@@ -78,7 +80,7 @@ class PlayerManager:
     def has_enough_players(self) -> bool:
         enable_players_count = self.__count_players(PlayerStatus(ENABLED))
         disable_players_count = self.__count_players(PlayerStatus(DISABLED))
-        return enable_players_count + disable_players_count >= 2
+        return enable_players_count + disable_players_count == self.nb_players
 
     def rematch(self, user_id: int):
         if not self.is_player_in_game(user_id):
