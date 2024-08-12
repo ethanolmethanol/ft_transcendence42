@@ -211,7 +211,7 @@ class UpdateUsernameView(APIView):
         if not self.username or not self.user_id:
             return Response(
                 {"error": "Username and user ID are required."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         _, response = self.update_username()

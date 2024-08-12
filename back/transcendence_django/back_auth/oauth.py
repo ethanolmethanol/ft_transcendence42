@@ -10,7 +10,6 @@ from django.contrib.auth import login
 from django.core.cache import cache
 from shared_models.models import CustomUser
 
-
 logger = logging.getLogger(__name__)
 
 

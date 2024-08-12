@@ -21,7 +21,6 @@ from shared_models.constants import (
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -56,9 +55,9 @@ class OauthToken(models.Model):
         self.access_token = token_data["access_token"]
         self.refresh_token = token_data["refresh_token"]
         self.token_expires_at = (
-                timezone.now()
-                + timedelta(seconds=token_data["expires_in"])
-                - timedelta(minutes=5)
+            timezone.now()
+            + timedelta(seconds=token_data["expires_in"])
+            - timedelta(minutes=5)
         )
         self.save()
 

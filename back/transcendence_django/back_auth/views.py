@@ -12,7 +12,6 @@ from .auth_helpers import get_session_from_request, perform_logout
 from .oauth import OAuthBackend
 from .serializers import UserSerializer
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -108,8 +107,8 @@ def exchange_code_for_user_id(request):
     if response.status_code == 200:
         return Response(
             data={
-            "user_id": response.user_id,
-            "new_user_created": response.new_user_created,
+                "user_id": response.user_id,
+                "new_user_created": response.new_user_created,
             },
             status=status.HTTP_200_OK,
         )

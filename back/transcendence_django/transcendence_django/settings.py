@@ -107,7 +107,7 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://redis:6379/1",  # Using the same Redis instance but a different DB index
         "OPTIONS": {
-            "CLIENT_CLASS': 'django_redis.client.DefaultClient",
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
 }
