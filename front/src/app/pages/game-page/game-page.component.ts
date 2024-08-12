@@ -62,7 +62,6 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public ngAfterViewInit() {
-    console.log('Game Component initializing...');
     this.game = this.gameComponent.first;
     this.updateGameContainerScale();
     this._route.params.subscribe(params => {

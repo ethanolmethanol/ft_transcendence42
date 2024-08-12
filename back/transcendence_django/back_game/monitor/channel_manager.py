@@ -18,10 +18,7 @@ class ChannelManager:
         self.user_game_table: dict[int, dict[str, Any]] = {}
 
     def can_channel_be_joined(self, channel_id: str, user_id: int) -> bool:
-        if channel_id not in self.channels:
-            return False
-        channel = self.channels[channel_id]
-        if channel["is_tournament"]:
+        if channel_id not in self.channels or self.is_tournament(channel_id):
             return False
         arena_id: str = list(channel["arenas"])[0]
         arena = self.get_arena(channel_id, arena_id)
@@ -89,6 +86,9 @@ class ChannelManager:
         arenas = self.get_arenas(channel_id)
         return len(arenas) == 0
 
+    def is_tournament(self, channel_id: str) -> bool:
+        return self.channels[channel_id]["is_tournament"]
+
     def delete_arena(self, channel_id: str, arena_id: str):
         arenas = self.get_arenas(channel_id)
         arena = self.get_arena(channel_id, arena_id)
@@ -146,7 +146,7 @@ class ChannelManager:
         channels = {
             channel_id: channel
             for channel_id, channel in self.channels.items()
-            if channel["is_tournament"] == is_tournament
+            if self.is_tournament(channel_id) == is_tournament
         }
         for channel_id, channel in channels.items():
             arenas = self.get_arenas(channel_id)

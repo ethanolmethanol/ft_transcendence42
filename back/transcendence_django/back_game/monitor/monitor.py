@@ -173,8 +173,7 @@ class Monitor:
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
 
     async def __monitor_arena_loop(self, channel_id: str, arena: Arena):
-        channel = self.channel_manager.channels[channel_id]
-        if channel["is_tournament"]:
+        if self.channel_manager.is_tournament(channel_id):
             await self.wait_for_tournament_start(channel_id)
         while arena:
             await self.update_game_states(channel_id, arena)
