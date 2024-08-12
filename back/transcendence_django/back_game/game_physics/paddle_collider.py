@@ -9,6 +9,8 @@ from back_game.game_settings.game_constants import (
     INITIAL_BALL_SPEED_COEFF,
     LEFT_SLOT,
     RIGHT_SLOT,
+    TOP_SLOT,
+    BOT_SLOT,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,5 +47,14 @@ class PaddleCollider:
             speed_component_x = paddle.rectangle.distance_from_center
         elif paddle.slot == RIGHT_SLOT:
             speed_component_x = (-1) * paddle.rectangle.distance_from_center
-        speed_component_y = collision_point.y - paddle.rectangle.convexity_center.y
+        elif paddle.slot == BOT_SLOT: #TODO test when handling >2 players
+            speed_component_y = paddle.rectangle.distance_from_center
+        elif paddle.slot == TOP_SLOT: #TODO test when handling >2 players
+            speed_component_y = (-1) * paddle.rectangle.distance_from_center
+        else:
+            raise Exception("Oopsie! Too many paddles?")
+        if paddle.slot == LEFT_SLOT or paddle.slot == RIGHT_SLOT:
+            speed_component_y = collision_point.y - paddle.rectangle.convexity_center.y
+        else:
+            speed_component_x = collision_point.x - paddle.rectangle.convexity_center.x
         return Speed(speed_component_x, speed_component_y)

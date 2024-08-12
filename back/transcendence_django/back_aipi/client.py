@@ -72,7 +72,8 @@ def handle_data(message: str, ai_user_id: int, arena: dict[str: Any]) -> str:
             if not update:
                 logger.warning(f"Empty update? {message}")
                 return ""
-            if update.get('game_over') is not None: exit()
+            if update.get('game_over') is not None: #FIXME AIs rematch each other infinitely, ignoring user's choice?
+                return json.dumps({"type":"rematch","message":{}})
             if update.get('start_timer') is not None:
                 logger.info(f"Received start timer: {update['start_timer']}")
                 return ""

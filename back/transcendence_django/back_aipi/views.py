@@ -4,6 +4,7 @@ from typing import Any, Dict, Union
 import asyncio
 import json
 import threading
+import random
 from datetime import datetime
 now = datetime.now
 
@@ -21,9 +22,11 @@ API_GAME_SOCKET = 'wss://back-game';
 # @method_decorator(csrf_protect, name="dispatch")
 class AipiView(APIView):
 
+    bots: dict[int: Any] = {}
+
     def get(self, request) -> Response:
 
-        data: Dict[str: Any] = json.loads(request.body.decode("utf-8"))
+        data: dict[str: Any] = json.loads(request.body.decode("utf-8"))
 
         channel_id: str = data["channel_id"]
 
@@ -33,7 +36,10 @@ class AipiView(APIView):
 
         self.wss_address: str = f"{API_GAME_SOCKET}/ws/game/{channel_id}/"
 
-        self.ai_user_id: int = 1738
+        self.ai_user_id: int = random.randint(1000, 10000)
+
+        while self.bots.get(self.ai_user_id) is not None: # collisions
+            self.ai_user_id: int = random.randint(1000, 10000)
 
         # check for collisions with user ids 
         try:
@@ -41,6 +47,10 @@ class AipiView(APIView):
             t = threading.Thread(target=self.run_async_loop_in_thread)
             t.setDaemon(True)
             t.start()
+            self.bots[self.ai_user_id] = {
+                "channel_id": channel_id,
+                "arena_id": self.arena_id
+            }
             return Response({"user_id": self.ai_user_id}, status=HTTPStatus.OK)
         except (TypeError, KeyError, ValueError) as e:
             logger.error(e)

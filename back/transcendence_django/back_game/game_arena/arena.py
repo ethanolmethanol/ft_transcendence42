@@ -114,7 +114,7 @@ class Arena:
         if self.player_manager.is_remote:
             self.__enter_remote_mode(user_id, player_name)
         else:
-            self.__enter_local_mode(user_id)
+            self.__enter_local_mode(user_id, player_name)
 
     async def start_game(self):
         self.game.set_status(READY_TO_START)
@@ -233,13 +233,14 @@ class Arena:
         self.player_manager.reset()
         self.game.reset()
 
-    def __enter_local_mode(self, user_id: int):
+    def __enter_local_mode(self, user_id: int, player_name: str):
         if not self.is_full():
-            self.__register_player(user_id, PLAYER1, False)
-            if (self.player_manager.nb_robots):
-                self.__register_player(user_id, f"bot{user_id}", True)
-            elif (self.player_manager.nb_humans): # modify when able to handle 2 humans + bots
+            if (self.player_manager.nb_robots and player_name == f"bot{user_id}"):
+                self.__register_player(user_id, player_name, True)
+                return
+            if (self.player_manager.nb_humans): # modify when able to handle 2 humans + bots
                 self.__register_player(user_id, PLAYER2, False)
+            self.__register_player(user_id, PLAYER1, False)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):

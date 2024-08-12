@@ -49,8 +49,10 @@ class ChannelManager:
         self.channels[channel_id] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
-        if (int)(players_specs['options'][AI_OPPONENTS_LOCAL]) > 0 \
-            or (int)(players_specs['options'][AI_OPPONENTS_ONLINE]) > 0:
+        bots: int = (int)(players_specs['options'][AI_OPPONENTS_LOCAL]) \
+            + (int)(players_specs['options'][AI_OPPONENTS_ONLINE])
+        while bots:
+            bots -= 1
             try:
                 aipi_response: Response = http_get(
                     url = f"https://back-aipi/aipi/spawn/",
