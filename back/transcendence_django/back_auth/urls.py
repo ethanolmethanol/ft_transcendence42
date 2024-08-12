@@ -16,6 +16,10 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("is_logged/", is_logged_view, name="is_logged"),
     path("authorize/", get_authorize_url, name="authorize"),
-    path("exchange_code_for_user_id/", exchange_code_for_user_id, name="exchange_code_for_user_id"),
+    path(
+        "exchange_code_for_user_id/",
+        exchange_code_for_user_id,
+        name="exchange_code_for_user_id"
+    ),
     path("set_username_42/", set_username_42, name="set_username_42"),
 ]

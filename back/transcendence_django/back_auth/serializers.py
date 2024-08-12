@@ -29,4 +29,3 @@ class UserSerializer(serializers.ModelSerializer[CustomUser]):
                 "This username is already in use. Please choose another one."
             )
         return value
-
