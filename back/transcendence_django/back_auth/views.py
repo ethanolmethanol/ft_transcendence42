@@ -88,7 +88,7 @@ def is_logged_view(request):
 
 
 @api_view(["GET"])
-def get_authorize_url(request):
+def get_authorize_url(_):
     oauth_backend: OAuthBackend = OAuthBackend()
     return Response(oauth_backend.get_authorize_url())
 

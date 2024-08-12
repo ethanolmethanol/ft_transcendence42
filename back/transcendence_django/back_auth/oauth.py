@@ -23,8 +23,10 @@ class OAuthBackend:
         self._generate_state()
         url = (
             f"https://api.intra.42.fr/oauth/authorize?client_id={settings.OAUTH_CLIENT_UID}"
-            f"&redirect_uri={settings.OAUTH_REDIRECT_URI}&response_type=code&scope=public&state={self.state}"
+            f"&redirect_uri={settings.OAUTH_REDIRECT_URI}"
+            f"&response_type=code&scope=public&state={self.state}"
         )
+
         logger.info("Authorization URL: %s", url)
         return url
 

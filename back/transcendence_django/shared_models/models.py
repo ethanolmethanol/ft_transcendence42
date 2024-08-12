@@ -142,6 +142,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def store_tokens(self, token_data):
         if self.oauth_token is None:
+            # pylint: disable=no-member
             self.oauth_token = OauthToken.objects.create()
         self.oauth_token.store_tokens(token_data)
         self.save()
