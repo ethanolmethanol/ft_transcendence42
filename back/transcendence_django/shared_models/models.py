@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, List, TypeVar
 from django.utils import timezone
+import requests
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import (
@@ -18,6 +19,7 @@ from shared_models.constants import (
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -53,8 +55,32 @@ class OauthToken(models.Model):
         logger.info(f"Token data: {token_data}")
         self.access_token = token_data['access_token']
         self.refresh_token = token_data['refresh_token']
-        self.token_expires_at = timezone.now() + timedelta(seconds=token_data['expires_in'])
+        self.token_expires_at = timezone.now() + timedelta(seconds=token_data['expires_in']) - timedelta(minutes=5)
         self.save()
+
+    def is_token_expired(self) -> bool:
+        return timezone.now() > self.token_expires_at
+
+    def refresh_tokens(self) -> str:
+        if not self.is_token_expired():
+            logger.info("Access token is still valid, no need to refresh.")
+            return self.access_token
+
+        data = {
+            "grant_type": "refresh_token",
+            "client_id": settings.OAUTH_CLIENT_UID,
+            "client_secret": settings.OAUTH_CLIENT_SECRET,
+            "refresh_token": self.refresh_token,
+        }
+
+        try:
+            token_response = requests.post(settings.OAUTH_TOKEN_URL, data=data)
+            token_response.raise_for_status()
+            self.store_tokens(token_response.json())
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to refresh token: {e}")
+        return self.access_token
+
 
 
 CustomUserType = TypeVar("CustomUserType", bound="CustomUser")
