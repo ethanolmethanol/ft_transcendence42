@@ -49,8 +49,7 @@ class OAuthBackend:
         cache.delete(state)
 
     def _process_token_data(
-            self,
-            token_data: Dict[str, str]
+            self, token_data: Dict[str, str]
     ) -> Tuple[CustomUser, bool]:
         username = self._fetch_username(token_data["access_token"])
         user, created = CustomUser.objects.get_or_create(login42=username)
