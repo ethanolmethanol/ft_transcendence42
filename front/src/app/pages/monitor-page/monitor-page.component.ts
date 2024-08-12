@@ -88,7 +88,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
         "players_specs":
         {
           "nb_players": this._optionsDict["human_players"] + this._optionsDict["ai_opponents_local"]
-            + this._optionsDict["online_players"] + this._optionsDict["ai_opponents_online"],
+            + this._optionsDict["online_players"] + this._optionsDict["ai_opponents_online"] + 1,
           "type": this._gameType, "options": this._optionsDict
         }
       });

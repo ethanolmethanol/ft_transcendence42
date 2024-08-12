@@ -236,10 +236,10 @@ class Arena:
     def __enter_local_mode(self, user_id: int):
         if not self.is_full():
             self.__register_player(user_id, PLAYER1, False)
-            if (self.player_manager.nb_humans):
-                self.__register_player(user_id, PLAYER2, False)
             if (self.player_manager.nb_robots):
                 self.__register_player(user_id, f"bot{user_id}", True)
+            elif (self.player_manager.nb_humans): # modify when able to handle 2 humans + bots
+                self.__register_player(user_id, PLAYER2, False)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
