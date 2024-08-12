@@ -93,11 +93,12 @@ class ChannelManager:
         }
 
     def get_players_from_channel(self, channel_id: str) -> list[dict[str, Any]]:
-        arenas = self.get_arenas(channel_id)
         players = []
-        for arena in arenas.values():
-            players.extend(arena.get_players().values())
-        return [player.to_dict() for player in players]
+        logger.info("Getting players from channel %s", channel_id)
+        for user_id, user_data in self.user_game_table.items():
+            if user_data["channel_id"] == channel_id:
+                players.append({"user_id": user_id, "arena": user_data["arena"]})
+        return players
 
     def get_channel_capacity(self, channel_id: str) -> int:
         arenas = self.get_arenas(channel_id)

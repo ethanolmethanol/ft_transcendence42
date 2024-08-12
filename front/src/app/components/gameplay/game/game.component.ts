@@ -46,14 +46,7 @@ import {
   ScoreUpdateResponse,
   StartTimerResponse
 } from "../../../interfaces/game.interface";
-
-interface VariableMapping {
-  [key: string]: (value: any) => void;
-}
-
-interface ErrorMapping {
-  [key: number]: (value: ErrorResponse) => void;
-}
+import {ErrorMapping, VariableMapping} from "../../../interfaces/mapping.interface";
 
 @Component({
   selector: 'app-game',
@@ -121,7 +114,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.isRemote && this.isRemote) {
       await this.userService.whenUserDataLoaded();
-      this.playerName = this.userService.getUsername();
+      this.playerName = await this.userService.getUsername();
     }
   }
 

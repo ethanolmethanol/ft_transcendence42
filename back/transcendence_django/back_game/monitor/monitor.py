@@ -82,6 +82,9 @@ class Monitor:
             raise KeyError("Arena not found")
         return arena
 
+    def is_tournament(self, channel_id: str) -> bool:
+        return self.channel_manager.is_tournament(channel_id)
+
     def does_exist_channel(self, channel_id: str) -> bool:
         return self.channel_manager.channels.get(channel_id) is not None
 
@@ -175,14 +178,7 @@ class Monitor:
             logger.info("Game over in arena %s", arena.id)
             await self.__game_over(channel_id, arena)
 
-    async def wait_for_tournament_start(self, channel_id: str):
-        channel = self.channel_manager.channels[channel_id]
-        while self.channel_manager.are_all_arenas_ready(channel_id) is False:
-            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-
     async def __monitor_arena_loop(self, channel_id: str, arena: Arena):
-        if self.channel_manager.is_tournament(channel_id):
-            await self.wait_for_tournament_start(channel_id)
         while arena:
             await self.update_game_states(channel_id, arena)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)

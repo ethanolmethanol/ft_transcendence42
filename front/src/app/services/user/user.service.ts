@@ -75,8 +75,14 @@ export class UserService {
     return this._userData!;
   }
 
-  public getUsername(): string {
-    return this.getUserData().username;
+  public async getUsername(userID: number | null = null): Promise<string> {
+    let user: User;
+    if (userID) {
+      user = await this.getUser(userID);
+    } else {
+      user = this.getUserData();
+    }
+    return user.username;
   }
 
   public getUserID(): number {

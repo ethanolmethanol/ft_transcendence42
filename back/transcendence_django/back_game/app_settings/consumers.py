@@ -64,6 +64,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         else:
             self.channel_capacity = self.monitor.get_channel_capacity(self.game.channel_id)
             await self.add_user_to_channel_group()
+            await self.send_players()
 
     async def add_user_to_channel_group(self):
         self.room_group_name = f"game_{self.game.channel_id}"
@@ -131,6 +132,10 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         direction: int = message[DIRECTION]
         paddle_data = self.game.move_paddle(player_name, direction)
         await self.send_update({PADDLE: paddle_data})
+
+    async def send_players(self):
+        players = self.monitor.get_players_from_channel(self.game.channel_id)
+        await self.send_update({CHANNEL_PLAYERS: players})
 
     async def send_arena_data(self):
         arena: Arena = self.monitor.get_arena(self.game.channel_id, self.game.arena_id)

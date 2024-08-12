@@ -1,1 +1,16 @@
-<p>tournament-page works!</p>
+<button (click)="confirmGiveUp()">Give up</button>
+<section *ngIf="isLoading">
+  <p>Loading...</p>
+</section>
+<section *ngIf="!isLoading" class="players">
+  <h4>
+    Connected Players:
+<!--    {{ getPlayerCount() }} / {{ getCapacity() }}-->
+  </h4>
+  <ul class="waiting-players">
+    <li *ngFor="let player of players">
+      <app-player-icon [playerName]="player"></app-player-icon>
+    </li>
+  </ul>
+</section>
+

@@ -1,0 +1,31 @@
+.players {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 3em;
+}
+
+h4 {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  color: #e1e1e1;
+  font-size: 2em;
+}
+
+button {
+  background-color: rgb(255, 0, 0, 0.5);
+  position: absolute;
+  overflow: hidden;
+  top: 2%;
+  left: 3%;
+  z-index: 1;
+  margin: 2%
+}

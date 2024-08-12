@@ -31,16 +31,18 @@ export class ConnectionService {
     });
   }
 
-  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id?: number) {
-    if (channel_id && arena_id) {
+  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id?: number | null) {
+    if (channel_id) {
       // Connect to the existing arena
-      this.accessArena(channel_id, arena_id, arenaSetter)
+      this.webSocketService.connect(channel_id);
+      this.channelID = channel_id;
+      if (arena_id) {
+        this.accessArena(channel_id, arena_id, arenaSetter)
+      }
     }
   }
 
   private accessArena(channel_id: string, arena_id: number, arenaSetter: (response: ArenaResponse) => void) {
-    this.webSocketService.connect(channel_id);
-    this.channelID = channel_id;
     this.handleWebSocketConnection(arena_id, arenaSetter);
   }
 
