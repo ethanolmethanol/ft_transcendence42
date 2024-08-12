@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.core.cache import cache
 from shared_models.models import CustomUser
+from typing import Dict, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ class OAuthBackend:
     def _clear_cache(self, state: str):
         cache.delete(state)
 
-    def _process_token_data(self, token_data: dict):
+def _process_token_data(self, token_data: Dict[str, str]) -> Tuple[CustomUser, bool]:
         username = self._fetch_username(token_data["access_token"])
         user, created = CustomUser.objects.get_or_create(login42=username)
 
