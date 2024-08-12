@@ -1,13 +1,13 @@
 from django.urls import path
 
 from .views import (
+    exchange_code_for_user_id,
+    get_authorize_url,
     is_logged_view,
     logout_view,
+    set_username_42,
     signin,
     signup,
-    get_authorize_url,
-    exchange_code_for_user_id,
-    set_username_42,
 )
 
 urlpatterns = [

@@ -1,13 +1,15 @@
+import base64
+import hashlib
 import logging
 import random
 import string
-import base64
-import hashlib
+
 import requests
-from django.core.cache import cache
 from django.conf import settings
-from shared_models.models import CustomUser
 from django.contrib.auth import login
+from django.core.cache import cache
+from shared_models.models import CustomUser
+
 
 logger = logging.getLogger(__name__)
 

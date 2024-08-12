@@ -3,7 +3,6 @@ import logging
 from django.contrib.auth import logout
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
-from shared_models.models import CustomUser
 
 logger = logging.getLogger(__name__)
 

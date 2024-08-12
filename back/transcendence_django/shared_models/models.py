@@ -1,10 +1,10 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Any, List, TypeVar
-from django.utils import timezone
-import requests
 
+import requests
 from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -12,6 +12,7 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.utils import timezone
 from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
@@ -19,7 +20,6 @@ from shared_models.constants import (
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
-from django.conf import settings
 
 
 logger = logging.getLogger(__name__)

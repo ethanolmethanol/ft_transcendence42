@@ -6,10 +6,10 @@ from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .oauth import OAuthBackend
 from shared_models.models import CustomUser
 
 from .auth_helpers import get_session_from_request, perform_logout
+from .oauth import OAuthBackend
 from .serializers import UserSerializer
 
 
@@ -101,7 +101,7 @@ def exchange_code_for_user_id(request):
 
     logger.info(f"code: {code}")
     if not code:
-        logger.error(f"code is empty")
+        logger.error("code is empty")
         return Response({"error": "No code provided"}, status=400)
 
     oauth_backend: OAuthBackend = OAuthBackend()
