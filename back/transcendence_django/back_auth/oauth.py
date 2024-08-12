@@ -68,7 +68,7 @@ class OAuthBackend:
             "redirect_uri": settings.OAUTH_REDIRECT_URI,
             "state": cache.get(state),
         }
-        return requests.post(settings.OAUTH_TOKEN_URL, data=data)
+        return requests.post(settings.OAUTH_TOKEN_URL, data=data, timeout=5)
 
     def _generate_state(self):
         code_verifier = self._generate_code_verifier()
@@ -92,6 +92,6 @@ class OAuthBackend:
     def _fetch_username(self, access_token: str) -> str:
         user_info_url = "https://api.intra.42.fr/v2/me"
         headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(user_info_url, headers=headers)
+        response = requests.get(user_info_url, headers=headers, timeout=10)
         response.raise_for_status()
         return response.json().get("login", "")

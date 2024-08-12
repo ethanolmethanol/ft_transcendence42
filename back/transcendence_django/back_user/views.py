@@ -180,7 +180,6 @@ class UpdateUsernameView(APIView):
             user = CustomUser.objects.get(id=self.user_id)
             user.username = self.username
             user.save()
-            logger.info(f"New username set: {user.username}")
             return user
         except CustomUser.DoesNotExist:
             logger.error("User with the provided ID does not exist.")
@@ -199,10 +198,9 @@ class UpdateUsernameView(APIView):
         user = self.write_username_in_db()
         if user:
             return user, Response({"success": True}, status=status.HTTP_200_OK)
-        else:
-            return None, Response(
-                {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
-            )
+        return None, Response(
+            {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+        )
 
     def post(self, request):
         self.username = request.data.get("username")

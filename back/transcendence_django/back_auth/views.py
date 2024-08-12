@@ -112,24 +112,19 @@ def exchange_code_for_user_id(request):
             },
             status=status.HTTP_200_OK,
         )
-    else:
-        return Response({"error": response.text}, status=response.status_code)
+    return Response({"error": response.text}, status=response.status_code)
 
 
 @api_view(["POST"])
 def set_username_42(request):
     username, user_id = request.data.get("username"), request.data.get("user_id")
 
-    try:
-        if CustomUser.objects.filter(username=username).exists():
-            return Response({"error": "Username already taken."}, status=400)
+    if CustomUser.objects.filter(username=username).exists():
+        return Response({"error": "Username already taken."}, status=400)
 
-        user = CustomUser.objects.get(id=user_id)
-        user.username = username
-        user.save()
+    user = CustomUser.objects.get(id=user_id)
+    user.username = username
+    user.save()
 
-        login(request, user)
-        return Response({"success": True}, status=status.HTTP_200_OK)
-
-    except CustomUser.DoesNotExist:
-        return Response({"error": "User not found."}, status=404)
+    login(request, user)
+    return Response({"success": True}, status=status.HTTP_200_OK)

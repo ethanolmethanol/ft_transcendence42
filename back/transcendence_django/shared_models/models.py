@@ -51,7 +51,6 @@ class OauthToken(models.Model):
     token_expires_at: datetime = models.DateTimeField(default=timezone.now)
 
     def store_tokens(self, token_data):
-        logger.info(f"Token data: {token_data}")
         self.access_token = token_data["access_token"]
         self.refresh_token = token_data["refresh_token"]
         self.token_expires_at = (
@@ -77,11 +76,11 @@ class OauthToken(models.Model):
         }
 
         try:
-            token_response = requests.post(settings.OAUTH_TOKEN_URL, data=data)
+            token_response = requests.post(settings.OAUTH_TOKEN_URL, data=data, timeout=5)
             token_response.raise_for_status()
             self.store_tokens(token_response.json())
         except requests.exceptions.RequestException as e:
-            logger.error(f"Failed to refresh token: {e}")
+            logger.error(e)
         return self.access_token
 
 
