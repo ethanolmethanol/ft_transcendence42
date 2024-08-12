@@ -46,8 +46,8 @@ class Profile(models.Model):
 
 
 class OauthToken(models.Model):
-    access_token: str = models.CharField(max_length=255)
-    refresh_token: str = models.CharField(max_length=255)
+    access_token = models.CharField(max_length=255)
+    refresh_token = models.CharField(max_length=255)
     token_expires_at: datetime = models.DateTimeField(default=timezone.now)
 
     def store_tokens(self, token_data):
