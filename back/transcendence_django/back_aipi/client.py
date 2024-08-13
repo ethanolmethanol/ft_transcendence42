@@ -2,6 +2,8 @@ import asyncio
 import logging
 import websockets
 import json
+import random
+import time
 import ssl
 from typing import Any, Dict
 
@@ -97,7 +99,9 @@ def handle_data(message: str, ai_user_id: int, arena: dict[str: Any]) -> str:
             paddle =  arena["paddles"][0]
             dx: int = ball["position"]["x"] - paddle["position"]["x"]
             dy: int = ball["position"]["y"] - paddle["position"]["y"]
-            direction = -1 if dy < -paddle["height"] * 0.75 else 1 if dy > paddle["height"] * 0.75 else 0;
+            direction = -1 if dy < -paddle["height"] * 0.85 else 1 if dy > paddle["height"] * 0.85 else 0;
+            if not random.randint(0, 20):
+                time.sleep(0.025) # skill issue
             if direction:
                 return json.dumps({'type': 'move_paddle',
                 'message': {"player": f"bot{ai_user_id}", "direction": direction}})
