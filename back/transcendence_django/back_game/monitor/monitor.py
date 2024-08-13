@@ -46,21 +46,21 @@ class Monitor:
         new_channel = await self.channel_manager.create_new_channel(
             user_id, players_specs
         )
-        channel_id: str = new_channel[CHANNEL_ID]
-        arenas = self.channel_manager.channels[channel_id]
-        asyncio.create_task(self.__monitor_arenas_loop(channel_id, arenas))
-        asyncio.create_task(self.__run_game_loop(arenas))
-        return new_channel
+        asyncio.create_task(self.__monitor_arenas_loop(new_channel.id, new_channel.arenas))
+        asyncio.create_task(self.__run_game_loop(new_channel.arenas))
+        return self.channel_manager.get_channel_dict_from_user_id(user_id)
 
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> dict[str, Any] | None:
-        return await self.channel_manager.join_channel(user_id, channel_id)
+        channel = await self.channel_manager.join_channel(user_id, channel_id)
+        return self.channel_manager.get_channel_dict_from_user_id(user_id)
 
     def join_already_created_channel(
         self, user_id: int, is_remote: bool
     ) -> dict[str, Any] | None:
-        return self.channel_manager.join_already_created_channel(user_id, is_remote)
+        channel_dict = self.channel_manager.join_already_created_channel(user_id, is_remote)
+        return channel_dict
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena:
         arena: Arena | None = self.channel_manager.get_arena(channel_id, arena_id)
@@ -72,10 +72,12 @@ class Monitor:
         return self.channel_manager.channels.get(channel_id) is not None
 
     def is_user_in_channel(self, user_id: int) -> bool:
-        return self.channel_manager.get_channel_from_user_id(user_id) is not None
+        return self.channel_manager.user_game_table.get(user_id) is not None
 
-    def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
-        self.channel_manager.add_user_to_channel(user_id, channel_id, arena_id)
+    def add_user_to_channel(self, channel_id: str, arena_id: str, user_id: int):
+        logger.info("Adding user %s to channel %s", user_id, channel_id)
+        channel = self.channel_manager.channels.get(channel_id)
+        self.channel_manager.add_user_to_channel(channel, arena_id, user_id)
 
     def init_arena(
         self,
@@ -96,12 +98,12 @@ class Monitor:
             raise ValueError("User already in another arena")
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.enter_arena(user_id, player_name)
-        self.add_user_to_channel(user_id, channel_id, arena_id)
+        self.add_user_to_channel(channel_id, arena_id, user_id)
 
     def give_up(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.player_gave_up(user_id)
-        self.channel_manager.delete_user(user_id, arena_id)
+        self.channel_manager.delete_user_from_channel(user_id)
 
     def rematch(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
