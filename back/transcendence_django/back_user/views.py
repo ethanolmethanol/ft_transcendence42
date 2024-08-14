@@ -187,8 +187,8 @@ class UpdateUsernameView(APIView):
         if self.username_already_taken():
             return None, Response({"error": "Username already taken."}, status=400)
 
-        self.user.set_username(self.username)
         if self.user:
+            self.user.set_username(self.username)
             return self.user, Response({"success": True}, status=status.HTTP_200_OK)
         return None, Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST

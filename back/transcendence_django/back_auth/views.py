@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
