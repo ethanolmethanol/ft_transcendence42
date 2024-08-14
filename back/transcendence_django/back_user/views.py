@@ -94,7 +94,7 @@ class UserDataView(APIView):
         self, user: CustomUser, color_config: list[str], game_settings: list[int]
     ):
         logger.info("Updating profile for user %s", user)
-        profile: Profile or None = user.profile
+        profile: Profile | None = user.profile
         if profile is None:
             profile = Profile()
         logger.info("Profile: %s", profile)
@@ -175,7 +175,7 @@ class UpdateUsernameView(APIView):
         super().__init__(**kwargs)
         self.username: str = ""
         self.user_id: str = ""
-        self.user: CustomUser or None = None
+        self.user: CustomUser | None = None
 
     def username_already_taken(self) -> bool:
         if CustomUser.objects.filter(username=self.username).exists():
@@ -203,9 +203,11 @@ class UpdateUsernameView(APIView):
             return response
         except KeyError:
             return Response(
-                {"error": "Invalid request data."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "username or user_id missing in request data"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         except ObjectDoesNotExist:
             return Response(
-                {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Cannot update username of unknown user."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
