@@ -4,6 +4,7 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any, Dict
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -198,11 +199,13 @@ class UpdateUsernameView(APIView):
             self.username = request.data.get("username")
             self.user_id = request.data.get("user_id")
             self.user = CustomUser.objects.get(id=self.user_id)
-        except Exception as e:
-            logger.error(e)
+            _, response = self.update_username()
+            return response
+        except KeyError:
             return Response(
-                {"error": f"An unexpected error occurred: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": "Invalid request data."}, status=status.HTTP_400_BAD_REQUEST
             )
-        _, response = self.update_username()
-        return response
+        except ObjectDoesNotExist:
+            return Response(
+                {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+            )

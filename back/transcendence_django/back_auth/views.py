@@ -1,8 +1,10 @@
 import logging
+import json
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -28,18 +30,23 @@ def login_user(request, username, password):
 
 @api_view(["POST"])
 def signup(request):
-    serializer = UserSerializer(data=request.data)
+    try:
+        serializer = UserSerializer(data=request.data)
 
-    if not serializer.is_valid():
-        logger.error("Signup Error: %s", serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            logger.error("Signup Error: %s", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    serializer.save()
-    # Access validated data directly from the serializer
-    username = serializer.validated_data.get("username")
-    password = serializer.validated_data.get("password")
-    login_user(request, username, password)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer.save()
+        # Access validated data directly from the serializer
+        username = serializer.validated_data.get("username")
+        password = serializer.validated_data.get("password")
+        login_user(request, username, password)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except IntegrityError as e:
+        logger.error(json.dumps(e))
+        return Response(json.dumps(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(["POST"])
@@ -100,7 +107,9 @@ def exchange_code_for_user_id(request):
     code = request.data.get("code")
 
     if not code:
-        return Response({"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     oauth_backend: OAuthBackend = OAuthBackend()
     response = oauth_backend.register_user(request, code, state)
@@ -122,7 +131,9 @@ def set_username_42(request):
         username, user_id = request.data.get("username"), request.data.get("user_id")
 
         if CustomUser.objects.filter(username=username).exists():
-            return Response({"error": "Username already taken."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Username already taken."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         user = CustomUser.objects.get(id=user_id)
         user.set_username(username)
@@ -130,12 +141,10 @@ def set_username_42(request):
         login(request, user)
         return Response({"success": True}, status=status.HTTP_200_OK)
     except KeyError:
-        return Response({"error": "Invalid request data."}, status=status.HTTP_400_BAD_REQUEST)
-    except ObjectDoesNotExist:
-        return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
         return Response(
-            {"error": f"An unexpected error occurred: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-    )
-
+            {"error": "Invalid request data."}, status=status.HTTP_400_BAD_REQUEST
+        )
+    except ObjectDoesNotExist:
+        return Response(
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+        )

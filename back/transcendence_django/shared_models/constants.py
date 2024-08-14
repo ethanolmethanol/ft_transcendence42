@@ -3,3 +3,6 @@ from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
 DEFAULT_TIME_PLAYED = {LOCAL: 0, REMOTE: 0, TOTAL: 0}
 DEFAULT_GAME_COUNTER = {LOCAL: 0, REMOTE: 0, TOTAL: 0}
 DEFAULT_WIN_LOSS_TIE = {WIN: 0, LOSS: 0, TIE: 0, TOTAL: 0}
+ACCESS_TOKEN_KEY = "access_token"
+REFRESH_TOKEN_KEY = "refresh_token"
+EXPIRES_IN_KEY = "expires_in"
