@@ -14,15 +14,22 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 from shared_models.constants import (
-    ACCESS_TOKEN_KEY,
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
-    EXPIRES_IN_KEY,
-    REFRESH_TOKEN_KEY,
 )
 from sortedm2m.fields import SortedManyToManyField
-from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
+from transcendence_django.dict_keys import (
+    ACCESS_TOKEN_KEY,
+    EXPIRES_IN_KEY,
+    LOCAL,
+    LOSS,
+    REFRESH_TOKEN_KEY,
+    REMOTE,
+    TIE,
+    TOTAL,
+    WIN
+)
 
 logger = logging.getLogger(__name__)
 

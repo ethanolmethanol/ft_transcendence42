@@ -22,10 +22,3 @@ class UserSerializer(serializers.ModelSerializer[CustomUser]):
     def create(self, validated_data: dict[str, str]) -> CustomUser:
         user = CustomUser.objects.create_user(**validated_data)
         return user
-
-    def validate_username(self, value: str) -> str:
-        if self.instance is None and CustomUser.objects.filter(username=value).exists():
-            raise serializers.ValidationError(
-                "This username is already in use. Please choose another one."
-            )
-        return value
