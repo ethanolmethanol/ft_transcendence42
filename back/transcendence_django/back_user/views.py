@@ -185,12 +185,12 @@ class UpdateUsernameView(APIView):
 
     def update_username(self):
         if self.username_already_taken():
-            return None, Response({"error": "Username already taken."}, status=400)
+            return Response({"error": "Username already taken."}, status=400)
 
         if self.user:
             self.user.set_username(self.username)
-            return self.user, Response({"success": True}, status=status.HTTP_200_OK)
-        return None, Response(
+            return Response({"success": True}, status=status.HTTP_200_OK)
+        return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -199,7 +199,7 @@ class UpdateUsernameView(APIView):
             self.username = request.data.get("username")
             self.user_id = request.data.get("user_id")
             self.user = CustomUser.objects.get(id=self.user_id)
-            _, response = self.update_username()
+            response = self.update_username()
             return response
         except KeyError:
             return Response(
