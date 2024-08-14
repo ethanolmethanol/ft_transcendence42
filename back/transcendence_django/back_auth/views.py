@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_protect
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -99,12 +100,12 @@ def exchange_code_for_user_id(request):
     code = request.data.get("code")
 
     if not code:
-        return Response({"error": "No code provided"}, status=400)
+        return Response({"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST)
 
     oauth_backend: OAuthBackend = OAuthBackend()
     response = oauth_backend.register_user(request, code, state)
 
-    if response.status_code == 200:
+    if response.status_code == status.HTTP_200_OK:
         return Response(
             data={
                 "user_id": response.user_id,
@@ -117,14 +118,24 @@ def exchange_code_for_user_id(request):
 
 @api_view(["POST"])
 def set_username_42(request):
-    username, user_id = request.data.get("username"), request.data.get("user_id")
+    try:
+        username, user_id = request.data.get("username"), request.data.get("user_id")
 
-    if CustomUser.objects.filter(username=username).exists():
-        return Response({"error": "Username already taken."}, status=400)
+        if CustomUser.objects.filter(username=username).exists():
+            return Response({"error": "Username already taken."}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = CustomUser.objects.get(id=user_id)
-    user.username = username
-    user.save()
+        user = CustomUser.objects.get(id=user_id)
+        user.set_username(username)
 
-    login(request, user)
-    return Response({"success": True}, status=status.HTTP_200_OK)
+        login(request, user)
+        return Response({"success": True}, status=status.HTTP_200_OK)
+    except KeyError:
+        return Response({"error": "Invalid request data."}, status=status.HTTP_400_BAD_REQUEST)
+    except ObjectDoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+

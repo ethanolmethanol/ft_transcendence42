@@ -33,7 +33,7 @@ import { Oauth42ButtonComponent } from "../oauth42-button/oauth42-button.compone
 export class SignUpComponent implements OnInit {
   signupForm!: FormGroup;
   errorMessage: string = "";
-  oauthText: string = "Sign up with";
+  readonly oauthText: string = "Sign up with";
 
   constructor(
     private _formBuilder: FormBuilder,

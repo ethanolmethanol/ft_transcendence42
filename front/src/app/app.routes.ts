@@ -25,7 +25,7 @@ export const routes: Routes = [
   { path: 'online/join', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' , actionType: 'join'} },
   { path: 'online/join/:channel_id', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_specific'} },
   { path: 'online/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },
-  { path: 'oauth-callback', component: OauthCallbackComponent},
+  { path: 'oauth-callback', component: OauthCallbackComponent, pathMatch: 'prefix', canActivate: [GuestGuard] },
   { path: 'sign-in', component: SignInPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: 'sign-up', component: SignUpPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: '404', component: NotFoundPageComponent, pathMatch: 'full' },

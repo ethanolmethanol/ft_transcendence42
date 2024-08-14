@@ -84,7 +84,7 @@ export class OauthCallbackComponent implements OnInit {
     this.router.navigate(["/sign-in"]);
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     if (this.pickUsernameForm.valid) {
       const username = this.pickUsernameForm.value.username;
       this.setUsername(username);
@@ -108,7 +108,7 @@ export class OauthCallbackComponent implements OnInit {
     this.errorMessage = err.message;
   }
 
-  hasUserCreationFailed(): boolean {
+  public hasUserCreationFailed(): boolean {
     return this.errorMessage !== "";
   }
 }

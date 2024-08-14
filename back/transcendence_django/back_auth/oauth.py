@@ -9,6 +9,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth import login
 from django.core.cache import cache
+from rest_framework import status
 from shared_models.models import CustomUser
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ class OAuthBackend:
     def register_user(self, request, code: str, state: str):
         token_response = self._request_token(code, state)
 
-        if token_response.status_code == 200:
+        if token_response.status_code == status.HTTP_200_OK:
             self._clear_cache(state)
             token_data = token_response.json()
             user, created = self._process_token_data(token_data)

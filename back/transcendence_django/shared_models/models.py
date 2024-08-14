@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Any, List, TypeVar
+from back_auth.constants import ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, EXPIRES_IN_KEY
 
 import requests
 from asgiref.sync import sync_to_async
@@ -51,11 +52,11 @@ class OauthToken(models.Model):
     token_expires_at = models.DateTimeField(default=timezone.now)  # type: ignore
 
     def store_tokens(self, token_data):
-        self.access_token = token_data["access_token"]
-        self.refresh_token = token_data["refresh_token"]
+        self.access_token = token_data[ACCESS_TOKEN_KEY]
+        self.refresh_token = token_data[REFRESH_TOKEN_KEY]
         self.token_expires_at = (
             timezone.now()
-            + timedelta(seconds=token_data["expires_in"])
+            + timedelta(seconds=token_data[EXPIRES_IN_KEY])
             - timedelta(minutes=5)
         )
         self.save()
@@ -137,6 +138,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.username)
+
+    def set_username(self, username):
+        self.username = username
+        self.save()
 
     def store_tokens(self, token_data):
         if self.oauth_token is None:

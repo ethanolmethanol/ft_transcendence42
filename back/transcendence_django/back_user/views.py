@@ -93,7 +93,7 @@ class UserDataView(APIView):
         self, user: CustomUser, color_config: list[str], game_settings: list[int]
     ):
         logger.info("Updating profile for user %s", user)
-        profile: Profile | None = user.profile
+        profile: Profile or None = user.profile
         if profile is None:
             profile = Profile()
         logger.info("Profile: %s", profile)
@@ -174,16 +174,7 @@ class UpdateUsernameView(APIView):
         super().__init__(**kwargs)
         self.username: str = ""
         self.user_id: str = ""
-
-    def write_username_in_db(self):
-        try:
-            user = CustomUser.objects.get(id=self.user_id)
-            user.username = self.username
-            user.save()
-            return user
-        except CustomUser.DoesNotExist:
-            logger.error("User with the provided ID does not exist.")
-            return None
+        self.user: CustomUser or None = None
 
     def username_already_taken(self) -> bool:
         if CustomUser.objects.filter(username=self.username).exists():
@@ -195,22 +186,23 @@ class UpdateUsernameView(APIView):
         if self.username_already_taken():
             return None, Response({"error": "Username already taken."}, status=400)
 
-        user = self.write_username_in_db()
-        if user:
-            return user, Response({"success": True}, status=status.HTTP_200_OK)
+        self.user.set_username(self.username)
+        if self.user:
+            return self.user, Response({"success": True}, status=status.HTTP_200_OK)
         return None, Response(
-            {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
         )
 
     def post(self, request):
-        self.username = request.data.get("username")
-        self.user_id = request.data.get("user_id")
-
-        if not self.username or not self.user_id:
+        try:
+            self.username = request.data.get("username")
+            self.user_id = request.data.get("user_id")
+            self.user = CustomUser.objects.get(id=self.user_id)
+        except Exception as e:
+            logger.error(e)
             return Response(
-                {"error": "Username and user ID are required."},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"error": f"An unexpected error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
         _, response = self.update_username()
         return response
