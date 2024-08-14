@@ -28,7 +28,7 @@ from transcendence_django.dict_keys import (
     REMOTE,
     TIE,
     TOTAL,
-    WIN
+    WIN,
 )
 
 logger = logging.getLogger(__name__)
