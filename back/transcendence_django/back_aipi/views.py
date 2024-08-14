@@ -12,7 +12,7 @@ now = datetime.now
 # from django.views.decorators.csrf import csrf_protect
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .client import client
+from .client import AipiClient
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ API_GAME_SOCKET = 'wss://back-game';
 # @method_decorator(csrf_protect, name="dispatch")
 class AipiView(APIView):
 
-    bots: dict[int: Any] = {}
+    bots: dict[int: AipiClient] = {}
 
     def get(self, request) -> Response:
 
@@ -43,18 +43,15 @@ class AipiView(APIView):
 
         # check for collisions with user ids 
         try:
+            self.bots[self.ai_user_id] = AipiClient(self.wss_address, self.ai_user_id, self.arena_id)
             logger.info(f"Starting thread at {now()}")
             t = threading.Thread(target=self.run_async_loop_in_thread)
             t.setDaemon(True)
             t.start()
-            self.bots[self.ai_user_id] = {
-                "channel_id": channel_id,
-                "arena_id": self.arena_id
-            }
             return Response({"user_id": self.ai_user_id}, status=HTTPStatus.OK)
         except (TypeError, KeyError, ValueError) as e:
             logger.error(e)
             return Response({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
 
     def run_async_loop_in_thread(self):
-        asyncio.run(client(self.wss_address, self.ai_user_id, self.arena_id))
+        asyncio.run(self.bots[self.ai_user_id].run())
