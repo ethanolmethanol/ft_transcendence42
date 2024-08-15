@@ -5,8 +5,6 @@ import asyncio
 import json
 import threading
 import random
-from datetime import datetime
-now = datetime.now
 
 # from django.utils.decorators import method_decorator
 # from django.views.decorators.csrf import csrf_protect
@@ -44,7 +42,6 @@ class AipiView(APIView):
         # check for collisions with user ids 
         try:
             self.bots[self.ai_user_id] = AipiClient(self.wss_address, self.ai_user_id, self.arena_id)
-            logger.info(f"Starting thread at {now()}")
             t = threading.Thread(target=self.run_async_loop_in_thread)
             t.setDaemon(True)
             t.start()

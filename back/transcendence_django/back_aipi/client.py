@@ -4,8 +4,18 @@ import websockets
 import json
 import random
 import time
+from datetime import datetime; now = datetime.now
 import ssl
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, List
+from back_game.game_settings.game_constants import LEFT_SLOT, RIGHT_SLOT, TOP_SLOT, BOT_SLOT
+from transcendence_django.dict_keys import ( 
+    HEIGHT, POSITION, WIDTH, BALL, PADDLE, PADDLES,
+    ARENA, TYPE, JOIN, MESSAGE, UPDATE, ERROR,
+    USER_ID, PLAYER, ARENA_ID, REMATCH, MOVE_PADDLE,
+    START_TIMER, SLOT, GAME_OVER, DIRECTION, MAP,
+    GAME_MESSAGE, GAME_ERROR, GAME_UPDATE, TIME,
+    SCORES, SCORE, COLLIDED_SLOT, PLAYERS
+)
 
 ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 ssl_context.load_cert_chain(certfile='/etc/ssl/serv.crt', keyfile='/etc/ssl/serv.key')
@@ -18,28 +28,32 @@ logger = logging.getLogger(__name__)
 class AipiClient:
     def __init__(self, websocket_url: str, ai_user_id: int, arena_id: str) -> None:
         self.id: int = ai_user_id
+        self.name:str = f"bot{self.id}"
         self.url: str = websocket_url
         self.arena_id: str = arena_id
         self.retries: int = 0
+        # self.brain: int = 1 #TODO modify front and let user choose? Nah
         self.game_ongoing: bool = True
         self.has_joined: bool = False
+        self.rematching: bool = False
         self.arena: Dict[str: Any] = {}
+        self.slot: int = 0
 
     async def run(self):
-        logger.info(f"AIPI client joining {self.url}")
+        logger.info(f"{self.id}: Start -- {now()}")
         while self.game_ongoing:
             try:
                 async with websockets.connect( self.url, open_timeout=10,
                     ssl=ssl_context ) as websocket:
-                    logger.info(f"{"Re-" if self.has_joined else ""}Connected to WebSocket server {self.url}")
+                    logger.info(f"{self.id}: {"Re-" if self.has_joined else ""}Connected to WebSocket server {self.url}")
                     self.retries = 0
                     if not self.has_joined:
                         await websocket.send(json.dumps(
-                            {'type': 'join',
-                            'message': {
-                                'user_id': self.id,
-                                'player': f"bot{self.id}",
-                                'arena_id': self.arena_id
+                            {TYPE: JOIN,
+                            MESSAGE: {
+                                USER_ID: self.id,
+                                PLAYER: self.name,
+                                ARENA_ID: self.arena_id
                             }}))
                         self.has_joined = True
                     while self.game_ongoing:
@@ -68,15 +82,22 @@ class AipiClient:
                 elif backoff_time > 1:
                     logger.info(f"! connect failed; reconnecting in {backoff_time} seconds")
                     await asyncio.sleep(backoff_time)
+        self.goodbye()
+
+    def goodbye(self):
+        logger.info(f"{self.id}: Ended -- {now()}")
+        exit()
 
     def handle_data(self, message: str) -> str:
+        def __content_from_msg_type(content: dict[str: Any]) -> str:
+            name = {GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(content)
+            return name if not None else ""
         data: Dict[str: Any] = json.loads(message)
-        # msg_type: str = data["type"]
         return self.__unwrap_from_type(
-            self.__unwrap_from_type("type", {"type": lambda x: x.removeprefix("game_") if x is not None else ""}, data), {
-            "message": self.__h_message,
-            "update": self.__h_update,
-            "error": self.__h_error,
+            self.__unwrap_from_type(TYPE, {TYPE: __content_from_msg_type}, data), {
+            MESSAGE: self.__h_message,
+            UPDATE: self.__h_update,
+            ERROR: self.__h_error,
         }, data)
 
 
@@ -90,41 +111,59 @@ class AipiClient:
         try:
             return handlers[cnt_type](content)
         except KeyError:
-            return self.__h_error({"error": {"message": f"No such key [{cnt_type}] within keys [{data.keys()}]", "code": 42}})
+            return self.__h_error({ERROR: {MESSAGE: f"No such key [{cnt_type}] within keys [{data.keys()}]", "code": 42}})
     
     def __h_message(self, content: dict[str: Any]) -> str:
-        # if rematch, respond rematch
-        logger.info(f"{self.id}: Received game message: {content}")
+        message: str = str(content)
+        logger.info(f"{self.id}: Received game message: {message}")
+        if REMATCH in message and not self.rematching: # if rematch, respond rematch
+            self.rematching = True
+            return json.dumps({TYPE:REMATCH, MESSAGE:{}})
         return ""
 
     def __h_update(self, content: dict[str: Any]) -> str:
         def __do_nun(_) -> str:
+            self.rematching = False
+            return ""
+        def __game_over(game_over: dict[str: Any]) -> str:
+            timeout = game_over.get(TIME)
+            if timeout is not None and not int(timeout):
+                self.goodbye()
+            return ""
+        def __upd_scores(data: dict[str: Any]) -> str:
+            if len(self.arena[PADDLES]) == 2:
+                upd_arena = self.arena
+                upd_arena[SCORES][int(data) - 1] += 1
+                self.arena.update(upd_arena)
+            else:
+                raise NotImplementedError("implement when more than 2 players (subtract from score?)")
             return ""
         def __upd_arena(arena: dict[str: Any]) -> str:
             self.arena.clear()
             self.arena.update(arena)
+            self.slot = next((x + 1 for x, player in enumerate(self.arena[PLAYERS]) if player == self.name), 0)
+            if not self.slot:
+                raise KeyError(f"{self.id}: Cannot find myself within arena's given player list.")
             # logger.info(f"Received game arena: {self.arena}")
             return ""
         def __upd_paddle(paddle: dict[str: Any]) -> str:
-            self.arena["paddles"][paddle["slot"] - 1]["position"].update(paddle["position"])
+            self.arena[PADDLES][paddle[SLOT] - 1][POSITION].update(paddle[POSITION])
             return ""
         def __upd_ball(ball: dict[str: Any]) -> str:
-            paddle = self.arena["paddles"][0]
-            dx: int = ball["position"]["x"] - paddle["position"]["x"]
-            dy: int = ball["position"]["y"] - paddle["position"]["y"]
-            direction = -1 if dy < -paddle["height"] * 0.85 else 1 if dy > paddle["height"] * 0.85 else 0;
-            if not random.randint(0, 20):
-                time.sleep(0.025) # skill issue
-            if direction:
-                return json.dumps({'type': 'move_paddle',
-                                'message': {"player": f"bot{self.id}", "direction": direction}})
-            return ""
+            brains: list[Callable[[dict[str, Any]], str]] = [ self.__dumb_brain, self.__calc_brain ]
+            if len(self.arena[PLAYERS]) == 2:
+                score_difference = self.arena[SCORES][self.slot - 1] - self.arena[SCORES][0 if self.slot == 2 else 1]
+                brain = 1 if score_difference < 0 else 0
+            else: raise NotImplementedError("Which brain when more than 2 players?")
+            return brains[brain](ball) # self.brain
+
         actions = {
-            "game_over": __do_nun,
-            "start_timer": __do_nun,
-            "arena": __upd_arena,
-            "paddle": __upd_paddle,
-            "ball": __upd_ball,
+            GAME_OVER: __game_over,
+            START_TIMER: __do_nun,
+            ARENA: __upd_arena,
+            PADDLE: __upd_paddle,
+            BALL: __upd_ball,
+            COLLIDED_SLOT: __upd_scores,
         }
         res: str = ""
         for t in actions.keys():
@@ -132,11 +171,78 @@ class AipiClient:
         return res
 
     def __h_error(self, content: dict[str: Any]) -> str:
-        logger.error(f"{self.id}: Received error: #{content.get('code')} -- {content.get('message')}")
+        logger.error(f"{self.id}: Received error: #{content.get('code')} -- {content.get(MESSAGE)}")
+        return ""
+    
+    def __dumb_brain(self, ball: dict[str: Any]) -> str:
+        paddle = self.arena[PADDLES][self.slot - 1]
+        dx: float = ball[POSITION]["x"] - paddle[POSITION]["x"]
+        dy: float = ball[POSITION]["y"] - paddle[POSITION]["y"]
+        precision: float = 0.70 + random.random() / 2.0
+        direction: int = 0
+        if paddle[SLOT] == LEFT_SLOT or paddle[SLOT] == RIGHT_SLOT:
+            direction = -1 if dy < -paddle[HEIGHT] * precision else 1 if dy > paddle[HEIGHT] * precision else 0;
+        elif paddle[SLOT] == TOP_SLOT or paddle[SLOT] == BOT_SLOT:
+            direction = -1 if dx < -paddle[WIDTH] * precision else 1 if dx > paddle[WIDTH] * precision else 0;
+        if direction:
+            return json.dumps({TYPE: MOVE_PADDLE,
+                            MESSAGE: {PLAYER: self.name, DIRECTION: direction}})
+        return ""
+    
+    def __calc_brain(self, ball: dict[str: Any]) -> str:
+        dx: float = ball[POSITION]["x"] - self.arena[BALL][POSITION]["x"]
+        dy: float = ball[POSITION]["y"] - self.arena[BALL][POSITION]["y"]
+        paddle = self.arena[PADDLES][self.slot - 1]
+        paddle_x = paddle[POSITION]["x"]
+        paddle_y = paddle[POSITION]["y"]
+        map_height = self.arena[MAP][HEIGHT]
+        map_width = self.arena[MAP][WIDTH]
+        precision: float = 0.85
+        vertical: bool = paddle[SLOT] == LEFT_SLOT or paddle[SLOT] == RIGHT_SLOT
+        if vertical: # good ol trigonometry
+            if dx != 0:
+                time_to_paddle = abs(paddle_x - self.arena[BALL][POSITION]["x"]) / abs(dx)
+            else: time_to_paddle = 0  # dx is 0 (ball moving vertically)
+            target_y = self.arena[BALL][POSITION]["y"] + time_to_paddle * dy
+            while target_y < 0 or target_y > map_height:
+                if target_y < 0:
+                    target_y = -target_y  # Reflect off the top
+                elif target_y > map_height:
+                    target_y = 2 * map_height - target_y  # Reflect off the bottom
+            if (paddle[SLOT] == LEFT_SLOT and dx < 0) or (paddle[SLOT] == RIGHT_SLOT and dx > 0):
+                paddle_delta: float = target_y - paddle_y # Ball is moving towards me
+            else:
+                paddle_delta: float = (map_height / 2) - paddle_y # Ball is moving towards the opponent, return to center
+            precision: float = 0.85
+            direction = -1 if paddle_delta < -paddle[HEIGHT] * precision else 1 if paddle_delta > paddle[HEIGHT] * precision else 0
+        else:
+            if dy != 0:
+                time_to_paddle = abs(paddle_y - self.arena[BALL][POSITION]["y"]) / abs(dy)
+            else: time_to_paddle = 0  # dy is 0 (ball moving horizontally)
+            target_x = self.arena[BALL][POSITION]["x"] + time_to_paddle * dx
+            while target_x < 0 or target_x > map_width:
+                if target_x < 0:
+                    target_x = -target_x  # Reflect off the left
+                elif target_x > map_width:
+                    target_x = 2 * map_width - target_x  # Reflect off the right
+            if (paddle[SLOT] == TOP_SLOT and dy < 0) or (paddle[SLOT] == BOT_SLOT and dy > 0):
+                paddle_delta: float = target_x - paddle_x # Ball is moving towards me
+            else:
+                paddle_delta: float = (map_height / 2) - paddle_x # Ball is moving towards the opponent, return to center
+            precision: float = 0.85
+            direction = -1 if paddle_delta < -paddle[WIDTH] * precision else 1 if paddle_delta > paddle[WIDTH] * precision else 0
+
+        self.arena[BALL][POSITION].update(ball[POSITION])
+        if direction:
+            return json.dumps({TYPE: MOVE_PADDLE,
+                            MESSAGE: {PLAYER: self.name, DIRECTION: direction}})
         return ""
 
 # {"type": "game_update", "update": {
-#     "arena": {"id": "140301557308336", "status": 2, "players": ["Player1", "Player2"],
+#     "arena": {"id": "140301557308336"
+#               "status": 2,
+#               "players": ["Player1", "Player2"],
 #               "scores": [0, 0],
 #               "ball": {"position": {"x": 500.0, "y": 300.0}, "speed": {"x": 7.58946638440411, "y": -2.5298221281347035, "absolute_velocity": 7.999999999999999}, "radius": 15},
-#             "paddles": [{"slot": 1, "player_name": "Player1", "position": {"x": 10, "y": 300}, "speed": 0.025, "width": 20, "height": 100}, {"slot": 2, "player_name": "Player2", "position": {"x": 990, "y": 300}, "speed": 0.025, "width": 20, "height": 100}], "map": {"width": 1000, "height": 600}, "players_specs": {"nb_players": 2, "type": "local"}}}}
+#               "paddles": [{"slot": 1, "player_name": "Player1", "position": {"x": 10, "y": 300}, "speed": 0.025, "width": 20, "height": 100}, {"slot": 2, "player_name": "Player2", "position": {"x": 990, "y": 300}, "speed": 0.025, "width": 20, "height": 100}],
+#               "map": {"width": 1000, "height": 600}, "players_specs": {"nb_players": 2, "type": "local"}}}}
