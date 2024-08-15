@@ -196,8 +196,8 @@ class UpdateUsernameView(APIView):
 
     def post(self, request):
         try:
-            self.username = request.data.get("username")
-            self.user_id = request.data.get("user_id")
+            self.username = request.data["username"]
+            self.user_id = request.data["user_id"]
             self.user = CustomUser.objects.get(id=self.user_id)
             response = self.update_username()
             return response
