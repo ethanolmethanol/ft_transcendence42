@@ -214,7 +214,6 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
     };
 
-    console.log('Arena_id:', gameState['arena_id'], 'stored arena_id:', this.arenaID);
     if (gameState['arena_id'] !== this.arenaID) {
       return;
     }

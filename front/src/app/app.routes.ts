@@ -10,6 +10,7 @@ import { GamePageComponent } from "./pages/game-page/game-page.component";
 import { MonitorPageComponent } from "./pages/monitor-page/monitor-page.component";
 import { OnlineGameSelectorPageComponent } from "./pages/online-game-selector-page/online-game-selector-page.component";
 import { CreateGamePageComponent } from './pages/create-game-page/create-game-page.component';
+import {TournamentPageComponent} from "./pages/tournament-page/tournament-page.component";
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   { path: 'online/create/options', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' } },
   { path: 'online/create/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'create'} },
   { path: 'online/tournament', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'tournament'} },
+  { path: 'online/tournament/:channel_id', component: TournamentPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'tournament'} },
   { path: 'online/join', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' , actionType: 'join'} },
   { path: 'online/join/:channel_id', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_specific'} },
   { path: 'online/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },

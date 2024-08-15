@@ -71,8 +71,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
-  private getGameUrl(channel_id: string, arena_id: number): string {
-    return `/${this._gameType}/${channel_id}/${arena_id}`;
+  private getGameUrl(channel_id: string, arenaID: number): string {
+    if (this._actionType === "tournament") {
+      return `/online/tournament/${channel_id}`;
+    }
+    return `/${this._gameType}/${channel_id}/${arenaID}`;
   }
 
   private getPostData(): string {
@@ -173,7 +176,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     console.log('Error joining game: ' + this.errorMessage);
   }
 
-  private navigateToGame(channelID: string, arenaID : number): void {
+  private navigateToGame(channelID: string, arenaID: number): void {
     const gameUrl: string = this.getGameUrl(channelID, arenaID);
     this.router.navigateByUrl(gameUrl);
   }
