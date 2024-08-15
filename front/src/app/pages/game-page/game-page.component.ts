@@ -34,6 +34,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isRemote: boolean | null = null;
   canGiveUp: boolean = true;
+  arenaID: number | null = null;
 
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @HostListener('window:resize', ['$event'])
@@ -58,6 +59,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
+      this.arenaID = arena_id;
       console.log('Channel ID:', channel_id);
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
     });

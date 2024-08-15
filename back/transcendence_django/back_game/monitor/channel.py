@@ -5,7 +5,7 @@ from typing import Any
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import WAITING
+from back_game.game_settings.game_constants import CREATED, WAITING
 
 class Channel:
     def __init__(self, arenas: dict[int, Arena], is_tournament: bool = False):
@@ -22,7 +22,7 @@ class Channel:
 
     def get_available_arena(self) -> Arena | None:
         for arena in self.arenas.values():
-            if not arena.is_private() and arena.get_status() == GameStatus(WAITING):
+            if not arena.is_private() and arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
                 return arena
         return None
 

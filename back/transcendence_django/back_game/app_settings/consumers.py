@@ -192,6 +192,8 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_update(self, update: dict[str, Any]):
         # logger.info("Sending update: %s", update)
+        update = {**{ARENA_ID: self.game.arena_id}, **update}
+        logger.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):

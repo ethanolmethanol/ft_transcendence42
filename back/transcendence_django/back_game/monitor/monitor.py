@@ -1,21 +1,14 @@
-import asyncio
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
-    DYING,
-    MONITOR_LOOP_INTERVAL,
-    OVER,
     RUN_LOOP_INTERVAL,
-    STARTED,
     TIMEOUT_GAME_OVER,
     TIMEOUT_INTERVAL,
-    WAITING,
 )
 from back_game.monitor.channel_manager import ChannelManager
-from back_game.monitor.history_manager import HistoryManager
 from django.apps import apps
 from django.conf import settings
 from transcendence_django.dict_keys import (
@@ -37,7 +30,6 @@ class Monitor:
         if not apps.ready:
             apps.populate(settings.INSTALLED_APPS)
         self.game_summary = apps.get_model("shared_models", "GameSummary")
-        self.history_manager = HistoryManager()
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -46,8 +38,6 @@ class Monitor:
         new_channel = await self.channel_manager.create_new_channel(
             user_id, players_specs
         )
-        asyncio.create_task(self.__monitor_arenas_loop(new_channel.id, new_channel.arenas))
-        asyncio.create_task(self.__run_game_loop(new_channel.arenas))
         return self.channel_manager.get_channel_dict_from_user_id(user_id)
 
     async def join_channel(
@@ -137,62 +127,6 @@ class Monitor:
         return self.channel_manager.is_user_active_in_game(
             user_id, channel_id, arena_id
         )
-
-    async def save_game_summary(
-        self,
-        summary: dict[str, Any],
-    ):
-        if summary[START_TIME] is not None:
-            await self.history_manager.save_game_summary(summary)
-
-    async def update_game_states(self, arenas: dict[str, Arena]):
-        for arena in arenas.values():
-            arena_status = arena.get_status()
-            if arena.can_be_started():
-                await arena.start_game()
-            elif arena.can_be_over():
-                arena.conclude_game()
-                summary = arena.get_game_summary()
-                await self.save_game_summary(summary)
-                if arena_status != GameStatus(STARTED):
-                    self.channel_manager.delete_arena(arenas, arena.id)
-                    break
-            elif arena_status == GameStatus(OVER):
-                logger.info("Game over in arena %s", arena.id)
-                await self.__game_over(arenas, arena)
-                break
-
-    async def __monitor_arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
-        while arenas:
-            await self.update_game_states(arenas)
-            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        self.channel_manager.delete_channel(channel_id)
-
-    async def __run_game_loop(self, arenas: dict[str, Arena]):
-        while arenas:
-            for arena in arenas.values():
-                if arena.get_status() == GameStatus(STARTED):
-                    update_message = arena.update_game()
-                    if arena.game_update_callback is not None:
-                        await arena.game_update_callback(update_message)
-            await asyncio.sleep(RUN_LOOP_INTERVAL)
-
-    async def __game_over(self, arenas: dict[str, Arena], arena: Arena):
-        arena.set_status(GameStatus(DYING))
-        if arena.game_update_callback is not None:
-            logger.info("Sending game over message to arena %s", arena.id)
-            await arena.game_update_callback({ARENA: arena.to_dict()})
-        time = TIMEOUT_GAME_OVER + 1
-        while (
-            arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
-        ):
-            time -= TIMEOUT_INTERVAL
-            if arena.game_over_callback is not None:
-                await arena.game_over_callback(time)
-            if time <= 0 and arena.get_status() == GameStatus(DYING):
-                self.channel_manager.delete_arena(arenas, arena.id)
-            else:
-                await asyncio.sleep(TIMEOUT_INTERVAL)
 
     @classmethod
     def get_instance(cls):

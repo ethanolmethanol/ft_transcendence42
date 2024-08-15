@@ -102,6 +102,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() isRemote: boolean = false;
+  @Input() arenaID: number = -1;
   @Output() hasStarted = new EventEmitter<void>();
   @Output() startCounterStarted = new EventEmitter<void>();
   private playerName: string | null = null;
@@ -212,6 +213,11 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         'give_up': (value: number) => { this.giveUp(value) },
         'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
     };
+
+    console.log('Arena_id:', gameState['arena_id'], 'stored arena_id:', this.arenaID);
+    if (gameState['arena_id'] !== this.arenaID) {
+      return;
+    }
 
     for (const variable in gameState) {
         if (variable in variableMapping) {

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import random
 import string
@@ -6,9 +7,21 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.game_constants import DEAD, TOURNAMENT_SPECS, WAITING
+from back_game.game_settings.game_constants import (
+    DEAD,
+    DYING,
+    MONITOR_LOOP_INTERVAL,
+    OVER,
+    RUN_LOOP_INTERVAL,
+    STARTED,
+    TIMEOUT_GAME_OVER,
+    TIMEOUT_INTERVAL,
+    TOURNAMENT_SPECS,
+    WAITING
+)
 from back_game.monitor.channel import Channel
-from transcendence_django.dict_keys import ID
+from back_game.monitor.history_manager import HistoryManager
+from transcendence_django.dict_keys import ARENA, ID, START_TIME
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +30,7 @@ class ChannelManager:
     def __init__(self):
         self.channels: dict[str, Channel] = {}
         self.user_game_table: dict[int, Channel] = {}
+        self.history_manager = HistoryManager()
 
     def add_user_to_channel(
         self, channel: Channel, arena_id: str, user_id: int
@@ -51,15 +65,14 @@ class ChannelManager:
             return self.__get_available_channel()
         if channel is None:
             return None
-        logger.info("(Joining already) User %s is already in a channel", user_id)
         arena = self.get_arena_from_user_id(user_id)
-        logger.info("Arena gotten: %s", arena.to_dict())
         return {"channel_id": channel.id, "arena": arena.to_dict()}
 
     async def create_new_channel(
         self, user_id: int, players_specs: dict[str, int], is_tournament: bool = False
     ) -> Channel:
-        arenas_count = 1 if is_tournament else 2
+        arenas_count = 2 if is_tournament else 1
+        logger.info("Creating new channel with %s arenas", arenas_count)
         arenas = {}
         for _ in range(arenas_count):
             new_arena: Arena = Arena(players_specs)
@@ -67,6 +80,8 @@ class ChannelManager:
         new_channel = Channel(arenas, is_tournament=is_tournament)
         self.channels[new_channel.id] = new_channel
         self.add_user_to_channel(new_channel, new_arena.id, user_id)
+        asyncio.create_task(self.__arenas_loop(new_channel.id, new_channel.arenas))
+        asyncio.create_task(self.__run_game_loop(new_channel.arenas))
         logger.info("New arena: %s", new_arena.to_dict())
         return new_channel
 
@@ -132,3 +147,60 @@ class ChannelManager:
                 if available_arena:
                     return {"channel_id": channel.id, "arena": available_arena.to_dict()}
         return None
+
+    async def save_game_summary(
+        self,
+        summary: dict[str, Any],
+    ):
+        if summary[START_TIME] is not None:
+            await self.history_manager.save_game_summary(summary)
+
+    async def __update_game_states(self, arenas: dict[str, Arena]):
+        for arena in arenas.values():
+            arena_status = arena.get_status()
+            if arena.can_be_started():
+                await arena.start_game()
+            elif arena.can_be_over():
+                arena.conclude_game()
+                summary = arena.get_game_summary()
+                await self.save_game_summary(summary)
+                if arena_status != GameStatus(STARTED):
+                    self.delete_arena(arenas, arena.id)
+                    break
+            elif arena_status == GameStatus(OVER):
+                logger.info("Game over in arena %s", arena.id)
+                await self.__game_over(arenas, arena)
+                break
+
+    async def __arenas_loop(self, channel_id: str, arenas: dict[str, Arena]):
+        while arenas:
+            await self.__update_game_states(arenas)
+            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+        self.delete_channel(channel_id)
+
+    async def __run_game_loop(self, arenas: dict[str, Arena]):
+        while arenas:
+            for arena in arenas.values():
+                if arena.get_status() == GameStatus(STARTED):
+                    update_message = arena.update_game()
+                    if arena.game_update_callback is not None:
+                        await arena.game_update_callback(update_message)
+            await asyncio.sleep(RUN_LOOP_INTERVAL)
+
+    async def __game_over(self, arenas: dict[str, Arena], arena: Arena):
+        arena.set_status(GameStatus(DYING))
+        if arena.game_update_callback is not None:
+            logger.info("Sending game over message to arena %s", arena.id)
+            await arena.game_update_callback({ARENA: arena.to_dict()})
+        time = TIMEOUT_GAME_OVER + 1
+        while (
+            arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
+        ):
+            time -= TIMEOUT_INTERVAL
+            if arena.game_over_callback is not None:
+                await arena.game_over_callback(time)
+            if time <= 0 and arena.get_status() == GameStatus(DYING):
+                self.delete_arena(arenas, arena.id)
+            else:
+                await asyncio.sleep(TIMEOUT_INTERVAL)
+
