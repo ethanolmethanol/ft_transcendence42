@@ -6,7 +6,7 @@ from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
-from back_game.game_settings.game_constants import DEAD, WAITING
+from back_game.game_settings.game_constants import DEAD, TOURNAMENT_SPECS, WAITING
 from back_game.monitor.channel import Channel
 from transcendence_django.dict_keys import ID
 
@@ -57,14 +57,25 @@ class ChannelManager:
         return {"channel_id": channel.id, "arena": arena.to_dict()}
 
     async def create_new_channel(
-        self, user_id: int, players_specs: dict[str, int]
+        self, user_id: int, players_specs: dict[str, int], is_tournament: bool = False
     ) -> Channel:
-        new_arena: Arena = Arena(players_specs)
-        new_channel = Channel(new_arena)
+        arenas_count = 1 if is_tournament else 2
+        arenas = {}
+        for _ in range(arenas_count):
+            new_arena: Arena = Arena(players_specs)
+            arenas[new_arena.id] = new_arena
+        new_channel = Channel(arenas, is_tournament=is_tournament)
         self.channels[new_channel.id] = new_channel
         self.add_user_to_channel(new_channel, new_arena.id, user_id)
         logger.info("New arena: %s", new_arena.to_dict())
         return new_channel
+
+    async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
+        channel_dict = self.__get_available_channel(is_tournament=True)
+        if channel_dict is None:
+            channel = await self.create_new_channel(user_id, TOURNAMENT_SPECS, is_tournament=True)
+            return self.get_channel_dict_from_user_id(user_id)
+        return channel_dict
 
     def get_channel_dict_from_user_id(self, user_id: int) -> dict[str, Any] | None:
         channel: dict[str, Any] | None = self.user_game_table.get(user_id)
@@ -114,9 +125,10 @@ class ChannelManager:
     def delete_channel(self, channel_id: str):
         del self.channels[channel_id]
 
-    def __get_available_channel(self) -> dict[str, Any] | None:
+    def __get_available_channel(self, is_tournament: bool = False) -> dict[str, Any] | None:
         for channel in self.channels.values():
-            available_arena = channel.get_available_arena()
-            if available_arena:
-                return {"channel_id": channel.id, "arena": available_arena.to_dict()}
+            if channel.is_tournament == is_tournament:
+                available_arena = channel.get_available_arena()
+                if available_arena:
+                    return {"channel_id": channel.id, "arena": available_arena.to_dict()}
         return None

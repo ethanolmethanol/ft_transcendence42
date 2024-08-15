@@ -134,6 +134,12 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  private joinToTournament(postData: string): void {
+    this.monitorService.joinTournamentWebSocketUrl(postData).subscribe(response => {
+      this.navigateToGame(response.channel_id, response.arena.id);
+    }, error => this.handleError(error));
+  }
+
   private createGame(postData: string): void {
     this.monitorService.createWebSocketUrl(postData).subscribe(response => {
       this.navigateToGame(response.channel_id, response.arena.id);
@@ -153,6 +159,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this.joinSpecificChannel(postData);
     } else if (this._actionType == "create") {
       this.createGame(postData);
+    } else if (this._actionType == "tournament") {
+      this.joinToTournament(postData);
     }
   }
 

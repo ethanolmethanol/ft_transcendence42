@@ -8,10 +8,11 @@ from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import WAITING
 
 class Channel:
-    def __init__(self, arena: Arena):
+    def __init__(self, arenas: dict[int, Arena], is_tournament: bool = False):
         self.id: str = self.__generate_random_id(10)
-        self.arenas = {arena.id: arena}
+        self.arenas = arenas
         self.users = {}
+        self.is_tournament = is_tournament
 
     def to_dict(self) -> dict[str, Any]:
         return {

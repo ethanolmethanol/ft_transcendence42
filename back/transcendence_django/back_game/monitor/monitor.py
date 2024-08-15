@@ -62,6 +62,10 @@ class Monitor:
         channel_dict = self.channel_manager.join_already_created_channel(user_id, is_remote)
         return channel_dict
 
+    async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
+        channel_dict = await self.channel_manager.join_tournament(user_id)
+        return channel_dict
+
     def get_arena(self, channel_id: str, arena_id: str) -> Arena:
         arena: Arena | None = self.channel_manager.get_arena(channel_id, arena_id)
         if arena is None:

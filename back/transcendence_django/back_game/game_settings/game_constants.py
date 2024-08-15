@@ -46,6 +46,22 @@ OVER = 4
 DYING = 5
 DEAD = 6
 
+# Tournament
+
+TOURNAMENT_SPECS = {
+    "nb_players": 2,
+    "type": "online",
+    "options": {
+        "ball_speed": 2,
+        "paddle_size": 2,
+        "human_players": 1,
+        "online_players": 0,
+        "ai_opponents_local": 0,
+        "ai_opponents_online": 0,
+        "is_private": 0,
+    },
+}
+
 # Game loop parameters
 MONITOR_LOOP_INTERVAL = 0.5
 RUN_LOOP_INTERVAL = 0.005

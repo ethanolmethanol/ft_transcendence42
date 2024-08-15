@@ -82,6 +82,16 @@ async def join_specific_channel(request) -> JsonResponse:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
+@require_http_methods(["POST"])
+async def join_tournament(request) -> JsonResponse:
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data[USER_ID]
+        channel = await MONITOR.join_tournament(user_id)
+        return JsonResponse(channel, status=HTTPStatus.OK, safe=False)
+    except (JSONDecodeError, TypeError, ValueError) as e:
+        logger.error(e)
+        return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
 @require_http_methods(["POST"])
 def is_user_in_channel(request) -> JsonResponse:

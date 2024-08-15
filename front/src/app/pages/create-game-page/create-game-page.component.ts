@@ -23,8 +23,8 @@ import { UserService } from "../../services/user/user.service";
 })
 export class CreateGamePageComponent implements OnInit {
   constants = Constants;
-  isRemote = false;
-  urlDestination = '/';
+  isRemote: boolean = false;
+  urlDestination: string = '/';
   options: Option[] = [];
   saveConfig: boolean = false;
 

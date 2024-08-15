@@ -11,6 +11,11 @@
       [link]="'/online/join'"
       [icon]="'electric_bolt'">
     </app-button-with-icon>
+    <app-button-with-icon
+      [title]="'Tournament'"
+      [link]="'/online/tournament'"
+      [icon]="'emoji_events'">
+    </app-button-with-icon>
     <section class="join-game">
       <textarea [(ngModel)]="gameID" maxlength="10" placeholder="Party Code" (keypress)="preventSpaces($event)"></textarea>
       <button type="submit" (click)="joinGame()" [class.hover-effect]="gameID" [class.disabled-button]="gameID?.length !== CHANNEL_ID_LENGTH" [disabled]="gameID?.length !== CHANNEL_ID_LENGTH">Join</button>
