@@ -26,8 +26,8 @@ class AipiView(APIView):
 
     bots: dict[int, AipiClient] = {}
 
-    def __init__(self) -> None:
-        super(AipiView, self).__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.arena_id: str = ""
         self.wss_address: str = ""
         self.ai_user_id: int = -1
