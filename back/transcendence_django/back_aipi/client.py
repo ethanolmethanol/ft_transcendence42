@@ -1,10 +1,13 @@
 import asyncio
-import logging
-import websockets
 import json
+import logging
 import random
 import ssl
+import sys
+from datetime import datetime
 from typing import Any, Callable, Dict
+
+import websockets
 from back_game.game_settings.game_constants import (
     LEFT_SLOT,
     RIGHT_SLOT,
@@ -42,7 +45,6 @@ from transcendence_django.dict_keys import (
     COLLIDED_SLOT,
     PLAYERS,
 )
-from datetime import datetime
 
 now = datetime.now
 
@@ -61,26 +63,28 @@ class AipiClient:
         self.name: str = f"bot{self.id}"
         self.url: str = websocket_url
         self.arena_id: str = arena_id
-        self.retries: int = 0
-        # self.brain: int = 1 #TODO modify front and let user choose? Nah
-        self.game_ongoing: bool = True
-        self.has_joined: bool = False
         self.rematching: bool = False
         self.arena: Dict[str, Any] = {}
         self.slot: int = 0
 
     async def run(self):
-        logger.info(f"{self.id}: Start -- {now()}")
-        while self.game_ongoing:
+        logger.info("%s: Start -- %s", self.id, now())
+        retries: int = 0
+        game_ongoing: bool = True
+        has_joined: bool = False
+        while game_ongoing:
             try:
                 async with websockets.connect(
                     self.url, open_timeout=10, ssl=ssl_context
                 ) as websocket:
                     logger.info(
-                        f"{self.id}: {"Re-" if self.has_joined else ""}Connected to WebSocket server {self.url}"
+                        "%s: %sConnected to WebSocket server %s",
+                        self.id,
+                        "Re-" if has_joined else "",
+                        self.url,
                     )
-                    self.retries = 0
-                    if not self.has_joined:
+                    retries = 0
+                    if not has_joined:
                         await websocket.send(
                             json.dumps(
                                 {
@@ -93,8 +97,8 @@ class AipiClient:
                                 }
                             )
                         )
-                        self.has_joined = True
-                    while self.game_ongoing:
+                        has_joined = True
+                    while game_ongoing:
                         message = await websocket.recv()  # Await the coroutine
                         # logger.info(f"Received message: {message}")
                         response = self.handle_data(message)
@@ -105,36 +109,37 @@ class AipiClient:
                             )  # Send a response back to the server
             except websockets.ConnectionClosed as e:
                 logger.warning(
-                    f"Connection lost! Reason: {e.reason}, code: {e.code}. Retrying..."
+                    "Connection lost! Reason: %s, code: %s. Retrying...",
+                    e.reason,
+                    e.code,
                 )
-                self.has_joined = False
+                has_joined = False
             except asyncio.TimeoutError:
                 logger.error("Connection attempt timed out. Retrying...")
-            except asyncio.CancelledError as e:
-                logger.error(f"Cancelled Error occurred: {e}. Stopping retries.")
+            except asyncio.CancelledError:
                 break
             # except Exception as e:
             #     logger.error(f"An unexpected error occurred: {e}")
             finally:
                 backoff_time = 2 ** min(
-                    self.retries, 5
+                    retries, 5
                 )  # Exponential backoff with a max wait time
-                self.retries += 1
-                if self.retries == 5:
+                retries += 1
+                if retries == 5:
                     logger.error(
-                        f"! connect failed; stopping after {self.retries} retries"
+                        "! connect failed; stopping after %s retries", retries
                     )
-                    break
-                elif backoff_time > 1:
+                    game_ongoing = False
+                if backoff_time > 1:
                     logger.info(
-                        f"! connect failed; reconnecting in {backoff_time} seconds"
+                        "! connect failed; reconnecting in %s seconds", backoff_time
                     )
                     await asyncio.sleep(backoff_time)
         self.goodbye()
 
     def goodbye(self):
-        logger.info(f"{self.id}: Ended -- {now()}")
-        exit()
+        logger.info("%s: Ended -- %s", self.id, now())
+        sys.exit()
 
     def handle_data(self, message: str) -> str:
         def __content_from_msg_type(content: Any) -> str:
@@ -164,7 +169,7 @@ class AipiClient:
         if content is None:
             if quit_if_none:
                 return ""
-            logger.warning(f"{self.id}: Received empty {cnt_type}: {data}")
+            logger.warning("%s: Received empty %s: %s", self.id, cnt_type, data)
         try:
             return handlers[cnt_type](content)
         except KeyError:
@@ -179,7 +184,7 @@ class AipiClient:
 
     def __h_message(self, content: dict[str, Any]) -> str:
         message: str = str(content)
-        logger.info(f"{self.id}: Received game message: {message}")
+        logger.info("%s: Received game message: %s", self.id, message)
         if REMATCH in message and not self.rematching:  # if rematch, respond rematch
             self.rematching = True
             return json.dumps({TYPE: REMATCH, MESSAGE: {}})
@@ -253,13 +258,16 @@ class AipiClient:
             COLLIDED_SLOT: __upd_scores,
         }
         res: str = ""
-        for t in actions.keys():
+        for t in actions:
             res += self.__unwrap_from_type(t, actions, content, True)
         return res
 
     def __h_error(self, content: dict[str, Any]) -> str:
         logger.error(
-            f"{self.id}: Received error: #{content.get('code')} -- {content.get(MESSAGE)}"
+            "%s: Received error: #%s -- %s",
+            self.id,
+            content.get('code'),
+            content.get(MESSAGE),
         )
         return ""
 
@@ -290,70 +298,57 @@ class AipiClient:
     def __calc_brain(self, ball: dict[str, Any]) -> str:
         dx: float = ball[POSITION]["x"] - self.arena[BALL][POSITION]["x"]
         dy: float = ball[POSITION]["y"] - self.arena[BALL][POSITION]["y"]
-        paddle = self.arena[PADDLES][self.slot - 1]
+        paddle: dict[str, Any] = self.arena[PADDLES][self.slot - 1]
         paddle_x = paddle[POSITION]["x"]
         paddle_y = paddle[POSITION]["y"]
-        map_height = self.arena[MAP][HEIGHT]
-        map_width = self.arena[MAP][WIDTH]
-        precision: float = 0.85
-        paddle_delta: float
-        vertical: bool = paddle[SLOT] == LEFT_SLOT or paddle[SLOT] == RIGHT_SLOT
-        if vertical:  # good ol trigonometry
-            if dx != 0:
-                time_to_paddle = abs(paddle_x - self.arena[BALL][POSITION]["x"]) / abs(
-                    dx
-                )
-            else:
-                time_to_paddle = 0  # dx is 0 (ball moving vertically)
-            target_y = self.arena[BALL][POSITION]["y"] + time_to_paddle * dy
-            while target_y < 0 or target_y > map_height:
-                if target_y < 0:
-                    target_y = -target_y  # Reflect off the top
-                elif target_y > map_height:
-                    target_y = 2 * map_height - target_y  # Reflect off the bottom
-            if (paddle[SLOT] == LEFT_SLOT and dx < 0) or (
-                paddle[SLOT] == RIGHT_SLOT and dx > 0
-            ):
-                paddle_delta = target_y - paddle_y  # Ball is moving towards me
-            else:
-                paddle_delta = (
-                    map_height / 2
-                ) - paddle_y  # Ball is moving towards the opponent, return to center
-            direction = (
-                -1
-                if paddle_delta < -paddle[HEIGHT] * precision
-                else 1 if paddle_delta > paddle[HEIGHT] * precision else 0
-            )
+        is_vertical = paddle[SLOT] in {LEFT_SLOT, RIGHT_SLOT}
+        dp = dx if is_vertical else dy
+        paddle_pos = paddle_x if is_vertical else paddle_y
+        map_size = self.arena[MAP][HEIGHT] if is_vertical else self.arena[MAP][WIDTH]
+        ball_pos = self.arena[BALL][POSITION]["y" if is_vertical else "x"]
+        time_to_paddle = 0
+        if dp != 0:
+            time_to_paddle = abs(paddle_pos - self.arena[BALL][POSITION]
+                                 ["x" if is_vertical else "y"]) / abs(dp)
+        target_pos = ball_pos + time_to_paddle * (dy if is_vertical else dx)
+        while target_pos < 0 or target_pos > map_size:
+            if target_pos < 0:
+                target_pos = -target_pos  # Reflect off the top/left
+            elif target_pos > map_size:
+                target_pos = 2 * map_size - target_pos  # Reflect off the bottom/right
+        if self.__ball_moving_towards_me(is_vertical, paddle, dx, dy):
+            paddle_delta = target_pos - (paddle_y if is_vertical else paddle_x)
         else:
-            if dy != 0:
-                time_to_paddle = abs(paddle_y - self.arena[BALL][POSITION]["y"]) / abs(
-                    dy
-                )
-            else:
-                time_to_paddle = 0  # dy is 0 (ball moving horizontally)
-            target_x = self.arena[BALL][POSITION]["x"] + time_to_paddle * dx
-            while target_x < 0 or target_x > map_width:
-                if target_x < 0:
-                    target_x = -target_x  # Reflect off the left
-                elif target_x > map_width:
-                    target_x = 2 * map_width - target_x  # Reflect off the right
-            if (paddle[SLOT] == TOP_SLOT and dy < 0) or (
-                paddle[SLOT] == BOT_SLOT and dy > 0
-            ):
-                paddle_delta = target_x - paddle_x  # Ball is moving towards me
-            else:
-                paddle_delta = (
-                    map_height / 2
-                ) - paddle_x  # Ball is moving towards the opponent, return to center
-            direction = (
-                -1
-                if paddle_delta < -paddle[WIDTH] * precision
-                else 1 if paddle_delta > paddle[WIDTH] * precision else 0
-            )
-
+            paddle_delta = (map_size / 2) - (paddle_y if is_vertical else paddle_x)
         self.arena[BALL][POSITION].update(ball[POSITION])
+        return self.__direction_of_paddle(is_vertical, paddle, paddle_delta)
+
+    def __direction_of_paddle(self,
+            is_vertical: bool,
+            paddle: dict[str, Any],
+            paddle_delta,
+        ) -> str:
+        precision: float = 0.85
+        paddle_size = paddle[HEIGHT] if is_vertical else paddle[WIDTH]
+        direction: int = (
+            -1 if paddle_delta < -paddle_size * precision
+            else 1 if paddle_delta > paddle_size * precision else 0
+        )
         if direction:
             return json.dumps(
                 {TYPE: MOVE_PADDLE, MESSAGE: {PLAYER: self.name, DIRECTION: direction}}
             )
         return ""
+
+
+    def __ball_moving_towards_me(self,
+            is_vertical: bool,
+            paddle: dict[str, Any],
+            dx: float,
+            dy: float
+        ) -> bool:
+        if is_vertical:
+            return (paddle[SLOT] == LEFT_SLOT and dx < 0) \
+                  or (paddle[SLOT] == RIGHT_SLOT and dx > 0)
+        return (paddle[SLOT] == TOP_SLOT and dy < 0) \
+              or (paddle[SLOT] == BOT_SLOT and dy > 0)

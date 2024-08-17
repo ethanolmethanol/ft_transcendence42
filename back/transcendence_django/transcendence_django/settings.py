@@ -130,11 +130,9 @@ AUTH_USER_MODEL = "shared_models.CustomUser"
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{SERV_IP}:4200",
-    f"https://back-aipi",
 ]
 CORS_ALLOWED_ORIGINS = [
     f"https://{SERV_IP}:4200",
-    f"https://back-aipi",
 ]
 CORS_ALLOW_CREDENTIALS = True
 AUTHENTICATION_BACKENDS = ["back_auth.backends.EmailOrUsernameModelBackend"]

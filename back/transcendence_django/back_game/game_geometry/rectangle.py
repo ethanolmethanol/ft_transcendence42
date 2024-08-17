@@ -18,7 +18,7 @@ class Rectangle:
         self.position: Position = position
         self.width: int = width
         self.height: int = height
-        if not (self.slot == LEFT_SLOT or self.slot == RIGHT_SLOT):
+        if not self.slot in (LEFT_SLOT, RIGHT_SLOT):
             self.width = height
             self.height = width
         self.edges: Edges = Edges(position, width, height)

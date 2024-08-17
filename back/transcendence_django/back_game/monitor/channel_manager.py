@@ -59,6 +59,7 @@ class ChannelManager:
                     verify=False,  # does not work otherwise
                     cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
                     json={"channel_id": channel_id, "arena_id": new_arena.id},
+                    timeout=3,
                 )
                 ai_user_id: int = aipi_response.json()["user_id"]
                 logger.info(

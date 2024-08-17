@@ -1,17 +1,19 @@
 # pylint: disable=no-member
-from http import HTTPStatus
-from typing import Any
 import asyncio
 import json
-import threading
+import logging
 import random
-from requests import get as http_get, Response as HTTPResponse
+import threading
+from http import HTTPStatus
+from typing import Any
 
+from requests import Response as HTTPResponse
+from requests import get as http_get
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from transcendence_django.dict_keys import ARENA_ID, CHANNEL_ID, ERROR, USER_ID
+
 from .client import AipiClient
-import logging
-from transcendence_django.dict_keys import CHANNEL_ID, ARENA_ID, USER_ID, ERROR
 
 logger = logging.getLogger(__name__)
 
@@ -24,26 +26,31 @@ class AipiView(APIView):
 
     bots: dict[int, AipiClient] = {}
 
+    def __init__(self) -> None:
+        self.arena_id: str = ""
+        self.wss_address: str = ""
+        self.ai_user_id: int = -1
+
     def get(self, request) -> Response:
 
         data: dict[str, Any] = json.loads(request.body.decode("utf-8"))
 
         channel_id: str = data[CHANNEL_ID]
 
-        self.arena_id: str = data[ARENA_ID]
+        self.arena_id = data[ARENA_ID]
 
-        logger.info(f"AIPI got request for channel id {channel_id}")
+        logger.info("AIPI got request for channel id %s", channel_id)
 
-        self.wss_address: str = f"{API_GAME_SOCKET}/ws/game/{channel_id}/"
+        self.wss_address = f"{API_GAME_SOCKET}/ws/game/{channel_id}/"
 
-        self.ai_user_id: int = self.__new_ai_uid()
+        self.ai_user_id = self.__new_ai_uid()
 
         try:
             self.bots[self.ai_user_id] = AipiClient(
                 self.wss_address, self.ai_user_id, self.arena_id
             )
             t = threading.Thread(target=self.run_async_loop_in_thread)
-            t.setDaemon(True)
+            t.daemon = True
             t.start()
             return Response({USER_ID: self.ai_user_id}, status=HTTPStatus.OK)
         except (TypeError, KeyError, ValueError) as e:
@@ -60,8 +67,9 @@ class AipiView(APIView):
                 verify=False,  # does not work otherwise
                 cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
             )
+            status: str = "already taken" if user_response.status_code == 200 else "free to use"
             logger.info(
-                f"{uid}: User id is {"already taken" if user_response.status_code == 200 else "free to use"}"
+                "%s: User id is %s", uid, status
             )
             return user_response.status_code == 404
 
