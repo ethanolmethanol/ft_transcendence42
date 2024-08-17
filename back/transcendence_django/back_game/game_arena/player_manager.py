@@ -183,9 +183,6 @@ class PlayerManager:
             players_specs["options"]["ai_opponents_local"]
             or players_specs["options"]["ai_opponents_online"]
         )
-        logger.info(
-            f"NB PLAYERS {self.nb_players} -- HUMANS {self.nb_humans} -- ROBOTS {self.nb_robots}"
-        )
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
         self.is_remote = players_specs[IS_REMOTE] == "online"

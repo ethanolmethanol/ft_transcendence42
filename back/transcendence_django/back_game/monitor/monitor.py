@@ -106,8 +106,6 @@ class Monitor:
     def rematch(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.rematch(user_id)
-        # FIXME since this does not check the state of the game,
-        # one can DDOS/freeze the game by sending many rematch requests
 
     def get_game_summary(self, channel_id: str, arena_id: str) -> dict[str, Any]:
         arena: Arena = self.get_arena(channel_id, arena_id)

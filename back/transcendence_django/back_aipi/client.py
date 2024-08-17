@@ -9,41 +9,41 @@ from typing import Any, Callable, Dict
 
 import websockets
 from back_game.game_settings.game_constants import (
+    BOT_SLOT,
     LEFT_SLOT,
     RIGHT_SLOT,
     TOP_SLOT,
-    BOT_SLOT,
 )
 from transcendence_django.dict_keys import (
-    HEIGHT,
-    POSITION,
-    WIDTH,
+    ARENA,
+    ARENA_ID,
     BALL,
+    COLLIDED_SLOT,
+    DIRECTION,
+    ERROR,
+    GAME_ERROR,
+    GAME_MESSAGE,
+    GAME_OVER,
+    GAME_UPDATE,
+    HEIGHT,
+    JOIN,
+    MAP,
+    MESSAGE,
+    MOVE_PADDLE,
     PADDLE,
     PADDLES,
-    ARENA,
-    TYPE,
-    JOIN,
-    MESSAGE,
-    UPDATE,
-    ERROR,
-    USER_ID,
     PLAYER,
-    ARENA_ID,
-    REMATCH,
-    MOVE_PADDLE,
-    START_TIMER,
-    SLOT,
-    GAME_OVER,
-    DIRECTION,
-    MAP,
-    GAME_MESSAGE,
-    GAME_ERROR,
-    GAME_UPDATE,
-    TIME,
-    SCORES,
-    COLLIDED_SLOT,
     PLAYERS,
+    POSITION,
+    REMATCH,
+    SCORES,
+    SLOT,
+    START_TIMER,
+    TIME,
+    TYPE,
+    UPDATE,
+    USER_ID,
+    WIDTH,
 )
 
 now = datetime.now
@@ -126,9 +126,7 @@ class AipiClient:
                 )  # Exponential backoff with a max wait time
                 retries += 1
                 if retries == 5:
-                    logger.error(
-                        "! connect failed; stopping after %s retries", retries
-                    )
+                    logger.error("! connect failed; stopping after %s retries", retries)
                     game_ongoing = False
                 if backoff_time > 1:
                     logger.info(
@@ -143,9 +141,15 @@ class AipiClient:
 
     def handle_data(self, message: str) -> str:
         def __content_from_msg_type(content: Any) -> str:
-            return str({GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(
-                content
-            )) if not None else ""
+            return (
+                str(
+                    {GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(
+                        content
+                    )
+                )
+                if not None
+                else ""
+            )
 
         data: Dict[str, Any] = json.loads(message)
         return self.__unwrap_from_type(
@@ -266,7 +270,7 @@ class AipiClient:
         logger.error(
             "%s: Received error: #%s -- %s",
             self.id,
-            content.get('code'),
+            content.get("code"),
             content.get(MESSAGE),
         )
         return ""
@@ -308,8 +312,9 @@ class AipiClient:
         ball_pos = self.arena[BALL][POSITION]["y" if is_vertical else "x"]
         time_to_paddle = 0
         if dp != 0:
-            time_to_paddle = abs(paddle_pos - self.arena[BALL][POSITION]
-                                 ["x" if is_vertical else "y"]) / abs(dp)
+            time_to_paddle = abs(
+                paddle_pos - self.arena[BALL][POSITION]["x" if is_vertical else "y"]
+            ) / abs(dp)
         target_pos = ball_pos + time_to_paddle * (dy if is_vertical else dx)
         while target_pos < 0 or target_pos > map_size:
             if target_pos < 0:
@@ -323,15 +328,17 @@ class AipiClient:
         self.arena[BALL][POSITION].update(ball[POSITION])
         return self.__direction_of_paddle(is_vertical, paddle, paddle_delta)
 
-    def __direction_of_paddle(self,
-            is_vertical: bool,
-            paddle: dict[str, Any],
-            paddle_delta,
-        ) -> str:
+    def __direction_of_paddle(
+        self,
+        is_vertical: bool,
+        paddle: dict[str, Any],
+        paddle_delta,
+    ) -> str:
         precision: float = 0.85
         paddle_size = paddle[HEIGHT] if is_vertical else paddle[WIDTH]
         direction: int = (
-            -1 if paddle_delta < -paddle_size * precision
+            -1
+            if paddle_delta < -paddle_size * precision
             else 1 if paddle_delta > paddle_size * precision else 0
         )
         if direction:
@@ -340,15 +347,13 @@ class AipiClient:
             )
         return ""
 
-
-    def __ball_moving_towards_me(self,
-            is_vertical: bool,
-            paddle: dict[str, Any],
-            dx: float,
-            dy: float
-        ) -> bool:
+    def __ball_moving_towards_me(
+        self, is_vertical: bool, paddle: dict[str, Any], dx: float, dy: float
+    ) -> bool:
         if is_vertical:
-            return (paddle[SLOT] == LEFT_SLOT and dx < 0) \
-                  or (paddle[SLOT] == RIGHT_SLOT and dx > 0)
-        return (paddle[SLOT] == TOP_SLOT and dy < 0) \
-              or (paddle[SLOT] == BOT_SLOT and dy > 0)
+            return (paddle[SLOT] == LEFT_SLOT and dx < 0) or (
+                paddle[SLOT] == RIGHT_SLOT and dx > 0
+            )
+        return (paddle[SLOT] == TOP_SLOT and dy < 0) or (
+            paddle[SLOT] == BOT_SLOT and dy > 0
+        )

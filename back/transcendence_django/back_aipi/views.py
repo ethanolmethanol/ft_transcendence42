@@ -27,6 +27,7 @@ class AipiView(APIView):
     bots: dict[int, AipiClient] = {}
 
     def __init__(self) -> None:
+        super.__init__()
         self.arena_id: str = ""
         self.wss_address: str = ""
         self.ai_user_id: int = -1
@@ -66,11 +67,12 @@ class AipiView(APIView):
                 url=f"{API_USER_ENDPOINT}/{uid}/",
                 verify=False,  # does not work otherwise
                 cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
+                timeout=3,
             )
-            status: str = "already taken" if user_response.status_code == 200 else "free to use"
-            logger.info(
-                "%s: User id is %s", uid, status
+            status: str = (
+                "already taken" if user_response.status_code == 200 else "free to use"
             )
+            logger.info("%s: User id is %s", uid, status)
             return user_response.status_code == 404
 
         uid: int = random.randint(1000, 10000)

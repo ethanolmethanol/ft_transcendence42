@@ -2,13 +2,14 @@ import logging
 import random
 import string
 from typing import Any
-from requests import get as http_get, Response, JSONDecodeError
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import DEAD, WAITING
-from transcendence_django.dict_keys import ID, AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE
+from requests import JSONDecodeError, Response
+from requests import get as http_get
+from transcendence_django.dict_keys import AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE, ID
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +63,6 @@ class ChannelManager:
                     timeout=3,
                 )
                 ai_user_id: int = aipi_response.json()["user_id"]
-                logger.info(
-                    f"AIPI responded user id {ai_user_id} for channel id {channel_id}"
-                )
                 self.add_ai_to_channel(ai_user_id, channel_id, new_arena.id)
             except (ConnectionRefusedError, JSONDecodeError) as e:
                 logger.error(e)
