@@ -4,8 +4,7 @@ from back_game.monitor.monitor import get_monitor
 from transcendence_django.dict_keys import USER_ID, PLAYER, ARENA_ID, UPDATE_CALLBACK, OVER_CALLBACK, START_TIMER_CALLBACK, GIVE_UP
 from typing import Any, Callable, Coroutine, Optional
 
-
-class ClassicConsumer(BaseConsumer):
+class TournamentConsumer(BaseConsumer):
 
     def get_game_logic_interface(self):
         return GameLogicInterface()
@@ -22,9 +21,9 @@ class ClassicConsumer(BaseConsumer):
             OVER_CALLBACK: self.send_game_over,
             START_TIMER_CALLBACK: self.send_start_timer,
         }
-        self.game.join(user_id, player_name, arena_id, callbacks)
+        #self.game.join(user_id, player_name, arena_id, callbacks)
         await self.send_message(f"{self.game.user_id} has joined the game.")
-        await self.send_arena_data()
+#         await self.send_arena_data()
 
     async def leave(self, _):
         self.game.leave()
@@ -34,9 +33,9 @@ class ClassicConsumer(BaseConsumer):
         self.game.give_up()
         await self.send_message(f"{self.game.user_id} has given up.")
         await self.send_update({GIVE_UP: self.game.user_id})
-        await self.send_arena_data()
+#         await self.send_arena_data()
 
     async def rematch(self, _):
         self.game.rematch()
         await self.send_message(f"{self.game.user_id} asked for a rematch.")
-        await self.send_arena_data()
+#         await self.send_arena_data()

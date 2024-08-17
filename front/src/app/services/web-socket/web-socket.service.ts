@@ -29,20 +29,25 @@ export class WebSocketService implements OnInit, OnDestroy {
     };
   }
 
-  public connect(channel_id: string): void {
+  public connect(channel_id: string, isTournament: boolean): void {
     this.userService.whenUserDataLoaded().then(() => {
-      this.attemptToConnect(channel_id);
+      this.attemptToConnect(channel_id, isTournament);
     });
   }
 
-  private attemptToConnect(channel_id: string): void {
+  private attemptToConnect(channel_id: string, isTournament: boolean): void {
     if (this.socket) {
       console.log('WebSocket connection already open');
       return;
     }
 
     console.log('Connecting to WebSocket -> ', channel_id);
-    const url = `${API_GAME_SOCKET}/ws/game/${channel_id}/`;
+    let url;
+    if (isTournament) {
+      url = `${API_GAME_SOCKET}/ws/game/tournament/${channel_id}/`;
+    } else {
+      url = `${API_GAME_SOCKET}/ws/game/classic/${channel_id}/`;
+    }
 
     const socket = new WebSocket(url);
 
@@ -118,8 +123,12 @@ export class WebSocketService implements OnInit, OnDestroy {
     }
   }
 
-  public join(arena_id: number): Observable<ArenaResponse> {
-    console.log(`Join ${arena_id}`);
+  public join(arena_id: number | null): Observable<ArenaResponse> {
+    if (arena_id === null) {
+      console.log('Arena ID is null');
+    } else {
+      console.log(`Join ${arena_id}`);
+    }
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.send('join', {"user_id": this.userService.getUserID(), "player": this.userService.getUsername(), "arena_id": arena_id});
