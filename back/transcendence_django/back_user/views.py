@@ -4,11 +4,13 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any, Dict
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from shared_models.models import CustomUser, Profile
@@ -165,3 +167,47 @@ def get_game_summaries(request) -> JsonResponse:
         return JsonResponse(
             {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
         )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class UpdateUsernameView(APIView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.username: str = ""
+        self.user_id: str = ""
+        self.user: CustomUser | None = None
+
+    def username_already_taken(self) -> bool:
+        if CustomUser.objects.filter(username=self.username).exists():
+            logger.info("Username is already taken")
+            return True
+        return False
+
+    def update_username(self):
+        if self.username_already_taken():
+            return Response({"error": "Username already taken."}, status=400)
+
+        if self.user:
+            self.user.set_username(self.username)
+            return Response({"success": True}, status=status.HTTP_200_OK)
+        return Response(
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    def post(self, request):
+        try:
+            self.username = request.data["username"]
+            self.user_id = request.data["user_id"]
+            self.user = CustomUser.objects.get(id=self.user_id)
+            response = self.update_username()
+            return response
+        except KeyError:
+            return Response(
+                {"error": "username or user_id missing in request data"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except ObjectDoesNotExist:
+            return Response(
+                {"error": "Cannot update username of unknown user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

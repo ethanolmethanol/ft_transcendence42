@@ -10,6 +10,7 @@ import { GamePageComponent } from "./pages/game-page/game-page.component";
 import { MonitorPageComponent } from "./pages/monitor-page/monitor-page.component";
 import { OnlineGameSelectorPageComponent } from "./pages/online-game-selector-page/online-game-selector-page.component";
 import { CreateGamePageComponent } from './pages/create-game-page/create-game-page.component';
+import { OauthCallbackComponent } from './components/oauth-callback/oauth-callback.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'online/join', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' , actionType: 'join'} },
   { path: 'online/join/:channel_id', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_specific'} },
   { path: 'online/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },
+  { path: 'oauth-callback', component: OauthCallbackComponent, pathMatch: 'prefix', canActivate: [GuestGuard] },
   { path: 'sign-in', component: SignInPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: 'sign-up', component: SignUpPageComponent, pathMatch: 'full', canActivate: [GuestGuard] },
   { path: '404', component: NotFoundPageComponent, pathMatch: 'full' },

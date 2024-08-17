@@ -40,11 +40,6 @@ down:
 
 all: ${NAME}
 
-${ENV_FILE}:
-	@if test -f ${ENV_SRC} && cp ${ENV_SRC} $@; then echo -e "$GFetched environment file [$C.env$G] from ..$N"; \
-	else echo -e "$RPlease make an environment file [$C.env$R] using .env_template file$N"; \
-	exit 1; fi
-
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
 # WIP
@@ -180,7 +175,6 @@ fclean: clean
 ffclean: fclean
 	@docker --log-level=warn system prune -af
 	@ rm -rf ${DATADIRS}
-
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all

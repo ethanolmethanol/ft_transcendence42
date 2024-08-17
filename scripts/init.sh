@@ -20,16 +20,19 @@ prompt_for_env() {
 		return
 	fi
 
-	read -rp "Enter PostgreSQL User: " postgres_user
-	read -rsp "Enter PostgreSQL Password: " postgres_password
-	echo
-	read -rp "Enter PostgreSQL Database Name: " postgres_db
+	[ -z "${POSTGRES_USER}" ] && read -rp "Enter PostgreSQL User: " POSTGRES_USER
+	[ -z "${POSTGRES_PASSWORD}" ] && read -rsp "Enter PostgreSQL Password: " POSTGRES_PASSWORD && echo
+	[ -z "${POSTGRES_DB}" ] && read -rp "Enter PostgreSQL Database Name: " POSTGRES_DB
+	[ -z "${OAUTH_CLIENT_UID}" ] && read -rp "Enter OAuth Client UID: " OAUTH_CLIENT_UID
+	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET
 
-	echo "POSTGRES_USER='${postgres_user}'" >"${ENV_FILE_GLOBAL}"
+	echo "POSTGRES_USER='${POSTGRES_USER}'" >"${ENV_FILE_GLOBAL}"
 	{
-		echo "POSTGRES_PASSWORD='${postgres_password}'"
-		echo "POSTGRES_DB='${postgres_db}'"
+		echo "POSTGRES_PASSWORD='${POSTGRES_PASSWORD}'"
+		echo "POSTGRES_DB='${POSTGRES_DB}'"
 		echo "SERV_IP='${IP_ADDR}'"
+		echo "OAUTH_CLIENT_UID='${OAUTH_CLIENT_UID}'"
+		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
@@ -120,6 +123,14 @@ install_mkcert() {
 	mkcert -version
 }
 
+export_env_instructions() {
+	echo -e "\n**************************** EXPORT ENV INSTRUCTIONS ****************************"
+	echo "*  To apply the environment variables to your current shell, please run:        *"
+	echo "*  [ZSH]    set -a; source ${ENV_FILE_GLOBAL}; set +a                                         *"
+	echo "*  [BSH]    source ${ENV_FILE_GLOBAL}                                                         *"
+	echo -e "*********************************************************************************\n"
+}
+
 IP_ADDR=$(get_ip "$1")
 CERT_DIR="ssl/"
 SSL_CONT_DIRS=(front/ssl back/ssl)
@@ -133,7 +144,7 @@ else
 	prompt_for_env
 	install_mkcert
 	generate_certificates
-	distribute_certificates
 	create_nginx_config_file
 	update_environment_ts
+	export_env_instructions
 fi
