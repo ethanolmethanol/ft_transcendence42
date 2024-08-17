@@ -14,7 +14,7 @@ GAME_WIDTH = 1000
 
 # Game arena
 MIN_PLAYER = 2
-MAX_PLAYER = 3 # TODO handle more than 2 players
+MAX_PLAYER = 3  # TODO handle more than 2 players
 MAXIMUM_SCORE = 10
 
 # # Ball parameters

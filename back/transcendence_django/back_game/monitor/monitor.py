@@ -1,8 +1,7 @@
 import asyncio
 import logging
-from typing import Any, Callable, Coroutine, List, Optional
+from typing import Any, Callable, Coroutine, Optional
 
-from asgiref.sync import sync_to_async
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
@@ -107,7 +106,7 @@ class Monitor:
     def rematch(self, user_id: int, channel_id: str, arena_id: str):
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.rematch(user_id)
-        #FIXME since this does not check the state of the game,
+        # FIXME since this does not check the state of the game,
         # one can DDOS/freeze the game by sending many rematch requests
 
     def get_game_summary(self, channel_id: str, arena_id: str) -> dict[str, Any]:

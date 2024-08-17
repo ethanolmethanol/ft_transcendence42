@@ -1,7 +1,6 @@
 import logging
 import random
 import string
-import json
 from typing import Any
 from requests import get as http_get, Response, JSONDecodeError
 
@@ -9,7 +8,7 @@ from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import DEAD, WAITING
-from transcendence_django.dict_keys import (ID, AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE)
+from transcendence_django.dict_keys import ID, AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE
 
 logger = logging.getLogger(__name__)
 
@@ -42,26 +41,29 @@ class ChannelManager:
         return channel
 
     async def create_new_channel(
-        self, user_id: int, players_specs: dict[str, int]
+        self, user_id: int, players_specs: dict[str, Any]
     ) -> dict[str, Any]:
         new_arena: Arena = Arena(players_specs)
         channel_id: str = self.__generate_random_id(10)
         self.channels[channel_id] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
-        bots: int = (int)(players_specs['options'][AI_OPPONENTS_LOCAL]) \
-            + (int)(players_specs['options'][AI_OPPONENTS_ONLINE])
+        bots: int = int(players_specs["options"][AI_OPPONENTS_LOCAL]) + int(
+            players_specs["options"][AI_OPPONENTS_ONLINE]
+        )
         while bots:
             bots -= 1
             try:
                 aipi_response: Response = http_get(
-                    url = f"https://back-aipi/aipi/spawn/",
-                    verify = False, # does not work otherwise
-                    cert = ('/etc/ssl/serv.crt', '/etc/ssl/serv.key'),
-                    json = {"channel_id": channel_id, "arena_id": new_arena.id}
+                    url="https://back-aipi/aipi/spawn/",
+                    verify=False,  # does not work otherwise
+                    cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
+                    json={"channel_id": channel_id, "arena_id": new_arena.id},
                 )
-                ai_user_id: int = aipi_response.json()['user_id']
-                logger.info(f"AIPI responded user id {ai_user_id} for channel id {channel_id}")
+                ai_user_id: int = aipi_response.json()["user_id"]
+                logger.info(
+                    f"AIPI responded user id {ai_user_id} for channel id {channel_id}"
+                )
                 self.add_ai_to_channel(ai_user_id, channel_id, new_arena.id)
             except (ConnectionRefusedError, JSONDecodeError) as e:
                 logger.error(e)
@@ -79,7 +81,13 @@ class ChannelManager:
     def add_ai_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         self.__add_to_channel(self.ai_game_table, user_id, channel_id, arena_id)
 
-    def __add_to_channel(self, game_table: dict[int, dict[str, Any]], user_id: int, channel_id: str, arena_id: str):
+    def __add_to_channel(
+        self,
+        game_table: dict[int, dict[str, Any]],
+        user_id: int,
+        channel_id: str,
+        arena_id: str,
+    ):
         arena: Arena = self.channels[channel_id][arena_id]
         game_table[user_id] = {
             "channel_id": channel_id,

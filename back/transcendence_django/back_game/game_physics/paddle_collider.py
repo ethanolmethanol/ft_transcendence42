@@ -47,9 +47,9 @@ class PaddleCollider:
             speed_component_x = paddle.rectangle.distance_from_center
         elif paddle.slot == RIGHT_SLOT:
             speed_component_x = (-1) * paddle.rectangle.distance_from_center
-        elif paddle.slot == BOT_SLOT: #TODO test when handling >2 players
+        elif paddle.slot == BOT_SLOT:  # TODO test when handling >2 players
             speed_component_y = paddle.rectangle.distance_from_center
-        elif paddle.slot == TOP_SLOT: #TODO test when handling >2 players
+        elif paddle.slot == TOP_SLOT:  # TODO test when handling >2 players
             speed_component_y = (-1) * paddle.rectangle.distance_from_center
         else:
             raise Exception("Oopsie! Too many paddles?")

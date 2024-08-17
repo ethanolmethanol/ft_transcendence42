@@ -45,8 +45,10 @@ class PlayerManager:
     def is_full(self) -> bool:
         enable_players_count = self.__count_players(PlayerStatus(ENABLED))
         disable_players_count = self.__count_players(PlayerStatus(DISABLED))
-        logger.info(f"IS FULL? {enable_players_count} + {disable_players_count} vs"
-                    + f" {self.nb_players}")
+        logger.info(
+            f"IS FULL? {enable_players_count} + {disable_players_count} vs"
+            + f" {self.nb_players}"
+        )
         return enable_players_count + disable_players_count == self.nb_players
 
     def add_player(self, user_id: int, player_name: str, is_bot: bool):
@@ -173,9 +175,17 @@ class PlayerManager:
 
     def __fill_player_specs(self, players_specs: dict[str, Any]):
         self.nb_players = players_specs[NB_PLAYERS]
-        self.nb_humans = players_specs["options"]["human_players"] or players_specs["options"]["online_players"]
-        self.nb_robots = players_specs["options"]["ai_opponents_local"] or players_specs["options"]["ai_opponents_online"]
-        logger.info(f"NB PLAYERS {self.nb_players} -- HUMANS {self.nb_humans} -- ROBOTS {self.nb_robots}")
+        self.nb_humans = (
+            players_specs["options"]["human_players"]
+            or players_specs["options"]["online_players"]
+        )
+        self.nb_robots = (
+            players_specs["options"]["ai_opponents_local"]
+            or players_specs["options"]["ai_opponents_online"]
+        )
+        logger.info(
+            f"NB PLAYERS {self.nb_players} -- HUMANS {self.nb_humans} -- ROBOTS {self.nb_robots}"
+        )
         if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
             raise ValueError(INVALID_NB_PLAYERS)
         self.is_remote = players_specs[IS_REMOTE] == "online"

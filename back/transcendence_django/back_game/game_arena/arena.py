@@ -241,10 +241,12 @@ class Arena:
 
     def __enter_local_mode(self, user_id: int, player_name: str):
         if not self.is_full():
-            if (self.player_manager.nb_robots and player_name == f"bot{user_id}"):
+            if self.player_manager.nb_robots and player_name == f"bot{user_id}":
                 self.__register_player(user_id, player_name, True)
                 return
-            if (self.player_manager.nb_humans): # modify when able to handle 2 humans + bots
+            if (
+                self.player_manager.nb_humans
+            ):  # modify when able to handle 2 humans + bots
                 self.__register_player(user_id, PLAYER2, False)
             self.__register_player(user_id, PLAYER1, False)
 
