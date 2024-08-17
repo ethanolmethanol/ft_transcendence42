@@ -43,7 +43,9 @@ services:
         ports:
             - "8002:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-user
         restart: unless-stopped
         env_file: .env
 

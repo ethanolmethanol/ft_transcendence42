@@ -20,6 +20,7 @@ from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     BALL,
+    BOTS,
     COLLIDED_SLOT,
     ID,
     IS_REMOTE,
@@ -67,7 +68,7 @@ class Arena:
             ID: self.id,
             STATUS: self.game.status,
             PLAYERS: [
-                player.player_name #FIXME shouldn't this be the IDs of the players?
+                player.player_name
                 for player in self.player_manager.players.values()
                 if player.status == PlayerStatus(ENABLED)
             ],
@@ -78,6 +79,11 @@ class Arena:
             PLAYER_SPECS: {
                 NB_PLAYERS: self.player_manager.nb_players,
                 IS_REMOTE: mode,
+                BOTS: [
+                    player.player_name
+                    for player in self.player_manager.players.values()
+                    if player.is_bot
+                ],
             },
         }
 
