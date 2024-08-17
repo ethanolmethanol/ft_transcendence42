@@ -1,0 +1,21 @@
+<body>
+<section *ngIf="displayForm" class="form-container">
+  <main class="background">
+    <header class="signin-header">
+      <h1>Almost there, pick a username !</h1>
+    </header>
+    <form [formGroup]="pickUsernameForm" (ngSubmit)="onSubmit()">
+      <section class="form-group">
+        <div class="input-error-container">
+          <input type="text" formControlName="username" class="form-control" placeholder="Username">
+          <app-username-error [control]="pickUsernameForm.controls.username" [isTouched]="pickUsernameForm.controls.username.touched" class="form-group label"></app-username-error>
+        </div>
+      </section>
+      <button type="submit">Sign In</button>
+      <section class="error-message-container">
+        <app-error-message [condition]="hasUserCreationFailed()" [message]="errorMessage"></app-error-message>
+      </section>
+    </form>
+  </main>
+</section>
+</body>

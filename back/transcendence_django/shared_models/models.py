@@ -1,7 +1,10 @@
-from datetime import datetime
+import logging
+from datetime import datetime, timedelta
 from typing import Any, List, TypeVar
 
+import requests
 from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -9,13 +12,26 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.utils import timezone
 from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
 )
 from sortedm2m.fields import SortedManyToManyField
-from transcendence_django.dict_keys import LOCAL, LOSS, REMOTE, TIE, TOTAL, WIN
+from transcendence_django.dict_keys import (
+    ACCESS_TOKEN_KEY,
+    EXPIRES_IN_KEY,
+    LOCAL,
+    LOSS,
+    REFRESH_TOKEN_KEY,
+    REMOTE,
+    TIE,
+    TOTAL,
+    WIN,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class GameSummary(models.Model):
@@ -37,6 +53,47 @@ class Profile(models.Model):
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         super().save(*args, **kwargs)
+
+
+class OauthToken(models.Model):
+    access_token = models.CharField(max_length=255)  # type: ignore
+    refresh_token = models.CharField(max_length=255)  # type: ignore
+    token_expires_at = models.DateTimeField(default=timezone.now)  # type: ignore
+
+    def store_tokens(self, token_data):
+        self.access_token = token_data[ACCESS_TOKEN_KEY]
+        self.refresh_token = token_data[REFRESH_TOKEN_KEY]
+        self.token_expires_at = (
+            timezone.now()
+            + timedelta(seconds=token_data[EXPIRES_IN_KEY])
+            - timedelta(minutes=5)
+        )
+        self.save()
+
+    def is_token_expired(self) -> bool:
+        return timezone.now() > self.token_expires_at
+
+    def refresh_tokens(self) -> str:
+        if not self.is_token_expired():
+            logger.info("Access token is still valid, no need to refresh.")
+            return self.access_token
+
+        data = {
+            "grant_type": "refresh_token",
+            "client_id": settings.OAUTH_CLIENT_UID,
+            "client_secret": settings.OAUTH_CLIENT_SECRET,
+            "refresh_token": self.refresh_token,
+        }
+
+        try:
+            token_response = requests.post(
+                settings.OAUTH_TOKEN_URL, data=data, timeout=5
+            )
+            token_response.raise_for_status()
+            self.store_tokens(token_response.json())
+        except requests.exceptions.RequestException as e:
+            logger.error(e)
+        return self.access_token
 
 
 CustomUserType = TypeVar("CustomUserType", bound="CustomUser")
@@ -67,9 +124,13 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)  # type: ignore
     username = models.CharField(max_length=150, unique=True)  # type: ignore
+    login42 = models.CharField(max_length=150, null=True, blank=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
+    )  # type: ignore
+    oauth_token = models.OneToOneField(
+        OauthToken, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
     game_summaries = SortedManyToManyField(GameSummary, blank=True)
     time_played = models.JSONField(default=DEFAULT_TIME_PLAYED)
@@ -86,6 +147,22 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.username)
+
+    def set_username(self, username):
+        self.username = username
+        self.save()
+
+    def store_tokens(self, token_data):
+        if self.oauth_token is None:
+            # pylint: disable=no-member
+            self.oauth_token = OauthToken.objects.create()
+        self.oauth_token.store_tokens(token_data)
+        self.save()
+
+    def clear_tokens(self):
+        if self.oauth_token is not None:
+            self.oauth_token = None
+        self.save()
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)

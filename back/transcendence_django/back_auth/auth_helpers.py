@@ -34,6 +34,8 @@ def get_user_id(session):
 
 def perform_logout(request):
     try:
+        user = request.user
+        user.clear_tokens()
         logout(request)
         logger.info("User successfully logged out.")
     except Exception as e:
