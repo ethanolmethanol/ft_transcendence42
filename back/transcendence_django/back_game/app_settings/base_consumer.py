@@ -80,6 +80,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
+        self.is_connected = False
         logger.info("Disconnect with code: %s", close_code)
 
     async def receive(self, text_data: str):

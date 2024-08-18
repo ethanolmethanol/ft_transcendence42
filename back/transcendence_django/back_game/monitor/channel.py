@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 
@@ -7,12 +8,17 @@ from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import CREATED, WAITING
 
+
+logger = logging.getLogger(__name__)
+
+
 class Channel:
     def __init__(self, arenas: dict[int, Arena], is_tournament: bool = False):
         self.id: str = self.__generate_random_id(10)
         self.arenas = arenas
-        self.users = {}
         self.is_tournament = is_tournament
+        self.users = {}
+        self.user_count = len(arenas) * 2
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -21,6 +27,8 @@ class Channel:
         }
 
     def get_available_arena(self) -> Arena | None:
+        if self.is_full():
+            return None
         for arena in self.arenas.values():
             if not arena.is_private() and arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
                 return arena
@@ -36,8 +44,14 @@ class Channel:
         self.arenas[arena.id] = arena
 
     def add_user_into_arena(self, user_id: int, arena_id: str):
-        arena: Arena = self.arenas[arena_id]
-        self.users[user_id] = arena
+        if len(self.users) < self.user_count:
+            arena: Arena = self.arenas[arena_id]
+            self.users[user_id] = arena
+            logger.info("User %s added to channel %s", user_id, self.id)
+        else:
+            logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
+        if self.is_full():
+            logger.info("Channel %s is full!", self.id)
 
     def delete_arena(self, arena_id: str):
         if arena_id in self.arenas:
@@ -45,6 +59,9 @@ class Channel:
 
     def is_empty(self) -> bool:
         return not bool(self.arenas)
+
+    def is_full(self) -> bool:
+        return len(self.users) == self.user_count
 
     def __generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits
