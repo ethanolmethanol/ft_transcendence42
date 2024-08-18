@@ -62,16 +62,22 @@ class Monitor:
             raise KeyError("Arena not found")
         return arena
 
+    def get_arena_from_user_id(self, user_id: int) -> Arena | None:
+        return self.channel_manager.get_arena_from_user_id(user_id)
+
     def does_exist_channel(self, channel_id: str) -> bool:
         return self.channel_manager.channels.get(channel_id) is not None
 
     def is_user_in_channel(self, user_id: int) -> bool:
         return self.channel_manager.user_game_table.get(user_id) is not None
 
-    def add_user_to_channel(self, channel_id: str, arena_id: str, user_id: int):
+    def add_user_to_channel(self, channel_id: str, arena_id: str | None, user_id: int):
         logger.info("Adding user %s to channel %s", user_id, channel_id)
         channel = self.channel_manager.channels.get(channel_id)
-        self.channel_manager.add_user_to_channel(channel, arena_id, user_id)
+        if channel:
+            self.channel_manager.add_user_to_channel(channel, arena_id, user_id)
+        else:
+            logger.error("Channel %s not found", channel_id)
 
     def init_arena(
         self,
@@ -94,9 +100,10 @@ class Monitor:
         arena.enter_arena(user_id, player_name)
         self.add_user_to_channel(channel_id, arena_id, user_id)
 
-    def give_up(self, user_id: int, channel_id: str, arena_id: str):
-        arena: Arena = self.get_arena(channel_id, arena_id)
-        arena.player_gave_up(user_id)
+    def give_up(self, user_id: int, channel_id: str, arena_id: str | None):
+        if arena_id is not None:
+            arena: Arena = self.get_arena(channel_id, arena_id)
+            arena.player_gave_up(user_id)
         self.channel_manager.delete_user_from_channel(user_id)
 
     def rematch(self, user_id: int, channel_id: str, arena_id: str):
@@ -118,8 +125,9 @@ class Monitor:
         arena: Arena = self.get_arena(channel_id, arena_id)
         return arena.move_paddle(player_name, direction)
 
-    def leave_arena(self, user_id: int, channel_id: str, arena_id: str):
-        self.channel_manager.leave_arena(user_id, channel_id, arena_id)
+    def leave_arena(self, user_id: int, channel_id: str, arena_id: str | None):
+        if arena_id is not None:
+            self.channel_manager.leave_arena(user_id, channel_id, arena_id)
 
     def is_user_active_in_game(
         self, user_id: int, channel_id: str, arena_id: str

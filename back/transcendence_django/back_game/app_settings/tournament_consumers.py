@@ -7,7 +7,7 @@ from typing import Any, Callable, Coroutine, Optional
 class TournamentConsumer(BaseConsumer):
 
     def get_game_logic_interface(self):
-        return GameLogicInterface()
+        return GameLogicInterface(is_tournament=True)
 
     def get_monitor(self):
         return get_monitor()
@@ -21,9 +21,9 @@ class TournamentConsumer(BaseConsumer):
             OVER_CALLBACK: self.send_game_over,
             START_TIMER_CALLBACK: self.send_start_timer,
         }
-        #self.game.join(user_id, player_name, arena_id, callbacks)
+        self.game.join(user_id, player_name, arena_id, callbacks)
         await self.send_message(f"{self.game.user_id} has joined the game.")
-#         await self.send_arena_data()
+        await self.send_arena_data()
 
     async def leave(self, _):
         self.game.leave()

@@ -4,7 +4,9 @@ from typing import Any, Callable
 import logging
 import json
 import asyncio
-from autobahn.wamp.exception import ApplicationError as ChannelError
+import autobahn
+
+from back_game.app_settings.channel_error import ChannelError
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
 from transcendence_django.dict_keys import (
     ARENA,
@@ -43,6 +45,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         self.room_group_name: str | None = None
         self.game = self.get_game_logic_interface()
         self.monitor = self.get_monitor()
+        self.is_connected = False
 
     @abstractmethod
     def get_game_logic_interface(self):
@@ -66,6 +69,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         self.room_group_name = f"game_{self.game.channel_id}"
         logger.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        self.is_connected = True
 
     async def disconnect(self, close_code: int):
         try:
@@ -79,6 +83,9 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         logger.info("Disconnect with code: %s", close_code)
 
     async def receive(self, text_data: str):
+        if not self.is_connected:
+            logger.error("User not connected.")
+            return
         content = json.loads(text_data)
         message_type, message = content[TYPE], content[MESSAGE]
         message_binding: dict[
@@ -118,6 +125,8 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.send_update({PADDLE: paddle_data})
 
     async def send_arena_data(self):
+        if self.game.arena_id is None:
+            return
         arena: Arena = self.monitor.get_arena(self.game.channel_id, self.game.arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 

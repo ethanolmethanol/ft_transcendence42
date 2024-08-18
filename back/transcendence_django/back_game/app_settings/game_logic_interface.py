@@ -14,36 +14,27 @@ logger = logging.getLogger(__name__)
 
 
 class GameLogicInterface:
-    def __init__(self):
+    def __init__(self, is_tournament: bool = False):
         self.channel_id: str = ""
-        self.arena_id: str = ""
+        self.arena_id: str | None = None
         self.user_id: int = -1
         self.has_joined: bool = False
+        self.is_tournament: bool = is_tournament
         self.monitor = get_monitor()
 
     def join(
         self,
         user_id: int,
         player_name: str,
-        arena_id: str,
+        arena_id: str | None,
         callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
-        try:
-            logger.info("Joining arena %s", arena_id)
-            self.monitor.init_arena(
-                self.channel_id,
-                arena_id,
-                callbacks,
-            )
-        except KeyError as e:
-            raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
-        try:
-            self.monitor.join_arena(user_id, player_name, self.channel_id, arena_id)
-        except (KeyError, ValueError) as e:
-            logger.error("Error: %s", e)
-            raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
+        if arena_id is not None:
+            self.__join_arena(user_id, player_name, arena_id, callbacks)
+            self.arena_id = arena.id
+        else:
+            self.monitor.add_user_to_channel(self.channel_id, None, user_id)
         self.user_id = user_id
-        self.arena_id = arena_id
         self.has_joined = True
 
     def leave(self):
@@ -74,3 +65,25 @@ class GameLogicInterface:
         return self.monitor.move_paddle(
             self.channel_id, self.arena_id, player_name, direction
         )
+
+    def __join_arena(
+        self,
+        user_id: int,
+        player_name: str,
+        arena_id: str,
+        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]]
+    ):
+        try:
+            logger.info("Joining arena %s", arena_id)
+            self.monitor.init_arena(
+                self.channel_id,
+                arena_id,
+                callbacks,
+            )
+        except KeyError as e:
+            raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
+        try:
+            self.monitor.join_arena(user_id, player_name, self.channel_id, arena_id)
+        except (KeyError, ValueError) as e:
+            logger.error("Error: %s", e)
+            raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e

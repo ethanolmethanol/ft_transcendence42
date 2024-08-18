@@ -33,8 +33,13 @@ class ChannelManager:
         self.history_manager = HistoryManager()
 
     def add_user_to_channel(
-        self, channel: Channel, arena_id: str, user_id: int
+        self, channel: Channel, arena_id: str | None, user_id: int
     ) -> dict[str, Any]:
+        if arena_id is None:
+            arena = channel.get_available_arena()
+            if arena is None:
+                return {}
+            arena_id = arena.id
         channel.add_user_into_arena(user_id, arena_id)
         self.user_game_table[user_id] = channel
 
@@ -136,6 +141,12 @@ class ChannelManager:
         if arena and arena.id == arena_id:
             return arena.is_user_active_in_game(user_id)
         return False
+
+    def get_arena_from_user_id(self, user_id: int) -> Arena | None:
+        channel = self.user_game_table.get(user_id)
+        if channel is None:
+            return None
+        return channel.get_arena_from_user_id(user_id)
 
     def delete_channel(self, channel_id: str):
         del self.channels[channel_id]
