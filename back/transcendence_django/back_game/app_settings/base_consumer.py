@@ -8,6 +8,7 @@ import autobahn
 
 from back_game.app_settings.channel_error import ChannelError
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
+from back_game.monitor.monitor import get_monitor
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
@@ -23,15 +24,19 @@ from transcendence_django.dict_keys import (
     LEAVE,
     MESSAGE,
     MOVE_PADDLE,
+    OVER_CALLBACK,
     PADDLE,
     PLAYER,
     PLAYERS,
     PLAYER_NAME,
     REMATCH,
     START_TIMER,
+    START_TIMER_CALLBACK,
     TYPE,
     TIME,
     UPDATE,
+    UPDATE_CALLBACK,
+    USER_ID,
     WINNER,
 )
 
@@ -51,9 +56,8 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
     def get_game_logic_interface(self):
         pass
 
-    @abstractmethod
     def get_monitor(self):
-        pass
+        return get_monitor()
 
     async def connect(self):
         self.game.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
@@ -103,21 +107,34 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         except ChannelError as e:
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
 
-    @abstractmethod
     async def join(self, message: dict[str, Any]):
-        pass
+        user_id = message[USER_ID]
+        player_name = message[PLAYER]
+        arena_id: str = message[ARENA_ID]
+        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]] = {
+            UPDATE_CALLBACK: self.send_update,
+            OVER_CALLBACK: self.send_game_over,
+            START_TIMER_CALLBACK: self.send_start_timer,
+        }
+        self.game.join(user_id, player_name, arena_id, callbacks)
+        await self.send_message(f"{self.game.user_id} has joined the game.")
+        await self.send_arena_data()
 
-    @abstractmethod
     async def leave(self, _):
-        pass
+        self.game.leave()
+        await self.send_message(f"{self.game.user_id} has left the game.")
 
-    @abstractmethod
     async def give_up(self, _):
-        pass
+        self.game.give_up()
+        await self.send_message(f"{self.game.user_id} has given up.")
+        await self.send_update({GIVE_UP: self.game.user_id})
+        await self.send_arena_data()
 
-    @abstractmethod
     async def rematch(self, _):
-        pass
+        self.game.rematch()
+        await self.send_message(f"{self.game.user_id} asked for a rematch.")
+        await self.send_arena_data()
+
 
     async def move_paddle(self, message: dict[str, Any]):
         player_name: str = message[PLAYER]
