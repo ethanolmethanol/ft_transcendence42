@@ -92,9 +92,7 @@ class AipiClient:
                 backoff_time = 2 ** min(retries, 5)
                 retries += 1
                 if backoff_time > 1 and retries < 5:
-                    logger.info(
-                        "%s: Reconnecting in %s seconds", self.id, backoff_time
-                    )
+                    logger.info("%s: Reconnecting in %s seconds", self.id, backoff_time)
                     await asyncio.sleep(backoff_time)
         logger.error("%s: Stopping after %s retries", self.id, retries)
 
@@ -139,7 +137,7 @@ class AipiClient:
 
     def handle_data(self, message: str) -> str:
         def __content_from_msg_type(content: Any) -> str:
-            return (
+            return str(
                 {GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(
                     str(content)
                 )
