@@ -178,6 +178,7 @@ class Arena:
         kicked_players = self.player_manager.kick_afk_players()
         if kicked_players:
             update_dict[KICKED_PLAYERS] = kicked_players
+        self.game.reset_paddles_statuses()
         return update_dict
 
     def can_be_started(self) -> bool:

@@ -8,6 +8,7 @@ from back_game.game_physics.collision import Collision
 from back_game.game_settings.game_constants import (
     CREATED,
     LISTENING,
+    MOVED,
     OVER,
     PROCESSING,
     STARTED,
@@ -72,8 +73,12 @@ class Game:
             except ValueError:
                 logger.error("Paddle cannot move due to collision.")
                 paddle.move(-direction)
-            paddle.status = PaddleStatus(LISTENING)
+            paddle.status = PaddleStatus(MOVED)
         return paddle.get_dict_update()
+
+    def reset_paddles_statuses(self):
+        for paddle in self.paddles.values():
+            paddle.reset_status()
 
     def update(self) -> dict[str, Any]:
         ball_update: dict[str, Any] = Collision.resolve_collision(self.ball)

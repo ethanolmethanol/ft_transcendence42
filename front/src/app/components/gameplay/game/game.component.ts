@@ -189,6 +189,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.ball.first.positionX = arena.ball.position.x;
     this.ball.first.positionY = arena.ball.position.y;
     this.ball.first.ballSize = 2 * arena.ball.radius;
+    this.ball.first.gameHeight = arena.map.height;
+    this.ball.first.gameWidth = arena.map.width;
     this.gameHeight = arena.map.height;
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];

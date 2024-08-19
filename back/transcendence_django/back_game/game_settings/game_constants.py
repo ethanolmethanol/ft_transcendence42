@@ -9,8 +9,8 @@ UNKNOWN_CHANNEL_ID = "Unknown channel_id"
 UNKNOWN_ARENA_ID = "Unknown arena_id"
 
 # Game area dimensions
-GAME_HEIGHT = 600
-GAME_WIDTH = 1000
+GAME_HEIGHT = 800
+GAME_WIDTH = 1200
 
 # Game arena
 MIN_PLAYER = 2
@@ -62,6 +62,7 @@ TIME_START_INTERVAL = 1
 # Paddle status
 LISTENING = 1
 PROCESSING = 2
+MOVED = 3
 
 # Rectangle
 TANGENT_FACTOR = 1 / (2 * math.tan(CONVEXITY / 2))
