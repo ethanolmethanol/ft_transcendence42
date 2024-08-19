@@ -46,6 +46,7 @@ from transcendence_django.dict_keys import (
     USER_ID,
     WIDTH,
 )
+
 from .constants import CALC_PRECISION, DUMB_PRECISION, MAX_CONNECT_ATTEMPTS
 
 now = datetime.now
@@ -320,7 +321,9 @@ class AipiClient:
         else:
             paddle_delta = (map_size / 2) - (paddle_y if is_vertical else paddle_x)
         self.arena[BALL][POSITION].update(ball[POSITION])
-        return self.__direction_of_paddle(is_vertical, paddle, paddle_delta, CALC_PRECISION)
+        return self.__direction_of_paddle(
+            is_vertical, paddle, paddle_delta, CALC_PRECISION
+        )
 
     def __direction_of_paddle(
         self,

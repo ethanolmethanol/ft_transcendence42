@@ -16,8 +16,8 @@ from transcendence_django.dict_keys import (
     ARENA_ID,
     CHANNEL_ID,
     ID,
+    OPTIONS,
     USER_ID,
-    OPTIONS
 )
 
 logger = logging.getLogger(__name__)

@@ -14,9 +14,16 @@ from rest_framework.views import APIView
 from transcendence_django.dict_keys import ARENA_ID, CHANNEL_ID, ERROR, USER_ID
 
 from .client import AipiClient
-from .constants import API_GAME_SOCKET, API_USER_ENDPOINT, UID_RNG_BEGIN, UID_RNG_END, UID_RNG_STEP
+from .constants import (
+    API_GAME_SOCKET,
+    API_USER_ENDPOINT,
+    UID_RNG_BEGIN,
+    UID_RNG_END,
+    UID_RNG_STEP,
+)
 
 logger = logging.getLogger(__name__)
+
 
 class AipiView(APIView):
 
@@ -67,7 +74,9 @@ class AipiView(APIView):
                 timeout=3,
             )
             status: str = (
-                "already taken" if user_response.status_code == HTTPStatus.OK else "free to use"
+                "already taken"
+                if user_response.status_code == HTTPStatus.OK
+                else "free to use"
             )
             logger.info("%s: User id is %s", uid, status)
             return user_response.status_code == HTTPStatus.NOT_FOUND
@@ -76,7 +85,9 @@ class AipiView(APIView):
 
         # collisions with ai or real user ids
         while self.bots.get(uid) is not None or not __user_id_collision_check(uid):
-            uid = random.randint(UID_RNG_BEGIN + self.coli_rng_offset, UID_RNG_END + self.coli_rng_offset)
+            uid = random.randint(
+                UID_RNG_BEGIN + self.coli_rng_offset, UID_RNG_END + self.coli_rng_offset
+            )
             self.coli_rng_offset += UID_RNG_STEP
 
         return uid
