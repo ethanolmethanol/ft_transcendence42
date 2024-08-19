@@ -69,71 +69,69 @@ class AipiClient:
 
     async def run(self):
         logger.info("%s: Start -- %s", self.id, now())
+        await self.attempt_to_connect()
+        self.goodbye()
+
+    async def attempt_to_connect(self):
         retries: int = 0
-        game_ongoing: bool = True
-        has_joined: bool = False
-        while game_ongoing:
+        while retries < 5:
             try:
-                async with websockets.connect(
-                    self.url, open_timeout=10, ssl=ssl_context
-                ) as websocket:
-                    logger.info(
-                        "%s: %sConnected to WebSocket server %s",
-                        self.id,
-                        "Re-" if has_joined else "",
-                        self.url,
-                    )
-                    retries = 0
-                    if not has_joined:
-                        await websocket.send(
-                            json.dumps(
-                                {
-                                    TYPE: JOIN,
-                                    MESSAGE: {
-                                        USER_ID: self.id,
-                                        PLAYER: self.name,
-                                        ARENA_ID: self.arena_id,
-                                    },
-                                }
-                            )
-                        )
-                        has_joined = True
-                    while game_ongoing:
-                        message = await websocket.recv()  # Await the coroutine
-                        # logger.info(f"Received message: {message}")
-                        response = self.handle_data(message)
-                        if len(response) > 0:
-                            # logger.info(f"Sending response: {response}")
-                            await websocket.send(
-                                response
-                            )  # Send a response back to the server
+                await self.connect()
             except websockets.ConnectionClosed as e:
                 logger.warning(
-                    "Connection lost! Reason: %s, code: %s. Retrying...",
+                    "%s: Connection lost! Reason: %s, code: %s. Retrying...",
+                    self.id,
                     e.reason,
                     e.code,
                 )
-                has_joined = False
             except asyncio.TimeoutError:
-                logger.error("Connection attempt timed out. Retrying...")
+                logger.error("%s: Connection attempt timed out. Retrying...", self.id)
             except asyncio.CancelledError:
                 break
-            # except Exception as e:
-            #     logger.error(f"An unexpected error occurred: {e}")
             finally:
-                backoff_time = 2 ** min(
-                    retries, 5
-                )  # Exponential backoff with a max wait time
+                backoff_time = 2 ** min(retries, 5)
                 retries += 1
-                if retries == 5:
-                    logger.error("! connect failed; stopping after %s retries", retries)
-                    game_ongoing = False
-                if backoff_time > 1:
+                if backoff_time > 1 and retries < 5:
                     logger.info(
-                        "! connect failed; reconnecting in %s seconds", backoff_time
+                        "%s: Reconnecting in %s seconds", self.id, backoff_time
                     )
                     await asyncio.sleep(backoff_time)
-        self.goodbye()
+        logger.error("%s: Stopping after %s retries", self.id, retries)
+
+    async def connect(self):
+        async with websockets.connect(
+            self.url, open_timeout=10, ssl=ssl_context
+        ) as websocket:
+            logger.info(
+                "%s: Connected to WebSocket server %s",
+                self.id,
+                self.url,
+            )
+            await self.join(websocket)
+            await self.play(websocket)
+
+    async def join(self, websocket):
+        await websocket.send(
+            json.dumps(
+                {
+                    TYPE: JOIN,
+                    MESSAGE: {
+                        USER_ID: self.id,
+                        PLAYER: self.name,
+                        ARENA_ID: self.arena_id,
+                    },
+                }
+            )
+        )
+
+    async def play(self, websocket):
+        while True:
+            message = await websocket.recv()
+            # logger.info(f"Received message: {message}")
+            response = self.handle_data(message)
+            if len(response) > 0:
+                # logger.info(f"Sending response: {response}")
+                await websocket.send(response)
 
     def goodbye(self):
         logger.info("%s: Ended -- %s", self.id, now())
@@ -142,10 +140,8 @@ class AipiClient:
     def handle_data(self, message: str) -> str:
         def __content_from_msg_type(content: Any) -> str:
             return (
-                str(
-                    {GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(
-                        content
-                    )
+                {GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(
+                    str(content)
                 )
                 if not None
                 else ""
@@ -231,7 +227,7 @@ class AipiClient:
                 raise KeyError(
                     f"{self.id}: Cannot find myself within arena's given player list."
                 )
-            # logger.info(f"Received game arena: {self.arena}")
+            logger.debug("%s: Received game arena: %s", self.id, self.arena)
             return ""
 
         def __upd_paddle(paddle: dict[str, Any]) -> str:
@@ -251,7 +247,7 @@ class AipiClient:
                 brain = 1 if score_difference < 0 else 0
             else:
                 raise NotImplementedError("Which brain when more than 2 players?")
-            return brains[brain](ball)  # self.brain
+            return brains[brain](ball)
 
         actions = {
             GAME_OVER: __game_over,
@@ -277,10 +273,12 @@ class AipiClient:
 
     def __dumb_brain(self, ball: dict[str, Any]) -> str:
         paddle = self.arena[PADDLES][self.slot - 1]
+        # Deltas between the ball and paddle
         dx: float = ball[POSITION]["x"] - paddle[POSITION]["x"]
         dy: float = ball[POSITION]["y"] - paddle[POSITION]["y"]
         precision: float = 0.70 + random.random() / 2.0
         direction: int = 0
+        # Basically, if ball is up go up, if down go down
         if paddle[SLOT] == LEFT_SLOT or paddle[SLOT] == RIGHT_SLOT:
             direction = (
                 -1
@@ -300,6 +298,7 @@ class AipiClient:
         return ""
 
     def __calc_brain(self, ball: dict[str, Any]) -> str:
+        # Rate of change of ball position dx and dy
         dx: float = ball[POSITION]["x"] - self.arena[BALL][POSITION]["x"]
         dy: float = ball[POSITION]["y"] - self.arena[BALL][POSITION]["y"]
         paddle: dict[str, Any] = self.arena[PADDLES][self.slot - 1]
@@ -310,19 +309,25 @@ class AipiClient:
         paddle_pos = paddle_x if is_vertical else paddle_y
         map_size = self.arena[MAP][HEIGHT] if is_vertical else self.arena[MAP][WIDTH]
         ball_pos = self.arena[BALL][POSITION]["y" if is_vertical else "x"]
+        # Time to paddle aka how many times the rate of change till the ball and paddle meet
+        # (if dp is 0, the ball is perpendicular to the paddle and will never meet it)
         time_to_paddle = 0
         if dp != 0:
             time_to_paddle = abs(
                 paddle_pos - self.arena[BALL][POSITION]["x" if is_vertical else "y"]
             ) / abs(dp)
+        # Find where the ball intersects with the paddle axis
         target_pos = ball_pos + time_to_paddle * (dy if is_vertical else dx)
+        # If ball intersects with paddle axis outside range of map, wrap the value
         while target_pos < 0 or target_pos > map_size:
             if target_pos < 0:
                 target_pos = -target_pos  # Reflect off the top/left
             elif target_pos > map_size:
                 target_pos = 2 * map_size - target_pos  # Reflect off the bottom/right
+        # If ball moves towards me, move towards its calculated target position
         if self.__ball_moving_towards_me(is_vertical, paddle, dx, dy):
             paddle_delta = target_pos - (paddle_y if is_vertical else paddle_x)
+        # Otherwise return to the center of the axis segment
         else:
             paddle_delta = (map_size / 2) - (paddle_y if is_vertical else paddle_x)
         self.arena[BALL][POSITION].update(ball[POSITION])
@@ -336,6 +341,7 @@ class AipiClient:
     ) -> str:
         precision: float = 0.85
         paddle_size = paddle[HEIGHT] if is_vertical else paddle[WIDTH]
+        # If paddle delta isn't within the paddle, move the paddle accordingly
         direction: int = (
             -1
             if paddle_delta < -paddle_size * precision
