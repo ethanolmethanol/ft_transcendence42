@@ -3,7 +3,7 @@ from typing import Any
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
 from back_game.game_settings.game_constants import (
-    BOT_SLOT,
+    BOTTOM_SLOT,
     LEFT_SLOT,
     RIGHT_SLOT,
     TANGENT_FACTOR,
@@ -44,7 +44,7 @@ class Rectangle:
             center_x = self.edges.right - self.distance_from_center
         elif self.slot == RIGHT_SLOT:
             center_x = self.edges.left + self.distance_from_center
-        elif self.slot == BOT_SLOT:
+        elif self.slot == BOTTOM_SLOT:
             center_y = self.edges.top - self.distance_from_center
         elif self.slot == TOP_SLOT:
             center_y = self.edges.bottom + self.distance_from_center

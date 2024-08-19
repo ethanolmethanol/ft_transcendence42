@@ -6,7 +6,7 @@ from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
 from back_game.game_physics.speed import Speed
 from back_game.game_settings.game_constants import (
-    BOT_SLOT,
+    BOTTOM_SLOT,
     INITIAL_BALL_SPEED_COEFF,
     LEFT_SLOT,
     RIGHT_SLOT,
@@ -47,7 +47,7 @@ class PaddleCollider:
             speed_component_x = paddle.rectangle.distance_from_center
         elif paddle.slot == RIGHT_SLOT:
             speed_component_x = (-1) * paddle.rectangle.distance_from_center
-        elif paddle.slot == BOT_SLOT:
+        elif paddle.slot == BOTTOM_SLOT:
             speed_component_y = paddle.rectangle.distance_from_center
         elif paddle.slot == TOP_SLOT:
             speed_component_y = (-1) * paddle.rectangle.distance_from_center

@@ -14,7 +14,11 @@ from back_game.game_settings.game_constants import (
     STARTED,
     VALID_DIRECTIONS,
 )
-from transcendence_django.dict_keys import STATUS
+from transcendence_django.dict_keys import (
+    NB_PLAYERS,
+    OPTIONS,
+    STATUS
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +29,8 @@ GameStatus = NewType("GameStatus", int)
 class Game:
     def __init__(self, players_specs: dict[str, Any]):
         try:
-            nb_players = players_specs["nb_players"]
-            options: dict[str, Any] = players_specs["options"]
+            nb_players = players_specs[NB_PLAYERS]
+            options: dict[str, Any] = players_specs[OPTIONS]
             paddle_size = options["paddle_size"]
             ball_speed = options["ball_speed"]
             self.is_private: bool = options["is_private"]

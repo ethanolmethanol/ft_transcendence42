@@ -9,7 +9,16 @@ from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import DEAD, WAITING
 from requests import JSONDecodeError, Response
 from requests import get as http_get
-from transcendence_django.dict_keys import AI_OPPONENTS_LOCAL, AI_OPPONENTS_ONLINE, ID
+from transcendence_django.dict_keys import (
+    AI_OPPONENTS_LOCAL,
+    AI_OPPONENTS_ONLINE,
+    ARENA,
+    ARENA_ID,
+    CHANNEL_ID,
+    ID,
+    USER_ID,
+    OPTIONS
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +58,12 @@ class ChannelManager:
         self.channels[channel_id] = {new_arena.id: new_arena}
         self.add_user_to_channel(user_id, channel_id, new_arena.id)
         logger.info("New arena: %s", new_arena.to_dict())
-        bots: int = int(players_specs["options"][AI_OPPONENTS_LOCAL]) + int(
-            players_specs["options"][AI_OPPONENTS_ONLINE]
+        self.spawn_bots(players_specs, channel_id, new_arena.id)
+        return self.user_game_table[user_id]
+
+    def spawn_bots(self, players_specs: dict[str, Any], channel_id: str, arena_id: str):
+        bots: int = int(players_specs[OPTIONS][AI_OPPONENTS_LOCAL]) + int(
+            players_specs[OPTIONS][AI_OPPONENTS_ONLINE]
         )
         while bots:
             bots -= 1
@@ -59,14 +72,13 @@ class ChannelManager:
                     url="https://back-aipi/aipi/spawn/",
                     verify=False,  # does not work otherwise
                     cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
-                    json={"channel_id": channel_id, "arena_id": new_arena.id},
+                    json={CHANNEL_ID: channel_id, ARENA_ID: arena_id},
                     timeout=3,
                 )
-                ai_user_id: int = aipi_response.json()["user_id"]
-                self.add_ai_to_channel(ai_user_id, channel_id, new_arena.id)
+                ai_user_id: int = aipi_response.json()[USER_ID]
+                self.add_ai_to_channel(ai_user_id, channel_id, arena_id)
             except (ConnectionRefusedError, JSONDecodeError) as e:
                 logger.error(e)
-        return self.user_game_table[user_id]
 
     def get_channel_from_user_id(self, user_id: int) -> dict[str, Any] | None:
         channel: dict[str, Any] | None = self.user_game_table.get(user_id)
@@ -89,8 +101,8 @@ class ChannelManager:
     ):
         arena: Arena = self.channels[channel_id][arena_id]
         game_table[user_id] = {
-            "channel_id": channel_id,
-            "arena": arena.to_dict(),
+            CHANNEL_ID: channel_id,
+            ARENA: arena.to_dict(),
         }
 
     def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
@@ -126,8 +138,8 @@ class ChannelManager:
         self, user_id: int, channel_id: str, arena_id: str
     ) -> bool:
         if self.user_game_table.get(user_id) == {
-            "channel_id": channel_id,
-            "arena": arena_id,
+            CHANNEL_ID: channel_id,
+            ARENA: arena_id,
         }:
             arena: Arena = self.channels[channel_id][arena_id]
             return arena.is_user_active_in_game(user_id)
@@ -139,7 +151,7 @@ class ChannelManager:
     def delete_user(self, user_id: int, arena_id: str):
         try:
             user_data = self.user_game_table[user_id]
-            if user_data["arena"][ID] == arena_id:
+            if user_data[ARENA][ID] == arena_id:
                 self.user_game_table.pop(user_id)
                 logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
@@ -155,7 +167,7 @@ class ChannelManager:
             if arena.is_private():
                 continue
             if arena.get_status() == GameStatus(WAITING):
-                return {"channel_id": channel_id, "arena": arena.to_dict()}
+                return {CHANNEL_ID: channel_id, ARENA: arena.to_dict()}
         return None
 
     def __generate_random_id(self, length: int) -> str:

@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict
 
 import websockets
 from back_game.game_settings.game_constants import (
-    BOT_SLOT,
+    BOTTOM_SLOT,
     LEFT_SLOT,
     RIGHT_SLOT,
     TOP_SLOT,
@@ -18,6 +18,7 @@ from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     BALL,
+    CODE,
     COLLIDED_SLOT,
     DIRECTION,
     ERROR,
@@ -45,6 +46,7 @@ from transcendence_django.dict_keys import (
     USER_ID,
     WIDTH,
 )
+from .constants import CALC_PRECISION, DUMB_PRECISION, MAX_CONNECT_ATTEMPTS
 
 now = datetime.now
 
@@ -74,7 +76,7 @@ class AipiClient:
 
     async def attempt_to_connect(self):
         retries: int = 0
-        while retries < 5:
+        while retries < MAX_CONNECT_ATTEMPTS:
             try:
                 await self.connect()
             except websockets.ConnectionClosed as e:
@@ -91,7 +93,7 @@ class AipiClient:
             finally:
                 backoff_time = 2 ** min(retries, 5)
                 retries += 1
-                if backoff_time > 1 and retries < 5:
+                if backoff_time > 1 and retries < MAX_CONNECT_ATTEMPTS:
                     logger.info("%s: Reconnecting in %s seconds", self.id, backoff_time)
                     await asyncio.sleep(backoff_time)
         logger.error("%s: Stopping after %s retries", self.id, retries)
@@ -126,7 +128,7 @@ class AipiClient:
         while True:
             message = await websocket.recv()
             # logger.info(f"Received message: {message}")
-            response = self.handle_data(message)
+            response = self.answer_message(message)
             if len(response) > 0:
                 # logger.info(f"Sending response: {response}")
                 await websocket.send(response)
@@ -135,7 +137,7 @@ class AipiClient:
         logger.info("%s: Ended -- %s", self.id, now())
         sys.exit()
 
-    def handle_data(self, message: str) -> str:
+    def answer_message(self, message: str) -> str:
         def __content_from_msg_type(content: Any) -> str:
             return str(
                 {GAME_MESSAGE: MESSAGE, GAME_UPDATE: UPDATE, GAME_ERROR: ERROR}.get(
@@ -175,7 +177,7 @@ class AipiClient:
                 {
                     ERROR: {
                         MESSAGE: f"No such key [{cnt_type}] within keys [{data.keys()}]",
-                        "code": 42,
+                        CODE: 42,
                     }
                 }
             )
@@ -194,15 +196,16 @@ class AipiClient:
             return ""
 
         def __game_over(game_over: dict[str, Any]) -> str:
-            timeout = game_over.get(TIME)
-            if timeout is not None and not int(timeout):
+            timeout: int | None = game_over.get(TIME)
+            if timeout is not None and timeout == 0:
                 self.goodbye()
             return ""
 
         def __upd_scores(data: Any) -> str:
             if len(self.arena[PADDLES]) == 2:
                 upd_arena = self.arena
-                upd_arena[SCORES][int(data) - 1] += 1
+                index: int = int(data) - 1
+                upd_arena[SCORES][index] += 1
                 self.arena.update(upd_arena)
             else:
                 raise NotImplementedError(
@@ -237,11 +240,11 @@ class AipiClient:
                 self.__dumb_brain,
                 self.__calc_brain,
             ]
-            if len(self.arena[PLAYERS]) == 2:
+            if len(self.arena[PLAYERS]) == 2 and self.slot in (LEFT_SLOT, RIGHT_SLOT):
                 score_difference = (
-                    self.arena[SCORES][self.slot - 1]
-                    - self.arena[SCORES][0 if self.slot == 2 else 1]
-                )
+                    self.arena[SCORES][LEFT_SLOT - 1]
+                    - self.arena[SCORES][RIGHT_SLOT - 1]
+                ) * (-1 if self.slot == RIGHT_SLOT else 1)
                 brain = 1 if score_difference < 0 else 0
             else:
                 raise NotImplementedError("Which brain when more than 2 players?")
@@ -264,7 +267,7 @@ class AipiClient:
         logger.error(
             "%s: Received error: #%s -- %s",
             self.id,
-            content.get("code"),
+            content.get(CODE),
             content.get(MESSAGE),
         )
         return ""
@@ -274,26 +277,14 @@ class AipiClient:
         # Deltas between the ball and paddle
         dx: float = ball[POSITION]["x"] - paddle[POSITION]["x"]
         dy: float = ball[POSITION]["y"] - paddle[POSITION]["y"]
-        precision: float = 0.70 + random.random() / 2.0
-        direction: int = 0
+        is_vertical = paddle[SLOT] in {LEFT_SLOT, RIGHT_SLOT}
         # Basically, if ball is up go up, if down go down
-        if paddle[SLOT] == LEFT_SLOT or paddle[SLOT] == RIGHT_SLOT:
-            direction = (
-                -1
-                if dy < -paddle[HEIGHT] * precision
-                else 1 if dy > paddle[HEIGHT] * precision else 0
-            )
-        elif paddle[SLOT] == TOP_SLOT or paddle[SLOT] == BOT_SLOT:
-            direction = (
-                -1
-                if dx < -paddle[WIDTH] * precision
-                else 1 if dx > paddle[WIDTH] * precision else 0
-            )
-        if direction:
-            return json.dumps(
-                {TYPE: MOVE_PADDLE, MESSAGE: {PLAYER: self.name, DIRECTION: direction}}
-            )
-        return ""
+        return self.__direction_of_paddle(
+            is_vertical,
+            paddle,
+            dy if is_vertical else dx,
+            DUMB_PRECISION + random.random() / 2.0,
+        )
 
     def __calc_brain(self, ball: dict[str, Any]) -> str:
         # Rate of change of ball position dx and dy
@@ -329,21 +320,21 @@ class AipiClient:
         else:
             paddle_delta = (map_size / 2) - (paddle_y if is_vertical else paddle_x)
         self.arena[BALL][POSITION].update(ball[POSITION])
-        return self.__direction_of_paddle(is_vertical, paddle, paddle_delta)
+        return self.__direction_of_paddle(is_vertical, paddle, paddle_delta, CALC_PRECISION)
 
     def __direction_of_paddle(
         self,
         is_vertical: bool,
         paddle: dict[str, Any],
-        paddle_delta,
+        delta: float,
+        precision: float,
     ) -> str:
-        precision: float = 0.85
         paddle_size = paddle[HEIGHT] if is_vertical else paddle[WIDTH]
         # If paddle delta isn't within the paddle, move the paddle accordingly
         direction: int = (
             -1
-            if paddle_delta < -paddle_size * precision
-            else 1 if paddle_delta > paddle_size * precision else 0
+            if delta < -paddle_size * precision
+            else 1 if delta > paddle_size * precision else 0
         )
         if direction:
             return json.dumps(
@@ -359,5 +350,5 @@ class AipiClient:
                 paddle[SLOT] == RIGHT_SLOT and dx > 0
             )
         return (paddle[SLOT] == TOP_SLOT and dy < 0) or (
-            paddle[SLOT] == BOT_SLOT and dy > 0
+            paddle[SLOT] == BOTTOM_SLOT and dy > 0
         )

@@ -16,11 +16,16 @@ from back_game.game_settings.game_constants import (
     MIN_PLAYER,
 )
 from transcendence_django.dict_keys import (
+    AI_OPPONENTS_LOCAL,
+    AI_OPPONENTS_ONLINE,
     ARENA_FULL,
+    HUMAN_OPPONENTS_LOCAL,
+    HUMAN_OPPONENTS_ONLINE,
     INVALID_NB_PLAYERS,
     IS_BOT,
     IS_REMOTE,
     NB_PLAYERS,
+    OPTIONS,
     PLAYER_NAME,
     PLAYERS,
     SCORE,
@@ -176,14 +181,14 @@ class PlayerManager:
     def __fill_player_specs(self, players_specs: dict[str, Any]):
         self.nb_players = players_specs[NB_PLAYERS]
         self.nb_humans = (
-            players_specs["options"]["human_players"]
-            or players_specs["options"]["online_players"]
+            players_specs[OPTIONS][HUMAN_OPPONENTS_LOCAL]
+            or players_specs[OPTIONS][HUMAN_OPPONENTS_ONLINE]
         )
         self.nb_robots = (
-            players_specs["options"]["ai_opponents_local"]
-            or players_specs["options"]["ai_opponents_online"]
+            players_specs[OPTIONS][AI_OPPONENTS_LOCAL]
+            or players_specs[OPTIONS][AI_OPPONENTS_ONLINE]
         )
-        if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER):
+        if self.nb_players not in range(MIN_PLAYER, MAX_PLAYER + 1):
             raise ValueError(INVALID_NB_PLAYERS)
         self.is_remote = players_specs[IS_REMOTE] == "online"
 
