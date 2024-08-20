@@ -4,6 +4,7 @@ from asgiref.sync import sync_to_async
 from django.apps import apps
 from transcendence_django.dict_keys import (
     ARENA_ID,
+    IS_BOT,
     IS_REMOTE,
     PLAYERS,
     START_TIME,
@@ -34,11 +35,18 @@ class HistoryManager:
             for player in summary[PLAYERS]:
                 await self.__save_game_summary_for_player(player, game_summary)
         else:
-            player = summary[PLAYERS][0]
+            player = self.__get_human_player(players=summary[PLAYERS])
             await self.__save_game_summary_for_player(player, game_summary)
+
+    def __get_human_player(self, players) -> dict[str, Any]:
+        for player in players:
+            if not player[IS_BOT]:
+                return player
+        raise ValueError("No human player found in game summary")
 
     async def __save_game_summary_for_player(self, player, game_summary):
         user_id = player.get(USER_ID)
-        if user_id:
+        is_bot = player.get(IS_BOT)
+        if user_id and not is_bot:
             user = await sync_to_async(self.custom_user_model.objects.get)(pk=user_id)
             await user.save_game_summary(game_summary)

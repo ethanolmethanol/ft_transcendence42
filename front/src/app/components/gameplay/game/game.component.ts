@@ -115,6 +115,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   dataLoaded: boolean = false;
   isWaiting: boolean = true;
   activePlayers: string[] = [];
+  bots: string[] = [];
   constants = Constants;
 
   private _localPaddleBinding = [
@@ -188,6 +189,8 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.ball.first.positionX = arena.ball.position.x;
     this.ball.first.positionY = arena.ball.position.y;
     this.ball.first.ballSize = 2 * arena.ball.radius;
+    this.ball.first.gameHeight = arena.map.height;
+    this.ball.first.gameWidth = arena.map.width;
     this.gameHeight = arena.map.height;
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
@@ -195,6 +198,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.maxPlayers = arena.players_specs.nb_players;
     this.updateStatus(arena.status)
     this.activePlayers = arena.players;
+    this.bots = arena.players_specs.bots;
     this.dataLoaded = true;
     this.startTimer.first.show = false;
     this.gameOver.first.hasRematched = false;
@@ -364,7 +368,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     const isMovingUp = this._pressedKeys.has(binding.upKey);
     const isMovingDown = this._pressedKeys.has(binding.downKey);
 
-    if (isMovingUp && isMovingDown) {
+    if ((isMovingUp && isMovingDown) || this.bots.includes(playerName)) {
       return;
     }
     const direction = isMovingUp ? -1 : isMovingDown ? 1 : 0;

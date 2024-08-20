@@ -33,7 +33,7 @@ OAUTH_CLIENT_UID = os.getenv("OAUTH_CLIENT_UID")
 OAUTH_REDIRECT_URI = f"https://{SERV_IP}:4200/oauth-callback"
 OAUTH_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
 
-ALLOWED_HOSTS = [SERV_IP, "0.0.0.0"]
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "back-aipi", "back-user"]
 
 # Application definition
 
@@ -130,7 +130,6 @@ AUTH_USER_MODEL = "shared_models.CustomUser"
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{SERV_IP}:4200",
-    f"https://{SERV_IP}:1234",
 ]
 CORS_ALLOWED_ORIGINS = [
     f"https://{SERV_IP}:4200",

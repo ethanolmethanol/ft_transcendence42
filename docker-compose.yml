@@ -18,7 +18,7 @@ services:
             start_period: 5s
 
     back_auth:
-        image: back_auth
+        image: back
         container_name: back_auth
         build:
             context: back
@@ -33,7 +33,7 @@ services:
         env_file: .env
 
     back_user:
-        image: back_user
+        image: back
         container_name: back_user
         build:
             context: back
@@ -43,12 +43,31 @@ services:
         ports:
             - "8002:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-user
         restart: unless-stopped
         env_file: .env
 
+    back_aipi:
+        image: back
+        container_name: back_aipi
+        build:
+            context: back
+        env_file: .env
+        depends_on:
+            back_game:
+                condition: service_healthy
+        ports:
+            - "8003:443"
+        networks:
+            transcendence:
+                aliases:
+                    - back-aipi
+        restart: unless-stopped
+
     back_game:
-        image: back_game
+        image: back
         container_name: back_game
         build:
             context: back
@@ -61,7 +80,9 @@ services:
         ports:
             - "8001:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-game
         restart: unless-stopped
 
     front:
@@ -196,3 +217,4 @@ volumes:
 
 networks:
     transcendence:
+        name: trancendence

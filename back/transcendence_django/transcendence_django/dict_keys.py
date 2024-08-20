@@ -11,6 +11,7 @@ CHANNEL_ID = "channel_id"
 # Game error
 GAME_ERROR = "game_error"
 ERROR = "error"
+CODE = "code"
 
 # Game update
 GAME_UPDATE = "game_update"
@@ -46,8 +47,10 @@ START_TIMER_CALLBACK = "start_timer_callback"
 
 # Arena
 PLAYER_SPECS = "players_specs"
+OPTIONS = "options"
 ID = "id"
 PLAYERS = "players"
+BOTS = "bots"
 SCORES = "scores"
 BALL = "ball"
 COLLIDED_SLOT = "collided_slot"
@@ -67,8 +70,13 @@ ARENA_FULL = "The arena is full."
 UNKNOWN_USER = "This user is unknown"
 INVALID_NB_PLAYERS = "The number of players is out of allowed range."
 NB_PLAYERS = "nb_players"
+IS_BOT = "is_bot"
 IS_REMOTE = "type"
 PLAYER_NAME = "player_name"
+HUMAN_OPPONENTS_LOCAL = "human_opponents_local"
+HUMAN_OPPONENTS_ONLINE = "human_opponents_online"
+AI_OPPONENTS_LOCAL = "ai_opponents_local"
+AI_OPPONENTS_ONLINE = "ai_opponents_online"
 TIME_LEFT = "time_left"
 
 # Ball && Paddle
