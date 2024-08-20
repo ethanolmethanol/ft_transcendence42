@@ -1,4 +1,4 @@
 <body>
   <button *ngIf="canGiveUp" (click)="confirmGiveUp()">Give up</button>
-  <app-game *ngIf="isRemote != null" [isRemote]="isRemote" [arenaID]="arenaID!"></app-game>
+  <app-game [arenaID]="arenaID!"></app-game>
 </body>

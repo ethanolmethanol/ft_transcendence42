@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   OnChanges,
   Renderer2,
-  ElementRef, EventEmitter, Output,
+  ElementRef, EventEmitter, Output, OnInit,
 } from '@angular/core';
 import {
   NOT_JOINED,
@@ -33,13 +33,15 @@ import { Position } from "../../../interfaces/position.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
-import { NgForOf, NgIf } from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import { ConnectionService } from "../../../services/connection/connection.service";
 import { UserService } from "../../../services/user/user.service";
 import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
+import {GameStateService} from "../../../services/game-state/game-state.service";
+import {map} from "rxjs";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -82,40 +84,36 @@ interface ErrorMapping {
 @Component({
   selector: 'app-game',
   standalone: true,
-      imports: [
-            PaddleComponent,
-            BallComponent,
-            GameOverComponent,
-            LoadingSpinnerComponent,
-            NgIf,
-            NgForOf,
-            PlayerIconComponent,
-            StartTimerComponent,
-        CopyButtonComponent,
-      ],
+  imports: [
+    PaddleComponent,
+    BallComponent,
+    GameOverComponent,
+    LoadingSpinnerComponent,
+    NgIf,
+    NgForOf,
+    PlayerIconComponent,
+    StartTimerComponent,
+    CopyButtonComponent,
+    AsyncPipe,
+  ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
-  @Input() isRemote: boolean = false;
   @Input() arenaID: number = -1;
   @Output() hasStarted = new EventEmitter<void>();
   @Output() startCounterStarted = new EventEmitter<void>();
   private playerName: string | null = null;
+  private isRemote: boolean = false;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
   gameHeight: number = GAME_HEIGHT;
   player1Score: number = 0;
   player2Score: number = 0;
-  maxPlayers: number = 2;
-  channelID: string = '';
-  dataLoaded: boolean = false;
-  isWaiting: boolean = true;
-  activePlayers: string[] = [];
   constants = Constants;
 
   private _localPaddleBinding = [
@@ -140,12 +138,17 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     private connectionService: ConnectionService,
     private renderer: Renderer2,
     private el: ElementRef,
+    public gameStateService: GameStateService,
   ) {}
 
-  async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.isRemote && this.isRemote) {
+  async ngOnInit(): Promise<void> {
+    this.gameStateService.isRemote$.subscribe(isRemote => {
+      this.isRemote = isRemote;
+    });
+    if (this.isRemote) {
       await this.userService.whenUserDataLoaded();
       this.playerName = this.userService.getUsername();
+      console.log('Player name:', this.playerName);
     }
   }
 
@@ -193,10 +196,10 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
-    this.maxPlayers = arena.players_specs.nb_players;
+    this.gameStateService.setMaxPlayers(arena.players_specs.nb_players)
     this.updateStatus(arena.status)
-    this.activePlayers = arena.players;
-    this.dataLoaded = true;
+    this.gameStateService.setActivePlayers(arena.players);
+    this.gameStateService.setDataLoaded(true);
     this.startTimer.first.show = false;
     this.gameOver.first.hasRematched = false;
   }
@@ -270,7 +273,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private updateStatus(status: number) {
     let gameOverOverlay = this.gameOver.first;
-    this.isWaiting = (status == CREATED || status == WAITING)
+    this.gameStateService.setIsWaiting(status == CREATED || status == WAITING)
     if (gameOverOverlay.hasRematched === false) {
       if (status == DYING) {
         gameOverOverlay.show = true;
@@ -308,7 +311,10 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private updateGameOver(info: GameOverUpdateResponse) {
     let gameOverOverlay = this.gameOver.first;
-    let player = this.activePlayers.find(name => name === this.playerName);
+    let player: string | undefined;
+    this.gameStateService.activePlayers$.pipe(
+      map(players => players.find((name: string) => name === this.playerName))
+    ).subscribe(foundPlayer => player = foundPlayer);
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
     }
@@ -381,14 +387,15 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
-    this.channelID = this.connectionService.getChannelID();
+    this.gameStateService.setChannelID(this.connectionService.getChannelID());
     this._setGameStyle();
-    this.channelID = this.connectionService.getChannelID();
     this.gameLoop()
   }
 
   ngOnDestroy() {
     console.log('GameComponent destroyed');
   }
+
+  protected readonly length = length;
 }
 

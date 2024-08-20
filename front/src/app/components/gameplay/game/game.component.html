@@ -1,7 +1,7 @@
 <script src="../start-timer/start-timer.component.ts"></script>
 <section class="game-container">
-  <app-loading-spinner *ngIf="!dataLoaded"></app-loading-spinner>
-  <section class="game-area" [class.hidden]="!dataLoaded || isWaiting">
+  <app-loading-spinner *ngIf="!(gameStateService.dataLoaded$ | async)"></app-loading-spinner>
+  <section class="game-area" [class.hidden]="!(gameStateService.dataLoaded$ | async) || (gameStateService.isWaiting$ | async)">
     <section class="game" [style]="{'--game-width': gameWidth + 'px', '--game-height': gameHeight + 'px'}">
       <div class="dotted-line" [style]="{'--line-thickness': lineThickness + 'px'}"></div>
       <section class="score-display">
@@ -17,22 +17,21 @@
       <div class="player-name player2">{{ paddles.last.playerName }}</div>
     </section>
   </section>
-  <section class="remote-section" *ngIf="dataLoaded && isWaiting && isRemote">
-    <h4>
+  <section class="remote-section" *ngIf="(gameStateService.dataLoaded$ | async) && (gameStateService.isWaiting$ | async) && (gameStateService.isRemote$ | async)">    <h4>
       Share this code with your friends!
     </h4>
     <section class="share-code">
       <h5>
-        {{ channelID }}
+        {{ (gameStateService.channelID$ | async) }}
       </h5>
-      <app-copy-button [textToCopy]="channelID"></app-copy-button>
+      <app-copy-button [textToCopy]="(gameStateService.channelID$ | async)!"></app-copy-button>
     </section>
     <h4>
       Waiting for players to join... <br><br>
-      {{ activePlayers.length }} / {{ maxPlayers }}
+      {{ (gameStateService.activePlayers$ | async)?.length}} / {{ (gameStateService.maxPlayers$ | async) }}
     </h4>
     <ul class="waiting-players">
-      <li *ngFor="let player of activePlayers">
+      <li *ngFor="let player of (gameStateService.activePlayers$ | async)">
         <app-player-icon [playerName]="player"></app-player-icon>
       </li>
     </ul>

@@ -163,7 +163,9 @@ class ChannelManager:
         return channel.get_arena_from_user_id(user_id)
 
     def delete_channel(self, channel_id: str):
-        del self.channels[channel_id]
+        channel = self.get_channel(channel_id)
+        if channel is not None:
+            del channel
 
     def __get_available_channel(self, is_tournament: bool = False) -> dict[str, Any] | None:
         for channel in self.channels.values():

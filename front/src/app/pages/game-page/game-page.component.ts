@@ -15,6 +15,7 @@ import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import { ConnectionService } from "../../services/connection/connection.service";
 import { NgIf } from "@angular/common";
+import {GameStateService} from "../../services/game-state/game-state.service";
 
 @Component({
   selector: 'app-game-page',
@@ -32,7 +33,6 @@ import { NgIf } from "@angular/common";
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  isRemote: boolean | null = null;
   canGiveUp: boolean = true;
   arenaID: number | null = null;
 
@@ -47,11 +47,12 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     private _router: Router,
     private _webSocketService: WebSocketService,
     private _route: ActivatedRoute,
-    private _connectionService: ConnectionService
+    private _connectionService: ConnectionService,
+    public gameStateService: GameStateService
   ) {}
 
   public ngOnInit() {
-    this.isRemote = this._route.snapshot.data['gameType'] === 'online';
+    this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
   }
 
   public ngAfterViewInit() {

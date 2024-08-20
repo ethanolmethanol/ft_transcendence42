@@ -34,7 +34,7 @@ class GameLogicInterface:
     ):
         if arena_id is not None:
             self.__join_arena(user_id, player_name, arena_id, callbacks)
-            self.arena_id = arena.id
+            self.arena_id = arena_id
         else:
             self.monitor.add_user_to_channel(self.channel.id, None, user_id)
         self.user_id = user_id
