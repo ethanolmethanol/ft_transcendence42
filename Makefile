@@ -2,10 +2,6 @@ NAME			= ft_transcendence
 
 DATADIRS		= db/data/ front/dist/transcendence/browser/ ~/tr_certs
 
-ENV_SRC			= ~/.env
-
-ENV_FILE		= .env
-
 # WIP
 # DB_NAME		= $$(grep POSTGRES_DB ${ENV_FILE} | sed "s.POSTGRES_DB='(.*)'.\1.")
 
@@ -13,7 +9,7 @@ BROWSER			= firefox
 
 SHELL			= bash
 
-CONTAINERS		= back_auth back_user back_game front db prometheus grafana alertmanager cadvisor node_exporter blackbox_exporter redis
+CONTAINERS		= back_auth back_user back_game back_aipi front db prometheus grafana alertmanager cadvisor node_exporter blackbox_exporter redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -28,12 +24,10 @@ N				= \033[0m    # RESET
 
 TEST-ENGINE-TAGS = passed monitor paddle ball
 
-${NAME}: gen-cert up health
+${NAME}: initialize up health
 	$(call printname)
 
-# ${ENV_FILE}
-
-up: | ${DATADIRS} ${ENV_FILE}
+up: | ${DATADIRS}
 	@echo "Up-ing containers:"
 	${COMPOSE} up -d --build
 
@@ -45,11 +39,6 @@ down:
 	${COMPOSE} down
 
 all: ${NAME}
-
-${ENV_FILE}:
-	@if test -f ${ENV_SRC} && cp ${ENV_SRC} $@; then echo -e "$GFetched environment file [$C.env$G] from ..$N"; \
-	else echo -e "$RPlease make an environment file [$C.env$R] using .env_template file$N"; \
-	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
@@ -168,18 +157,20 @@ dev: all
 test:
 	cd front/; npm run test
 
-install-mkcert:
-	@./scripts/install_mkcert.sh
+initialize:
+	@./scripts/init.sh
 
-gen-cert: install-mkcert
-	@./scripts/gen_cert.sh
+init-prod:
+	@./scripts/init.sh prod
+
+prod: init-prod up health
 
 clean:
 	@${COMPOSE} down -v
 
 fclean: clean
 	@docker --log-level=warn system prune -f
-	@./scripts/gen_cert.sh clean
+	@./scripts/init.sh clean
 
 ffclean: fclean
 	@docker --log-level=warn system prune -af

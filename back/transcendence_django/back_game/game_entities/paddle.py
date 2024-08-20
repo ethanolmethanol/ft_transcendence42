@@ -5,7 +5,17 @@ from typing import Any, NewType
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
 from back_game.game_geometry.rectangle import Rectangle
-from back_game.game_settings.dict_keys import (
+from back_game.game_settings.game_constants import (
+    GAME_HEIGHT,
+    GAME_WIDTH,
+    LISTENING,
+    MOVED,
+    PADDLE_HEIGHT,
+    PADDLE_INITIAL_SPEED_RATE,
+    PADDLE_OFFSET,
+    PADDLE_WIDTH,
+)
+from transcendence_django.dict_keys import (
     END,
     HEIGHT,
     PLAYER_NAME,
@@ -14,15 +24,6 @@ from back_game.game_settings.dict_keys import (
     SPEED,
     START,
     WIDTH,
-)
-from back_game.game_settings.game_constants import (
-    GAME_HEIGHT,
-    GAME_WIDTH,
-    LISTENING,
-    PADDLE_HEIGHT,
-    PADDLE_INITIAL_SPEED_RATE,
-    PADDLE_OFFSET,
-    PADDLE_WIDTH,
 )
 
 log = logging.getLogger(__name__)
@@ -131,6 +132,10 @@ class Paddle:
     def reset(self):
         self.rate = 0.5
         self.__update_position()
+
+    def reset_status(self):
+        if self.status == PaddleStatus(MOVED):
+            self.status = PaddleStatus(LISTENING)
 
     def update(self, config: dict[str, Any]):
         self.rectangle.width = config[WIDTH]

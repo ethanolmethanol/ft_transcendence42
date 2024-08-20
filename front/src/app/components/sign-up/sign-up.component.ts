@@ -11,11 +11,13 @@ import { ErrorMessageComponent } from "../error-message/error-message.component"
 import { usernameValidator } from '../../validators/username.validator';
 import { emailValidator } from '../../validators/email.validator';
 import { matchValidator } from '../../validators/match.validator';
+import { Oauth42ButtonComponent } from "../oauth42-button/oauth42-button.component";
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     RouterLink,
     CPasswordErrorComponent,
@@ -23,6 +25,7 @@ import { matchValidator } from '../../validators/match.validator';
     EmailErrorComponent,
     UsernameErrorComponent,
     ErrorMessageComponent,
+    Oauth42ButtonComponent,
   ],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
@@ -30,6 +33,7 @@ import { matchValidator } from '../../validators/match.validator';
 export class SignUpComponent implements OnInit {
   signupForm!: FormGroup;
   errorMessage: string = "";
+  readonly oauthText: string = "Sign up with";
 
   constructor(
     private _formBuilder: FormBuilder,

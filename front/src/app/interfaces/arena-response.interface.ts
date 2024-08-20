@@ -25,6 +25,7 @@ interface Map {
 interface PlayersSpecs {
   nb_players: number;
   mode: number;
+  bots: string[];
 }
 
 export interface ArenaResponse {

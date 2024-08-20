@@ -5,15 +5,16 @@ from back_game.game_arena.map import Map
 from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle, PaddleStatus
 from back_game.game_physics.collision import Collision
-from back_game.game_settings.dict_keys import STATUS
 from back_game.game_settings.game_constants import (
     CREATED,
     LISTENING,
+    MOVED,
     OVER,
     PROCESSING,
     STARTED,
     VALID_DIRECTIONS,
 )
+from transcendence_django.dict_keys import NB_PLAYERS, OPTIONS, STATUS
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,8 @@ GameStatus = NewType("GameStatus", int)
 class Game:
     def __init__(self, players_specs: dict[str, Any]):
         try:
-            nb_players = players_specs["nb_players"]
-            options: dict[str, Any] = players_specs["options"]
+            nb_players = players_specs[NB_PLAYERS]
+            options: dict[str, Any] = players_specs[OPTIONS]
             paddle_size = options["paddle_size"]
             ball_speed = options["ball_speed"]
             self.is_private: bool = options["is_private"]
@@ -72,8 +73,12 @@ class Game:
             except ValueError:
                 logger.error("Paddle cannot move due to collision.")
                 paddle.move(-direction)
-            paddle.status = PaddleStatus(LISTENING)
+            paddle.status = PaddleStatus(MOVED)
         return paddle.get_dict_update()
+
+    def reset_paddles_statuses(self):
+        for paddle in self.paddles.values():
+            paddle.reset_status()
 
     def update(self) -> dict[str, Any]:
         ball_update: dict[str, Any] = Collision.resolve_collision(self.ball)

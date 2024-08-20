@@ -39,6 +39,8 @@ package.json
 /libpeerconnection.log
 testem.log
 /typings
+front/src/environments/environment.ts
+front/nginx/nginx.conf
 
 # System files
 .DS_Store

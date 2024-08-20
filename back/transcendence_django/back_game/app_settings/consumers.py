@@ -7,7 +7,10 @@ import autobahn
 from back_game.app_settings.channel_error import ChannelError
 from back_game.app_settings.game_logic_interface import GameLogicInterface
 from back_game.game_arena.arena import Arena
-from back_game.game_settings.dict_keys import (
+from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
+from back_game.monitor.monitor import get_monitor
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     CHANNEL_ERROR_CODE,
@@ -25,6 +28,8 @@ from back_game.game_settings.dict_keys import (
     OVER_CALLBACK,
     PADDLE,
     PLAYER,
+    PLAYER_NAME,
+    PLAYERS,
     REMATCH,
     START_TIMER,
     START_TIMER_CALLBACK,
@@ -35,9 +40,6 @@ from back_game.game_settings.dict_keys import (
     USER_ID,
     WINNER,
 )
-from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
-from back_game.monitor.monitor import monitor
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 logger = logging.getLogger(__name__)
 
@@ -48,11 +50,12 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.room_group_name: str | None = None
         self.game = GameLogicInterface()
+        self.monitor = get_monitor()
 
     async def connect(self):
         self.game.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
         await self.accept()
-        if monitor.does_exist_channel(self.game.channel_id) is False:
+        if self.monitor.does_exist_channel(self.game.channel_id) is False:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
@@ -127,7 +130,7 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         await self.send_update({PADDLE: paddle_data})
 
     async def send_arena_data(self):
-        arena: Arena = monitor.get_arena(self.game.channel_id, self.game.arena_id)
+        arena: Arena = self.monitor.get_arena(self.game.channel_id, self.game.arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 
     async def send_start_timer(self, time: float):
@@ -142,12 +145,14 @@ class PlayerConsumer(AsyncJsonWebsocketConsumer):
         )
 
     async def send_game_over(self, time: float):
-        winner = monitor.get_winner(self.game.channel_id, self.game.arena_id)
-        logger.info("Game over: %s wins. %s seconds left.", winner, time)
+        summary = self.monitor.get_game_summary(
+            self.game.channel_id, self.game.arena_id
+        )
         await self.send_update(
             {
                 GAME_OVER: {
-                    WINNER: winner,
+                    PLAYERS: summary[PLAYERS],
+                    WINNER: summary[WINNER][PLAYER_NAME] if summary[WINNER] else None,
                     TIME: time,
                     MESSAGE: "Game over. Thanks for playing!",
                 }

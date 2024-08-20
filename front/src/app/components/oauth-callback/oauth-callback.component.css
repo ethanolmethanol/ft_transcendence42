@@ -1,0 +1,60 @@
+body {
+  background-image: url("../../../assets/app-themes/red_vortex_light.gif");
+}
+
+.form-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+}
+
+.header {
+  text-align: center;
+  color: rgb(200, 250, 230);
+}
+
+h1 {
+  font-size: xx-large;
+}
+
+.form-group {
+  margin-top: 0.5em;
+  position:relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-group input {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.input-error-container {
+  position: relative;
+  display: flex;
+  align-items: center; /* This ensures the input and error message are vertically aligned */
+  justify-content: space-between;
+  width: 100%;
+}
+
+.form-control {
+  flex: 0 0 auto; /* This prevents the input field from growing or shrinking */
+  width: calc(100% - 120px); /* Adjust the width as needed, subtracting the space for the error message */
+}
+
+.signup-header {
+  font-size: 2em;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.error-message-container {
+  margin-top: 1vh;
+  height: 40px; /* Adjust this value based on the height of your error message */
+}
+
+

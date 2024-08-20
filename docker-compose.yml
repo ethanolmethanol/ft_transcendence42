@@ -1,6 +1,3 @@
----
-version: '3'
-
 services:
     db:
         image: postgres:latest
@@ -14,7 +11,7 @@ services:
         restart: unless-stopped
         env_file: .env
         healthcheck:
-            test: pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            test: "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"
             interval: 5s
             timeout: 1s
             retries: 20
@@ -34,12 +31,6 @@ services:
             - transcendence
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'python3 manage.py health_check'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 5s
 
     back_user:
         image: back
@@ -52,11 +43,28 @@ services:
         ports:
             - "8002:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-user
         restart: unless-stopped
         env_file: .env
-        healthcheck:
-            test: 'python3 manage.py health_check'
+
+    back_aipi:
+        image: back
+        container_name: back_aipi
+        build:
+            context: back
+        env_file: .env
+        depends_on:
+            back_game:
+                condition: service_healthy
+        ports:
+            - "8003:443"
+        networks:
+            transcendence:
+                aliases:
+                    - back-aipi
+        restart: unless-stopped
 
     back_game:
         image: back
@@ -72,29 +80,26 @@ services:
         ports:
             - "8001:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-game
         restart: unless-stopped
-        healthcheck:
-            test: 'python3 manage.py health_check'
 
     front:
         image: front
         container_name: front
         build:
             context: front
-        # volumes:
-        #     - front-data:/usr/share/nginx/html
+        depends_on:
+            back_game:
+                condition: service_healthy
+        volumes:
+            - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
             - transcendence
         restart: unless-stopped
-        healthcheck:
-            test: 'curl -kfsSL https://localhost:443/'
-            interval: 5s
-            timeout: 1s
-            retries: 10
-            start_period: 5s
 
     redis:
         image: "redis:latest"
@@ -224,7 +229,7 @@ services:
             - transcendence
 
     blackbox:
-        image: prom/blackbox-exporter:v0.14.0
+        image: prom/blackbox-exporter
         container_name: blackbox_exporter
         deploy:
             replicas: 1
@@ -258,14 +263,14 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    # front-data:
-    #     driver: local
-    #     driver_opts:
-    #         type: 'none'
-    #         o: 'bind'
-    #         device: './front/dist/transcendence/browser'
+    front-data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './front/dist/transcendence/browser'
     db-data:
 
 networks:
     transcendence:
-        name: transcendence
+        name: trancendence

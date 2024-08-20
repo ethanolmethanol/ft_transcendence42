@@ -2,8 +2,14 @@ from typing import Any
 
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
-from back_game.game_settings.dict_keys import HEIGHT, POSITION, WIDTH
-from back_game.game_settings.game_constants import LEFT_SLOT, RIGHT_SLOT, TANGENT_FACTOR
+from back_game.game_settings.game_constants import (
+    BOTTOM_SLOT,
+    LEFT_SLOT,
+    RIGHT_SLOT,
+    TANGENT_FACTOR,
+    TOP_SLOT,
+)
+from transcendence_django.dict_keys import HEIGHT, POSITION, WIDTH
 
 
 class Rectangle:
@@ -12,6 +18,9 @@ class Rectangle:
         self.position: Position = position
         self.width: int = width
         self.height: int = height
+        if self.slot not in (LEFT_SLOT, RIGHT_SLOT):
+            self.width = height
+            self.height = width
         self.edges: Edges = Edges(position, width, height)
         self.convexity_center: Position = self.__get_convexity_center()
         self.distance_from_center: float = 0
@@ -30,8 +39,15 @@ class Rectangle:
 
     def __get_convexity_center(self) -> Position:
         self.distance_from_center = self.height * TANGENT_FACTOR
+        center_x, center_y = self.position.x, self.position.y
         if self.slot == LEFT_SLOT:
             center_x = self.edges.right - self.distance_from_center
         elif self.slot == RIGHT_SLOT:
             center_x = self.edges.left + self.distance_from_center
-        return Position(center_x, self.position.y)
+        elif self.slot == BOTTOM_SLOT:
+            center_y = self.edges.top - self.distance_from_center
+        elif self.slot == TOP_SLOT:
+            center_y = self.edges.bottom + self.distance_from_center
+        else:
+            raise ValueError("Oopsie! Too many paddles?")
+        return Position(center_x, center_y)

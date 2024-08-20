@@ -1,0 +1,32 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  width: 100%;
+  min-height: 300px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border-radius: 0.5em;
+}
+
+.title {
+  padding: 1em;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: white;
+  width: 50%;
+}
+
+.content {
+  display: grid;
+  list-style-type: none;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  padding: 0.5em;
+  justify-content: center;
+  justify-items: center;
+  align-content: space-evenly;
+  align-items: center;
+  gap: 2em;
+  margin: 1em 0;
+  width: 100%;
+}

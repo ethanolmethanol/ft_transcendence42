@@ -4,8 +4,8 @@ from back_game.game_entities.ball import Ball
 from back_game.game_entities.paddle import Paddle
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
-from back_game.game_settings.dict_keys import BOTTOM, LEFT, RIGHT, TOP
 from back_game.game_settings.game_constants import GAME_HEIGHT, GAME_WIDTH
+from transcendence_django.dict_keys import BOTTOM, LEFT, RIGHT, TOP
 
 logger = logging.getLogger(__name__)
 

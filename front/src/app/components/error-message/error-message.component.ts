@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {NgIf} from "@angular/common";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-error-message',

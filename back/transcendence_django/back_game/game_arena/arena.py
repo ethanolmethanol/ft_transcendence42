@@ -1,13 +1,26 @@
 import asyncio
+import datetime
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.game import Game, GameStatus
 from back_game.game_arena.player import ENABLED, Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
-from back_game.game_settings.dict_keys import (
+from back_game.game_settings.game_constants import (
+    CREATED,
+    MAXIMUM_SCORE,
+    READY_TO_START,
+    STARTED,
+    TIME_START,
+    TIME_START_INTERVAL,
+    WAITING,
+)
+from django.utils import timezone
+from transcendence_django.dict_keys import (
     ARENA,
+    ARENA_ID,
     BALL,
+    BOTS,
     COLLIDED_SLOT,
     ID,
     IS_REMOTE,
@@ -22,16 +35,8 @@ from back_game.game_settings.dict_keys import (
     PLAYERS,
     SCORE,
     SCORES,
+    START_TIME,
     STATUS,
-)
-from back_game.game_settings.game_constants import (
-    CREATED,
-    MAXIMUM_SCORE,
-    READY_TO_START,
-    STARTED,
-    TIME_START,
-    TIME_START_INTERVAL,
-    WAITING,
 )
 
 logger = logging.getLogger(__name__)
@@ -39,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 class Arena:
 
-    def __init__(self, players_specs: dict[str, int]):
+    def __init__(self, players_specs: dict[str, Any]):
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(players_specs)
@@ -52,6 +57,7 @@ class Arena:
         self.game_over_callback: Optional[
             Callable[[Any], Coroutine[Any, Any, None]]
         ] = None
+        self.start_time: datetime.datetime | None = None
 
     def to_dict(self) -> dict[str, Any]:
         if self.player_manager.is_remote:
@@ -73,11 +79,13 @@ class Arena:
             PLAYER_SPECS: {
                 NB_PLAYERS: self.player_manager.nb_players,
                 IS_REMOTE: mode,
+                BOTS: [
+                    player.player_name
+                    for player in self.player_manager.players.values()
+                    if player.is_bot
+                ],
             },
         }
-
-    def is_empty(self) -> bool:
-        return self.player_manager.is_empty()
 
     def is_full(self) -> bool:
         return self.player_manager.is_full()
@@ -90,8 +98,11 @@ class Arena:
             for player in self.player_manager.players.values()
         )
 
-    def get_winner(self) -> str:
-        return self.player_manager.get_winner()
+    def get_game_summary(self) -> dict[str, Any]:
+        summary = self.player_manager.get_game_summary()
+        summary[START_TIME] = self.start_time
+        summary[ARENA_ID] = self.id
+        return summary
 
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
@@ -109,7 +120,7 @@ class Arena:
         if self.player_manager.is_remote:
             self.__enter_remote_mode(user_id, player_name)
         else:
-            self.__enter_local_mode(user_id)
+            self.__enter_local_mode(user_id, player_name)
 
     async def start_game(self):
         self.game.set_status(READY_TO_START)
@@ -122,6 +133,7 @@ class Arena:
             await asyncio.sleep(TIME_START_INTERVAL)
         self.game.start()
         logger.info("Game started. %s", self.id)
+        self.start_time = timezone.now()
         if self.game_update_callback is not None:
             await self.game_update_callback({ARENA: self.to_dict()})
 
@@ -166,6 +178,7 @@ class Arena:
         kicked_players = self.player_manager.kick_afk_players()
         if kicked_players:
             update_dict[KICKED_PLAYERS] = kicked_players
+        self.game.reset_paddles_statuses()
         return update_dict
 
     def can_be_started(self) -> bool:
@@ -177,7 +190,7 @@ class Arena:
     def can_be_over(self) -> bool:
         status = self.game.status
         if status == GameStatus(WAITING):
-            return self.is_empty()
+            return self.player_manager.is_empty()
         if status == GameStatus(STARTED):
             return self.__has_enough_players() is False or self.__did_player_win()
         return False
@@ -227,18 +240,24 @@ class Arena:
         self.player_manager.reset()
         self.game.reset()
 
-    def __enter_local_mode(self, user_id: int):
+    def __enter_local_mode(self, user_id: int, player_name: str):
         if not self.is_full():
-            self.__register_player(user_id, PLAYER1)
-            self.__register_player(user_id, PLAYER2)
+            if self.player_manager.nb_robots and player_name == f"bot{user_id}":
+                self.__register_player(user_id, player_name, True)
+                return
+            if (
+                self.player_manager.nb_humans
+            ):  # modify when able to handle 2 humans + bots
+                self.__register_player(user_id, PLAYER2, False)
+            self.__register_player(user_id, PLAYER1, False)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.enable_player(user_id)
         else:
-            self.__register_player(user_id, player_name)
+            self.__register_player(user_id, player_name, True)
 
-    def __register_player(self, user_id: int, player_name: str):
+    def __register_player(self, user_id: int, player_name: str, is_bot: bool):
         self.player_manager.finish_given_up_players()
-        self.player_manager.add_player(user_id, player_name)
+        self.player_manager.add_player(user_id, player_name, is_bot)
         self.game.add_paddle(player_name)
