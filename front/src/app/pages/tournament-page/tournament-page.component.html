@@ -1,4 +1,18 @@
 <body>
   <button *ngIf="canGiveUp" (click)="confirmGiveUp()">Give up</button>
   <app-game [arenaID]="arenaID!"></app-game>
+  <section class="remote-section"
+           *ngIf="(gameStateService.dataLoaded$ | async)
+           && (gameStateService.isWaiting$ | async)
+           && (gameStateService.isRemote$ | async)">
+    <h4>
+      Waiting for players to join... <br><br>
+      {{ (gameStateService.activePlayers$ | async)?.length}} / {{ (gameStateService.maxPlayers$ | async) }}
+    </h4>
+    <ul class="waiting-players">
+      <li *ngFor="let player of (gameStateService.activePlayers$ | async)">
+        <app-player-icon [playerName]="player"></app-player-icon>
+      </li>
+    </ul>
+  </section>
 </body>

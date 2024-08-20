@@ -31,7 +31,7 @@ export class ConnectionService {
     });
   }
 
-  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id?: number) {
+  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id: number | null = null) {
     if (channel_id) {
       // Connect to the existing arena
       this.channelID = channel_id;

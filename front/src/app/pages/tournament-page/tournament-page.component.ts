@@ -12,20 +12,24 @@ import {GameComponent} from "../../components/gameplay/game/game.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
 import {ConnectionService} from "../../services/connection/connection.service";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
+import {GameStateService} from "../../services/game-state/game-state.service";
 
 @Component({
   selector: 'app-tournament-page',
   standalone: true,
-  imports: [
-    GameComponent,
-    NgIf
-  ],
+    imports: [
+        GameComponent,
+        NgIf,
+        AsyncPipe,
+        NgForOf,
+        PlayerIconComponent
+    ],
   templateUrl: './tournament-page.component.html',
   styleUrl: './tournament-page.component.css'
 })
 export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy {
-  isRemote: boolean | null = null;
   canGiveUp: boolean = true;
   arenaID: number | null = null;
 
@@ -40,11 +44,12 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
     private _router: Router,
     private _webSocketService: WebSocketService,
     private _route: ActivatedRoute,
-    private _connectionService: ConnectionService
+    private _connectionService: ConnectionService,
+    public gameStateService: GameStateService
   ) {}
 
   public ngOnInit() {
-    this.isRemote = this._route.snapshot.data['gameType'] === 'online';
+    this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
   }
 
   public ngAfterViewInit()  {

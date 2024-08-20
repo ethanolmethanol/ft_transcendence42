@@ -18,3 +18,45 @@ button {
   z-index: 1;
   margin: 2%
 }
+
+.remote-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transform: translate(0, -80%);
+  gap: 3em;
+}
+
+.waiting-players {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+  font-size: 2em;
+  width: 100%;
+  top: 40vh;
+  padding: 0;
+}
+
+h4 {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  color: #e1e1e1;
+  font-size: 2em;
+}
+
+h5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e1e1e1;
+  padding: 1em;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}

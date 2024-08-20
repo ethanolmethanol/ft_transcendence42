@@ -14,8 +14,10 @@ import { GameComponent } from "../../components/gameplay/game/game.component";
 import { WebSocketService } from '../../services/web-socket/web-socket.service';
 import { LoadingSpinnerComponent } from "../../components/loading-spinner/loading-spinner.component";
 import { ConnectionService } from "../../services/connection/connection.service";
-import { NgIf } from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {GameStateService} from "../../services/game-state/game-state.service";
+import {CopyButtonComponent} from "../../components/copy-button/copy-button.component";
+import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
 
 @Component({
   selector: 'app-game-page',
@@ -26,6 +28,10 @@ import {GameStateService} from "../../services/game-state/game-state.service";
     GameComponent,
     LoadingSpinnerComponent,
     NgIf,
+    AsyncPipe,
+    CopyButtonComponent,
+    NgForOf,
+    PlayerIconComponent,
   ],
   templateUrl: './game-page.component.html',
   styleUrl: './game-page.component.css'
