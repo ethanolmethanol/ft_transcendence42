@@ -53,6 +53,10 @@ class Channel:
         if self.is_full():
             logger.info("Channel %s is full!", self.id)
 
+    def delete_user_from_arena(self, user_id: int):
+        if user_id in self.users:
+            del self.users[user_id]
+
     def delete_arena(self, arena_id: str):
         if arena_id in self.arenas:
             del self.arenas[arena_id]

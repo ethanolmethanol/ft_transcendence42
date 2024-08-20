@@ -45,6 +45,11 @@ class ChannelManager:
 
     def delete_user_from_channel(self, user_id: int):
         try:
+            channel = self.user_game_table.get(user_id)
+            if channel is not None:
+                channel.delete_user_from_arena(user_id)
+                if not channel.users:
+                    self.delete_channel(channel.id)
             self.user_game_table.pop(user_id)
             logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
@@ -155,6 +160,7 @@ class ChannelManager:
         for channel in self.channels.values():
             if channel.is_tournament == is_tournament:
                 available_arena = channel.get_available_arena()
+                logger.info("Available arena: %s in channel %s", available_arena, channel.id)
                 if available_arena:
                     return {"channel_id": channel.id, "arena": available_arena.to_dict()}
         return None
