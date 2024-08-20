@@ -12,6 +12,7 @@ from back_game.monitor.monitor import get_monitor
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
+    ASSIGNATIONS,
     CHANNEL_ERROR_CODE,
     DIRECTION,
     ERROR,
@@ -60,9 +61,9 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         return get_monitor()
 
     async def connect(self):
-        self.game.channel_id = self.scope["url_route"]["kwargs"]["channel_id"]
+        self.game.init_channel(self.scope["url_route"]["kwargs"]["channel_id"])
         await self.accept()
-        if self.monitor.does_exist_channel(self.game.channel_id) is False:
+        if self.game.channel is None:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
             )
@@ -70,7 +71,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await self.add_user_to_channel_group()
 
     async def add_user_to_channel_group(self):
-        self.room_group_name = f"game_{self.game.channel_id}"
+        self.room_group_name = f"game_{self.game.channel.id}"
         logger.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         self.is_connected = True
@@ -117,6 +118,9 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             START_TIMER_CALLBACK: self.send_start_timer,
         }
         self.game.join(user_id, player_name, arena_id, callbacks)
+        if self.game.is_channel_full():
+            assignations: dict[str, Any] = self.game.get_assignations()
+            await self.send_update({ASSIGNATIONS: assignations})
         await self.send_message(f"{self.game.user_id} has joined the game.")
         await self.send_arena_data()
 
@@ -145,7 +149,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
     async def send_arena_data(self):
         if self.game.arena_id is None:
             return
-        arena: Arena = self.monitor.get_arena(self.game.channel_id, self.game.arena_id)
+        arena: Arena = self.monitor.get_arena(self.game.channel.id, self.game.arena_id)
         await self.send_update({ARENA: arena.to_dict()})
 
     async def send_start_timer(self, time: float):
@@ -161,7 +165,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     async def send_game_over(self, time: float):
         summary = self.monitor.get_game_summary(
-            self.game.channel_id, self.game.arena_id
+            self.game.channel.id, self.game.arena_id
         )
         await self.send_update(
             {

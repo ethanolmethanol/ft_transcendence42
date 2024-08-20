@@ -58,7 +58,7 @@ class ChannelManager:
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> Channel | None:
-        channel = self.channels.get(channel_id)
+        channel = self.get_channel(channel_id)
         if channel is None:
             return None
         arena_id: str = list(self.channel.arenas.keys())[0]
@@ -102,8 +102,11 @@ class ChannelManager:
             return self.get_channel_dict_from_user_id(user_id)
         return channel_dict
 
+    def get_channel(self, channel_id: str) -> Channel | None:
+        return self.channels.get(channel_id)
+
     def get_channel_dict_from_user_id(self, user_id: int) -> dict[str, Any] | None:
-        channel: dict[str, Any] | None = self.user_game_table.get(user_id)
+        channel: Channel | None = self.user_game_table.get(user_id)
         if channel is None:
             return None
         arena = channel.get_arena_from_user_id(user_id)
@@ -120,13 +123,19 @@ class ChannelManager:
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
         logger.info("Trying to get arena %s in channel %s", arena_id, channel_id)
-        channel = self.channels.get(channel_id)
+        channel = self.get_channel(channel_id)
         if channel:
             return channel.get_arena(arena_id)
         return None
 
+    def get_assignations(self, channel_id: str) -> dict[str, Any]:
+        channel = self.get_channel(channel_id)
+        if channel:
+            return channel.get_assignations()
+        return {}
+
     def leave_arena(self, user_id: int, channel_id: str, arena_id: str):
-        channel = self.channels.get(channel_id)
+        channel = self.get_channel(channel_id)
         if channel is None:
             return
         arena = channel.arenas.get(arena_id)
@@ -141,7 +150,7 @@ class ChannelManager:
     def is_user_active_in_game(
         self, user_id: int, channel_id: str, arena_id: str
     ) -> bool:
-        channel = self.channels.get(channel_id)
+        channel = self.get_channel(channel_id)
         arena = channel.get_arena_from_user_id(user_id)
         if arena and arena.id == arena_id:
             return arena.is_user_active_in_game(user_id)

@@ -7,6 +7,7 @@ TYPE = "type"
 
 # Channel
 CHANNEL_ID = "channel_id"
+ASSIGNATIONS = "assignations"
 
 # Game error
 GAME_ERROR = "game_error"

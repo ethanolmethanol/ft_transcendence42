@@ -31,8 +31,13 @@ class Channel:
             return None
         for arena in self.arenas.values():
             if not arena.is_private() and arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
-                return arena
+                if self.is_arena_available(arena):
+                    return arena
         return None
+
+    def is_arena_available(self, arena: Arena) -> bool:
+        user_count_in_arena = sum(1 for user_arena in self.users.values() if user_arena == arena)
+        return user_count_in_arena < arena.player_manager.nb_players
 
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
         return self.users.get(user_id)
@@ -48,10 +53,16 @@ class Channel:
             arena: Arena = self.arenas[arena_id]
             self.users[user_id] = arena
             logger.info("User %s added to channel %s", user_id, self.id)
+            if self.is_full():
+                logger.info("Channel %s is full!", self.id)
         else:
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
-        if self.is_full():
-            logger.info("Channel %s is full!", self.id)
+
+    def get_assignations(self) -> dict[str, Any]:
+        assignations = {}
+        for user_id, arena in self.users.items():
+            assignations[user_id] = arena.id
+        return assignations
 
     def delete_user_from_arena(self, user_id: int):
         if user_id in self.users:

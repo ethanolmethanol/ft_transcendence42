@@ -29,7 +29,6 @@ class Monitor:
     def __init__(self):
         if not apps.ready:
             apps.populate(settings.INSTALLED_APPS)
-        self.game_summary = apps.get_model("shared_models", "GameSummary")
         self.channel_manager = ChannelManager()
 
     async def create_new_channel(
@@ -64,9 +63,6 @@ class Monitor:
 
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
         return self.channel_manager.get_arena_from_user_id(user_id)
-
-    def does_exist_channel(self, channel_id: str) -> bool:
-        return self.channel_manager.channels.get(channel_id) is not None
 
     def is_user_in_channel(self, user_id: int) -> bool:
         return self.channel_manager.user_game_table.get(user_id) is not None
