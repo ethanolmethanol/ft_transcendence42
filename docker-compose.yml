@@ -177,7 +177,7 @@ services:
             - transcendence
 
     cadvisor:
-        image: gcr.io/cadvisor/cadvisor:v0.46.0
+        image: gcr.io/cadvisor/cadvisor:latest
         container_name: cadvisor
         # command: --logtostderr --v=4
         user: root
@@ -192,10 +192,12 @@ services:
             retries: 10
             start_period: 5s
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /run/user/1000:/var/run:ro
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
             - /etc/machine-id:/etc/machine-id:ro
+            - /:/rootfs:ro
+            - /dev/disk/:/dev/disk:ro
         devices:
             - /dev/kmsg:/dev/kmsg
         cap_add:
