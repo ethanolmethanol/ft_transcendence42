@@ -12,9 +12,7 @@ alerting:
   alertmanagers:
   - static_configs:
     - targets:
-      - localhost:9093
-    scheme: http
-    timeout: 10s
+      - alertmanager:9093
 
 # fichier de règles pour l'alerting, c'est dans ce fichier que sont les définitions des alertes
 

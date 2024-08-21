@@ -211,7 +211,7 @@ services:
             - transcendence
 
     alertmanager:
-        image: prom/alertmanager
+        image: prom/alertmanager:v0.27.0
         container_name: alertmanager
         healthcheck:
             test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093"]
@@ -219,7 +219,6 @@ services:
             timeout: 1s
             retries: 10
             start_period: 5s
-        user: root
         volumes:
             - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
             - ./monitoring/alertmanager/templates/default.tmpl:/etc/alertmanager/templates/default.tmpl
