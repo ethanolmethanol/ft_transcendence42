@@ -19,6 +19,7 @@ from transcendence_django.dict_keys import (
     GAME_MESSAGE,
     GAME_ERROR,
     GAME_OVER,
+    GAME_REDIRECT,
     GAME_UPDATE,
     GIVE_UP,
     JOIN,
@@ -30,6 +31,7 @@ from transcendence_django.dict_keys import (
     PLAYER,
     PLAYERS,
     PLAYER_NAME,
+    REDIRECT,
     REMATCH,
     START_TIMER,
     START_TIMER_CALLBACK,
@@ -120,7 +122,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         self.game.join(user_id, player_name, arena_id, callbacks)
         if self.game.is_channel_full():
             assignations: dict[str, Any] = self.game.get_assignations()
-            await self.send_update({ASSIGNATIONS: assignations})
+            await self.send_redirect({ASSIGNATIONS: assignations})
         await self.send_message(f"{self.game.user_id} has joined the game.")
         await self.send_arena_data()
 
@@ -202,13 +204,21 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         message = event[UPDATE]
         await self.safe_send({TYPE: GAME_UPDATE, UPDATE: message})
 
+    async def game_redirect(self, event: dict[str, str]):
+        message = event[REDIRECT]
+        await self.safe_send({TYPE: GAME_REDIRECT, REDIRECT: message})
+
     async def send_error(self, error: dict[str, Any]):
         logger.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
         await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
 
+    async def send_redirect(self, redirect: dict[str, Any]):
+        logger.info("Sending assignations: %s", redirect)
+        await self.send_data({TYPE: GAME_REDIRECT, REDIRECT: redirect})
+
     async def send_update(self, update: dict[str, Any]):
         update = {**{ARENA_ID: self.game.arena_id}, **update}
-        logger.info("Sending update: %s", update)
+#         logger.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):

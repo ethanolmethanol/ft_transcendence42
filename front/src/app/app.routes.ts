@@ -24,6 +24,7 @@ export const routes: Routes = [
   { path: 'online/create/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'create'} },
   { path: 'online/tournament', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'tournament'} },
   { path: 'online/tournament/:channel_id', component: TournamentPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'tournament'} },
+  { path: 'online/tournament/:channel_id/:arena_id', component: TournamentPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online'} },
   { path: 'online/join', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' , actionType: 'join'} },
   { path: 'online/join/:channel_id', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online', actionType: 'join_specific'} },
   { path: 'online/:channel_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'online' } },

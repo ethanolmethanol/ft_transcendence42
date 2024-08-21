@@ -6,8 +6,6 @@ import {
   QueryList,
   ViewChildren,
   Input,
-  SimpleChanges,
-  OnChanges,
   Renderer2,
   ElementRef, EventEmitter, Output, OnInit,
 } from '@angular/core';
@@ -42,6 +40,8 @@ import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
 import {GameStateService} from "../../../services/game-state/game-state.service";
 import {map} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
+import {AssignationsResponse} from "../../../interfaces/assignation.interface";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -138,6 +138,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     private connectionService: ConnectionService,
     private renderer: Renderer2,
     private el: ElementRef,
+    private route: ActivatedRoute,
+    private router: Router,
     public gameStateService: GameStateService,
   ) {}
 
@@ -227,6 +229,19 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
   }
+
+  private handleRedirection(response: AssignationsResponse) {
+    const { actionType } = this.route.snapshot.data;
+    if (actionType !== 'tournament') return;
+
+    const userID = this.userService.getUserID();
+    console.log('User ID:', userID);
+    const arenaID = response.assignations[userID];
+    this.gameStateService.channelID$.subscribe(channelID => {
+      this.router.navigate(['/online/tournament', channelID, arenaID]);
+    });
+  }
+
 
   private updateStartTimer(timer: StartTimerResponse) {
     this.startTimer.first.message = timer.message;
@@ -386,7 +401,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async ngAfterViewInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
-    this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
+    this.connectionService.listenToWebSocketMessages(
+      this.handleGameUpdate.bind(this), this.handleGameError.bind(this), this.handleRedirection.bind(this)
+    );
     this.gameStateService.setChannelID(this.connectionService.getChannelID());
     this._setGameStyle();
     this.gameLoop()

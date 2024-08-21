@@ -13,6 +13,11 @@ ASSIGNATIONS = "assignations"
 GAME_ERROR = "game_error"
 ERROR = "error"
 
+# Game redirect
+GAME_REDIRECT = "game_redirect"
+REDIRECT = "redirect"
+ASSIGNATIONS = "assignations"
+
 # Game update
 GAME_UPDATE = "game_update"
 UPDATE = "update"

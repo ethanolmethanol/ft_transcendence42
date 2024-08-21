@@ -3,6 +3,7 @@ import { Subscription } from "rxjs";
 import { WebSocketService } from "../web-socket/web-socket.service";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
+import {AssignationsResponse} from "../../interfaces/assignation.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,10 @@ export class ConnectionService {
     console.log('Connection service initialized');
   }
 
-  public listenToWebSocketMessages(handleGameUpdate: (response: string) => void, handleGameError: (response: ErrorResponse) => void) {
+  public listenToWebSocketMessages(
+    handleGameUpdate: (response: string) => void,
+    handleGameError: (response: ErrorResponse) => void,
+    handleRedirection: (response: AssignationsResponse) => void ){
     this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
       // console.log('Received WebSocket message:', message);
       const data = JSON.parse(message);
@@ -27,6 +31,8 @@ export class ConnectionService {
         handleGameUpdate(data.update);
       } else if (data.type === 'game_error') {
         handleGameError(data.error);
+      } else if (data.type === 'game_redirect') {
+        handleRedirection(data.redirect);
       }
     });
   }
