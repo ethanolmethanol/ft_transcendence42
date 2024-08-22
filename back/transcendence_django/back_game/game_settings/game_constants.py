@@ -9,12 +9,12 @@ UNKNOWN_CHANNEL_ID = "Unknown channel_id"
 UNKNOWN_ARENA_ID = "Unknown arena_id"
 
 # Game area dimensions
-GAME_HEIGHT = 600
-GAME_WIDTH = 1000
+GAME_HEIGHT = 800
+GAME_WIDTH = 1200
 
 # Game arena
 MIN_PLAYER = 2
-MAX_PLAYER = 10
+MAX_PLAYER = 2
 MAXIMUM_SCORE = 10
 
 # # Ball parameters
@@ -30,6 +30,8 @@ PADDLE_HEIGHT = 100
 PADDLE_OFFSET = PADDLE_WIDTH / 2
 LEFT_SLOT = 1
 RIGHT_SLOT = 2
+BOTTOM_SLOT = 3
+TOP_SLOT = 4
 CONVEXITY = 90
 VALID_DIRECTIONS = [-1, 1]
 
@@ -60,6 +62,7 @@ TIME_START_INTERVAL = 1
 # Paddle status
 LISTENING = 1
 PROCESSING = 2
+MOVED = 3
 
 # Rectangle
 TANGENT_FACTOR = 1 / (2 * math.tan(CONVEXITY / 2))

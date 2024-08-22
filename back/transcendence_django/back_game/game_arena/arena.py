@@ -20,6 +20,7 @@ from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     BALL,
+    BOTS,
     COLLIDED_SLOT,
     ID,
     IS_REMOTE,
@@ -43,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 class Arena:
 
-    def __init__(self, players_specs: dict[str, int]):
+    def __init__(self, players_specs: dict[str, Any]):
         self.id: str = str(id(self))
         self.player_manager: PlayerManager = PlayerManager(players_specs)
         self.game: Game = Game(players_specs)
@@ -78,6 +79,11 @@ class Arena:
             PLAYER_SPECS: {
                 NB_PLAYERS: self.player_manager.nb_players,
                 IS_REMOTE: mode,
+                BOTS: [
+                    player.player_name
+                    for player in self.player_manager.players.values()
+                    if player.is_bot
+                ],
             },
         }
 
@@ -114,7 +120,7 @@ class Arena:
         if self.player_manager.is_remote:
             self.__enter_remote_mode(user_id, player_name)
         else:
-            self.__enter_local_mode(user_id)
+            self.__enter_local_mode(user_id, player_name)
 
     async def start_game(self):
         self.game.set_status(READY_TO_START)
@@ -172,6 +178,7 @@ class Arena:
         kicked_players = self.player_manager.kick_afk_players()
         if kicked_players:
             update_dict[KICKED_PLAYERS] = kicked_players
+        self.game.reset_paddles_statuses()
         return update_dict
 
     def can_be_started(self) -> bool:
@@ -233,18 +240,24 @@ class Arena:
         self.player_manager.reset()
         self.game.reset()
 
-    def __enter_local_mode(self, user_id: int):
+    def __enter_local_mode(self, user_id: int, player_name: str):
         if not self.is_full():
-            self.__register_player(user_id, PLAYER1)
-            self.__register_player(user_id, PLAYER2)
+            if self.player_manager.nb_robots and player_name == f"bot{user_id}":
+                self.__register_player(user_id, player_name, True)
+                return
+            if (
+                self.player_manager.nb_humans
+            ):  # modify when able to handle 2 humans + bots
+                self.__register_player(user_id, PLAYER2, False)
+            self.__register_player(user_id, PLAYER1, False)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.enable_player(user_id)
         else:
-            self.__register_player(user_id, player_name)
+            self.__register_player(user_id, player_name, True)
 
-    def __register_player(self, user_id: int, player_name: str):
+    def __register_player(self, user_id: int, player_name: str, is_bot: bool):
         self.player_manager.finish_given_up_players()
-        self.player_manager.add_player(user_id, player_name)
+        self.player_manager.add_player(user_id, player_name, is_bot)
         self.game.add_paddle(player_name)

@@ -1,6 +1,6 @@
 # hadolint global ignore=DL3018
 # Stage 1: Build the Angular application
-FROM node:20-alpine as builder
+FROM node:22-alpine as builder
 WORKDIR /app
 
 # Install Angular CLI and project dependencies
