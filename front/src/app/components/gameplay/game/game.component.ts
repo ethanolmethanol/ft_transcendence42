@@ -39,7 +39,7 @@ import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
 import {GameStateService} from "../../../services/game-state/game-state.service";
-import {map} from "rxjs";
+import {map, Subscription} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AssignationsResponse} from "../../../interfaces/assignation.interface";
 
@@ -109,6 +109,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() startCounterStarted = new EventEmitter<void>();
   private playerName: string | null = null;
   private isRemote: boolean = false;
+  private channelSubscription: Subscription | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
   gameHeight: number = GAME_HEIGHT;
@@ -235,9 +236,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     if (actionType !== 'tournament') return;
 
     const userID = this.userService.getUserID();
-    console.log('User ID:', userID);
     const arenaID = response.assignations[userID];
-    this.gameStateService.channelID$.subscribe(channelID => {
+    this.channelSubscription = this.gameStateService.channelID$.subscribe(channelID => {
       this.router.navigate(['/online/tournament', channelID, arenaID]);
     });
   }
@@ -400,6 +400,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit() : Promise<void> {
+    console.log('GameComponent created');
     await this.userService.whenUserDataLoaded();
     this.connectionService.listenToWebSocketMessages(
       this.handleGameUpdate.bind(this), this.handleGameError.bind(this), this.handleRedirection.bind(this)
@@ -410,6 +411,11 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.channelSubscription) {
+      this.channelSubscription.unsubscribe();
+    }
+    this.gameStateService.setDataLoaded(false);
+    this.gameStateService.setIsWaiting(true);
     console.log('GameComponent destroyed');
   }
 

@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -45,8 +45,11 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
     private _webSocketService: WebSocketService,
     private _route: ActivatedRoute,
     private _connectionService: ConnectionService,
+    private cdr: ChangeDetectorRef,
     public gameStateService: GameStateService
-  ) {}
+  ) {
+    console.log('TournamentPageComponent created')
+  }
 
   public ngOnInit() {
     this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
@@ -58,7 +61,7 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
       this.arenaID = arena_id;
-      console.log('Channel ID:', channel_id);
+      this.cdr.detectChanges();
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
     });
     this.game.first.startCounterStarted.subscribe(() => {
