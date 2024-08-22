@@ -5,6 +5,8 @@ import logging
 import json
 import asyncio
 import autobahn
+import time
+
 
 from back_game.app_settings.channel_error import ChannelError
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
@@ -13,7 +15,9 @@ from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     ASSIGNATIONS,
+    CAPACITY,
     CHANNEL_ERROR_CODE,
+    CHANNEL_PLAYERS,
     DIRECTION,
     ERROR,
     GAME_MESSAGE,
@@ -120,20 +124,23 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             START_TIMER_CALLBACK: self.send_start_timer,
         }
         self.game.join(user_id, player_name, arena_id, callbacks)
+        await self.send_message(f"{self.game.user_id} has joined the game.")
+        await self.send_players()
+        await self.send_arena_data()
         if self.game.is_channel_full():
             assignations: dict[str, Any] = self.game.get_assignations()
             await self.send_redirect({ASSIGNATIONS: assignations})
-        await self.send_message(f"{self.game.user_id} has joined the game.")
-        await self.send_arena_data()
 
     async def leave(self, _):
         self.game.leave()
+        await self.send_players()
         await self.send_message(f"{self.game.user_id} has left the game.")
 
     async def give_up(self, _):
         self.game.give_up()
         await self.send_message(f"{self.game.user_id} has given up.")
         await self.send_update({GIVE_UP: self.game.user_id})
+        await self.send_players()
         await self.send_arena_data()
 
     async def rematch(self, _):
@@ -141,12 +148,15 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.send_message(f"{self.game.user_id} asked for a rematch.")
         await self.send_arena_data()
 
-
     async def move_paddle(self, message: dict[str, Any]):
         player_name: str = message[PLAYER]
         direction: int = message[DIRECTION]
         paddle_data = self.game.move_paddle(player_name, direction)
         await self.send_update({PADDLE: paddle_data})
+
+    async def send_players(self):
+        players = self.monitor.get_users_from_channel(self.game.channel.id)
+        await self.send_update({CHANNEL_PLAYERS: {USER_ID: players, CAPACITY: self.game.channel.user_count}})
 
     async def send_arena_data(self):
         if self.game.arena_id is None:

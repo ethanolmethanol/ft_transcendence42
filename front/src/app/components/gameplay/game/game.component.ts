@@ -42,6 +42,7 @@ import {GameStateService} from "../../../services/game-state/game-state.service"
 import {map, Subscription} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AssignationsResponse} from "../../../interfaces/assignation.interface";
+import {User} from "../../../interfaces/user";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -79,6 +80,11 @@ interface VariableMapping {
 
 interface ErrorMapping {
   [key: number]: (value: ErrorResponse) => void;
+}
+
+interface ChannelPlayersResponse {
+  user_id: number[];
+  capacity: number;
 }
 
 @Component({
@@ -207,8 +213,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gameOver.first.hasRematched = false;
   }
 
-  private handleGameUpdate(gameState: any) {
-    const variableMapping : VariableMapping = {
+  private async handleGameUpdate(gameState: any) {
+    const variableMappingArena : VariableMapping = {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
@@ -217,17 +223,38 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
         'give_up': (value: number) => { this.giveUp(value) },
-        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
+        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) },
+    };
+    const variableMappingChannel : VariableMapping = {
+      'channel_players': async (value: ChannelPlayersResponse) => {
+        await this.updateChannelPlayers(value);
+      },
     };
 
+    await this.__updateGameState(gameState, variableMappingChannel);
     if (gameState['arena_id'] !== this.arenaID) {
       return;
     }
+    await this.__updateGameState(gameState, variableMappingArena);
+  }
 
+  private async updateChannelPlayers(players: ChannelPlayersResponse) {
+    let playerList: string[] = []
+    for (const user_id of players.user_id) {
+      const user: User = await this.userService.getUser(user_id)
+      const player_name: string = user.username
+      playerList.push(player_name)
+    }
+    this.gameStateService.setChannelPlayers(playerList)
+    this.gameStateService.setChannelCapacity(players.capacity)
+    this.gameStateService.setDataLoaded(true)
+  }
+
+  private async __updateGameState(gameState: any, variableMapping: VariableMapping) {
     for (const variable in gameState) {
-        if (variable in variableMapping) {
-            variableMapping[variable](gameState[variable]);
-        }
+      if (variable in variableMapping) {
+        await variableMapping[variable](gameState[variable]);
+      }
     }
   }
 
@@ -402,7 +429,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   async ngAfterViewInit() : Promise<void> {
     console.log('GameComponent created');
     await this.userService.whenUserDataLoaded();
-    this.connectionService.listenToWebSocketMessages(
+    await this.connectionService.listenToWebSocketMessages(
       this.handleGameUpdate.bind(this), this.handleGameError.bind(this), this.handleRedirection.bind(this)
     );
     this.gameStateService.setChannelID(this.connectionService.getChannelID());
@@ -414,6 +441,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.channelSubscription) {
       this.channelSubscription.unsubscribe();
     }
+    this.gameStateService.setChannelCapacity(2);
+    this.gameStateService.setChannelPlayers([]);
     this.gameStateService.setDataLoaded(false);
     this.gameStateService.setIsWaiting(true);
     console.log('GameComponent destroyed');

@@ -8,6 +8,8 @@ TYPE = "type"
 # Channel
 CHANNEL_ID = "channel_id"
 ASSIGNATIONS = "assignations"
+CHANNEL_PLAYERS = "channel_players"
+CAPACITY = "capacity"
 
 # Game error
 GAME_ERROR = "game_error"

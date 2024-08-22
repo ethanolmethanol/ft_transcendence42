@@ -20,15 +20,15 @@ export class ConnectionService {
     console.log('Connection service initialized');
   }
 
-  public listenToWebSocketMessages(
-    handleGameUpdate: (response: string) => void,
+  public async listenToWebSocketMessages(
+    handleGameUpdate: (response: string) => Promise<void>,
     handleGameError: (response: ErrorResponse) => void,
     handleRedirection: (response: AssignationsResponse) => void ){
-    this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
+    this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(async message => {
       // console.log('Received WebSocket message:', message);
       const data = JSON.parse(message);
       if (data.type === 'game_update') {
-        handleGameUpdate(data.update);
+        await handleGameUpdate(data.update);
       } else if (data.type === 'game_error') {
         handleGameError(data.error);
       } else if (data.type === 'game_redirect') {

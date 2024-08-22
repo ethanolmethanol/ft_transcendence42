@@ -7,10 +7,10 @@
            && (gameStateService.isRemote$ | async)">
     <h4>
       Waiting for players to join... <br><br>
-      {{ (gameStateService.activePlayers$ | async)?.length}} / {{ (gameStateService.maxPlayers$ | async) }}
+      {{ (gameStateService.channelPlayers$ | async)?.length}} / {{ (gameStateService.channelCapacity$ | async) }}
     </h4>
     <ul class="waiting-players">
-      <li *ngFor="let player of (gameStateService.activePlayers$ | async)">
+      <li *ngFor="let player of (gameStateService.channelPlayers$ | async)">
         <app-player-icon [playerName]="player"></app-player-icon>
       </li>
     </ul>

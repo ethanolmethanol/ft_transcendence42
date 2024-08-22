@@ -111,6 +111,9 @@ class Monitor:
         summary: dict[str, Any] = arena.get_game_summary()
         return summary
 
+    def get_users_from_channel(self, channel_id: str) -> list[int]:
+        return self.channel_manager.get_users_from_channel(channel_id)
+
     def move_paddle(
         self,
         channel_id: str,

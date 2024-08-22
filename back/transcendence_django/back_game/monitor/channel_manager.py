@@ -151,6 +151,12 @@ class ChannelManager:
             else:
                 arena.player_leave(user_id)
 
+    def get_users_from_channel(self, channel_id: str) -> list[int]:
+        channel = self.get_channel(channel_id)
+        if channel is None:
+            return []
+        return list(channel.users.keys())
+
     def is_user_active_in_game(
         self, user_id: int, channel_id: str, arena_id: str
     ) -> bool:

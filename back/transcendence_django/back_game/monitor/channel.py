@@ -17,7 +17,7 @@ class Channel:
         self.id: str = self.__generate_random_id(10)
         self.arenas = arenas
         self.is_tournament = is_tournament
-        self.users = {}
+        self.users: dict[int, Arena] = {}
         self.user_count = len(arenas) * 2
 
     def to_dict(self) -> dict[str, Any]:
