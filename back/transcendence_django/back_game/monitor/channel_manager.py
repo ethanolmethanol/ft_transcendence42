@@ -43,14 +43,16 @@ class ChannelManager:
         channel.add_user_into_arena(user_id, arena_id)
         self.user_game_table[user_id] = channel
 
-    def delete_user_from_channel(self, user_id: int):
+    def delete_user_from_channel(self, user_id: int, channel: Channel = None):
         try:
-            channel = self.user_game_table.get(user_id)
+            if channel is None:
+                channel = self.user_game_table.get(user_id)
+            elif channel == self.user_game_table.get(user_id):
+                self.user_game_table.pop(user_id)
             if channel is not None:
                 channel.delete_user_from_arena(user_id)
                 if not channel.users:
                     self.delete_channel(channel.id)
-            self.user_game_table.pop(user_id)
             logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
@@ -120,7 +122,7 @@ class ChannelManager:
         logger.info("Arena %s is dead", arena.id)
         player_list: dict[str, Player] = arena.get_players()
         for player in player_list.values():
-            self.delete_user_from_channel(player.user_id)
+            self.delete_user_from_channel(player.user_id, channel)
         channel.delete_arena(arena_id)
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
