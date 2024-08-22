@@ -191,3 +191,11 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Minio settings for avatar file upload
+MINIO_STORAGE_ENDPOINT = "https://127.0.0.1:9000"
+MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER")
+MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
+MINIO_STORAGE_USE_HTTPS = True
+MINIO_STORAGE_MEDIA_BUCKET_NAME = "avatars"
+DEFAULT_AVATAR_PATH = "avatars/default_avatar.jpg"

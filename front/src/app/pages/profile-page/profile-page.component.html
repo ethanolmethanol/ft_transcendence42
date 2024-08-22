@@ -1,11 +1,14 @@
 <body>
   <app-header></app-header>
     <section class="profile-page-container">
-      <section class="preview-appearance">
+<!--      <section class="preview-appearance">
         <app-gameboard [gameboardColors]="gameboardColors"></app-gameboard>
       </section>
       <section class="appearance-settings">
         <app-appearance-settings (colors)="applyColors($event)" [selectedColors]="colors"></app-appearance-settings>
+      </section>-->
+      <section class="avatar-container">
+        <app-avatar></app-avatar>
       </section>
     </section>
 </body>

@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip==24.0 && \
 RUN python -m pip install -U 'channels[daphne]'
 RUN pip install -U "Twisted[tls,http2]"
 RUN pip install pytest pytest-asyncio pytest-django pytest-cov
+RUN pip install minio
 
 RUN mkdir -p /var/run/back /etc/ssl
 
@@ -28,4 +29,4 @@ RUN chmod +x ../wait-for-it.sh
 
 HEALTHCHECK --interval=5s --timeout=30s --retries=10 CMD python3 manage.py health_check
 
-ENTRYPOINT ["../wait-for-it.sh", "daphne", "-b", "0.0.0.0", "-p", "8000", "-e", "ssl:443:privateKey=/etc/ssl/serv.key:certKey=/etc/ssl/serv.crt", "transcendence_django.asgi:application"]
+ENTRYPOINT ["../wait-for-it.sh", "daphne", "-b", "0.0.0.0", "-p", "8000", "-e", "ssl:443:privateKey=/etc/ssl/private.key:certKey=/etc/ssl/public.crt", "transcendence_django.asgi:application"]

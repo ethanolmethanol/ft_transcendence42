@@ -8,7 +8,7 @@ RUN npm install -g @angular/cli@latest
 # Copy the app
 COPY . .
 
-RUN npm install && \
+RUN npm install && npm i cropperjs --save && \
 # Build the application
 	npm run build
 

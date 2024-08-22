@@ -24,7 +24,9 @@ prompt_for_env() {
 	[ -z "${POSTGRES_PASSWORD}" ] && read -rsp "Enter PostgreSQL Password: " POSTGRES_PASSWORD && echo
 	[ -z "${POSTGRES_DB}" ] && read -rp "Enter PostgreSQL Database Name: " POSTGRES_DB
 	[ -z "${OAUTH_CLIENT_UID}" ] && read -rp "Enter OAuth Client UID: " OAUTH_CLIENT_UID
-	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET
+	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rsp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET && echo
+	[ -z "${MINIO_ROOT_USER}" ] && read -rp "Enter Minio Root User: " MINIO_ROOT_USER
+	[ -z "${MINIO_ROOT_PASSWORD}" ] && read -rsp "Enter Minio Root Password: " MINIO_ROOT_PASSWORD && echo
 
 	echo "POSTGRES_USER='${POSTGRES_USER}'" >"${ENV_FILE_GLOBAL}"
 	{
@@ -33,6 +35,8 @@ prompt_for_env() {
 		echo "SERV_IP='${IP_ADDR}'"
 		echo "OAUTH_CLIENT_UID='${OAUTH_CLIENT_UID}'"
 		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
+		echo "MINIO_ROOT_USER='${MINIO_ROOT_USER}'"
+		echo "MINIO_ROOT_PASSWORD='${MINIO_ROOT_PASSWORD}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
@@ -45,8 +49,8 @@ generate_certificates() {
 		return
 	fi
 
-	local key_path="${CERT_DIR}/serv.key"
-	local cert_path="${CERT_DIR}/serv.crt"
+	local key_path="${CERT_DIR}/private.key"
+	local cert_path="${CERT_DIR}/public.crt"
 
 	# generate certificates files
 	mkcert serv "${IP_ADDR}" 127.0.0.1 ::1
@@ -133,7 +137,7 @@ export_env_instructions() {
 
 IP_ADDR=$(get_ip "$1")
 CERT_DIR="ssl/"
-SSL_CONT_DIRS=(front/ssl back/ssl)
+SSL_CONT_DIRS=(front/ssl back/ssl minio/ssl)
 ENV_FILE_FRONT="front/src/environments/environment.ts"
 NGINX_CONFIG_FILE="front/nginx/nginx.conf"
 ENV_FILE_GLOBAL=".env"

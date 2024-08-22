@@ -72,8 +72,8 @@ services:
         depends_on:
             back_game:
                 condition: service_healthy
-        volumes:
-            - front-data:/usr/share/nginx/html
+#        volumes:
+#            - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -93,6 +93,67 @@ services:
             start_period: 5s
         networks:
             - transcendence
+
+#    minio:
+#        image: minio/minio
+#        container_name: minio
+#        env_file:
+#            - .env
+#        volumes:
+#            - minio_data:/data
+#            - ./ssl:/root/.minio/certs
+#        ports:
+#            - "9000:443"
+#            - "9001:9001" # minIO console
+#        restart: unless-stopped
+#        healthcheck:
+#            test: "/bin/ls"    #"curl -I https://127.0.0.1:9000/minio/health/live"
+#            interval: 5s
+#            timeout: 1s
+#            retries: 20
+#            start_period: 5s
+#        command: server /data --console-address ":9001"
+#        networks:
+#            - transcendence
+#
+    minio:
+        image: minio
+        container_name: minio
+        build:
+            context: minio
+        env_file:
+            - .env
+        volumes:
+            - minio_data:/data
+        ports:
+            - "9000:443"
+            - "9001:9001" # minIO console
+        restart: unless-stopped
+        healthcheck:
+            test: "mc ready myminio --insecure"
+            interval: 5s
+            timeout: 1s
+            retries: 20
+            start_period: 5s
+        networks:
+            - transcendence
+
+#    avatars:
+#        image: avatars
+#        container_name: avatars
+#        build: avatars
+#        depends_on:
+#            - minio
+#        env_file:
+#            - .env
+#        healthcheck:
+#            test: [ "CMD", "/usr/bin/mc", "ls", "myminio/avatars/default_avatar.jpg" ]
+#            interval: 30s
+#            timeout: 10s
+#            retries: 3
+#            start_period: 5s
+#        networks:
+#            - transcendence
 
     prometheus:
         image: prom/prometheus:v2.35.0
@@ -186,13 +247,14 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-    front-data:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: './front/dist/transcendence/browser'
+#    front-data:
+#        driver: local
+#        driver_opts:
+#            type: 'none'
+#            o: 'bind'
+#            device: './front/dist/transcendence/browser'
     db-data:
+    minio_data:
 
 networks:
     transcendence:

@@ -102,3 +102,4 @@ export const DEFAULT_COLORS = ['#ffffff', '#ffffff', '#000000', '#000000', '#aaa
 export const DEFAULT_TIME_PLAYED = {local: 0, remote: 0, total: 0}
 export const DEFAULT_GAME_COUNTER = {local: 0, remote: 0, total: 0}
 export const DEFAULT_WIN_DICT = {win: 0, loss: 0, tie: 0, total: 0}
+

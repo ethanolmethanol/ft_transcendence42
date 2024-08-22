@@ -17,6 +17,7 @@ from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
+    DEFAULT_AVATAR_FILE,
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import (
@@ -50,9 +51,14 @@ class Profile(models.Model):
     game_settings: List[int] = ArrayField(
         models.IntegerField(), default=list
     )  # type: ignore
+    avatar_file = models.FileField(upload_to="avatars", default=DEFAULT_AVATAR_FILE)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         super().save(*args, **kwargs)
+
+    def store_avatar(self, avatar_file):
+        self.avatar_file.save(avatar_file.name, avatar_file)
+        self.save()
 
 
 class OauthToken(models.Model):
@@ -157,6 +163,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             # pylint: disable=no-member
             self.oauth_token = OauthToken.objects.create()
         self.oauth_token.store_tokens(token_data)
+        self.save()
+
+    def set_avatar(self, avatar_file):
+        self.profile.store_avatar(avatar_file)
         self.save()
 
     def clear_tokens(self):

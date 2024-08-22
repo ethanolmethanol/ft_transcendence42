@@ -2,7 +2,7 @@ import json
 import logging
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import Any, Dict
+from typing import Any, Dict, IO
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
@@ -16,8 +16,9 @@ from rest_framework.views import APIView
 from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
+from .avatar_uploader import AvatarUploader
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
-
+from .forms import UploadFileForm
 # pylint: disable=no-member
 
 logger = logging.getLogger(__name__)
@@ -210,4 +211,37 @@ class UpdateUsernameView(APIView):
             return Response(
                 {"error": "Cannot update username of unknown user."},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+@method_decorator(csrf_protect, name="dispatch")
+class AvatarView(APIView):
+    def __init__(self):
+        self._avatar_uploader = AvatarUploader()
+
+    def _get_default_url(self):
+        return "yolo"
+
+    def get(self, request: Any) -> Response:
+        try:
+            user_id: str = str(request.user.id)
+            url: str = self._avatar_uploader.get_avatar_url(user_id)
+            if not url:
+                url = self._get_default_url()
+            logger.info("Avatar URL: " + url)
+            return Response({"url": url})
+        except Exception as e:
+            logger.error(e)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request: Any) -> Response:
+        try:
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                self.avatar_uploader.upload_avatar(request.FILES["file"], request.user.id)
+            return Response(
+                {"message": "Avatar file successfully uploaded to the server"}, status=status.HTTP_200_OK,
+            )
+        except KeyError as e:
+            return Response(
+                {"Error while uploading avatar file to the server: ": str(e)}, status=status.HTTP_400_BAD_REQUEST,
             )
