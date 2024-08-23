@@ -20,6 +20,8 @@ from .avatar_uploader import AvatarUploader
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 from .forms import UploadFileForm
 # pylint: disable=no-member
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -218,15 +220,11 @@ class AvatarView(APIView):
     def __init__(self):
         self._avatar_uploader = AvatarUploader()
 
-    def _get_default_url(self):
-        return "yolo"
-
     def get(self, request: Any) -> Response:
         try:
             user_id: str = str(request.user.id)
             url: str = self._avatar_uploader.get_avatar_url(user_id)
-            if not url:
-                url = self._get_default_url()
+            url = url.replace("minio", settings.SERV_IP)
             logger.info("Avatar URL: " + url)
             return Response({"url": url})
         except Exception as e:

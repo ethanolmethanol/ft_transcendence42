@@ -2,6 +2,8 @@ import logging
 
 from minio import Minio
 from django.conf import settings
+from minio.error import S3Error
+import urllib3
 
 logger = logging.getLogger(__name__)
 
@@ -15,13 +17,17 @@ class AvatarUploader:
             secret_key=settings.MINIO_ROOT_PASSWORD,
             secure=settings.MINIO_STORAGE_USE_HTTPS
         )
-        # load the clown image to the bucket
+        self.client._http = urllib3.PoolManager(cert_reqs='CERT_NONE')
 
     def get_avatar_url(self, user_id: str):
         logger.info("Getting avatar url for user {}".format(user_id))
-        filename: str = f"{user_id}.jpg"
+        #filename = f"{user_id}.jpg"
+        filename = settings.DEFAULT_AVATAR_PATH
+
         bucket_name = settings.MINIO_STORAGE_MEDIA_BUCKET_NAME
         minio_response = self.client.presigned_get_object(bucket_name, filename)
+        if minio_response is None:
+            minio_response = self.client.presigned_get_object(bucket_name, settings.DEFAULT_AVATAR_PATH)
         logger.info('Minio response: {}'.format(minio_response))
         return minio_response
 

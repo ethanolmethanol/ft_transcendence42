@@ -33,7 +33,7 @@ OAUTH_CLIENT_UID = os.getenv("OAUTH_CLIENT_UID")
 OAUTH_REDIRECT_URI = f"https://{SERV_IP}:4200/oauth-callback"
 OAUTH_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
 
-ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "back-aipi", "back-user"]
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "minio", "back-aipi", "back-user"]
 
 # Application definition
 
@@ -192,9 +192,9 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Minio settings for avatar file upload
-MINIO_STORAGE_ENDPOINT = "https://127.0.0.1:9000"
+MINIO_STORAGE_ENDPOINT = "minio:443"
 MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER")
 MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 MINIO_STORAGE_USE_HTTPS = True
 MINIO_STORAGE_MEDIA_BUCKET_NAME = "avatars"
-DEFAULT_AVATAR_PATH = "avatars/default_avatar.jpg"
+DEFAULT_AVATAR_PATH = "default_avatar.jpg"
