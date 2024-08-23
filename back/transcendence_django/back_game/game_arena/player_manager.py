@@ -36,6 +36,7 @@ class PlayerManager:
     def __init__(self, player_specs: dict[str, int]):
         self.__fill_player_specs(player_specs)
         self.players: dict[str, Player] = {}
+        self.winner: Player | None = None
         self.last_kick_check: float = time.time()
 
     def is_empty(self) -> bool:
@@ -149,8 +150,9 @@ class PlayerManager:
         ]
         if not active_players:
             return None
-        winner = max(active_players, key=lambda player: player.score)
-        return winner
+        if self.winner is None:
+            self.winner = max(active_players, key=lambda player: player.score)
+        return self.winner
 
     def __count_players(self, state: PlayerStatus = PlayerStatus(ENABLED)) -> int:
         return sum(player.status == state for player in self.players.values())
