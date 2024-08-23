@@ -5,7 +5,6 @@ import logging
 import json
 import asyncio
 import autobahn
-import time
 
 
 from back_game.app_settings.channel_error import ChannelError

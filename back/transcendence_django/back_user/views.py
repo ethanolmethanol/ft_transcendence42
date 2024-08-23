@@ -165,3 +165,20 @@ def get_game_summaries(request) -> JsonResponse:
         return JsonResponse(
             {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
         )
+
+@require_http_methods(["POST"])
+@csrf_protect
+def get_username(request) -> JsonResponse:
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data.get(USER_ID)
+        user = CustomUser.objects.get(pk=user_id)
+        return JsonResponse({"username": user.username}, safe=False)
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
+        )
+    except (JSONDecodeError, TypeError, ValueError) as e:
+        return JsonResponse(
+            {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
+        )

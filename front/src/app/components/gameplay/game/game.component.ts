@@ -156,7 +156,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     if (this.isRemote) {
       await this.userService.whenUserDataLoaded();
-      this.playerName = this.userService.getUsername();
+      this.playerName = await this.userService.getUsername();
       console.log('Player name:', this.playerName);
     }
   }
@@ -377,6 +377,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private redirectToHome() {
+    this.gameStateService.reset();
     this.gameOver.first.redirectToHome();
   }
 
@@ -441,10 +442,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.channelSubscription) {
       this.channelSubscription.unsubscribe();
     }
-    this.gameStateService.setChannelCapacity(2);
-    this.gameStateService.setChannelPlayers([]);
-    this.gameStateService.setDataLoaded(false);
-    this.gameStateService.setIsWaiting(true);
+    this.gameStateService.restrictReset();
     console.log('GameComponent destroyed');
   }
 

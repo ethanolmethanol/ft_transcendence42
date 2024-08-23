@@ -13,6 +13,8 @@ export class WebSocketService implements OnInit, OnDestroy {
   private _connectionOpened: Subject<void> = new Subject<void>();
   private _messages: Subject<string> = new Subject<string>();
   private _logoutChannel: BroadcastChannel;
+  private _username: string = '';
+  private _usernameLoaded: Promise<void> | null = null;
 
   constructor(private userService: UserService) {
     console.log('WebSocketService created');
@@ -31,7 +33,9 @@ export class WebSocketService implements OnInit, OnDestroy {
 
   public connect(channel_id: string, isTournament: boolean): void {
     this.userService.whenUserDataLoaded().then(() => {
-      this.attemptToConnect(channel_id, isTournament);
+      this.whenUsernameLoaded().then(() => {
+        this.attemptToConnect(channel_id, isTournament);
+      });
     });
   }
 
@@ -131,7 +135,7 @@ export class WebSocketService implements OnInit, OnDestroy {
     }
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"user_id": this.userService.getUserID(), "player": this.userService.getUsername(), "arena_id": arena_id});
+      this.send('join', {"user_id": this.userService.getUserID(), "player": this._username, "arena_id": arena_id});
       this.getMessages().subscribe(message => {
         const data = JSON.parse(message);
         if (data.type === 'arena') {
@@ -162,6 +166,15 @@ export class WebSocketService implements OnInit, OnDestroy {
 
   async ngOnInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
+    this._username = await this.userService.getUsername();
+    this._usernameLoaded = Promise.resolve();
+  }
+
+  public whenUsernameLoaded(): Promise<void> {
+    if (!this._usernameLoaded) {
+      this._usernameLoaded = this.ngOnInit();
+    }
+    return this._usernameLoaded;
   }
 
   ngOnDestroy(): void {

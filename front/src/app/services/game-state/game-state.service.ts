@@ -23,6 +23,7 @@ export class GameStateService {
   get channelCapacity$() { return this._channelCapacity.asObservable(); }
   get maxPlayers$() { return this._maxPlayers.asObservable(); }
 
+
   setDataLoaded(value: boolean) { this._dataLoaded.next(value); }
   setIsWaiting(value: boolean) { this._isWaiting.next(value); }
   setIsRemote(value: boolean) { this._isRemote.next(value); }
@@ -31,4 +32,18 @@ export class GameStateService {
   setChannelPlayers(value: string[]) { this._channelPlayers.next(value); }
   setChannelCapacity(value: number) { this._channelCapacity.next(value); }
   setMaxPlayers(value: number) { this._maxPlayers.next(value); }
+
+  restrictReset() {
+    this.setDataLoaded(false);
+    this.setIsWaiting(true);
+  }
+
+  reset() {
+    this.restrictReset();
+    this.setChannelID('');
+    this.setActivePlayers([]);
+    this.setChannelPlayers([]);
+    this.setChannelCapacity(2);
+    this.setMaxPlayers(2);
+  }
 }
