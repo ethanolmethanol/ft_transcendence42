@@ -75,7 +75,7 @@ class ChannelManager:
         if channel is None and is_remote:
             logger.info("User %s is not in a channel and is remote", user_id)
             return self.__get_available_channel()
-        if channel is None:
+        if channel is None or channel.is_tournament:
             return None
         arena = self.get_arena_from_user_id(user_id)
         return {"channel_id": channel.id, "arena": arena.to_dict()}
@@ -175,7 +175,7 @@ class ChannelManager:
     def delete_channel(self, channel_id: str):
         channel = self.get_channel(channel_id)
         if channel is not None:
-            del channel
+            self.channels.pop(channel_id)
             logger.info("Channel %s deleted", channel_id)
 
     def __get_available_channel(self, is_tournament: bool = False) -> dict[str, Any] | None:

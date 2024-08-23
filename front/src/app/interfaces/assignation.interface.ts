@@ -1,3 +1,1 @@
-export interface AssignationsResponse {
-  assignations: { [key: string]: string };
-}
+export interface AssignationsResponse { [key: number]: string }

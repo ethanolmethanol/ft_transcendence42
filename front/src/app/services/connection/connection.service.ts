@@ -22,8 +22,8 @@ export class ConnectionService {
 
   public async listenToWebSocketMessages(
     handleGameUpdate: (response: string) => Promise<void>,
-    handleGameError: (response: ErrorResponse) => void,
-    handleRedirection: (response: AssignationsResponse) => void ){
+    handleGameError: (response: ErrorResponse) => void
+  ){
     this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(async message => {
       // console.log('Received WebSocket message:', message);
       const data = JSON.parse(message);
@@ -31,8 +31,6 @@ export class ConnectionService {
         await handleGameUpdate(data.update);
       } else if (data.type === 'game_error') {
         handleGameError(data.error);
-      } else if (data.type === 'game_redirect') {
-        handleRedirection(data.redirect);
       }
     });
   }

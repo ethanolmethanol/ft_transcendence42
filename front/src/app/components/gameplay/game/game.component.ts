@@ -229,6 +229,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       'channel_players': async (value: ChannelPlayersResponse) => {
         await this.updateChannelPlayers(value);
       },
+      'assignations': (value: AssignationsResponse) => {
+        this.handleRedirection(value);
+      },
     };
 
     await this.__updateGameState(gameState, variableMappingChannel);
@@ -263,7 +266,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     if (actionType !== 'tournament') return;
 
     const userID = this.userService.getUserID();
-    const arenaID = response.assignations[userID];
+    const arenaID = response[userID];
     this.channelSubscription = this.gameStateService.channelID$.subscribe(channelID => {
       this.router.navigate(['/online/tournament', channelID, arenaID]);
     });
@@ -431,7 +434,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('GameComponent created');
     await this.userService.whenUserDataLoaded();
     await this.connectionService.listenToWebSocketMessages(
-      this.handleGameUpdate.bind(this), this.handleGameError.bind(this), this.handleRedirection.bind(this)
+      this.handleGameUpdate.bind(this), this.handleGameError.bind(this)
     );
     this.gameStateService.setChannelID(this.connectionService.getChannelID());
     this._setGameStyle();

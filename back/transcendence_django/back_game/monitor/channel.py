@@ -49,6 +49,8 @@ class Channel:
         self.arenas[arena.id] = arena
 
     def add_user_into_arena(self, user_id: int, arena_id: str):
+        if user_id in self.users:
+            return
         if len(self.users) < self.user_count:
             arena: Arena = self.arenas[arena_id]
             self.users[user_id] = arena

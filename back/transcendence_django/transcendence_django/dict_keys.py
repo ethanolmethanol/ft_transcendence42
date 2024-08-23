@@ -10,15 +10,11 @@ CHANNEL_ID = "channel_id"
 ASSIGNATIONS = "assignations"
 CHANNEL_PLAYERS = "channel_players"
 CAPACITY = "capacity"
+ASSIGNATIONS = "assignations"
 
 # Game error
 GAME_ERROR = "game_error"
 ERROR = "error"
-
-# Game redirect
-GAME_REDIRECT = "game_redirect"
-REDIRECT = "redirect"
-ASSIGNATIONS = "assignations"
 
 # Game update
 GAME_UPDATE = "game_update"
