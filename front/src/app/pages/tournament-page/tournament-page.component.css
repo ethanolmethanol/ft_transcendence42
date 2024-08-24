@@ -39,6 +39,7 @@ button {
   width: 100%;
   top: 40vh;
   padding: 0;
+  list-style-type: none;
 }
 
 h4 {

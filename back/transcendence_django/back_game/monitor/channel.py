@@ -6,7 +6,7 @@ from typing import Any
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import CREATED, WAITING
+from back_game.game_settings.game_constants import CREATED, WAITING, DEAD
 
 
 logger = logging.getLogger(__name__)
@@ -66,13 +66,12 @@ class Channel:
             assignations[user_id] = arena.id
         return assignations
 
-    def delete_user_from_arena(self, user_id: int):
+    def count_non_dead_arenas(self) -> int:
+        return sum(1 for arena in self.arenas.values() if not arena.get_status() == GameStatus(DEAD))
+
+    def delete_user(self, user_id: int):
         if user_id in self.users:
             del self.users[user_id]
-
-    def delete_arena(self, arena_id: str):
-        if arena_id in self.arenas:
-            del self.arenas[arena_id]
 
     def is_empty(self) -> bool:
         return not bool(self.arenas)

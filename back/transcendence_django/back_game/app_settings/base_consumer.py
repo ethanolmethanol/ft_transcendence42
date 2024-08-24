@@ -124,9 +124,12 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.send_players()
         await self.send_arena_data()
         if self.game.is_channel_full() and arena_id is None:
-            await asyncio.sleep(2)
-            assignations: dict[str, Any] = self.game.get_assignations()
-            await self.send_update({ASSIGNATIONS: assignations})
+            asyncio.create_task(self.send_assignations_with_delay())
+
+    async def send_assignations_with_delay(self):
+        await asyncio.sleep(2)
+        assignations: dict[str, Any] = self.game.get_assignations()
+        await self.send_update({ASSIGNATIONS: assignations})
 
     async def leave(self, _):
         self.game.leave()

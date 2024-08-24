@@ -47,15 +47,23 @@ class ChannelManager:
         try:
             if channel is None:
                 channel = self.user_game_table.get(user_id)
-            elif channel == self.user_game_table.get(user_id):
-                self.user_game_table.pop(user_id)
+            elif channel != self.user_game_table.get(user_id):
+                raise KeyError
+            self.user_game_table.pop(user_id)
             if channel is not None:
-                channel.delete_user_from_arena(user_id)
-                if not channel.users:
-                    self.delete_channel(channel.id)
-            logger.info("User %s deleted from user_game_table", user_id)
+                channel.delete_user(user_id)
+                logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
+
+    def delete_channel(self, channel_id: str):
+        channel = self.get_channel(channel_id)
+        if channel is not None:
+            if channel.users:
+                for user_id in list(channel.users.keys()):
+                    self.delete_user_from_channel(user_id, channel)
+            self.channels.pop(channel_id)
+            logger.info("Channel %s deleted", channel_id)
 
     async def join_channel(
         self, user_id: int, channel_id: str
@@ -115,16 +123,6 @@ class ChannelManager:
         arena = channel.get_arena_from_user_id(user_id)
         return {"channel_id": channel.id, "arena": arena.to_dict()}
 
-    def delete_arena(self, channel_id: string, arena_id: str):
-        channel = self.get_channel(channel_id)
-        arena = channel.arenas[arena_id]
-        arena.set_status(GameStatus(DEAD))
-        logger.info("Arena %s is dead", arena.id)
-        player_list: dict[str, Player] = arena.get_players()
-        for player in player_list.values():
-            self.delete_user_from_channel(player.user_id, channel)
-        channel.delete_arena(arena_id)
-
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
         logger.info("Trying to get arena %s in channel %s", arena_id, channel_id)
         channel = self.get_channel(channel_id)
@@ -172,12 +170,6 @@ class ChannelManager:
             return None
         return channel.get_arena_from_user_id(user_id)
 
-    def delete_channel(self, channel_id: str):
-        channel = self.get_channel(channel_id)
-        if channel is not None:
-            self.channels.pop(channel_id)
-            logger.info("Channel %s deleted", channel_id)
-
     def __get_available_channel(self, is_tournament: bool = False) -> dict[str, Any] | None:
         for channel in self.channels.values():
             if channel.is_tournament == is_tournament:
@@ -212,8 +204,10 @@ class ChannelManager:
         while arena.get_status() != GameStatus(DEAD):
             await self.__update_game_states(arena)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        self.delete_arena(channel.id, arena.id)
-        if channel is not None and len(channel.arenas) == 0:
+        for player in arena.get_players().values():
+            self.delete_user_from_channel(player.user_id, channel)
+        non_dead_arenas_count = channel.count_non_dead_arenas()
+        if channel is not None and non_dead_arenas_count == 0:
             self.delete_channel(channel.id)
 
     async def __run_game_loop(self, arena: Arena):
@@ -240,4 +234,3 @@ class ChannelManager:
                 arena.set_status(GameStatus(DEAD))
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
-
