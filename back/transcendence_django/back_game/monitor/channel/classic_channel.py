@@ -10,12 +10,5 @@ class ClassicChannel(Channel):
         self.arenas: Dict[str, Arena] = {arena.id: arena}
         self.user_count = 2
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "channel_id": self.id,
-            "arenas": [arena.to_dict() for arena in self.arenas.values()],
-            "is_tournament": False,
-        }
-
     def is_tournament(self) -> bool:
         return False

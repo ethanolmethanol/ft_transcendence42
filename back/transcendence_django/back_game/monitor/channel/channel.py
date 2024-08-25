@@ -18,6 +18,17 @@ class Channel(ABC):
         self.arenas: Dict[str, Arena] = {}
         self.user_count = 0
 
+    @abstractmethod
+    def is_tournament(self) -> bool:
+        pass
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "channel_id": self.id,
+            "arenas": [arena.to_dict() for arena in self.arenas.values()],
+            "is_tournament": self.is_tournament(),
+        }
+
     def get_available_arena(self) -> Arena | None:
         if self.is_full():
             return None
