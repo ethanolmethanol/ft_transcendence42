@@ -115,6 +115,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() startCounterStarted = new EventEmitter<void>();
   private playerName: string | null = null;
   private isRemote: boolean = false;
+  private isTournament: boolean = false;
   private channelSubscription: Subscription | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -153,6 +154,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.gameStateService.isRemote$.subscribe(isRemote => {
       this.isRemote = isRemote;
+    });
+    this.gameStateService.isTournament$.subscribe(isTournament => {
+      this.isTournament = isTournament;
     });
     if (this.isRemote) {
       await this.userService.whenUserDataLoaded();
@@ -360,6 +364,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gameStateService.activePlayers$.pipe(
       map(players => players.find((name: string) => name === this.playerName))
     ).subscribe(foundPlayer => player = foundPlayer);
+    if (this.isTournament) {
+      this.redirectToLobby();
+    }
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
     }
@@ -370,7 +377,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
         gameOverOverlay.message = info.winner + " won! " + info.message
       }
       gameOverOverlay.time = info.time
-      gameOverOverlay.show = true
+      gameOverOverlay.show = true;
       // for online mode, use info.winner to update the user score db?
 
       if (info.time === 0) {
@@ -381,7 +388,12 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private redirectToHome() {
     this.gameStateService.reset();
-    this.gameOver.first.redirectToHome();
+    this.router.navigate(['/home']);
+  }
+
+  private redirectToLobby() {
+    this.gameStateService.reset();
+    this.router.navigate(['/online/tournament/', this.connectionService.getChannelID()]);
   }
 
   @HostListener('window:keydown', ['$event'])
