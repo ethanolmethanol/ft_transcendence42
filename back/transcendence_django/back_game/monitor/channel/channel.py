@@ -1,30 +1,22 @@
+from abc import ABC, abstractmethod
 import logging
 import random
 import string
-
-from typing import Any
+from typing import Any, Dict
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import CREATED, WAITING, DEAD
 
-
 logger = logging.getLogger(__name__)
 
+class Channel(ABC):
 
-class Channel:
-    def __init__(self, arenas: dict[int, Arena], is_tournament: bool = False):
-        self.id: str = self.__generate_random_id(10)
-        self.arenas = arenas
-        self.is_tournament = is_tournament
-        self.users: dict[int, Arena] = {}
-        self.user_count = len(arenas) * 2
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "channel_id": self.id,
-            "arenas": [arena.to_dict() for arena in self.arenas.values()],
-        }
+    def __init__(self, players_specs: dict[str, int]):
+        self.id: str = self._generate_random_id(10)
+        self.users: Dict[int, Arena] = {}
+        self.arenas: Dict[str, Arena] = {}
+        self.user_count = 0
 
     def get_available_arena(self) -> Arena | None:
         if self.is_full():
@@ -60,7 +52,7 @@ class Channel:
         else:
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
 
-    def get_assignations(self) -> dict[str, Any]:
+    def get_assignations(self) -> Dict[str, Any]:
         assignations = {}
         for user_id, arena in self.users.items():
             assignations[user_id] = arena.id
@@ -79,6 +71,6 @@ class Channel:
     def is_full(self) -> bool:
         return len(self.users) == self.user_count
 
-    def __generate_random_id(self, length: int) -> str:
+    def _generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits
         return "".join(random.choice(letters_and_digits) for _ in range(length))

@@ -4,6 +4,9 @@ import random
 import string
 from typing import Any
 
+from back_game.monitor.channel.channel import Channel
+from back_game.monitor.channel.classic_channel import ClassicChannel
+from back_game.monitor.channel.tournament_channel import TournamentChannel
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
@@ -19,7 +22,7 @@ from back_game.game_settings.game_constants import (
     TOURNAMENT_SPECS,
     WAITING
 )
-from back_game.monitor.channel import Channel
+from back_game.monitor.channel.channel import Channel
 from back_game.monitor.history_manager import HistoryManager
 from transcendence_django.dict_keys import ARENA, ID, START_TIME
 
@@ -83,7 +86,7 @@ class ChannelManager:
         if channel is None and is_remote:
             logger.info("User %s is not in a channel and is remote", user_id)
             return self.__get_available_channel()
-        if channel is None or channel.is_tournament:
+        if channel is None or channel.is_tournament():
             return None
         arena = self.get_arena_from_user_id(user_id)
         return {"channel_id": channel.id, "arena": arena.to_dict()}
@@ -91,14 +94,13 @@ class ChannelManager:
     async def create_new_channel(
         self, user_id: int, players_specs: dict[str, int], is_tournament: bool = False
     ) -> Channel:
-        arenas_count = 2 if is_tournament else 1
-        logger.info("Creating new channel with %s arenas", arenas_count)
-        arenas = {}
-        for _ in range(arenas_count):
-            new_arena: Arena = Arena(players_specs)
-            arenas[new_arena.id] = new_arena
-        new_channel = Channel(arenas, is_tournament=is_tournament)
+        if is_tournament:
+            new_channel = TournamentChannel(players_specs)
+        else:
+            new_channel = ClassicChannel(players_specs)
         self.channels[new_channel.id] = new_channel
+        arenas = new_channel.arenas
+        new_arena = list(arenas.values())[0]
         self.add_user_to_channel(new_channel, new_arena.id, user_id)
         for arena in arenas.values():
             asyncio.create_task(self.__arena_loop(new_channel, arena))
@@ -172,7 +174,7 @@ class ChannelManager:
 
     def __get_available_channel(self, is_tournament: bool = False) -> dict[str, Any] | None:
         for channel in self.channels.values():
-            if channel.is_tournament == is_tournament:
+            if channel.is_tournament() == is_tournament:
                 available_arena = channel.get_available_arena()
                 logger.info("Available arena: %s in channel %s", available_arena, channel.id)
                 if available_arena:
