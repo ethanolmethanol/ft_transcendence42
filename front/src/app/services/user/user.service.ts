@@ -136,14 +136,10 @@ export class UserService {
     return this.http.post<GameHistoryResponse>(`${API_USER}/get_game_summaries/`, postData);
   }
 
-  public getAvatarUrl(): Observable<any> {
-    return this.http.get(`${API_USER}/avatar/`);
-  }
-
-  public setAvatar(file: File): Observable<any> {
+  public updateAvatar(file: File): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('avatar', file);
 
-    return this.http.post<any>(`${API_USER}/avatar/`, formData);
+    return this.http.post<any>(`${API_USER}/update_avatar/`, formData);
   }
 }

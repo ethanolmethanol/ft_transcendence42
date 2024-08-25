@@ -18,9 +18,7 @@ from transcendence_django.dict_keys import USER_ID
 
 from .avatar_uploader import AvatarUploader
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
-from .forms import UploadFileForm
 # pylint: disable=no-member
-from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -215,31 +213,18 @@ class UpdateUsernameView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-@method_decorator(csrf_protect, name="dispatch")
-class AvatarView(APIView):
-    def __init__(self):
-        self._avatar_uploader = AvatarUploader()
+@require_http_methods(["POST"])
+@csrf_protect
+def update_avatar(request) -> JsonResponse:
+    avatar_uploader = AvatarUploader()
+    avatar_file = request.FILES.get("avatar")
 
-    def get(self, request: Any) -> Response:
-        try:
-            user_id: str = str(request.user.id)
-            url: str = self._avatar_uploader.get_avatar_url(user_id)
-            url = url.replace("minio", settings.SERV_IP)
-            logger.info("Avatar URL: " + url)
-            return Response({"url": url})
-        except Exception as e:
-            logger.error(e)
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    if not avatar_file:
+        return JsonResponse({"error": "Avatar file not found."}, status=400)
 
-    def post(self, request: Any) -> Response:
-        try:
-            form = UploadFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                self.avatar_uploader.upload_avatar(request.FILES["file"], request.user.id)
-            return Response(
-                {"message": "Avatar file successfully uploaded to the server"}, status=status.HTTP_200_OK,
-            )
-        except KeyError as e:
-            return Response(
-                {"Error while uploading avatar file to the server: ": str(e)}, status=status.HTTP_400_BAD_REQUEST,
-            )
+    avatar_uploader.upload_avatar(avatar_file, request.user.id)
+    return JsonResponse(
+        {"message": "Avatar file successfully uploaded to the server"},
+        status=status.HTTP_200_OK,
+    )
+

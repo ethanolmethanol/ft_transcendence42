@@ -18,22 +18,10 @@ class AvatarUploader:
             secure=settings.MINIO_STORAGE_USE_HTTPS
         )
         self.client._http = urllib3.PoolManager(cert_reqs='CERT_NONE')
-
-    def get_avatar_url(self, user_id: str):
-        logger.info("Getting avatar url for user {}".format(user_id))
-        #filename = f"{user_id}.jpg"
-        filename = settings.DEFAULT_AVATAR_PATH
-
-        bucket_name = settings.MINIO_STORAGE_MEDIA_BUCKET_NAME
-        minio_response = self.client.presigned_get_object(bucket_name, filename)
-        if minio_response is None:
-            minio_response = self.client.presigned_get_object(bucket_name, settings.DEFAULT_AVATAR_PATH)
-        logger.info('Minio response: {}'.format(minio_response))
-        return minio_response
+        logger.info("AvatarUploader: Started")
 
     def upload_avatar(self, file, user_id):
         bucket_name = settings.MINIO_STORAGE_MEDIA_BUCKET_NAME
-        # filename = user_id
         filename = "%s_avatar.jpg" % user_id
         self.client.put_object(
             bucket_name,
@@ -42,5 +30,3 @@ class AvatarUploader:
             length=file.size,
             content_type=file.content_type
         )
-        return "https://%s/%s/%s" % (settings.MINIO_STORAGE_ENDPOINT, bucket_name, filename)
-

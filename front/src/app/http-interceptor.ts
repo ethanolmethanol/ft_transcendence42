@@ -2,9 +2,7 @@ import { HttpRequest, HttpEvent, HttpHandlerFn, HttpHeaders } from '@angular/com
 import { Observable } from 'rxjs';
 
 export function interceptHttpRequests(req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> {
-  let headers = new HttpHeaders({
-    'Content-Type': 'application/json'
-  });
+  let headers = req.headers;
   headers = addHeader(headers, 'X-CSRFToken', 'csrftoken');
   const cloned = req.clone({
     withCredentials: true,

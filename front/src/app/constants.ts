@@ -103,3 +103,6 @@ export const DEFAULT_TIME_PLAYED = {local: 0, remote: 0, total: 0}
 export const DEFAULT_GAME_COUNTER = {local: 0, remote: 0, total: 0}
 export const DEFAULT_WIN_DICT = {win: 0, loss: 0, tie: 0, total: 0}
 
+export const MINIO_API: string = `https://${environment.servIP}:9000`
+export const AVATARS_BUCKET: string = "avatars"
+export const DEFAULT_AVATAR_URL: string = `${MINIO_API}/${AVATARS_BUCKET}/default_avatar.jpg`
