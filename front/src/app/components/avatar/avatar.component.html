@@ -1,6 +1,10 @@
 <div class="avatar-container">
-  <section class="image-container"
-           [ngStyle]="{backgroundImage: 'url(' + fileUrl + ')'}">
+  <section class="image-container">
+    <img class="image-container"
+         [src]="fileUrl"
+         [attr.alt]="'User Avatar'"
+         (error)="onImageError($event)"
+    />
     <label for="avatar-input-file">
       <section class="icon-wrapper">
         <input type="file" id="avatar-input-file" accept="image/*" (change)="onFileChange($event)"/>

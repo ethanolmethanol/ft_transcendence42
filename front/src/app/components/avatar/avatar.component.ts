@@ -17,8 +17,8 @@ import { MINIO_API, AVATARS_BUCKET, DEFAULT_AVATAR_URL} from "../../constants"
   styleUrl: './avatar.component.css'
 })
 export class AvatarComponent implements OnInit {
-  public  fileUrl: string = DEFAULT_AVATAR_URL;
-  private  isAvatarSet: boolean = false;
+  public  fileUrl: string = "";
+  private  fallbackUrl: string = DEFAULT_AVATAR_URL;
 
   constructor(private userService: UserService, private http: HttpClient) {}
 
@@ -28,11 +28,8 @@ export class AvatarComponent implements OnInit {
   }
 
   private loadAvatar(): void {
-    const user_id: string = String(this.userService.getUserID());
-    const new_url: string = `${MINIO_API}/${AVATARS_BUCKET}/${user_id}_avatar.jpg`
-
-    if (!this.isAvatarSet)
-      this.fileUrl = new_url;
+    const userID: string = String(this.userService.getUserID());
+    this.fileUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${userID}_avatar.jpg`;
   }
 
   public onFileChange(event: any) {
@@ -43,7 +40,6 @@ export class AvatarComponent implements OnInit {
         this.userService.updateAvatar(file).subscribe({
           next: (response: any): void => {
             console.log(response);
-            this.isAvatarSet = true;
           },
           error: (error: Error) => {
             console.error("Failed to load avatar: ", error);
@@ -58,5 +54,10 @@ export class AvatarComponent implements OnInit {
     if(input){
       input.value = "";
     }
+  }
+
+  public onImageError(event: Event) {
+    console.log('Image failed to load, using fallback URL.');
+    (event.target as HTMLImageElement).src = this.fallbackUrl;
   }
 }
