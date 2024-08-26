@@ -20,9 +20,9 @@ class AvatarUploader:
         self.client._http = urllib3.PoolManager(cert_reqs='CERT_NONE')
         logger.info("AvatarUploader: Started")
 
-    def upload_avatar(self, file, user_id):
+    def upload_avatar(self, file, username):
         bucket_name = settings.MINIO_STORAGE_MEDIA_BUCKET_NAME
-        filename = "%s_avatar.jpg" % user_id
+        filename = "%s_avatar.jpg" % username
         self.client.put_object(
             bucket_name,
             filename,

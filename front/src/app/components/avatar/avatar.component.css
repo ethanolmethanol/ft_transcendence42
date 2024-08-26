@@ -1,11 +1,12 @@
 .avatar-container {
   position: relative;
   width: fit-content;
+  margin-bottom: 15px;
 }
 
 .image-container {
-  height: 200px;
-  width: 200px;
+  height: 100px;
+  width: 100px;
   z-index: 1;
   border-radius: 50%;
   background-color: #fff;

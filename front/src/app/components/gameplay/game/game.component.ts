@@ -40,6 +40,7 @@ import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
+import { AvatarComponent } from "../../avatar/avatar.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -83,15 +84,16 @@ interface ErrorMapping {
   selector: 'app-game',
   standalone: true,
       imports: [
-            PaddleComponent,
-            BallComponent,
-            GameOverComponent,
-            LoadingSpinnerComponent,
-            NgIf,
-            NgForOf,
-            PlayerIconComponent,
-            StartTimerComponent,
+        PaddleComponent,
+        BallComponent,
+        GameOverComponent,
+        LoadingSpinnerComponent,
+        NgIf,
+        NgForOf,
+        PlayerIconComponent,
+        StartTimerComponent,
         CopyButtonComponent,
+        AvatarComponent,
       ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -101,6 +103,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
+  @ViewChildren(AvatarComponent) avatars!: QueryList<AvatarComponent>;
   @Input() isRemote: boolean = false;
   @Output() hasStarted = new EventEmitter<void>();
   @Output() startCounterStarted = new EventEmitter<void>();
@@ -175,7 +178,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   public setArena(arena: ArenaResponse) {
-    this.paddles.forEach(paddle => {
+    this.paddles.forEach((paddle, index) => {
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
         paddle.playerName = paddleData.player_name;
@@ -184,6 +187,10 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
         paddle.afkLeftTime = null;
+        const avatar = this.avatars.toArray()[index];
+        if (avatar) {
+          avatar.updateAvatar(paddle.playerName);
+        }
       }
     });
     this.ball.first.positionX = arena.ball.position.x;

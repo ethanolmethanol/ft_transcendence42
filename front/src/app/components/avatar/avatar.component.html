@@ -5,7 +5,7 @@
          [attr.alt]="'User Avatar'"
          (error)="onImageError($event)"
     />
-    <label for="avatar-input-file">
+    <label *ngIf="modify" for="avatar-input-file">
       <section class="icon-wrapper">
         <input type="file" id="avatar-input-file" accept="image/*" (change)="onFileChange($event)"/>
         <mat-icon class="icon">create</mat-icon>

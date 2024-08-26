@@ -13,8 +13,14 @@
       <app-paddle [id]="2"></app-paddle>
     </section>
     <section *ngIf="paddles && paddles.first && paddles.last" class="players">
-      <div class="player-name player1">{{ paddles.first.playerName }}</div>
-      <div class="player-name player2">{{ paddles.last.playerName }}</div>
+      <div class="player-name player1">
+        <app-avatar></app-avatar>
+        {{ paddles.first.playerName }}
+      </div>
+      <div class="player-name player2">
+        <app-avatar></app-avatar>
+        {{ paddles.last.playerName }}
+      </div>
     </section>
   </section>
   <section class="remote-section" *ngIf="dataLoaded && isWaiting && isRemote">

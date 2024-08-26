@@ -222,7 +222,8 @@ def update_avatar(request) -> JsonResponse:
     if not avatar_file:
         return JsonResponse({"error": "Avatar file not found."}, status=400)
 
-    avatar_uploader.upload_avatar(avatar_file, request.user.id)
+    user = CustomUser.objects.get(pk=request.user.id)
+    avatar_uploader.upload_avatar(avatar_file, user.username)
     return JsonResponse(
         {"message": "Avatar file successfully uploaded to the server"},
         status=status.HTTP_200_OK,

@@ -122,9 +122,15 @@ app-copy-button {
   transform: translateY(-50%);
 }
 
+.players app-avatar {
+  display: flex;
+  justify-content: center;
+}
+
 .player-name {
   color: #ffffff;
   font-size: 20px;
+  text-align: center;
 }
 
 .player1 {

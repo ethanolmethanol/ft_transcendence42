@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule, NgStyle } from "@angular/common"
+import { CommonModule, NgStyle, NgIf } from "@angular/common"
 import { UserService } from "../../services/user/user.service";
 import { MINIO_API, AVATARS_BUCKET, DEFAULT_AVATAR_URL} from "../../constants"
+import {User} from "../../interfaces/user";
 
 @Component({
   selector: 'app-avatar',
@@ -12,24 +13,29 @@ import { MINIO_API, AVATARS_BUCKET, DEFAULT_AVATAR_URL} from "../../constants"
     MatIconModule,
     CommonModule,
     NgStyle,
+    NgIf,
   ],
   templateUrl: './avatar.component.html',
   styleUrl: './avatar.component.css'
 })
 export class AvatarComponent implements OnInit {
-  public  fileUrl: string = "";
-  private  fallbackUrl: string = DEFAULT_AVATAR_URL;
+  public    fileUrl: string = "";
+  private   fallbackUrl: string = DEFAULT_AVATAR_URL;
+  @Input()  modify: boolean = false;
+  @Input()  username: string = "";
 
   constructor(private userService: UserService, private http: HttpClient) {}
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
+    console.log("username: ", this.username);
     this.loadAvatar();
   }
 
   private loadAvatar(): void {
-    const userID: string = String(this.userService.getUserID());
-    this.fileUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${userID}_avatar.jpg`;
+    if (this.modify || this.username === "Player1" || this.username === "Player2")
+      this.username = this.userService.getUsername();
+    this.fileUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${this.username}_avatar.jpg`;
   }
 
   public onFileChange(event: any) {
@@ -57,7 +63,12 @@ export class AvatarComponent implements OnInit {
   }
 
   public onImageError(event: Event) {
-    console.log('Image failed to load, using fallback URL.');
+    console.log('Image failed to load, using fallback URL.', this.fileUrl);
     (event.target as HTMLImageElement).src = this.fallbackUrl;
+  }
+
+  public updateAvatar(username: string): void {
+    this.username = username;
+    this.loadAvatar();
   }
 }
