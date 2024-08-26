@@ -61,6 +61,8 @@ TOURNAMENT_SPECS = {
         "is_private": 0,
     },
 }
+TOURNAMENT_ARENA_COUNT = 2
+TOURNAMENT_MAX_ROUND = int(math.log2(TOURNAMENT_ARENA_COUNT) + 1)
 
 # Game loop parameters
 MONITOR_LOOP_INTERVAL = 0.5

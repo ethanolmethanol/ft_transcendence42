@@ -117,6 +117,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   private isRemote: boolean = false;
   private isTournament: boolean = false;
   private channelSubscription: Subscription | null = null;
+  private activePlayersSubscription: Subscription | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
   gameHeight: number = GAME_HEIGHT;
@@ -361,7 +362,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   private updateGameOver(info: GameOverUpdateResponse) {
     let gameOverOverlay = this.gameOver.first;
     let player: string | undefined;
-    this.gameStateService.activePlayers$.pipe(
+    this.activePlayersSubscription = this.gameStateService.activePlayers$.pipe(
       map(players => players.find((name: string) => name === this.playerName))
     ).subscribe(foundPlayer => player = foundPlayer);
     if (this.isTournament) {
@@ -456,6 +457,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.channelSubscription) {
       this.channelSubscription.unsubscribe();
+    }
+    if (this.activePlayersSubscription) {
+      this.activePlayersSubscription.unsubscribe();
     }
     this.gameStateService.restrictReset();
     console.log('GameComponent destroyed');
