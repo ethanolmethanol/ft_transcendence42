@@ -271,12 +271,13 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     if (actionType !== 'tournament') return;
 
     const userID = this.userService.getUserID();
-    const arenaID = response[userID];
-    this.channelSubscription = this.gameStateService.channelID$.subscribe(channelID => {
-      this.router.navigate(['/online/tournament', channelID, arenaID]);
-    });
+    const arena = response[userID];
+    if (arena.status != DYING && arena.status != DEAD) {
+      this.channelSubscription = this.gameStateService.channelID$.subscribe(channelID => {
+        this.router.navigate(['/online/tournament', channelID, arena.id]);
+      });
+    }
   }
-
 
   private updateStartTimer(timer: StartTimerResponse) {
     this.startTimer.first.message = timer.message;
@@ -322,16 +323,22 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateStatus(status: number) {
-    let gameOverOverlay = this.gameOver.first;
+    let gameOverOverlay: GameOverComponent = this.gameOver.first;
     this.gameStateService.setIsWaiting(status == CREATED || status == WAITING)
     if (gameOverOverlay.hasRematched === false) {
-      if (status == DYING) {
-        gameOverOverlay.show = true;
-      } else if (status == DEAD) {
-        this.redirectToHome();
-      } else if (status == STARTED) {
+      if (status == STARTED) {
         this.handleStartCounterCompletion()
         gameOverOverlay.show = false;
+      } else if (status == DYING || status == DEAD) {
+        if (this.isTournament) {
+          this.redirectToLobby();
+          return;
+        }
+        if (status == DYING) {
+          gameOverOverlay.show = true;
+        } else if (status == DEAD) {
+          this.redirectToHome();
+        }
       }
     }
   }
@@ -365,9 +372,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePlayersSubscription = this.gameStateService.activePlayers$.pipe(
       map(players => players.find((name: string) => name === this.playerName))
     ).subscribe(foundPlayer => player = foundPlayer);
-    if (this.isTournament) {
-      this.redirectToLobby();
-    }
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
     }
@@ -394,7 +398,12 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private redirectToLobby() {
     this.gameStateService.reset();
-    this.router.navigate(['/online/tournament/', this.connectionService.getChannelID()]);
+    const arenaID = this.route.snapshot.params['arena_id'];
+    console.log('Arena ID:', arenaID)
+    if (arenaID) {
+      console.log('Redirecting to lobby');
+      this.router.navigate(['/online/tournament/', this.connectionService.getChannelID()]);
+    }
   }
 
   @HostListener('window:keydown', ['$event'])

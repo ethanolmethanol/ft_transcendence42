@@ -22,6 +22,10 @@ class Channel(ABC):
     def is_tournament(self) -> bool:
         pass
 
+    @abstractmethod
+    def is_ready_to_start(self) -> bool:
+        pass
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "channel_id": self.id,
@@ -66,7 +70,7 @@ class Channel(ABC):
     def get_assignations(self) -> Dict[str, Any]:
         assignations = {}
         for user_id, arena in self.users.items():
-            assignations[user_id] = arena.id
+            assignations[user_id] = arena.to_dict()
         return assignations
 
     def count_non_dead_arenas(self) -> int:

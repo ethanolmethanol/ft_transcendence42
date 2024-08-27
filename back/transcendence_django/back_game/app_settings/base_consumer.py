@@ -123,7 +123,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.send_message(f"{self.game.user_id} has joined the game.")
         await self.send_players()
         await self.send_arena_data()
-        if self.game.is_channel_full() and arena_id is None:
+        if arena_id is None and self.game.is_ready_to_start():
             asyncio.create_task(self.send_assignations_with_delay())
 
     async def send_assignations_with_delay(self):

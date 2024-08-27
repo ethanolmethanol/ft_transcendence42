@@ -72,6 +72,9 @@ class GameLogicInterface:
     def is_channel_full(self) -> bool:
         return self.channel.is_full()
 
+    def is_ready_to_start(self) -> bool:
+        return self.channel.is_ready_to_start()
+
     def get_assignations(self) -> dict[str, Any]:
         return self.channel.get_assignations()
 

@@ -55,6 +55,8 @@ class ChannelManager:
             self.user_game_table.pop(user_id)
             if channel is not None:
                 channel.delete_user(user_id)
+                if channel.can_be_deleted():
+                    self.delete_channel(channel.id)
                 logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
@@ -199,17 +201,13 @@ class ChannelManager:
             if arena_status != GameStatus(STARTED):
                 arena.set_status(GameStatus(DEAD))
         elif arena_status == GameStatus(OVER):
-            logger.info("Game over in arena %s", arena.id)
             await self.__game_over(arena)
 
     async def __arena_loop(self, channel: Channel, arena: Arena):
         while arena.get_status() != GameStatus(DEAD):
             await self.__update_game_states(arena)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        for player in arena.get_players().values():
-            self.delete_user_from_channel(player.user_id, channel)
-        non_dead_arenas_count = channel.count_non_dead_arenas()
-        if channel is not None and non_dead_arenas_count == 0:
+        if channel is not None and channel.can_be_deleted():
             self.delete_channel(channel.id)
 
     async def __run_game_loop(self, arena: Arena):
@@ -221,6 +219,7 @@ class ChannelManager:
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
     async def __game_over(self, arena: Arena):
+        logger.info("Game over in arena %s", arena.id)
         arena.set_status(GameStatus(DYING))
         if arena.game_update_callback is not None:
             logger.info("Sending game over message to arena %s", arena.id)

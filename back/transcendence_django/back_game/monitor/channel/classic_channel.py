@@ -12,3 +12,12 @@ class ClassicChannel(Channel):
 
     def is_tournament(self) -> bool:
         return False
+
+    def is_ready_to_start(self) -> bool:
+        return self.is_full()
+
+    def can_be_deleted(self) -> bool:
+        if len(self.users) == 0:
+            return True
+        non_dead_arenas_count = self.count_non_dead_arenas()
+        return non_dead_arenas_count == 0
