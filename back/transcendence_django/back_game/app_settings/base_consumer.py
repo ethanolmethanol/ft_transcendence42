@@ -128,6 +128,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     async def send_assignations_with_delay(self):
         await asyncio.sleep(2)
+        self.game.set_next_round()
         assignations: dict[str, Any] = self.game.get_assignations()
         await self.send_update({ASSIGNATIONS: assignations})
 

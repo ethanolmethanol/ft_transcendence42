@@ -1,6 +1,7 @@
 from .channel import Channel
 from typing import Any, Dict
 from back_game.game_arena.arena import Arena
+from back_game.game_settings.game_constants import DEAD
 
 class ClassicChannel(Channel):
 
@@ -16,8 +17,10 @@ class ClassicChannel(Channel):
     def is_ready_to_start(self) -> bool:
         return self.is_full()
 
+    def set_next_round(self):
+        pass
+
     def can_be_deleted(self) -> bool:
         if len(self.users) == 0:
             return True
-        non_dead_arenas_count = self.count_non_dead_arenas()
-        return non_dead_arenas_count == 0
+        return len(self.arenas) == self.count_arenas(DEAD)

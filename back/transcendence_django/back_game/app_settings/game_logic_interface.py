@@ -99,3 +99,8 @@ class GameLogicInterface:
         except (KeyError, ValueError) as e:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
+
+    def set_next_round(self):
+        if not self.is_tournament:
+            raise ChannelError(INVALID_ARENA, "Not a tournament channel.")
+        self.channel.set_next_round()

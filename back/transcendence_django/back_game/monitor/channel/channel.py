@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import CREATED, WAITING, DEAD
+from back_game.game_settings.game_constants import CREATED, WAITING, DEAD, DYING
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,10 @@ class Channel(ABC):
 
     @abstractmethod
     def is_ready_to_start(self) -> bool:
+        pass
+
+    @abstractmethod
+    def set_next_round(self):
         pass
 
     def to_dict(self) -> Dict[str, Any]:
@@ -73,8 +77,8 @@ class Channel(ABC):
             assignations[user_id] = arena.to_dict()
         return assignations
 
-    def count_non_dead_arenas(self) -> int:
-        return sum(1 for arena in self.arenas.values() if not arena.get_status() == GameStatus(DEAD))
+    def count_arenas(self, status: GameStatus) -> int:
+        return sum(1 for arena in self.arenas.values() if arena.get_status() == status)
 
     def delete_user(self, user_id: int):
         if user_id in self.users:
