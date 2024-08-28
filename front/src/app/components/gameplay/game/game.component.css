@@ -112,7 +112,7 @@ app-copy-button {
 
 .players {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   font-size: 2em;
   width: 100%;
@@ -133,6 +133,12 @@ app-copy-button {
   text-align: center;
 }
 
+.player1, .player2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .player1 {
   position: absolute;
   left: -15%;
@@ -141,4 +147,9 @@ app-copy-button {
 .player2 {
   position: absolute;
   right: -15%;
+}
+
+.player-avatar {
+  transform: scale(0.5);
+  margin-bottom: -0.5em;
 }

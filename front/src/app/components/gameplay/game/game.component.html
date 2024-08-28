@@ -13,13 +13,13 @@
       <app-paddle [id]="2"></app-paddle>
     </section>
     <section *ngIf="paddles && paddles.first && paddles.last" class="players">
-      <div class="player-name player1">
-        <app-avatar></app-avatar>
-        {{ paddles.first.playerName }}
+      <div class="player1">
+        <app-avatar class="player-avatar"></app-avatar>
+        <label class="player-name">{{ paddles.first.playerName }}</label>
       </div>
-      <div class="player-name player2">
-        <app-avatar></app-avatar>
-        {{ paddles.last.playerName }}
+      <div class="player2">
+        <app-avatar class="player-avatar"></app-avatar>
+        <label class="player-name">{{ paddles.last.playerName }}</label>
       </div>
     </section>
   </section>

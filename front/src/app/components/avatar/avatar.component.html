@@ -1,4 +1,4 @@
-<div class="avatar-container">
+<div class="avatar-container" >
   <section class="image-container">
     <img class="image-container"
          [src]="fileUrl"
@@ -7,7 +7,7 @@
     />
     <label *ngIf="modify" for="avatar-input-file">
       <section class="icon-wrapper">
-        <input type="file" id="avatar-input-file" accept="image/*" (change)="onFileChange($event)"/>
+        <input type="file" id="avatar-input-file" accept="image/jpeg" (change)="onFileChange($event)"/>
         <mat-icon class="icon">create</mat-icon>
       </section>
     </label>
