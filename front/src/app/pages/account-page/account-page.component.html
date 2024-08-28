@@ -1,8 +1,17 @@
 <body>
-<app-header></app-header>
-<section class="account-page-container">
-  <section class="avatar-container">
-    <app-avatar [modify]="true"></app-avatar>
+  <app-header></app-header>
+  <section class="account-page-container">
+    <app-avatar class="avatar" [modify]="true"></app-avatar>
+    <section class="account-card">
+      <div class="update-section">
+        <h4>Hello {{ username }}</h4>
+        <input type="text" placeholder="Update your username">
+        <button class="update-button" (click)="updateUsername()">Update Username</button>
+      </div>
+      <div class="update-section">
+        <input type="text" placeholder='Type "delete" to confirm'>
+        <button class="delete-button" (click)="deleteAccount()">Delete Account</button>
+      </div>
+    </section>
   </section>
-</section>
 </body>

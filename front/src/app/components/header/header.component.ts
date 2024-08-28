@@ -40,7 +40,11 @@ export class HeaderComponent {
   }
 
   toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
+    this.isDropdownOpen = true;
+  }
+
+  unToggleDropdown() {
+    this.isDropdownOpen = false;
   }
 
   selectOption(option: number) {
