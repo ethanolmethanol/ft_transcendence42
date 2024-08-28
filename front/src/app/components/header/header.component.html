@@ -5,16 +5,16 @@
       <span [class.arrow-up]="isDropdownOpen" [class.arrow-down]="!isDropdownOpen"></span>
     </button>
     <div class="dropdown settings-button" *ngIf="isDropdownOpen">
-      <button class="dropdown-item settings-button" (click)="selectOption('Account')">
+      <button class="dropdown-item settings-button" (click)="selectOption(ACCOUNT)">
         <i class="material-icons">account_circle</i> Account
       </button>
-      <button class="dropdown-item settings-button" (click)="selectOption('Game')">
-        <i class="material-icons">palette</i> Game
+      <button class="dropdown-item settings-button" (click)="selectOption(GAME)">
+        <i class="material-icons">palette</i> Custom
       </button>
-      <button class="dropdown-item settings-button" (click)="selectOption('Rules')">
+      <button class="dropdown-item settings-button" (click)="selectOption(RULES)">
         <i class="material-icons">menu_book</i> Rules
       </button>
-      <button class="dropdown-item settings-button" (click)="selectOption('Friends')">
+      <button class="dropdown-item settings-button" (click)="selectOption(FRIENDS)">
         <i class="material-icons">group</i> Friends
       </button>
     </div>

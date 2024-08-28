@@ -106,3 +106,8 @@ export const DEFAULT_WIN_DICT = {win: 0, loss: 0, tie: 0, total: 0}
 export const MINIO_API: string = `https://${environment.servIP}:9000`
 export const AVATARS_BUCKET: string = "avatars"
 export const DEFAULT_AVATAR_URL: string = `${MINIO_API}/${AVATARS_BUCKET}/default_avatar.jpg`
+
+export const ACCOUNT: number = 0;
+export const GAME: number = 1;
+export const RULES: number = 2;
+export const FRIENDS: number = 3;
