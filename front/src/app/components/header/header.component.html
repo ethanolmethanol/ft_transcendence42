@@ -1,5 +1,24 @@
 <header color="primary">
-  <button routerLink="/profile">Profile</button>
+  <div class="settings-container">
+    <button class="settings-button" (click)="toggleDropdown()">Settings
+      <span [class.arrow-up]="isDropdownOpen" [class.arrow-down]="!isDropdownOpen"></span>
+    </button>
+    <div class="dropdown settings-button" *ngIf="isDropdownOpen">
+      <button class="dropdown-item settings-button" (click)="selectOption('Account')">
+        <i class="material-icons">account_circle</i> Account
+      </button>
+      <button class="dropdown-item settings-button" (click)="selectOption('Game')">
+        <i class="material-icons">palette</i> Game
+      </button>
+      <button class="dropdown-item settings-button" (click)="selectOption('Rules')">
+        <i class="material-icons">menu_book</i> Rules
+      </button>
+      <button class="dropdown-item settings-button" (click)="selectOption('Friends')">
+        <i class="material-icons">group</i> Friends
+      </button>
+    </div>
+  </div>
+
   <a class="title" routerLink="/" (click)="onTitleClick()">
     <h1 class="banner-title">Transcendence</h1>
   </a>

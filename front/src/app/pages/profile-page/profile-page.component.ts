@@ -6,6 +6,7 @@ import { AppearanceSettingsComponent } from '../../components/appearance-setting
 import * as Constants from '../../constants';
 import { UserService } from '../../services/user/user.service';
 import { AvatarComponent } from "../../components/avatar/avatar.component";
+import { SettingsComponent } from "../../components/settings/settings.component";
 
 @Component({
   selector: 'app-profile-page',
@@ -16,6 +17,7 @@ import { AvatarComponent } from "../../components/avatar/avatar.component";
     GameboardComponent,
     AppearanceSettingsComponent,
     AvatarComponent,
+    SettingsComponent,
   ],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.css'

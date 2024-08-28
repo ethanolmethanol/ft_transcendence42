@@ -255,7 +255,7 @@ class Arena:
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.enable_player(user_id)
         else:
-            self.__register_player(user_id, player_name, True)
+            self.__register_player(user_id, player_name, False)
 
     def __register_player(self, user_id: int, player_name: str, is_bot: bool):
         self.player_manager.finish_given_up_players()

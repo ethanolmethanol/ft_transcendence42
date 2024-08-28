@@ -28,8 +28,8 @@ export class AvatarComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
-    console.log("username: ", this.username);
     this.loadAvatar();
+    console.log("username: ", this.username);
   }
 
   private loadAvatar(): void {
