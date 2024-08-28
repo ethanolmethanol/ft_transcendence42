@@ -67,11 +67,11 @@ class Monitor:
     def is_user_in_channel(self, user_id: int) -> bool:
         return self.channel_manager.user_game_table.get(user_id) is not None
 
-    def add_user_to_channel(self, channel_id: str, arena_id: str | None, user_id: int):
+    async def add_user_to_channel(self, channel_id: str, arena_id: str | None, user_id: int):
         logger.info("Adding user %s to channel %s", user_id, channel_id)
         channel = self.channel_manager.channels.get(channel_id)
         if channel:
-            self.channel_manager.add_user_to_channel(channel, arena_id, user_id)
+            await self.channel_manager.add_user_to_channel(channel, arena_id, user_id)
         else:
             logger.error("Channel %s not found", channel_id)
 
@@ -87,14 +87,14 @@ class Monitor:
         arena.game_over_callback = callbacks[OVER_CALLBACK]
         arena.start_timer_callback = callbacks[START_TIMER_CALLBACK]
 
-    def join_arena(
+    async def join_arena(
         self, user_id: int, player_name: str, channel_id: str, arena_id: str
     ):
         if self.is_user_active_in_game(user_id, channel_id, arena_id):
             raise ValueError("User already in another arena")
         arena: Arena = self.get_arena(channel_id, arena_id)
         arena.enter_arena(user_id, player_name)
-        self.add_user_to_channel(channel_id, arena_id, user_id)
+        await self.add_user_to_channel(channel_id, arena_id, user_id)
 
     def give_up(self, user_id: int, channel_id: str, arena_id: str | None):
         if arena_id is not None:

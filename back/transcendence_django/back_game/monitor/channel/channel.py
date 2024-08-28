@@ -27,7 +27,11 @@ class Channel(ABC):
         pass
 
     @abstractmethod
-    def set_next_round(self):
+    def set_next_round(self) -> bool:
+        pass
+
+    @abstractmethod
+    def can_round_be_set(self):
         pass
 
     def to_dict(self) -> Dict[str, Any]:
@@ -59,7 +63,7 @@ class Channel(ABC):
     def add_arena(self, arena: Arena):
         self.arenas[arena.id] = arena
 
-    def add_user_into_arena(self, user_id: int, arena_id: str):
+    async def add_user_into_arena(self, user_id: int, arena_id: str):
         if user_id in self.users:
             return
         if len(self.users) < self.user_count:
@@ -68,6 +72,7 @@ class Channel(ABC):
             logger.info("User %s added to channel %s", user_id, self.id)
             if self.is_full():
                 logger.info("Channel %s is full!", self.id)
+                await self.assignation_sender()
         else:
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
 

@@ -25,18 +25,19 @@ class GameLogicInterface:
     def init_channel(self, channel_id: str):
         self.channel = self.monitor.channel_manager.get_channel(channel_id)
 
-    def join(
+    async def join(
         self,
         user_id: int,
         player_name: str,
         arena_id: str | None,
         callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
+        logger.info("User %s joining channel %s", user_id, self.channel.id)
         if arena_id is not None:
-            self.__join_arena(user_id, player_name, arena_id, callbacks)
+            await self.__join_arena(user_id, player_name, arena_id, callbacks)
             self.arena_id = arena_id
         else:
-            self.monitor.add_user_to_channel(self.channel.id, None, user_id)
+            await self.monitor.add_user_to_channel(self.channel.id, None, user_id)
         self.user_id = user_id
         self.has_joined = True
 
@@ -65,9 +66,12 @@ class GameLogicInterface:
     def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
         if not self.has_joined:
             raise ChannelError(NOT_JOINED, "Attempt to move paddle without joining.")
-        return self.monitor.move_paddle(
-            self.channel.id, self.arena_id, player_name, direction
-        )
+        try:
+            return self.monitor.move_paddle(
+                self.channel.id, self.arena_id, player_name, direction
+            )
+        except KeyError as e:
+            raise ChannelError(NOT_ENTERED, "User cannot move paddle.") from e
 
     def is_channel_full(self) -> bool:
         return self.channel.is_full()
@@ -78,7 +82,7 @@ class GameLogicInterface:
     def get_assignations(self) -> dict[str, Any]:
         return self.channel.get_assignations()
 
-    def __join_arena(
+    async def __join_arena(
         self,
         user_id: int,
         player_name: str,
@@ -95,12 +99,7 @@ class GameLogicInterface:
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
-            self.monitor.join_arena(user_id, player_name, self.channel.id, arena_id)
+            await self.monitor.join_arena(user_id, player_name, self.channel.id, arena_id)
         except (KeyError, ValueError) as e:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
-
-    def set_next_round(self):
-        if not self.is_tournament:
-            raise ChannelError(INVALID_ARENA, "Not a tournament channel.")
-        self.channel.set_next_round()

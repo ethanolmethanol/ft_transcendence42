@@ -35,7 +35,7 @@ class ChannelManager:
         self.user_game_table: dict[int, Channel] = {}
         self.history_manager = HistoryManager()
 
-    def add_user_to_channel(
+    async def add_user_to_channel(
         self, channel: Channel, arena_id: str | None, user_id: int
     ) -> dict[str, Any]:
         if arena_id is None:
@@ -43,7 +43,7 @@ class ChannelManager:
             if arena is None:
                 return {}
             arena_id = arena.id
-        channel.add_user_into_arena(user_id, arena_id)
+        await channel.add_user_into_arena(user_id, arena_id)
         self.user_game_table[user_id] = channel
 
     def delete_user_from_channel(self, user_id: int, channel: Channel = None):
@@ -67,8 +67,9 @@ class ChannelManager:
             if channel.users:
                 for user_id in list(channel.users.keys()):
                     self.delete_user_from_channel(user_id, channel)
-            self.channels.pop(channel_id)
-            logger.info("Channel %s deleted", channel_id)
+            else:
+                self.channels.pop(channel_id)
+                logger.info("Channel %s deleted", channel_id)
 
     async def join_channel(
         self, user_id: int, channel_id: str
@@ -78,7 +79,7 @@ class ChannelManager:
             return None
         arena_id: str = list(self.channel.arenas.keys())[0]
         logger.info("Arena id: %s", arena_id)
-        self.add_user_to_channel(channel, arena_id, user_id)
+        await self.add_user_to_channel(channel, arena_id, user_id)
         return channel
 
     def join_already_created_channel(
@@ -103,7 +104,7 @@ class ChannelManager:
         self.channels[new_channel.id] = new_channel
         arenas = new_channel.arenas
         new_arena = list(arenas.values())[0]
-        self.add_user_to_channel(new_channel, new_arena.id, user_id)
+        await self.add_user_to_channel(new_channel, new_arena.id, user_id)
         for arena in arenas.values():
             asyncio.create_task(self.__arena_loop(new_channel, arena))
             asyncio.create_task(self.__run_game_loop(arena))
@@ -207,6 +208,8 @@ class ChannelManager:
         while arena.get_status() != GameStatus(DEAD):
             await self.__update_game_states(arena)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+        if channel.can_round_be_set():
+            await channel.set_next_round()
         if channel is not None and channel.can_be_deleted():
             self.delete_channel(channel.id)
 

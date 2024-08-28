@@ -20,6 +20,9 @@ class ClassicChannel(Channel):
     def set_next_round(self):
         pass
 
+    def can_round_be_set(self) -> bool:
+        return False
+
     def can_be_deleted(self) -> bool:
         if len(self.users) == 0:
             return True

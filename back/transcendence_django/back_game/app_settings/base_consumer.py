@@ -12,7 +12,6 @@ from back_game.monitor.monitor import get_monitor
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
-    ASSIGNATIONS,
     CAPACITY,
     CHANNEL_ERROR_CODE,
     CHANNEL_PLAYERS,
@@ -119,18 +118,11 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             OVER_CALLBACK: self.send_game_over,
             START_TIMER_CALLBACK: self.send_start_timer,
         }
-        self.game.join(user_id, player_name, arena_id, callbacks)
+        logger.info("Joining game with user_id: %s, player_name: %s, arena_id: %s", user_id, player_name, arena_id)
+        await self.game.join(user_id, player_name, arena_id, callbacks)
         await self.send_message(f"{self.game.user_id} has joined the game.")
         await self.send_players()
         await self.send_arena_data()
-        if arena_id is None and self.game.is_ready_to_start():
-            asyncio.create_task(self.send_assignations_with_delay())
-
-    async def send_assignations_with_delay(self):
-        await asyncio.sleep(2)
-        self.game.set_next_round()
-        assignations: dict[str, Any] = self.game.get_assignations()
-        await self.send_update({ASSIGNATIONS: assignations})
 
     async def leave(self, _):
         self.game.leave()
