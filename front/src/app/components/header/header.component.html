@@ -1,6 +1,7 @@
 <header color="primary">
   <div class="settings-container">
-    <button class="settings-button" (click)="toggleDropdown()">Settings
+    <button class="settings-button" (click)="toggleDropdown()">
+      <i class="material-icons">settings</i> Settings
       <span [class.arrow-up]="isDropdownOpen" [class.arrow-down]="!isDropdownOpen"></span>
     </button>
     <div class="dropdown settings-button" *ngIf="isDropdownOpen">
@@ -22,5 +23,6 @@
   <a class="title" routerLink="/" (click)="onTitleClick()">
     <h1 class="banner-title">Transcendence</h1>
   </a>
-  <button (click)="logOut()">Logout</button>
+  <button (click)="logOut()">
+    Logout <i class="material-icons">power_settings_new</i></button>
 </header>

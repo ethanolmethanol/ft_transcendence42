@@ -2,7 +2,6 @@ import {Component, EventEmitter, Output} from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { UserService } from "../../services/user/user.service";
 import { AuthService } from "../../services/auth/auth.service";
-import { SettingsComponent } from "../settings/settings.component";
 import { NgIf } from "@angular/common";
 import { ButtonWithIconComponent } from "../button-with-icon/button-with-icon.component";
 
@@ -11,7 +10,6 @@ import { ButtonWithIconComponent } from "../button-with-icon/button-with-icon.co
   standalone: true,
   imports: [
     RouterLink,
-    SettingsComponent,
     NgIf,
     ButtonWithIconComponent,
   ],

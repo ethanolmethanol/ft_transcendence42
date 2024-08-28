@@ -29,7 +29,6 @@ button {
   text-decoration: none;
 }
 
-
 .settings-button .arrow-up, .settings-button .arrow-down {
   display: inline-block;
   width: 0;
@@ -70,15 +69,18 @@ button {
   cursor: pointer;
 }
 
-.dropdown-item i {
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
 .dropdown-item:hover {
   background-color: #262424;
 }
 
 .hidden {
   display: none;
+}
+
+i {
+  vertical-align: middle;
+}
+
+.dropdown-item i {
+  margin: 4px;
 }
