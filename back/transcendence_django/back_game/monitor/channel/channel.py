@@ -49,6 +49,10 @@ class Channel(ABC):
     def can_round_be_set(self):
         pass
 
+    @abstractmethod
+    def disable(self):
+        pass
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "channel_id": self.id,
@@ -78,27 +82,15 @@ class Channel(ABC):
     def add_arena(self, arena: Arena):
         self.arenas[arena.id] = arena
 
+    @abstractmethod
     async def add_user_into_arena(self, user_id: int, arena_id: str):
-        if user_id in self.users:
-            return
-        if len(self.users) < self.user_count:
-            arena: Arena = self.arenas[arena_id]
-            self.users[user_id] = arena
-            logger.info("User %s added to channel %s", user_id, self.id)
-            if self.is_full():
-                logger.info("Channel %s is full!", self.id)
-                await self.assignation_sender()
-        else:
-            logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
+        pass
 
     def get_assignations(self) -> Dict[str, Any]:
         assignations = {}
         for user_id, arena in self.users.items():
             assignations[user_id] = arena.to_dict()
         return assignations
-
-    def count_arenas(self, status: GameStatus) -> int:
-        return sum(1 for arena in self.arenas.values() if arena.get_status() == status)
 
     def delete_user(self, user_id: int):
         if user_id in self.users:
@@ -109,6 +101,11 @@ class Channel(ABC):
 
     def is_full(self) -> bool:
         return len(self.users) == self.user_count
+
+    def are_all_arenas_in_status_list(self, status_list: list[GameStatus]) -> bool:
+        return len(self.arenas) == sum(
+            1 for arena in self.arenas.values() if arena.get_status() in status_list
+            )
 
     async def save_game_summary(
             self,
@@ -134,8 +131,6 @@ class Channel(ABC):
         while arena.get_status() != GameStatus(DEAD):
             await self.__update_game_states(arena)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
-        if self.can_round_be_set():
-            await self.set_next_round()
 
     async def run_game_loop(self, arena: Arena):
         while arena:
@@ -162,7 +157,6 @@ class Channel(ABC):
                 arena.set_status(GameStatus(DEAD))
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
-
 
     def _generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits

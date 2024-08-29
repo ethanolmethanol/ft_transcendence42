@@ -62,8 +62,13 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         return get_monitor()
 
     async def connect(self):
-        self.game.init_channel(self.scope["url_route"]["kwargs"]["channel_id"])
-        await self.accept()
+        try:
+            await self.accept()
+            self.game.init_channel(self.scope["url_route"]["kwargs"]["channel_id"])
+        except ChannelError as e:
+            await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
+            await self.close()
+            return
         if self.game.channel is None:
             await self.send_error(
                 {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}

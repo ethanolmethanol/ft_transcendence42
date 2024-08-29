@@ -4,9 +4,11 @@ from typing import Any, Callable, Coroutine, Optional
 from back_game.app_settings.channel_error import ChannelError
 from back_game.game_settings.game_constants import (
     INVALID_ARENA,
+    INVALID_CHANNEL,
     NOT_ENTERED,
     NOT_JOINED,
     UNKNOWN_ARENA_ID,
+    UNKNOWN_CHANNEL_ID,
 )
 from back_game.monitor.monitor import get_monitor
 
@@ -27,6 +29,8 @@ class GameLogicInterface:
     def init_channel(self, channel_id: str):
         logger.info("GameInterface %s: Initializing channel %s", id(self), channel_id)
         self.channel = self.monitor.channel_manager.get_channel(channel_id)
+        if self.channel is None:
+            raise ChannelError(INVALID_CHANNEL, UNKNOWN_CHANNEL_ID)
 
     async def join(
         self,

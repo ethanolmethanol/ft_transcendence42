@@ -60,6 +60,7 @@ class ChannelManager:
                 for user_id in list(channel.users.keys()):
                     self.delete_user_from_channel(user_id, channel)
             else:
+                channel.disable()
                 self.channels.pop(channel_id)
                 logger.info("Channel %s deleted", channel_id)
 
