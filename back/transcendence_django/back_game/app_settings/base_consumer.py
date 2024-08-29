@@ -45,6 +45,7 @@ from transcendence_django.dict_keys import (
 
 logger = logging.getLogger(__name__)
 
+
 class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     def __init__(self, *args: tuple[Any, ...], **kwargs: dict[str, Any]):
@@ -52,7 +53,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         self.room_group_name: str | None = None
         self.game = self.get_game_logic_interface()
         self.monitor = self.get_monitor()
-        self.is_connected = False
 
     @abstractmethod
     def get_game_logic_interface(self):
@@ -75,7 +75,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         self.room_group_name = f"game_{self.game.channel.id}"
         logger.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        self.is_connected = True
 
     async def disconnect(self, close_code: int):
         try:
@@ -86,13 +85,9 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
-        self.is_connected = False
         logger.info("Disconnect with code: %s", close_code)
 
     async def receive(self, text_data: str):
-        if not self.is_connected:
-            logger.error("User not connected.")
-            return
         content = json.loads(text_data)
         message_type, message = content[TYPE], content[MESSAGE]
         message_binding: dict[

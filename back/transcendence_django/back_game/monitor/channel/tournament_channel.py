@@ -1,4 +1,5 @@
 from .channel import Channel
+import asyncio
 from typing import Any, Dict
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import CREATED, DEAD, DYING, TOURNAMENT_ARENA_COUNT, TOURNAMENT_MAX_ROUND
@@ -7,6 +8,7 @@ from transcendence_django.dict_keys import NB_PLAYERS
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class TournamentChannel(Channel):
 
@@ -25,7 +27,9 @@ class TournamentChannel(Channel):
         return True
 
     def is_ready_to_start(self) -> bool:
-        return self.is_full() and (self.round == 1 or len(self.arenas) == self.count_arenas(DEAD) + self.count_arenas(DYING))
+        return self.is_full() and (
+                self.round == 1 or len(self.arenas) == self.count_arenas(DEAD) + self.count_arenas(DYING)
+        )
 
     def can_be_deleted(self) -> bool:
         if len(self.users) == 0:
@@ -37,7 +41,9 @@ class TournamentChannel(Channel):
         logger.info("Tournament round %s", self.round)
         for arena in self.arenas.values():
             # TODO: set winners as next round players
+            logger.info("Reset arena %s", arena.id)
             arena.reset()
+            logger.info("Set arena %s status to CREATED", arena.id)
             arena.set_status(CREATED)
         if self.assignation_sender is not None:
             await self.assignation_sender()

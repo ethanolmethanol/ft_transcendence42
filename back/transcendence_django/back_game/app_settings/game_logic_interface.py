@@ -10,6 +10,8 @@ from back_game.game_settings.game_constants import (
 )
 from back_game.monitor.monitor import get_monitor
 
+from back_game.monitor.channel.channel import Channel
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,6 +25,7 @@ class GameLogicInterface:
         self.monitor = get_monitor()
 
     def init_channel(self, channel_id: str):
+        logger.info("GameInterface %s: Initializing channel %s", id(self), channel_id)
         self.channel = self.monitor.channel_manager.get_channel(channel_id)
 
     async def join(
@@ -32,7 +35,6 @@ class GameLogicInterface:
         arena_id: str | None,
         callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
-        logger.info("User %s joining channel %s", user_id, self.channel.id)
         if arena_id is not None:
             await self.__join_arena(user_id, player_name, arena_id, callbacks)
             self.arena_id = arena_id

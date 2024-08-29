@@ -2,12 +2,6 @@ import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.arena import Arena
-from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import (
-    RUN_LOOP_INTERVAL,
-    TIMEOUT_GAME_OVER,
-    TIMEOUT_INTERVAL,
-)
 from back_game.monitor.channel_manager import ChannelManager
 from django.apps import apps
 from django.conf import settings

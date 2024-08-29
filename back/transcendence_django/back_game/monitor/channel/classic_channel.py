@@ -1,5 +1,5 @@
 from .channel import Channel
-from typing import Any, Dict
+from typing import Dict
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import DEAD
 
@@ -10,6 +10,7 @@ class ClassicChannel(Channel):
         arena = Arena(players_specs)
         self.arenas: Dict[str, Arena] = {arena.id: arena}
         self.user_count = 2
+
 
     def is_tournament(self) -> bool:
         return False
