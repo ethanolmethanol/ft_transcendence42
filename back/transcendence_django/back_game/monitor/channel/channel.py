@@ -136,16 +136,18 @@ class Channel(ABC):
         while arena:
             if arena.get_status() == GameStatus(STARTED):
                 update_message = arena.update_game()
-                if arena.game_update_callback is not None:
-                    await arena.game_update_callback(update_message)
+                await arena.send_update(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
 
     async def __game_over(self, arena: Arena):
         logger.info("Game over in arena %s", arena.id)
-        arena.set_status(GameStatus(DYING))
-        if arena.game_update_callback is not None:
-            logger.info("Sending game over message to arena %s", arena.id)
-            await arena.game_update_callback({ARENA: arena.to_dict()})
+        if self.is_tournament():
+            arena.set_status(GameStatus(DEAD))
+            await arena.send_update({ARENA: arena.to_dict()})
+            return
+        else:
+            arena.set_status(GameStatus(DYING))
+            await arena.send_update({ARENA: arena.to_dict()})
         time = TIMEOUT_GAME_OVER + 1
         while (
                 arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0

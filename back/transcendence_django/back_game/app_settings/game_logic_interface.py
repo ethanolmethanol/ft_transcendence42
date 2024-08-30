@@ -27,7 +27,6 @@ class GameLogicInterface:
         self.monitor = get_monitor()
 
     def init_channel(self, channel_id: str):
-        logger.info("GameInterface %s: Initializing channel %s", id(self), channel_id)
         self.channel = self.monitor.channel_manager.get_channel(channel_id)
         if self.channel is None:
             raise ChannelError(INVALID_CHANNEL, UNKNOWN_CHANNEL_ID)
@@ -96,7 +95,6 @@ class GameLogicInterface:
         callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]]
     ):
         try:
-            logger.info("Joining arena %s", arena_id)
             self.monitor.init_arena(
                 self.channel.id,
                 arena_id,

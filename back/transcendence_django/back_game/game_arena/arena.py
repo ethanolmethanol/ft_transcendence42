@@ -119,8 +119,7 @@ class Arena:
     async def start_game(self):
         self.game.set_status(READY_TO_START)
         self.reset()
-        if self.game_update_callback is not None:
-            await self.game_update_callback({ARENA: self.to_dict()})
+        await self.send_update({ARENA: self.to_dict()})
         for time in range(0, TIME_START):
             if self.start_timer_callback is not None:
                 await self.start_timer_callback(TIME_START - time)
@@ -128,8 +127,7 @@ class Arena:
         self.game.start()
         logger.info("Game started. %s", self.id)
         self.start_time = timezone.now()
-        if self.game_update_callback is not None:
-            await self.game_update_callback({ARENA: self.to_dict()})
+        await self.send_update({ARENA: self.to_dict()})
 
     def conclude_game(self):
         self.player_manager.finish_active_players()
@@ -190,12 +188,17 @@ class Arena:
 
     def set_status(self, status: GameStatus):
         self.game.set_status(status)
+        logger.info("Arena %s game status: %s", self.id, status)
 
     def did_player_give_up(self, user_id: int) -> bool:
         return self.player_manager.did_player_give_up(user_id)
 
     def is_private(self) -> bool:
         return self.game.is_private
+
+    async def send_update(self, update_dict: dict[str, Any]):
+        if self.game_update_callback is not None:
+            await self.game_update_callback(update_dict)
 
     def __disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)

@@ -63,7 +63,7 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
       const arena_id = params['arena_id'];
       this.arenaID = arena_id;
       this.cdr.detectChanges();
-      this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
+      this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id, true);
     });
     this.game.first.startCounterStarted.subscribe(() => {
       this.canGiveUp = false;

@@ -3,7 +3,14 @@ import asyncio
 from typing import Any, Dict
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import CREATED, DEAD, DYING, TOURNAMENT_ARENA_COUNT, TOURNAMENT_MAX_ROUND
+from back_game.game_settings.game_constants import (
+    CREATED,
+    DEAD,
+    DYING,
+    TOURNAMENT_ARENA_COUNT,
+    TOURNAMENT_MAX_ROUND,
+    WAITING,
+)
 from transcendence_django.dict_keys import NB_PLAYERS
 
 import logging
@@ -73,17 +80,17 @@ class TournamentChannel(Channel):
                 logger.info("Waiting for next round")
                 await asyncio.sleep(0.1)
             self.set_next_round()
-            await self.__reset_arenas()
+            self.__reset_arenas()
+            if self.assignation_sender is not None:
+                await self.assignation_sender()
 
     def can_round_be_set(self):
         return self.is_ready_to_start()
 
-    async def __reset_arenas(self):
+    def __reset_arenas(self):
         for arena in self.arenas.values():
             # TODO: set winners as next round players
             logger.info("Reset arena %s", arena.id)
             arena.reset()
             logger.info("Set arena %s status to CREATED", arena.id)
-            arena.set_status(CREATED)
-        if self.assignation_sender is not None:
-            await self.assignation_sender()
+            arena.set_status(GameStatus(CREATED))

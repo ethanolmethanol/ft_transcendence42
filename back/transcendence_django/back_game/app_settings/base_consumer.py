@@ -77,6 +77,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await self.add_user_to_channel_group()
 
     async def add_user_to_channel_group(self):
+        logger.info("Adding user to channel group (Tournament)")
         self.room_group_name = f"game_{self.game.channel.id}"
         logger.info("User Connected to %s", self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)

@@ -35,26 +35,13 @@ export class ConnectionService {
     });
   }
 
-  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id: number | null = null) {
+  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id: number | null = null, isTournament: boolean =false) {
     if (channel_id) {
       // Connect to the existing arena
       this.channelID = channel_id;
-      if (arena_id) {
-        this.accessArena(channel_id, arena_id, arenaSetter);
-      } else {
-        this.accessTournament(channel_id, arenaSetter);
-      }
+      this.webSocketService.connect(channel_id, isTournament);
+      this.handleWebSocketConnection(arena_id, arenaSetter);
     }
-  }
-
-  private accessArena(channel_id: string, arena_id: number, arenaSetter: (response: ArenaResponse) => void) {
-    this.webSocketService.connect(channel_id, false);
-    this.handleWebSocketConnection(arena_id, arenaSetter);
-  }
-
-  private accessTournament(channel_id: string, arenaSetter: (response: ArenaResponse) => void) {
-    this.webSocketService.connect(channel_id, true);
-    this.handleWebSocketConnection(null, arenaSetter)
   }
 
   private handleWebSocketConnection(arena_id: number | null = null, arenaSetter: (response: ArenaResponse) => void){
