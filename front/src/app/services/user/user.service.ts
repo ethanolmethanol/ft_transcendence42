@@ -42,7 +42,7 @@ export class UserService {
       this._userData = {
         id: Object.freeze(userData.id),
         email: Object.freeze(userData.email),
-        username: Object.freeze(userData.username),
+        username: userData.username,
         game_counter: userData.game_counter,
         win_dict: userData.win_dict,
         time_played: userData.time_played,
@@ -141,5 +141,10 @@ export class UserService {
     formData.append('avatar', file);
 
     return this.http.post<any>(`${API_USER}/update_avatar/`, formData);
+  }
+
+  public updateUsername(username: string): Observable<any> {
+    this.getUserData().username = username;
+    return this.http.post<any>(`${API_USER}/update_username/`, {username: username});
   }
 }

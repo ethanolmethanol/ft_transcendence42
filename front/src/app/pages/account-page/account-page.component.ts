@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { AvatarComponent } from "../../components/avatar/avatar.component";
 import { HeaderComponent } from "../../components/header/header.component";
 import { UserService } from "../../services/user/user.service";
-import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors} from '@angular/forms';
 import { usernameValidator } from "../../validators/username.validator";
 import { UsernameErrorComponent } from "../../components/sign-up/username-error/username-error.component";
 import { ErrorMessageComponent } from "../../components/error-message/error-message.component";
 import { Router } from '@angular/router';
 import { AuthService } from "../../services/auth/auth.service";
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-account-page',
@@ -16,7 +16,6 @@ import { AuthService } from "../../services/auth/auth.service";
   imports: [
     AvatarComponent,
     HeaderComponent,
-    BrowserModule,
     ReactiveFormsModule,
     UsernameErrorComponent,
     ErrorMessageComponent,
@@ -55,15 +54,26 @@ export class AccountPageComponent implements OnInit {
   public updateUsername() {
     this.errorMessage = "";
     if (this.usernameForm.valid) {
-      this.username = this.usernameForm.get('username')?.value;
-      console.log(`Username updated to: ${this.username}`);
-      // Logic to handle valid username (e.g., API call)
+      const newUsername: string = this.usernameForm.get('username')?.value;
+      this.userService.updateUsername(newUsername).subscribe({
+        next: (response: any): void => {
+          console.log(response);
+          this.username = newUsername;
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error("Failed to update username: ", error);
+          this.errorMessage = error.error?.error || "An unknown error occurred.";
+        }
+      });
     } else {
-      const control = this.usernameForm.get('username');
-      if (control)
-        this.errorMessage = this.getUsernameErrorMessage(control);
-      console.log('Form is invalid');
+      this.updateUsernameError();
     }
+  }
+
+  private updateUsernameError() {
+    const control = this.usernameForm.get('username');
+    if (control)
+      this.errorMessage = this.getUsernameErrorMessage(control);
   }
 
   public deleteAccount() {
@@ -72,10 +82,7 @@ export class AccountPageComponent implements OnInit {
     this.authService.deleteAccount().subscribe({
       next: (response: any): void => {
         console.log(response);
-        localStorage.clear();
-        this.router.navigate(['/sign-in']).then(() => {
-          window.location.reload();
-        });
+        this.router.navigate(['/sign-in']);
       },
       error: (error: Error) => {
         console.error("Failed to delete account: ", error);

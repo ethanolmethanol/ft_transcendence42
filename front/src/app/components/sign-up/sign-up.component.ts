@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth/auth.service';
-import { Router, RouterLink} from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { CPasswordErrorComponent } from "./c-password-error/c-password-error.component";
 import { PasswordErrorComponent } from "./password-error/password-error.component";
 import { EmailErrorComponent } from "./email-error/email-error.component";

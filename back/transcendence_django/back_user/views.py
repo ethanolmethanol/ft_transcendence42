@@ -197,16 +197,15 @@ class UpdateUsernameView(APIView):
 
     def post(self, request):
         try:
-            self.username = request.data["username"]
-            self.user_id = request.data["user_id"]
-            self.user = CustomUser.objects.get(id=self.user_id)
+            self.username = request.data.get("username")
+            if not self.username:
+                return Response(
+                    {"error": "Username missing in request data"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            self.user = CustomUser.objects.get(pk=request.user.id)
             response = self.update_username()
             return response
-        except KeyError:
-            return Response(
-                {"error": "username or user_id missing in request data"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         except ObjectDoesNotExist:
             return Response(
                 {"error": "Cannot update username of unknown user."},
