@@ -5,7 +5,6 @@ import { NotFoundPageComponent } from './pages/not-found-page/not-found-page.com
 import { HomePageComponent } from "./pages/home-page/home-page.component";
 import { CustomPageComponent } from "./pages/custom-page/custom-page.component";
 import { AccountPageComponent } from "./pages/account-page/account-page.component";
-import { RulesPageComponent } from "./pages/rules-page/rules-page.component";
 import { FriendsPageComponent } from "./pages/friends-page/friends-page.component";
 import { AuthGuard } from "./guards/auth.guard";
 import { GuestGuard } from "./guards/guest.guard";
@@ -20,7 +19,6 @@ export const routes: Routes = [
   { path: 'home', component: HomePageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'account', component: AccountPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'custom', component: CustomPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
-  { path: 'rules', component: RulesPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'friends', component: FriendsPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'local', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'local/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },

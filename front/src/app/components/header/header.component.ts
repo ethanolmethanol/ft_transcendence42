@@ -1,10 +1,10 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { UserService } from "../../services/user/user.service";
 import { AuthService } from "../../services/auth/auth.service";
 import { NgIf } from "@angular/common";
 import { ButtonWithIconComponent } from "../button-with-icon/button-with-icon.component";
-import { ACCOUNT, GAME, RULES, FRIENDS } from "../../constants";
+import { ACCOUNT, GAME, FRIENDS } from "../../constants";
 
 @Component({
   selector: 'app-header',
@@ -22,7 +22,6 @@ export class HeaderComponent {
   isDropdownOpen = false;
   protected readonly ACCOUNT = ACCOUNT;
   protected readonly GAME = GAME;
-  protected readonly RULES = RULES;
   protected readonly FRIENDS = FRIENDS;
 
   constructor(private authService: AuthService, private userService: UserService, private router: Router) {}
@@ -48,7 +47,7 @@ export class HeaderComponent {
   }
 
   selectOption(option: number) {
-    const navPages: string[] = ["/account", "/custom", "/rules", "/friends"];
+    const navPages: string[] = ["/account", "/custom", "/friends"];
 
     this.router.navigate([navPages[option]]);
 

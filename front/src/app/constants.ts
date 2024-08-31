@@ -109,5 +109,4 @@ export const DEFAULT_AVATAR_URL: string = `${MINIO_API}/${AVATARS_BUCKET}/defaul
 
 export const ACCOUNT: number = 0;
 export const GAME: number = 1;
-export const RULES: number = 2;
-export const FRIENDS: number = 3;
+export const FRIENDS: number = 2;
