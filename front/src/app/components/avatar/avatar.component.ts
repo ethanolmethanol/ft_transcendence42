@@ -36,6 +36,7 @@ export class AvatarComponent implements OnInit {
     if (this.modify || this.username === "Player1" || this.username === "Player2")
       this.username = this.userService.getUsername();
     this.fileUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${this.username}_avatar.jpg`;
+    console.log(this.fileUrl);
   }
 
   public onFileChange(event: any) {

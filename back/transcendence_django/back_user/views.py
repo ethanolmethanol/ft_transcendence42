@@ -174,22 +174,28 @@ def get_game_summaries(request) -> JsonResponse:
 class UpdateUsernameView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.username: str = ""
+        self.former_username: str = ""
+        self.new_username: str = ""
         self.user_id: str = ""
         self.user: CustomUser | None = None
 
     def username_already_taken(self) -> bool:
-        if CustomUser.objects.filter(username=self.username).exists():
+        if CustomUser.objects.filter(username=self.new_username).exists():
             logger.info("Username is already taken")
             return True
         return False
+
+    def update_avatar_filename(self):
+        avatar_uploader = AvatarUploader()
+        avatar_uploader.update_avatar_filename(self.former_username, self.new_username)
 
     def update_username(self):
         if self.username_already_taken():
             return Response({"error": "Username already taken."}, status=400)
 
         if self.user:
-            self.user.set_username(self.username)
+            self.user.set_username(self.new_username)
+            self.update_avatar_filename()
             return Response({"success": True}, status=status.HTTP_200_OK)
         return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
@@ -197,13 +203,14 @@ class UpdateUsernameView(APIView):
 
     def post(self, request):
         try:
-            self.username = request.data.get("username")
-            if not self.username:
+            self.new_username = request.data.get("username")
+            if not self.new_username:
                 return Response(
                     {"error": "Username missing in request data"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             self.user = CustomUser.objects.get(pk=request.user.id)
+            self.former_username = self.user.username
             response = self.update_username()
             return response
         except ObjectDoesNotExist:
@@ -211,6 +218,7 @@ class UpdateUsernameView(APIView):
                 {"error": "Cannot update username of unknown user."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 @require_http_methods(["POST"])
 @csrf_protect
