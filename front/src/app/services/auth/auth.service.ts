@@ -63,4 +63,8 @@ export class AuthService {
   private hashPassword(password: string): string {
     return CryptoJS.SHA256(password).toString();
   }
+
+  public deleteAccount(): Observable<any> {
+    return this.http.post(`${API_AUTH}/delete_account/`, {});
+  }
 }

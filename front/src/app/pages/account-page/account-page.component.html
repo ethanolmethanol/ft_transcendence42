@@ -4,13 +4,20 @@
     <app-avatar class="avatar" [modify]="true"></app-avatar>
     <section class="account-card">
       <div class="update-section">
-        <h4>Hello {{ username }}</h4>
-        <input type="text" placeholder="Update your username">
-        <button class="update-button" (click)="updateUsername()">Update Username</button>
+        <form [formGroup]="usernameForm" (ngSubmit)="updateUsername()">
+          <h4>Hello {{ username }}</h4>
+          <input type="text" placeholder="Update your username" formControlName="username">
+          <button class="username-button" type="submit">Update Username</button>
+          <section class="error-message-container">
+            <app-error-message [condition]="hasUpdateFailed()" [message]="errorMessage"></app-error-message>
+          </section>
+        </form>
       </div>
       <div class="update-section">
-        <input type="text" placeholder='Type "delete" to confirm'>
-        <button class="delete-button" (click)="deleteAccount()">Delete Account</button>
+        <form [formGroup]="deleteForm" (ngSubmit)="deleteAccount()">
+          <input type="text" placeholder='Type "delete" to confirm' formControlName="delete">
+          <button class="delete-button" type="submit">Delete Account</button>
+        </form>
       </div>
     </section>
   </section>

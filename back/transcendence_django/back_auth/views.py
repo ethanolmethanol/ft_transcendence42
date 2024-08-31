@@ -28,6 +28,12 @@ def login_user(request, username, password):
     return False
 
 
+def logout_user(request):
+    # Assuming you want to perform some action before logging out
+    get_session_from_request(request)
+    # user_id = get_user_id(session) # be sure to uncomment the import when uncommenting this
+    perform_logout(request)
+
 @api_view(["POST"])
 def signup(request):
     try:
@@ -69,10 +75,7 @@ def signin(request):
 @login_required
 def logout_view(request):
     try:
-        # Assuming you want to perform some action before logging out
-        get_session_from_request(request)
-        # user_id = get_user_id(session) # be sure to uncomment the import when uncommenting this
-        perform_logout(request)
+        logout_user(request)
         return Response(
             {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
         )
@@ -86,8 +89,13 @@ def logout_view(request):
 @csrf_protect
 def is_logged_view(request):
     try:
-        get_session_from_request(request)
-        return Response({"detail": "User is logged in."}, status=status.HTTP_200_OK)
+        if request.user.is_authenticated:
+            return Response({"detail": "User is logged in."}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"detail": "User not found"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
     except ValueError as e:
         return Response(
             {"detail": "User isn't logged in: " + str(e)},
@@ -148,3 +156,27 @@ def set_username_42(request):
         return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
         )
+
+@api_view(["POST"])
+@csrf_protect
+def delete_account(request):
+    if not request.user.is_authenticated:
+        return Response(
+            {"detail": "Session expired. Please log in again."},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    try:
+        user = CustomUser.objects.get(id=request.user.id)
+        logger.info("delete_account for user: %s", user.username)
+        logout_user(request)
+        logger.info("User has been logged out")
+        user.delete()
+        logger.info("User has been deleted")
+        return Response(
+            {"detail": "Account successfully deleted."}, status=status.HTTP_200_OK
+        )
+    except ObjectDoesNotExist:
+        return Response(
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+        )
+

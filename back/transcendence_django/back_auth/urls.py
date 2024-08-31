@@ -8,6 +8,7 @@ from .views import (
     set_username_42,
     signin,
     signup,
+    delete_account,
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
         name="exchange_code_for_user_id",
     ),
     path("set_username_42/", set_username_42, name="set_username_42"),
+    path("delete_account/", delete_account, name="delete_account"),
 ]

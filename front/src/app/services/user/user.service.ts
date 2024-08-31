@@ -10,7 +10,7 @@ import {
 } from "../../constants";
 import { Observable } from "rxjs";
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
-import {GameCounter, Times, User, Wins} from "../../interfaces/user";
+import { GameCounter, Times, User, Wins } from "../../interfaces/user";
 
 @Injectable({
   providedIn: 'root'
