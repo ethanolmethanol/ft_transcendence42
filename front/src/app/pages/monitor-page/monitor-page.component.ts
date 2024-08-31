@@ -178,6 +178,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
 
   private navigateToGame(channelID: string, arenaID: number): void {
     const gameUrl: string = this.getGameUrl(channelID, arenaID);
+    console.log('Navigating to game at: ' + gameUrl);
     this.router.navigateByUrl(gameUrl);
   }
 }

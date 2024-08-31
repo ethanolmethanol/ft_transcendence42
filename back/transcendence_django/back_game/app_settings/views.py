@@ -88,6 +88,7 @@ async def join_tournament(request) -> JsonResponse:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         channel = await MONITOR.join_tournament(user_id)
+        logger.info("User %s joined tournament and got the channel dict: %s", user_id, channel)
         return JsonResponse(channel, status=HTTPStatus.OK, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)

@@ -74,6 +74,7 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public ngOnDestroy() {
+    console.log('TournamentPageComponent destroyed')
     this._connectionService.endConnection();
   }
 

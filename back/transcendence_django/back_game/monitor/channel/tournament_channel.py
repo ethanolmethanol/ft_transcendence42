@@ -11,7 +11,7 @@ from back_game.game_settings.game_constants import (
     TOURNAMENT_MAX_ROUND,
     WAITING,
 )
-from transcendence_django.dict_keys import NB_PLAYERS
+from transcendence_django.dict_keys import ASSIGNATIONS, NB_PLAYERS
 
 import logging
 
@@ -29,7 +29,7 @@ class TournamentChannel(Channel):
         self.arenas: Dict[str, Arena] = arenas
         self.user_count: int = players_specs[NB_PLAYERS] * len(arenas)
         self.round: int = 0
-        self.assignation_sender = None
+        self.sender = None
         self.is_active = True
 
     def is_tournament(self) -> bool:
@@ -48,7 +48,7 @@ class TournamentChannel(Channel):
             if self.is_full():
                 logger.info("Channel %s is full!", self.id)
                 asyncio.create_task(self.next_round_loop())
-                await self.assignation_sender()
+                await self.send_assignations()
         else:
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
 
@@ -80,9 +80,21 @@ class TournamentChannel(Channel):
                 logger.info("Waiting for next round")
                 await asyncio.sleep(0.1)
             self.set_next_round()
-            self.__reset_arenas()
-            if self.assignation_sender is not None:
-                await self.assignation_sender()
+            if self.round <= TOURNAMENT_MAX_ROUND:
+                self.__reset_arenas()
+                await asyncio.sleep(2)
+                await self.send_assignations()
+        await self.send_end_game()
+
+    async def send_assignations(self):
+        if self.sender:
+            assignations: dict[str, Any] = self.get_assignations()
+            logger.info("Send assignations %s", assignations)
+            await self.sender({ASSIGNATIONS: assignations})
+
+    async def send_end_game(self):
+        if self.sender:
+            await self.sender({ASSIGNATIONS: {}})
 
     def can_round_be_set(self):
         return self.is_ready_to_start()

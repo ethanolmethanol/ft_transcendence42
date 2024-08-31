@@ -84,9 +84,6 @@ class GameLogicInterface:
     def is_ready_to_start(self) -> bool:
         return self.channel.is_ready_to_start()
 
-    def get_assignations(self) -> dict[str, Any]:
-        return self.channel.get_assignations()
-
     async def __join_arena(
         self,
         user_id: int,

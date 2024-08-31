@@ -29,11 +29,11 @@ class ChannelManager:
 
     async def add_user_to_channel(
         self, channel: Channel, arena_id: str | None, user_id: int
-    ) -> dict[str, Any]:
+    ):
         if arena_id is None:
             arena = channel.get_available_arena()
             if arena is None:
-                return {}
+                return
             arena_id = arena.id
         await channel.add_user_into_arena(user_id, arena_id)
         self.user_game_table[user_id] = channel

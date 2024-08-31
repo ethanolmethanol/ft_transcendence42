@@ -57,9 +57,9 @@ export class ConnectionService {
   public endConnection() {
     this.webSocketService.disconnect();
     this.connectionOpenedSubscription?.unsubscribe();
+    this.joinSubscription?.unsubscribe();
     this.WebSocketSubscription?.unsubscribe();
     this.WebSocketMessagesSubscription?.unsubscribe();
-    this.joinSubscription?.unsubscribe();
     console.log('WebSocket connection closed');
   }
 

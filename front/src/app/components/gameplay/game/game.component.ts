@@ -116,6 +116,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   private playerName: string | null = null;
   private isRemote: boolean = false;
   private isTournament: boolean = false;
+  private channelID: string = '';
   private channelSubscription: Subscription | null = null;
   private activePlayersSubscription: Subscription | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
@@ -158,6 +159,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.gameStateService.isTournament$.subscribe(isTournament => {
       this.isTournament = isTournament;
+    });
+    this.gameStateService.channelID$.subscribe(channelID => {
+      this.channelID = channelID;
     });
     if (this.isRemote) {
       await this.userService.whenUserDataLoaded();
@@ -272,10 +276,13 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const userID = this.userService.getUserID();
     const arena = response[userID];
-    if (arena.status != DYING && arena.status != DEAD) {
-      this.channelSubscription = this.gameStateService.channelID$.subscribe(channelID => {
-        this.router.navigate(['/online/tournament', channelID, arena.id]);
-      });
+    if (arena === undefined) {
+        console.log('Redirecting to home');
+        this.redirectToHome();
+        return;
+    } else if (arena.status != DYING && arena.status != DEAD) {
+        console.log('Redirecting to:', this.channelID, arena.id);
+        this.router.navigate(['/online/tournament', this.channelID, arena.id]);
     }
   }
 

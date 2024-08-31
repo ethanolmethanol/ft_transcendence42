@@ -62,6 +62,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         return get_monitor()
 
     async def connect(self):
+        logger.info("WebSocket connecting: %s", self.scope["path"])
         try:
             await self.accept()
             self.game.init_channel(self.scope["url_route"]["kwargs"]["channel_id"])
@@ -75,6 +76,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             )
         else:
             await self.add_user_to_channel_group()
+        logger.info("WebSocket connected: %s", self.scope["path"])
 
     async def add_user_to_channel_group(self):
         logger.info("Adding user to channel group (Tournament)")
@@ -92,9 +94,11 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
                 self.room_group_name, self.channel_name
             )
         logger.info("Disconnect with code: %s", close_code)
+        logger.info("WebSocket disconnected: %s", self.scope["path"])
 
     async def receive(self, text_data: str):
         content = json.loads(text_data)
+        logger.info("WebSocket received message: %s", content)
         message_type, message = content[TYPE], content[MESSAGE]
         message_binding: dict[
             str, Callable[[dict[str, Any]], Coroutine[Any, Any, Any]]
@@ -109,6 +113,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await message_binding[message_type](message)
         except ChannelError as e:
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
+
 
     async def join(self, message: dict[str, Any]):
         user_id = message[USER_ID]
