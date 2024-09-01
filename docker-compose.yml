@@ -85,6 +85,23 @@ services:
                     - back-game
         restart: unless-stopped
 
+    back_friends:
+        image: back
+        container_name: back_friends
+        build:
+            context: back
+        env_file: .env
+        depends_on:
+            back_user:
+                condition: service_healthy
+        ports:
+            - "8004:443"
+        networks:
+            transcendence:
+                aliases:
+                    - back-friends
+        restart: unless-stopped
+
     front:
         image: front
         container_name: front

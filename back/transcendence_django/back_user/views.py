@@ -2,12 +2,13 @@ import json
 import logging
 from http import HTTPStatus
 from json import JSONDecodeError
-from typing import Any, Dict, IO
+from typing import Any, Dict
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
@@ -16,7 +17,7 @@ from rest_framework.views import APIView
 from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
-from .avatar_uploader import AvatarUploader
+from shared_models.avatar_uploader import AvatarUploader
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 # pylint: disable=no-member
 
@@ -171,6 +172,7 @@ def get_game_summaries(request) -> JsonResponse:
 
 
 @method_decorator(csrf_protect, name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class UpdateUsernameView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -185,17 +187,12 @@ class UpdateUsernameView(APIView):
             return True
         return False
 
-    def update_avatar_filename(self):
-        avatar_uploader = AvatarUploader()
-        avatar_uploader.update_avatar_filename(self.former_username, self.new_username)
-
     def update_username(self):
         if self.username_already_taken():
             return Response({"error": "Username already taken."}, status=400)
 
         if self.user:
             self.user.set_username(self.new_username)
-            self.update_avatar_filename()
             return Response({"success": True}, status=status.HTTP_200_OK)
         return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
@@ -222,6 +219,7 @@ class UpdateUsernameView(APIView):
 
 @require_http_methods(["POST"])
 @csrf_protect
+@login_required
 def update_avatar(request) -> JsonResponse:
     avatar_uploader = AvatarUploader()
     avatar_file = request.FILES.get("avatar")
@@ -235,4 +233,3 @@ def update_avatar(request) -> JsonResponse:
         {"message": "Avatar file successfully uploaded to the server"},
         status=status.HTTP_200_OK,
     )
-

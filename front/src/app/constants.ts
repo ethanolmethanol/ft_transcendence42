@@ -110,3 +110,7 @@ export const DEFAULT_AVATAR_URL: string = `${MINIO_API}/${AVATARS_BUCKET}/defaul
 export const ACCOUNT: number = 0;
 export const GAME: number = 1;
 export const FRIENDS: number = 2;
+export const HOME: number = 3;
+
+export const ERROR_MESSAGE: string = "error-message"
+export const INFO_MESSAGE: string = "info-message"

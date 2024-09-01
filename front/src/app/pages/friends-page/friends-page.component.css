@@ -18,3 +18,15 @@ body {
   height: 100vh;
   overflow: scroll;
 }
+
+.search-area {}
+
+.friend-list {}
+
+.friend-requests{}
+
+.playing-friends{}
+
+.online-friends{}
+
+.offline-friends{}

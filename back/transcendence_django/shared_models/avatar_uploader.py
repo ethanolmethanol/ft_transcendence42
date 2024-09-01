@@ -2,9 +2,9 @@ import logging
 
 from minio import Minio
 from django.conf import settings
-from minio.error import S3Error
 import urllib3
 from minio.commonconfig import CopySource
+from minio.error import S3Error
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +39,22 @@ class AvatarUploader:
         )
 
     def update_avatar_filename(self, former_username, new_username):
-        former_filename = self.get_file_name(former_username)
-        new_filename = self.get_file_name(new_username)
-        bucket_name = self.get_bucket_name()
+        try:
+            former_filename = self.get_file_name(former_username)
+            new_filename = self.get_file_name(new_username)
+            bucket_name = self.get_bucket_name()
 
-        self.client.copy_object(
-            bucket_name,
-            new_filename,
-            CopySource(bucket_name, former_filename),
-        )
-        self.client.remove_object(bucket_name, former_filename)
+            self.client.copy_object(
+                bucket_name,
+                new_filename,
+                CopySource(bucket_name, former_filename),
+            )
+            self.client.remove_object(bucket_name, former_filename)
+        except S3Error:
+            logger.info("Avatar file not found (not set yet)")
+
+    def delete_avatar(self, username):
+        bucket_name = self.get_bucket_name()
+        filename = self.get_file_name(username)
+        self.client.remove_object(bucket_name, filename)
 

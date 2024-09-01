@@ -1,5 +1,12 @@
 <body>
 <app-header></app-header>
 <section class="friends-page-container">
+  <section class="search-area">
+    <app-friend-search></app-friend-search>
+  </section>
+  <section *ngIf="friend_requests" class="friend-list friend-requests"></section>
+  <section *ngIf="playing_friends" class="friend-list playing-friends"></section>
+  <section *ngIf="online_friends" class="friend-list online-friends"></section>
+  <section *ngIf="offline_friends" class="friend-list offline-friends"></section>
 </section>
 </body>

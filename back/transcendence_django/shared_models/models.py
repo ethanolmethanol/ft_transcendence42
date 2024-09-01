@@ -17,7 +17,9 @@ from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
-    DEFAULT_AVATAR_FILE,
+    ONLINE,
+    PLAYING,
+    OFFLINE,
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import (
@@ -31,6 +33,9 @@ from transcendence_django.dict_keys import (
     TOTAL,
     WIN,
 )
+from django.contrib.auth import logout, login
+from .avatar_uploader import AvatarUploader
+
 
 logger = logging.getLogger(__name__)
 
@@ -51,14 +56,9 @@ class Profile(models.Model):
     game_settings: List[int] = ArrayField(
         models.IntegerField(), default=list
     )  # type: ignore
-    avatar_file = models.FileField(upload_to="avatars", default=DEFAULT_AVATAR_FILE)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         super().save(*args, **kwargs)
-
-    def store_avatar(self, avatar_file):
-        self.avatar_file.save(avatar_file.name, avatar_file)
-        self.save()
 
 
 class OauthToken(models.Model):
@@ -119,12 +119,55 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
         user.save(using=self._db)
         return user
 
-    def create_superuser(
-        self, username, email, password=None, **extra_fields
-    ) -> CustomUserType:
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        return self.create_user(username, email, password, **extra_fields)
+
+class FriendshipManager:
+
+    @staticmethod
+    def send_friend_request(sender, receiver):
+        if sender == receiver:
+            return "Self-love is awesome! But you cannot friend yourself."
+        if FriendshipManager.accept_friendship(receiver, sender) is not None:
+            return "%s is now your friend!" % receiver.username
+        FriendRequest.objects.create(from_user=sender, to_user=receiver)
+        return "Friend request sent to %s!" % receiver.username
+
+    @staticmethod
+    def add_friend(friend1, friend2):
+        if friend1 != friend2:
+            friend1.friends.add(friend2)
+
+    @staticmethod
+    def remove_friend(user, friend) -> bool:
+        if friend not in user.friends.all():
+            return False
+        user.friends.remove(friend)
+        return True
+
+    @staticmethod
+    def find_friend_request(from_user, to_user):
+        try:
+            friend_request = FriendRequest.objects.get(from_user=from_user, to_user=to_user)
+            return friend_request
+        except FriendRequest.DoesNotExist:
+            return None
+
+    @staticmethod
+    def accept_friendship(from_user, to_user) -> bool:
+        friend_request = FriendshipManager.find_friend_request(from_user, to_user)
+
+        if friend_request is None:
+            return False
+        friend_request.accept()
+        return True
+
+    @staticmethod
+    def decline_friendship(from_user, to_user) -> bool:
+        friend_request = FriendshipManager.find_friend_request(from_user, to_user)
+
+        if friend_request is None:
+            return False
+        friend_request.decline()
+        return True
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -132,6 +175,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)  # type: ignore
     login42 = models.CharField(max_length=150, null=True, blank=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
+    friends = models.ManyToManyField("self", symmetrical=True, blank=True)
+    status = models.IntegerField(default=ONLINE)
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
@@ -143,9 +188,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     win_loss_tie = models.JSONField(default=DEFAULT_WIN_LOSS_TIE)
     game_counter = models.JSONField(default=DEFAULT_GAME_COUNTER)
 
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)  # type: ignore
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = "username"
@@ -154,8 +196,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.username)
 
-    def set_username(self, username):
-        self.username = username
+    def set_username(self, new_username):
+        avatar_uploader = AvatarUploader()
+        avatar_uploader.update_avatar_filename(self.username, new_username)
+        self.username = new_username
         self.save()
 
     def store_tokens(self, token_data):
@@ -165,14 +209,46 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.oauth_token.store_tokens(token_data)
         self.save()
 
-    def set_avatar(self, avatar_file):
-        self.profile.store_avatar(avatar_file)
-        self.save()
+    def logout_user(self, request):
+        self.__clear_tokens()
+        self.status = OFFLINE
+        logout(request)
 
-    def clear_tokens(self):
-        if self.oauth_token is not None:
-            self.oauth_token = None
-        self.save()
+    def login_user(self, request):
+        login(request, self)
+        self.status = ONLINE
+
+    def delete_account(self):
+        avatar_uploader = AvatarUploader()
+        avatar_uploader.delete_avatar(self.username)
+        FriendRequest.objects.filter(from_user=self).delete()
+        FriendRequest.objects.filter(to_user=self).delete()
+        self.friends.clear()
+        self.delete()
+
+    def send_friend_request(self, to_user) -> str:
+        return FriendshipManager.send_friend_request(self, to_user)
+
+    def remove_friend(self, friend):
+        return FriendshipManager.remove_friend(self, friend)
+
+    def accept_friendship_request(self, friend) -> bool:
+        return FriendshipManager.accept_friendship(friend, self)
+
+    def decline_friendship_request(self, friend) -> bool:
+        return FriendshipManager.decline_friendship(friend, self)
+
+    def get_friend_requests(self):
+        return FriendRequest.objects.filter(to_user=self).values_list("from_user__username", flat=True)
+
+    def get_playing_friends(self):
+        return self.friends.filter(status=PLAYING).values_list('username', flat=True)
+
+    def get_online_friends(self):
+        return self.friends.filter(status=ONLINE).values_list('username', flat=True)
+
+    def get_offline_friends(self):
+        return self.friends.filter(status=OFFLINE).values_list('username', flat=True)
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
@@ -208,3 +284,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         else:
             self.game_counter[LOCAL] += 1
         self.game_counter[TOTAL] += 1
+
+    def __clear_tokens(self):
+        if self.oauth_token is not None:
+            self.oauth_token = None
+        self.save()
+
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(CustomUser, related_name='friend_requests_sent', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(CustomUser, related_name='friend_requests_received', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def accept(self):
+        FriendshipManager.add_friend(self.from_user, self.to_user)
+        self.delete()
+
+    def decline(self):
+        self.delete()
+
+    class Meta:
+        unique_together = ('from_user', 'to_user')

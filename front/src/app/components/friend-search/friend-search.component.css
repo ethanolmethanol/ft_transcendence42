@@ -1,0 +1,70 @@
+.friend-search-container {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+form {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  text-align: left;
+}
+
+button {
+  margin: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #ffffff;
+  height: 40px;
+}
+
+.info-message-container {
+  display: flex;
+  min-width: 200px;
+  height: 40px;
+}
+
+.error-message, .info-message {
+  font-size: 0.8em;
+  border-radius: 5px;
+  max-width: 100%;
+  word-wrap: break-word;
+  line-height: 40px;
+  height: 40px;
+  padding: 0 10px;
+}
+
+.info-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.show {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.hide {
+  opacity: 0;
+  transform: translateX(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}

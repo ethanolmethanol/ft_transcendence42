@@ -1,7 +1,7 @@
 import json
 import logging
 
-from django.contrib.auth import authenticate, login
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -11,28 +11,13 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from shared_models.models import CustomUser
 
-from .auth_helpers import get_session_from_request, perform_logout
+
+from .auth_helpers import perform_logout, perform_login
 from .oauth import OAuthBackend
 from .serializers import UserSerializer
 
 logger = logging.getLogger(__name__)
 
-
-def login_user(request, username, password):
-    user = authenticate(request, username=username, password=password)
-
-    if user is not None:
-        login(request, user)
-        return True
-
-    return False
-
-
-def logout_user(request):
-    # Assuming you want to perform some action before logging out
-    get_session_from_request(request)
-    # user_id = get_user_id(session) # be sure to uncomment the import when uncommenting this
-    perform_logout(request)
 
 @api_view(["POST"])
 def signup(request):
@@ -47,7 +32,7 @@ def signup(request):
         # Access validated data directly from the serializer
         username = serializer.validated_data.get("username")
         password = serializer.validated_data.get("password")
-        login_user(request, username, password)
+        perform_login(request, username, password)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     except IntegrityError as e:
@@ -60,7 +45,7 @@ def signin(request):
     username = request.data.get("login")
     password = request.data.get("password")
 
-    if login_user(request, username, password):
+    if perform_login(request, username, password):
         response = Response(
             {"detail": "Successfully signed in."}, status=status.HTTP_200_OK
         )
@@ -75,7 +60,7 @@ def signin(request):
 @login_required
 def logout_view(request):
     try:
-        logout_user(request)
+        perform_logout(request)
         return Response(
             {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
         )
@@ -145,8 +130,7 @@ def set_username_42(request):
 
         user = CustomUser.objects.get(id=user_id)
         user.set_username(username)
-
-        login(request, user)
+        user.login_user(request)
         return Response({"success": True}, status=status.HTTP_200_OK)
     except KeyError:
         return Response(
@@ -159,19 +143,12 @@ def set_username_42(request):
 
 @api_view(["POST"])
 @csrf_protect
+@login_required
 def delete_account(request):
-    if not request.user.is_authenticated:
-        return Response(
-            {"detail": "Session expired. Please log in again."},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
     try:
         user = CustomUser.objects.get(id=request.user.id)
-        logger.info("delete_account for user: %s", user.username)
-        logout_user(request)
-        logger.info("User has been logged out")
-        user.delete()
-        logger.info("User has been deleted")
+        perform_logout(request)
+        user.delete_account()
         return Response(
             {"detail": "Account successfully deleted."}, status=status.HTTP_200_OK
         )
@@ -179,4 +156,3 @@ def delete_account(request):
         return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
         )
-
