@@ -8,6 +8,7 @@ export class GameStateService {
   private _dataLoaded = new BehaviorSubject<boolean>(false);
   private _isWaiting = new BehaviorSubject<boolean>(true);
   private _isRemote = new BehaviorSubject<boolean>(true);
+  private _isRematch = new BehaviorSubject<boolean>(true);
   private _channelID = new BehaviorSubject<string>('');
   private _isTournament = new BehaviorSubject<boolean>(false);
   private _activePlayers = new BehaviorSubject<string[]>([]);
@@ -18,6 +19,7 @@ export class GameStateService {
   get dataLoaded$() { return this._dataLoaded.asObservable(); }
   get isWaiting$() { return this._isWaiting.asObservable(); }
   get isRemote$() { return this._isRemote.asObservable(); }
+  get isRematch$() { return this._isRematch.asObservable(); }
   get channelID$() { return this._channelID.asObservable(); }
   get isTournament$() { return this._isTournament.asObservable(); }
   get activePlayers$() { return this._activePlayers.asObservable(); }
@@ -29,6 +31,7 @@ export class GameStateService {
   setDataLoaded(value: boolean) { this._dataLoaded.next(value); }
   setIsWaiting(value: boolean) { this._isWaiting.next(value); }
   setIsRemote(value: boolean) { this._isRemote.next(value); }
+  setIsRematch(value: boolean) { this._isRematch.next(value); }
   setChannelID(value: string) { this._channelID.next(value); }
   setIsTournament(value: boolean) { this._isTournament.next(value); }
   setActivePlayers(value: string[]) { this._activePlayers.next(value); }

@@ -6,7 +6,7 @@ import {
   OnDestroy,
   ViewChildren,
   QueryList,
-  AfterViewInit
+  AfterViewInit, ChangeDetectorRef
 } from '@angular/core';
 import { PaddleComponent } from "../../components/gameplay/paddle/paddle.component";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
@@ -54,7 +54,8 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
     private _webSocketService: WebSocketService,
     private _route: ActivatedRoute,
     private _connectionService: ConnectionService,
-    public gameStateService: GameStateService
+    private cdr: ChangeDetectorRef,
+    public gameStateService: GameStateService,
   ) {}
 
   public ngOnInit() {
@@ -68,6 +69,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
       this.arenaID = arena_id;
+      this.cdr.detectChanges();
       console.log('Channel ID:', channel_id);
       console.log('Arena ID:', arena_id);
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);

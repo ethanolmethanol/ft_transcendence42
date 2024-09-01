@@ -4,7 +4,8 @@
   <section class="remote-section"
            *ngIf="(gameStateService.dataLoaded$ | async)
            && (gameStateService.isWaiting$ | async)
-           && (gameStateService.isRemote$ | async)">
+           && (gameStateService.isRemote$ | async)
+           && (gameStateService.isRematch$ | async)">
     <h4>
       Share this code with your friends!
     </h4>

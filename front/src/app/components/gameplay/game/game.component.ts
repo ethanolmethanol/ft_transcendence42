@@ -336,6 +336,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       if (status == STARTED) {
         this.handleStartCounterCompletion()
         gameOverOverlay.show = false;
+        this.gameStateService.setIsRematch(false);
       } else if (status == DYING || status == DEAD) {
         if (this.isTournament) {
           this.redirectToLobby();
@@ -381,6 +382,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe(foundPlayer => player = foundPlayer);
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
+      this.gameStateService.setIsRematch(true);
     }
     if (gameOverOverlay.hasRematched === false) {
       if (info.winner === "") {
