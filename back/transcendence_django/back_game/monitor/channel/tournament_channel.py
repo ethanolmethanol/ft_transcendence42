@@ -5,12 +5,15 @@ from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import (
+    ARENA_LOOP_INTERVAL,
     CREATED,
     DEAD,
     DYING,
+    NEXT_ROUND_LOOP_INTERVAL,
     TOURNAMENT_ARENA_COUNT,
     TOURNAMENT_MAX_ROUND,
     WAITING,
+    WAIT_NEXT_ROUND_INTERVAL
 )
 from transcendence_django.dict_keys import ASSIGNATIONS, NB_PLAYERS
 
@@ -23,6 +26,7 @@ class TournamentChannel(Channel):
 
     def __init__(self, players_specs: dict[str, int]):
         super().__init__(players_specs)
+        logger.info("Tournament channel created: %s", TOURNAMENT_MAX_ROUND)
         for _ in range(TOURNAMENT_ARENA_COUNT):
             self.add_arena()
         self.user_count: int = self.players_specs[NB_PLAYERS] * len(self.arenas)
@@ -68,7 +72,7 @@ class TournamentChannel(Channel):
         while self.round <= TOURNAMENT_MAX_ROUND and self.is_active:
             logger.info("Arena %s loop", arena.id)
             await super().arena_loop(arena)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(ARENA_LOOP_INTERVAL)
 
     async def next_round_loop(self):
         while self.round <= TOURNAMENT_MAX_ROUND:
@@ -76,11 +80,11 @@ class TournamentChannel(Channel):
                 if not self.is_active:
                     return
                 logger.info("Waiting for next round")
-                await asyncio.sleep(1)
+                await asyncio.sleep(NEXT_ROUND_LOOP_INTERVAL)
             self.set_next_round()
             if 1 < self.round <= TOURNAMENT_MAX_ROUND:
                 self.__set_next_round_arenas()
-            await asyncio.sleep(2)
+            await asyncio.sleep(WAIT_NEXT_ROUND_INTERVAL)
             await self.send_assignations()
 
     async def send_assignations(self):

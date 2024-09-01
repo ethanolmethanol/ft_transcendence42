@@ -6,6 +6,7 @@ from back_game.monitor.channel.classic_channel import ClassicChannel
 from back_game.monitor.channel.tournament_channel import TournamentChannel
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
+    CHANNEL_LOOP_INTERVAL,
     DEAD,
     DYING,
     MONITOR_LOOP_INTERVAL,
@@ -104,7 +105,7 @@ class ChannelManager:
 
     async def run_channel_loop(self, channel: Channel):
         while channel and not channel.can_be_deleted():
-            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+            await asyncio.sleep(CHANNEL_LOOP_INTERVAL)
         self.delete_channel(channel.id)
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
