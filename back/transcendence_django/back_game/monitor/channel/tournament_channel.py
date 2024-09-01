@@ -82,19 +82,14 @@ class TournamentChannel(Channel):
             self.set_next_round()
             if self.round <= TOURNAMENT_MAX_ROUND:
                 self.__reset_arenas()
-                await asyncio.sleep(2)
-                await self.send_assignations()
-        await self.send_end_game()
+            await asyncio.sleep(2)
+            await self.send_assignations()
 
     async def send_assignations(self):
         if self.sender:
             assignations: dict[str, Any] = self.get_assignations()
             logger.info("Send assignations %s", assignations)
             await self.sender({ASSIGNATIONS: assignations})
-
-    async def send_end_game(self):
-        if self.sender:
-            await self.sender({ASSIGNATIONS: {}})
 
     def can_round_be_set(self):
         return self.is_ready_to_start()

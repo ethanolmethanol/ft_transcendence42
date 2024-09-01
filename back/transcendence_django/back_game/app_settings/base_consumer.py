@@ -114,7 +114,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         except ChannelError as e:
             await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
 
-
     async def join(self, message: dict[str, Any]):
         user_id = message[USER_ID]
         player_name = message[PLAYER]
@@ -178,19 +177,22 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         )
 
     async def send_game_over(self, time: float):
-        summary = self.monitor.get_game_summary(
-            self.game.channel.id, self.game.arena_id
-        )
-        await self.send_update(
-            {
-                GAME_OVER: {
-                    PLAYERS: summary[PLAYERS],
-                    WINNER: summary[WINNER][PLAYER_NAME] if summary[WINNER] else None,
-                    TIME: time,
-                    MESSAGE: "Game over. Thanks for playing!",
+        try:
+            summary = self.monitor.get_game_summary(
+                self.game.channel.id, self.game.arena_id
+            )
+            await self.send_update(
+                {
+                    GAME_OVER: {
+                        PLAYERS: summary[PLAYERS],
+                        WINNER: summary[WINNER][PLAYER_NAME] if summary[WINNER] else None,
+                        TIME: time,
+                        MESSAGE: "Game over. Thanks for playing!",
+                    }
                 }
-            }
-        )
+            )
+        except KeyError as e:
+            pass  # Arena not found
 
     async def safe_send(self, data: dict[str, Any]):
         try:
