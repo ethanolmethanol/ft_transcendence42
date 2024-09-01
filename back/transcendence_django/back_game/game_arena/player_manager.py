@@ -98,7 +98,7 @@ class PlayerManager:
             return False
 
     def get_game_summary(self) -> dict[str, Any]:
-        winner = self.__get_winner()
+        winner = self.get_winner()
         return {
             PLAYERS: [
                 {
@@ -144,7 +144,7 @@ class PlayerManager:
     def get_player_name(self, user_id: int) -> str:
         return self.__get_player_from_user_id(user_id).player_name
 
-    def __get_winner(self) -> Player | None:
+    def get_winner(self) -> Player | None:
         active_players = [
             player for player in self.players.values() if player.is_active()
         ]

@@ -97,17 +97,15 @@ class ChannelManager:
         self.channels[new_channel.id] = new_channel
         arenas = new_channel.arenas
         new_arena = list(arenas.values())[0]
-        for arena in arenas.values():
-            asyncio.create_task(self.__arena_loop(new_channel, arena))
-            asyncio.create_task(new_channel.run_game_loop(arena))
         await self.add_user_to_channel(new_channel, new_arena.id, user_id)
+        asyncio.create_task(self.run_channel_loop(new_channel))
         logger.info("New arena: %s", new_arena.to_dict())
         return new_channel
 
-    async def __arena_loop(self, channel: Channel, arena: Arena):
-        await channel.arena_loop(arena)
-        if channel is not None and channel.can_be_deleted():
-            self.delete_channel(channel.id)
+    async def run_channel_loop(self, channel: Channel):
+        while channel and not channel.can_be_deleted():
+            await asyncio.sleep(MONITOR_LOOP_INTERVAL)
+        self.delete_channel(channel.id)
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         channel_dict = self.__get_available_channel(is_tournament=True)

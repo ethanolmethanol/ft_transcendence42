@@ -1,8 +1,9 @@
 from .channel import Channel
 import asyncio
-from typing import Any, Dict
+from typing import Any
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
+from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import (
     CREATED,
     DEAD,
@@ -22,12 +23,9 @@ class TournamentChannel(Channel):
 
     def __init__(self, players_specs: dict[str, int]):
         super().__init__(players_specs)
-        arenas = {}
         for _ in range(TOURNAMENT_ARENA_COUNT):
-            new_arena: Arena = Arena(players_specs)
-            arenas[new_arena.id] = new_arena
-        self.arenas: Dict[str, Arena] = arenas
-        self.user_count: int = players_specs[NB_PLAYERS] * len(arenas)
+            self.add_arena()
+        self.user_count: int = self.players_specs[NB_PLAYERS] * len(self.arenas)
         self.round: int = 0
         self.sender = None
         self.is_active = True
@@ -78,10 +76,10 @@ class TournamentChannel(Channel):
                 if not self.is_active:
                     return
                 logger.info("Waiting for next round")
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(1)
             self.set_next_round()
-            if self.round <= TOURNAMENT_MAX_ROUND:
-                self.__reset_arenas()
+            if 1 < self.round <= TOURNAMENT_MAX_ROUND:
+                self.__set_next_round_arenas()
             await asyncio.sleep(2)
             await self.send_assignations()
 
@@ -94,10 +92,32 @@ class TournamentChannel(Channel):
     def can_round_be_set(self):
         return self.is_ready_to_start()
 
-    def __reset_arenas(self):
+    def __set_next_round_arenas(self):
+        winners: list[Player | None] = self.__get_winners()
+        self.arenas = {}
+        for _ in range(len(winners) // 2):
+            self.add_arena()
+        self.__assign_users_to_arenas(winners)
+
+    def __get_winners(self) -> list[Player | None]:
+        winners = []
         for arena in self.arenas.values():
-            # TODO: set winners as next round players
-            logger.info("Reset arena %s", arena.id)
-            arena.reset()
-            logger.info("Set arena %s status to CREATED", arena.id)
-            arena.set_status(GameStatus(CREATED))
+            winner = arena.get_winner()
+            if winner:
+                logger.info("Arena %s winner: %s", arena.id, winner.player_name)
+                winners.append(winner)
+            else:
+                logger.info("Arena %s has no winner and has %s status", arena.id, arena.get_status())
+        return winners
+
+    def __assign_users_to_arenas(self, winners: list[Player | None]):
+        for user_id in self.users.keys():
+            if user_id in (winner.user_id for winner in winners):
+                for new_arena in self.arenas.values():
+                    if new_arena.is_full():
+                        continue
+                    self.users[user_id] = new_arena
+                    break
+            else:
+                self.users[user_id] = None
+

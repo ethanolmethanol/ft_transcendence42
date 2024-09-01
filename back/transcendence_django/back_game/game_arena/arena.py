@@ -130,6 +130,7 @@ class Arena:
         await self.send_update({ARENA: self.to_dict()})
 
     def conclude_game(self):
+        self.player_manager.get_winner()
         self.player_manager.finish_active_players()
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
@@ -192,6 +193,9 @@ class Arena:
 
     def did_player_give_up(self, user_id: int) -> bool:
         return self.player_manager.did_player_give_up(user_id)
+
+    def get_winner(self) -> Player | None:
+        return self.player_manager.winner
 
     def is_private(self) -> bool:
         return self.game.is_private

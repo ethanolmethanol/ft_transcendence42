@@ -98,7 +98,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     async def receive(self, text_data: str):
         content = json.loads(text_data)
-        logger.info("WebSocket received message: %s", content)
         message_type, message = content[TYPE], content[MESSAGE]
         message_binding: dict[
             str, Callable[[dict[str, Any]], Coroutine[Any, Any, Any]]

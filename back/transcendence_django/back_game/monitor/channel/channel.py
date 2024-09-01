@@ -28,6 +28,7 @@ class Channel(ABC):
 
     def __init__(self, players_specs: dict[str, int]):
         self.id: str = self._generate_random_id(10)
+        self.players_specs = players_specs
         self.history_manager = HistoryManager()
         self.users: Dict[int, Arena] = {}
         self.arenas: Dict[str, Arena] = {}
@@ -79,8 +80,11 @@ class Channel(ABC):
     def get_arena(self, arena_id: int) -> Arena | None:
         return self.arenas.get(arena_id)
 
-    def add_arena(self, arena: Arena):
-        self.arenas[arena.id] = arena
+    def add_arena(self):
+        new_arena = Arena(self.players_specs)
+        asyncio.create_task(self.arena_loop(new_arena))
+        asyncio.create_task(self.run_game_loop(new_arena))
+        self.arenas[new_arena.id] = new_arena
 
     @abstractmethod
     async def add_user_into_arena(self, user_id: int, arena_id: str):
@@ -89,7 +93,7 @@ class Channel(ABC):
     def get_assignations(self) -> Dict[str, Any]:
         assignations = {}
         for user_id, arena in self.users.items():
-            if arena.get_status() != GameStatus(DEAD):
+            if arena and arena.get_status() != GameStatus(DEAD):
                 assignations[user_id] = arena.to_dict()
         return assignations
 
