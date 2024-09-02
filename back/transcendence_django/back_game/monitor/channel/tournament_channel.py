@@ -55,8 +55,8 @@ class TournamentChannel(Channel):
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
 
     def is_ready_to_start(self) -> bool:
-        return self.is_full() and (
-                self.round == 0 or self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
+        return (self.is_full() and self.round == 0) or (
+                self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
         )
 
     def can_be_deleted(self) -> bool:

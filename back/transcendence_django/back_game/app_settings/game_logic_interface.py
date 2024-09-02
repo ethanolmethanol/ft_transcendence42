@@ -76,7 +76,8 @@ class GameLogicInterface:
                 self.channel.id, self.arena_id, player_name, direction
             )
         except KeyError as e:
-            raise ChannelError(NOT_ENTERED, "User cannot move paddle.") from e
+            pass
+            # raise ChannelError(NOT_ENTERED, "User cannot move paddle.") from e
 
     def is_channel_full(self) -> bool:
         return self.channel.is_full()
