@@ -98,10 +98,11 @@ class TournamentChannel(Channel):
 
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
+        active_winners = [winner for winner in winners if winner.user_id in self.users]
         self.arenas = {}
-        for _ in range(len(winners) // 2):
+        for _ in range(len(active_winners) // 2):
             self.add_arena()
-        self.__assign_users_to_arenas(winners)
+        self.__assign_users_to_arenas(active_winners)
 
     def __get_winners(self) -> list[Player | None]:
         winners = []
