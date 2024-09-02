@@ -42,12 +42,12 @@ export class GameStateService {
   restrictReset() {
     this.setDataLoaded(false);
     this.setIsWaiting(true);
+    this.setIsRematch(true);
   }
 
   reset() {
     this.restrictReset();
     this.setIsRemote(true);
-    this.setIsRematch(true);
     this.setChannelID('');
     this.setIsTournament(false);
     this.setActivePlayers([]);
