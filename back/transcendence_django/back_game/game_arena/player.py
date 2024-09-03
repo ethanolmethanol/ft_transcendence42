@@ -1,7 +1,8 @@
 import time
-from typing import NewType
+from typing import Any, NewType
 
 from back_game.game_settings.game_constants import AFK_TIMEOUT
+from transcendence_django.dict_keys import SCORE, USER_ID
 
 ENABLED = 0
 DISABLED = 1
@@ -18,6 +19,12 @@ class Player:
         self.score: int = 0
         self.status: PlayerStatus = PlayerStatus(ENABLED)
         self.last_activity_time: float = time.time()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            USER_ID: self.user_id,
+            SCORE: self.score,
+        }
 
     def update_activity_time(self):
         self.last_activity_time = time.time()

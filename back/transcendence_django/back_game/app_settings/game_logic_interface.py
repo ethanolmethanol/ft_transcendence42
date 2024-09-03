@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any, Callable, Coroutine, Dict, Optional
 
 from back_game.app_settings.channel_error import ChannelError
 from back_game.game_settings.game_constants import (
@@ -10,9 +10,9 @@ from back_game.game_settings.game_constants import (
     UNKNOWN_ARENA_ID,
     UNKNOWN_CHANNEL_ID,
 )
-from back_game.monitor.monitor import get_monitor
-
 from back_game.monitor.channel.channel import Channel
+from back_game.monitor.channel.tournament_channel import TournamentChannel
+from back_game.monitor.monitor import get_monitor
 
 logger = logging.getLogger(__name__)
 
@@ -105,3 +105,9 @@ class GameLogicInterface:
         except (KeyError, ValueError) as e:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
+
+    def get_tournament_map(self) -> Dict[str, Dict[str, list[Dict[str, Any] | None]]]:
+        if not self.is_tournament:
+            raise ChannelError(INVALID_CHANNEL, "Attempt to get tournament map in a non-tournament")
+        tournament_channel: TournamentChannel = self.channel
+        return tournament_channel.get_tournament_map()

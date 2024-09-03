@@ -241,6 +241,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       'assignations': (value: AssignationsResponse) => {
         this.handleRedirection(value);
       },
+      'tournament_map': (value: any) => {
+        this.gameStateService.setTournamentMap(value);
+      }
     };
 
     await this.__updateGameState(gameState, variableMappingChannel);

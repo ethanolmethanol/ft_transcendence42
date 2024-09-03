@@ -5,14 +5,10 @@
            *ngIf="(gameStateService.dataLoaded$ | async)
            && (gameStateService.isWaiting$ | async)
            && (gameStateService.isRemote$ | async)">
-    <h4>
-      Waiting for players to join... <br><br>
-      {{ (gameStateService.channelPlayers$ | async)?.length}} / {{ (gameStateService.channelCapacity$ | async) }}
-    </h4>
-    <ul class="waiting-players">
-      <li *ngFor="let player of (gameStateService.channelPlayers$ | async)">
-        <app-player-icon [playerName]="player"></app-player-icon>
-      </li>
-    </ul>
+    <app-tournament-dashboard
+      [players]="(gameStateService.channelPlayers$ | async)!"
+      [capacity]="(gameStateService.channelCapacity$ | async)!"
+      [tournamentMap]="(gameStateService.tournamentMap$ | async)!">
+    </app-tournament-dashboard>
   </section>
 </body>

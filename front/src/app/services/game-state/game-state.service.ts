@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject} from "rxjs";
+import {TournamentMap} from "../../interfaces/tournament-map.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class GameStateService {
   private _isRematch = new BehaviorSubject<boolean>(true);
   private _channelID = new BehaviorSubject<string>('');
   private _isTournament = new BehaviorSubject<boolean>(false);
+  private _tournamentMap = new BehaviorSubject<TournamentMap>({});
   private _activePlayers = new BehaviorSubject<string[]>([]);
   private _channelPlayers = new BehaviorSubject<string[]>([]);
   private _channelCapacity = new BehaviorSubject<number>(2);
@@ -22,6 +24,7 @@ export class GameStateService {
   get isRematch$() { return this._isRematch.asObservable(); }
   get channelID$() { return this._channelID.asObservable(); }
   get isTournament$() { return this._isTournament.asObservable(); }
+  get tournamentMap$() { return this._tournamentMap.asObservable(); }
   get activePlayers$() { return this._activePlayers.asObservable(); }
   get channelPlayers$() { return this._channelPlayers.asObservable(); }
   get channelCapacity$() { return this._channelCapacity.asObservable(); }
@@ -34,6 +37,7 @@ export class GameStateService {
   setIsRematch(value: boolean) { this._isRematch.next(value); }
   setChannelID(value: string) { this._channelID.next(value); }
   setIsTournament(value: boolean) { this._isTournament.next(value); }
+  setTournamentMap(value: TournamentMap) { this._tournamentMap.next(value); }
   setActivePlayers(value: string[]) { this._activePlayers.next(value); }
   setChannelPlayers(value: string[]) { this._channelPlayers.next(value); }
   setChannelCapacity(value: number) { this._channelCapacity.next(value); }
@@ -50,6 +54,7 @@ export class GameStateService {
     this.setIsRemote(true);
     this.setChannelID('');
     this.setIsTournament(false);
+    this.setTournamentMap({});
     this.setActivePlayers([]);
     this.setChannelPlayers([]);
     this.setChannelCapacity(2);

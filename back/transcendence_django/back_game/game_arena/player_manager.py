@@ -22,7 +22,6 @@ from transcendence_django.dict_keys import (
     NB_PLAYERS,
     PLAYER_NAME,
     PLAYERS,
-    SCORE,
     TIME_LEFT,
     UNKNOWN_USER,
     USER_ID,
@@ -101,10 +100,7 @@ class PlayerManager:
         winner = self.get_winner()
         return {
             PLAYERS: [
-                {
-                    USER_ID: player.user_id,
-                    SCORE: player.score,
-                }
+                player.to_dict()
                 for player in self.players.values()
             ],
             WINNER: (

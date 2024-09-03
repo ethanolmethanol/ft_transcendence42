@@ -15,17 +15,19 @@ import {ConnectionService} from "../../services/connection/connection.service";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
 import {GameStateService} from "../../services/game-state/game-state.service";
+import {TournamentDashboardComponent} from "../../components/tournament-dashboard/tournament-dashboard.component";
 
 @Component({
   selector: 'app-tournament-page',
   standalone: true,
-    imports: [
-        GameComponent,
-        NgIf,
-        AsyncPipe,
-        NgForOf,
-        PlayerIconComponent
-    ],
+  imports: [
+    GameComponent,
+    NgIf,
+    AsyncPipe,
+    NgForOf,
+    PlayerIconComponent,
+    TournamentDashboardComponent
+  ],
   templateUrl: './tournament-page.component.html',
   styleUrl: './tournament-page.component.css'
 })

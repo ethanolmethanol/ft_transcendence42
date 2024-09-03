@@ -1,6 +1,6 @@
 from .channel import Channel
 import asyncio
-from typing import Any
+from typing import Any, Dict
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
@@ -33,6 +33,7 @@ class TournamentChannel(Channel):
         self.round: int = 0
         self.sender = None
         self.is_active = True
+        self.rounds_map: Dict[str, Dict[str, list[dict[str, Any] | None]]] = self.__get_initial_rounds_map()
 
     def is_tournament(self) -> bool:
         return True
@@ -67,6 +68,7 @@ class TournamentChannel(Channel):
     def set_next_round(self):
         self.round += 1
         logger.info("Tournament round %s", self.round)
+        self.rounds_map[str(self.round)] = self.__get_current_round_arenas()
 
     async def arena_loop(self, arena: Arena):
         while self.round <= TOURNAMENT_MAX_ROUND and self.is_active:
@@ -95,6 +97,28 @@ class TournamentChannel(Channel):
 
     def can_round_be_set(self):
         return self.is_ready_to_start()
+
+    def get_tournament_map(self) -> Dict[str, Dict[str, list[dict[str, Any] | None]]]:
+        return self.rounds_map
+
+    def __get_initial_rounds_map(self) -> Dict[str, Dict[str, list[None]]]:
+        rounds_map = {}
+        for i in range(TOURNAMENT_MAX_ROUND):
+            round = {}
+            arena_count = TOURNAMENT_ARENA_COUNT // 2 ** i
+            for j in range(arena_count):
+                round[str(j)] = [None for _ in range(self.players_specs[NB_PLAYERS])]
+            rounds_map[str(i + 1)] = round
+        return rounds_map
+
+    def __get_current_round_arenas(self) -> Dict[str, list[dict[str, Any]]]:
+        round_arenas = {}
+        i = 0
+        for arena in self.arenas.values():
+            players = arena.get_players().values()
+            round_arenas[str(i)] = [player.to_dict() for player in players]
+            i += 1
+        return round_arenas
 
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
