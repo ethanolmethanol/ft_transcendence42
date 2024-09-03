@@ -243,6 +243,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       'tournament_map': (value: any) => {
         this.gameStateService.setTournamentMap(value);
+        console.log('Tournament map:', value);
       }
     };
 

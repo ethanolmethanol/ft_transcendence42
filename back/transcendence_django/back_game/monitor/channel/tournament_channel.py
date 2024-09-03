@@ -47,6 +47,7 @@ class TournamentChannel(Channel):
         if len(self.users) < self.user_count:
             arena: Arena = self.arenas[arena_id]
             self.users[user_id] = arena
+            self.__update_rounds_map(self.round + 1)
             logger.info("User %s added to channel %s", user_id, self.id)
             if self.is_full():
                 logger.info("Channel %s is full!", self.id)
@@ -68,7 +69,6 @@ class TournamentChannel(Channel):
     def set_next_round(self):
         self.round += 1
         logger.info("Tournament round %s", self.round)
-        self.rounds_map[str(self.round)] = self.__get_current_round_arenas()
 
     async def arena_loop(self, arena: Arena):
         while self.round <= TOURNAMENT_MAX_ROUND and self.is_active:
@@ -98,7 +98,7 @@ class TournamentChannel(Channel):
     def can_round_be_set(self):
         return self.is_ready_to_start()
 
-    def get_tournament_map(self) -> Dict[str, Dict[str, list[dict[str, Any] | None]]]:
+    def get_tournament_map(self) -> Dict[str, Dict[str, list[str | None]]]:
         return self.rounds_map
 
     def __get_initial_rounds_map(self) -> Dict[str, Dict[str, list[None]]]:
@@ -111,14 +111,24 @@ class TournamentChannel(Channel):
             rounds_map[str(i + 1)] = round
         return rounds_map
 
-    def __get_current_round_arenas(self) -> Dict[str, list[dict[str, Any]]]:
+    def __get_current_round_arenas(self, round) -> Dict[str, list[str | None]]:
+        arena_count = len(self.rounds_map[str(round)])
         round_arenas = {}
-        i = 0
-        for arena in self.arenas.values():
-            players = arena.get_players().values()
-            round_arenas[str(i)] = [player.to_dict() for player in players]
-            i += 1
+        for user_id in self.users.keys():
+            arena = self.users[user_id]
+            if arena:
+                if arena.id not in round_arenas:
+                    round_arenas[arena.id] = []
+                if user_id not in round_arenas[arena.id]:
+                    round_arenas[arena.id].append(user_id)
+        for _ in range(arena_count - len(round_arenas)):
+            round_arenas[str(len(round_arenas))] = [None for _ in range(self.players_specs[NB_PLAYERS])]
         return round_arenas
+
+    def __update_rounds_map(self, round: int | None = None):
+        if round is None:
+            round = self.round
+        self.rounds_map[str(round)] = self.__get_current_round_arenas(round)
 
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
@@ -127,6 +137,7 @@ class TournamentChannel(Channel):
         for _ in range(len(active_winners) // 2):
             self.add_arena()
         self.__assign_users_to_arenas(active_winners)
+        self.__update_rounds_map()
 
     def __get_winners(self) -> list[Player | None]:
         winners = []

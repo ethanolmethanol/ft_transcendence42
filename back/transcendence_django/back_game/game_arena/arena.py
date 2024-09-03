@@ -101,6 +101,9 @@ class Arena:
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
 
+    def get_player_info(self, user_id: int) -> dict[str, Any]:
+        return self.player_manager.get_player_info(user_id)
+
     def get_status(self) -> GameStatus:
         return self.game.status
 

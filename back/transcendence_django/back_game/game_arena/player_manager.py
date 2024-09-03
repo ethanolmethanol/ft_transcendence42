@@ -46,6 +46,10 @@ class PlayerManager:
         disable_players_count = self.__count_players(PlayerStatus(DISABLED))
         return enable_players_count + disable_players_count == self.nb_players
 
+    def get_player_info(self, user_id: int) -> dict[str, Any]:
+        player = self.__get_player_from_user_id(user_id)
+        return player.to_dict()
+
     def add_player(self, user_id: int, player_name: str):
         player = Player(user_id, player_name)
         self.players[player_name] = player
