@@ -1,3 +1,4 @@
+import json
 import logging
 from http import HTTPStatus
 
@@ -19,14 +20,20 @@ logger = logging.getLogger(__name__)
 @login_required
 def add_friend(request):
     try:
-        friend_id = request.data.get("friend")
+        data = json.loads(request.body)
+        friend_name = data.get("friendName")
         user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(pk=friend_id)
+        friend = CustomUser.objects.get(username=friend_name)
         request_status = user.send_friend_request(friend)
         return JsonResponse({"status": request_status}, status=status.HTTP_200_OK)
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
+        )
+    except json.JSONDecodeError:
+        # Handle case where the JSON is malformed
+        return JsonResponse(
+            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )
 
 
@@ -35,9 +42,10 @@ def add_friend(request):
 @login_required
 def remove_friend(request):
     try:
-        friend_id = request.data.get("friend")
+        data = json.loads(request.body)
+        friend_name = data.get("friendName")
         user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(pk=friend_id)
+        friend = CustomUser.objects.get(username=friend_name)
         if user.remove_friend(friend):
             return JsonResponse(
                 {"status": "Successfully removed %s from friends" % friend.username},
@@ -51,6 +59,11 @@ def remove_friend(request):
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND,
         )
+    except json.JSONDecodeError:
+        # Handle case where the JSON is malformed
+        return JsonResponse(
+            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
+        )
 
 
 @require_http_methods(["POST"])
@@ -58,9 +71,10 @@ def remove_friend(request):
 @login_required
 def accept_friendship(request):
     try:
-        friend_id = request.data.get("friend")
+        data = json.loads(request.body)
+        friend_name = data.get("friendName")
         user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(pk=friend_id)
+        friend = CustomUser.objects.get(username=friend_name)
         if user.accept_friendship_request(friend) is not None:
             return JsonResponse({"status": "%s is now your friend!" % friend.username}, status=status.HTTP_200_OK)
         else:
@@ -71,6 +85,11 @@ def accept_friendship(request):
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )
+    except json.JSONDecodeError:
+        # Handle case where the JSON is malformed
+        return JsonResponse(
+            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
+        )
 
 
 @require_http_methods(["POST"])
@@ -78,9 +97,10 @@ def accept_friendship(request):
 @login_required
 def decline_friendship(request):
     try:
-        friend_id = request.data.get("friend")
+        data = json.loads(request.body)
+        friend_name = data.get("friendName")
         user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(pk=friend_id)
+        friend = CustomUser.objects.get(username=friend_name)
         if user.decline_friendship_request(friend) is not None:
             return JsonResponse(
                 {"status": "Friendship request from %s declined" % friend.username},
@@ -93,6 +113,11 @@ def decline_friendship(request):
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
+        )
+    except json.JSONDecodeError:
+        # Handle case where the JSON is malformed
+        return JsonResponse(
+            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )
 
 
@@ -115,4 +140,9 @@ def get_friends_info(request):
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
+        )
+    except json.JSONDecodeError:
+        # Handle case where the JSON is malformed
+        return JsonResponse(
+            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )

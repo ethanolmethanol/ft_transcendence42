@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SignInPageComponent } from "./pages/sign-in-page/sign-in-page.component";
 import { UserService } from "./services/user/user.service";
+import { FriendService } from "./services/friend/friend.service";
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { UserService } from "./services/user/user.service";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  constructor(private router: Router, private userService: UserService) {
+  constructor(private router: Router, private userService: UserService, private friendService: FriendService) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         if (event.url === '/home') {
@@ -20,6 +21,13 @@ export class AppComponent {
               console.log('User data refreshed successfully.');
             }).catch((error) => {
               console.error('Failed to refresh user data:', error);
+            });
+          }, 500);
+          setTimeout(() => {
+            this.friendService.refreshFriendData().then(() => {
+              console.log('Friend data refreshed successfully.');
+            }).catch((error) => {
+              console.error('Failed to refresh friend data:', error);
             });
           }, 500);
         }

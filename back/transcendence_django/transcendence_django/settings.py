@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "back_auth",
     "back_user",
     "back_game",
+    "back_friends",
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",  # https://pypi.org/project/django-health-check/

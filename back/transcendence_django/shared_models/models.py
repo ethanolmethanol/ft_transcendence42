@@ -125,11 +125,20 @@ class FriendshipManager:
     @staticmethod
     def send_friend_request(sender, receiver):
         if sender == receiver:
-            return "Self-love is awesome! But you cannot friend yourself."
-        if FriendshipManager.accept_friendship(receiver, sender) is not None:
-            return "%s is now your friend!" % receiver.username
+            return "Self-love is awesome!"
+
+        if sender.friends.filter(id=receiver.id).exists():
+            return f"{receiver.username} is already your friend!"
+
+        if FriendRequest.objects.filter(from_user=sender, to_user=receiver).exists():
+            return f"Friend request to {receiver.username} already sent!"
+
+        if FriendRequest.objects.filter(from_user=receiver, to_user=sender).exists():
+            FriendshipManager.accept_friendship(receiver, sender)
+            return f"{receiver.username} is now your friend!"
+
         FriendRequest.objects.create(from_user=sender, to_user=receiver)
-        return "Friend request sent to %s!" % receiver.username
+        return f"Friend request sent to {receiver.username}!"
 
     @staticmethod
     def add_friend(friend1, friend2):

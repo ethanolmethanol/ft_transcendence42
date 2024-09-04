@@ -19,7 +19,9 @@ body {
   overflow: scroll;
 }
 
-.search-area {}
+.search-area {
+  display: flex;
+}
 
 .friend-list {}
 
