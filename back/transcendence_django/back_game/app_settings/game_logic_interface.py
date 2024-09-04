@@ -106,7 +106,7 @@ class GameLogicInterface:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
 
-    def get_tournament_map(self) -> Dict[str, Dict[str, list[str | None]]]:
+    def get_tournament_map(self) -> Dict[str, Dict[str, list[int | None]]]:
         if not self.is_tournament:
             raise ChannelError(INVALID_CHANNEL, "Attempt to get tournament map in a non-tournament")
         tournament_channel: TournamentChannel = self.channel

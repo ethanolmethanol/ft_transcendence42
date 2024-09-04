@@ -1,21 +1,17 @@
-<h4>
-  Waiting for players to join... <br><br>
-  {{ players.length }} / {{ capacity }}
-</h4>
-<ul class="waiting-players">
-  <li *ngFor="let player of players">
-    <app-player-icon [playerName]="player"></app-player-icon>
-  </li>
-</ul>
-<section class="games-section">
-  <div *ngFor="let roundKey of tournamentMap | keyvalue">
-    <h5>Round {{ roundKey.key }}</h5>
-    <div *ngFor="let gameKey of roundKey.value | keyvalue" class="game-rectangle">
-      <ul>
-        <li *ngFor="let player of gameKey.value.players">
-          <app-player-icon [playerName]="player.user_id.toString()"></app-player-icon>
-        </li>
-      </ul>
+<div *ngIf="isDataLoaded; else loading">
+  <section class="games-section">
+    <div *ngFor="let roundKey of tournamentMap | keyvalue" class="round">
+      <h5>Round {{ roundKey.key }}</h5>
+      <div *ngFor="let gameKey of roundKey.value | keyvalue" class="game">
+        <ul>
+          <li *ngFor="let userID of gameKey.value" class="players">
+            <app-player-icon *ngIf="userID" [playerName]="playerNamesMap[userID]"></app-player-icon>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
+<ng-template #loading>
+  <p>Loading data, please wait...</p>
+</ng-template>

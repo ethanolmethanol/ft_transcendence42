@@ -16,6 +16,8 @@ import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
 import {GameStateService} from "../../services/game-state/game-state.service";
 import {TournamentDashboardComponent} from "../../components/tournament-dashboard/tournament-dashboard.component";
+import {UserService} from "../../services/user/user.service";
+import {TournamentMap} from "../../interfaces/tournament-map.interface";
 
 @Component({
   selector: 'app-tournament-page',

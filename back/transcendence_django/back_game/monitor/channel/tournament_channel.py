@@ -56,6 +56,10 @@ class TournamentChannel(Channel):
         else:
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
 
+    def delete_user(self, user_id: int):
+        super().delete_user(user_id)
+        self.__update_rounds_map(self.round + 1)
+
     def is_ready_to_start(self) -> bool:
         return (self.is_full() and self.round == 0) or (
                 self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
@@ -98,7 +102,7 @@ class TournamentChannel(Channel):
     def can_round_be_set(self):
         return self.is_ready_to_start()
 
-    def get_tournament_map(self) -> Dict[str, Dict[str, list[str | None]]]:
+    def get_tournament_map(self) -> Dict[str, Dict[str, list[int | None]]]:
         return self.rounds_map
 
     def __get_initial_rounds_map(self) -> Dict[str, Dict[str, list[None]]]:
@@ -111,7 +115,7 @@ class TournamentChannel(Channel):
             rounds_map[str(i + 1)] = round
         return rounds_map
 
-    def __get_current_round_arenas(self, round) -> Dict[str, list[str | None]]:
+    def __get_current_round_arenas(self, round) -> Dict[str, list[int | None]]:
         arena_count = len(self.rounds_map[str(round)])
         round_arenas = {}
         for user_id in self.users.keys():
@@ -120,7 +124,7 @@ class TournamentChannel(Channel):
                 if arena.id not in round_arenas:
                     round_arenas[arena.id] = []
                 if user_id not in round_arenas[arena.id]:
-                    round_arenas[arena.id].append(user_id)
+                    round_arenas[arena.id].append(int(user_id))
         for _ in range(arena_count - len(round_arenas)):
             round_arenas[str(len(round_arenas))] = [None for _ in range(self.players_specs[NB_PLAYERS])]
         return round_arenas

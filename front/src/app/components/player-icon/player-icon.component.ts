@@ -10,5 +10,5 @@ import {Component, Input} from '@angular/core';
 export class PlayerIconComponent {
   @Input() playerName: string = '';
 
-  constructor() { }
+  constructor() {}
 }
