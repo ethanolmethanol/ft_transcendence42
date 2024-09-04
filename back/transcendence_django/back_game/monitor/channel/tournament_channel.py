@@ -31,7 +31,8 @@ class TournamentChannel(Channel):
             self.add_arena()
         self.user_count: int = self.players_specs[NB_PLAYERS] * len(self.arenas)
         self.round: int = 0
-        self.sender = None
+        self.assignations_sender = None
+        self.tournament_map_sender = None
         self.is_active = True
         self.rounds_map: Dict[str, Dict[str, list[dict[str, Any] | None]]] = self.__get_initial_rounds_map()
 
@@ -52,13 +53,8 @@ class TournamentChannel(Channel):
             if self.is_full():
                 logger.info("Channel %s is full!", self.id)
                 asyncio.create_task(self.next_round_loop())
-                await self.send_assignations()
         else:
             logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
-
-    def delete_user(self, user_id: int):
-        super().delete_user(user_id)
-        self.__update_rounds_map(self.round + 1)
 
     def is_ready_to_start(self) -> bool:
         return (self.is_full() and self.round == 0) or (
@@ -73,6 +69,8 @@ class TournamentChannel(Channel):
     def set_next_round(self):
         self.round += 1
         logger.info("Tournament round %s", self.round)
+        if 1 < self.round <= TOURNAMENT_MAX_ROUND:
+            self.__set_next_round_arenas()
 
     async def arena_loop(self, arena: Arena):
         while self.round <= TOURNAMENT_MAX_ROUND and self.is_active:
@@ -82,22 +80,25 @@ class TournamentChannel(Channel):
 
     async def next_round_loop(self):
         while self.round <= TOURNAMENT_MAX_ROUND:
+            self.set_next_round()
+            await self.send_tournament_map()
+            await asyncio.sleep(WAIT_NEXT_ROUND_INTERVAL)
+            await self.send_assignations()
             while not self.can_round_be_set():
                 if not self.is_active:
                     return
                 logger.info("Waiting for next round")
                 await asyncio.sleep(NEXT_ROUND_LOOP_INTERVAL)
-            self.set_next_round()
-            if 1 < self.round <= TOURNAMENT_MAX_ROUND:
-                self.__set_next_round_arenas()
-            await asyncio.sleep(WAIT_NEXT_ROUND_INTERVAL)
-            await self.send_assignations()
 
     async def send_assignations(self):
-        if self.sender:
+        if self.assignations_sender is not None:
             assignations: dict[str, Any] = self.get_assignations()
             logger.info("Send assignations %s", assignations)
-            await self.sender({ASSIGNATIONS: assignations})
+            await self.assignations_sender({ASSIGNATIONS: assignations})
+
+    async def send_tournament_map(self):
+        if self.tournament_map_sender is not None:
+            await self.tournament_map_sender()
 
     def can_round_be_set(self):
         return self.is_ready_to_start()

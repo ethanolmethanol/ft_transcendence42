@@ -39,10 +39,11 @@ import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
 import {GameStateService} from "../../../services/game-state/game-state.service";
-import {map, Subscription} from "rxjs";
+import {isEmpty, map, Subscription, timeout} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AssignationsResponse} from "../../../interfaces/assignation.interface";
 import {User} from "../../../interfaces/user";
+import {isEmptyObject} from "../../../utils/object";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -278,15 +279,18 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     const { actionType } = this.route.snapshot.data;
     if (actionType !== 'tournament') return;
 
+    if (isEmptyObject(response)) {
+      console.log('Redirecting to home');
+      this.redirectToHome();
+    }
+
     const userID = this.userService.getUserID();
     const arena = response[userID];
-    if (arena === undefined) {
-        console.log('Redirecting to home');
-        this.redirectToHome();
-        return;
-    } else if (arena.status != DYING && arena.status != DEAD) {
+    if (arena && arena.status != DYING && arena.status != DEAD) {
         console.log('Redirecting to:', this.channelID, arena.id);
-        this.router.navigate(['/online/tournament', this.channelID, arena.id]);
+        setTimeout(() => {
+          this.router.navigate(['/online/tournament', this.channelID, arena.id]);
+        }, 0); // 3000 milliseconds = 3 seconds
     }
   }
 
