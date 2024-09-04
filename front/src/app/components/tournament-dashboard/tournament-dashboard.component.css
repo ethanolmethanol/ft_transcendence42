@@ -1,13 +1,5 @@
-.waiting-players {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  text-align: center;
-  font-size: 2em;
-  width: 100%;
-  top: 40vh;
-  padding: 0;
-  list-style-type: none;
+.dashboard-container {
+  padding: 2em;
 }
 
 h4 {
@@ -32,10 +24,11 @@ h5 {
 
 .games-section {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
   justify-content: center;
   gap: 1em;
   margin-top: 2em;
+  width: 100%;
 }
 
 .round {
@@ -43,6 +36,7 @@ h5 {
   flex-direction: column;
   align-items: center;
   gap: 1em;
+  width: 100%;
 }
 
 .game {
@@ -51,6 +45,7 @@ h5 {
   background-color: #111111;
   color: white;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
@@ -59,10 +54,7 @@ h5 {
 
 .players {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 2em;
   padding: 0;
   list-style-type: none;
 }
-

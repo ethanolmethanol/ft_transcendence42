@@ -1,13 +1,12 @@
-<div *ngIf="isDataLoaded; else loading">
+<div *ngIf="isDataLoaded; else loading" class="dashboard-container">
   <section class="games-section">
     <div *ngFor="let roundKey of tournamentMap | keyvalue" class="round">
       <h5>Round {{ roundKey.key }}</h5>
       <div *ngFor="let gameKey of roundKey.value | keyvalue" class="game">
-        <ul>
-          <li *ngFor="let userID of gameKey.value" class="players">
-            <app-player-icon *ngIf="userID" [playerName]="playerNamesMap[userID]"></app-player-icon>
-          </li>
-        </ul>
+        <li *ngFor="let userID of gameKey.value" class="players">
+          <app-player-icon *ngIf="userID" [playerName]="playerNamesMap[userID]"></app-player-icon>
+          <app-player-icon *ngIf="!userID" [playerName]="'?'"></app-player-icon>
+        </li>
       </div>
     </div>
   </section>
