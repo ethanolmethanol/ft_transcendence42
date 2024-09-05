@@ -36,12 +36,8 @@ import {TournamentMap} from "../../interfaces/tournament-map.interface";
 export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy {
   canGiveUp: boolean = true;
   arenaID: number | null = null;
-
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
-  @HostListener('window:resize', ['$event'])
-  public onResize(event: Event) {
-    this.updateGameContainerScale();
-  }
+  @ViewChildren(TournamentDashboardComponent) tournamentDashboard!: QueryList<TournamentDashboardComponent>;
 
   constructor(
     private _elementRef: ElementRef,
@@ -75,6 +71,18 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
     this.game.first.hasStarted.subscribe(() => {
       this.canGiveUp = true;
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  public onResize(event: Event) {
+    this.updateTournamentDashboardContainer();
+  }
+
+  private updateTournamentDashboardContainer() {
+    const tournamentDashboardContainer = this._elementRef.nativeElement.querySelector('app-tournament-dashboard');
+    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    console.log('New scale', scale)
+    tournamentDashboardContainer.style.transform = `scale(${scale})`;
   }
 
   public ngOnDestroy() {

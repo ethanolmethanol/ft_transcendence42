@@ -21,11 +21,10 @@ button {
 
 .remote-section {
   display: flex;
-  width: 50%;
   height: 100%;
-  transform: translate(0, -60%);
+  transform: translate(0, -50%);
   gap: 3em;
-  padding: 2em;
+  padding: 3em;
 }
 
 app-tournament-dashboard {
