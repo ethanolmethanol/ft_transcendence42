@@ -76,13 +76,6 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
 
   private updateContainersScale() {
     this.game.first.updateScale();
-    this.updateTournamentDashboardContainer();
-  }
-
-  private updateTournamentDashboardContainer() {
-    if (this.tournamentDashboard && typeof this.tournamentDashboard.updateScale === 'function') {
-      this.tournamentDashboard.updateScale();
-    }
   }
 
   public ngOnDestroy() {

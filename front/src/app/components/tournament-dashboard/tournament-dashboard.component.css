@@ -67,3 +67,7 @@ h5 {
   padding: 0;
   list-style-type: none;
 }
+
+.current-user {
+  color: #2b669a;
+}

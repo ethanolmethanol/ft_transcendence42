@@ -1,6 +1,6 @@
 import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {PlayerIconComponent} from "../player-icon/player-icon.component";
-import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, KeyValuePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {TournamentMap} from "../../interfaces/tournament-map.interface";
 import { UserService } from '../../services/user/user.service';
 
@@ -12,7 +12,8 @@ import { UserService } from '../../services/user/user.service';
     NgForOf,
     KeyValuePipe,
     AsyncPipe,
-    NgIf
+    NgIf,
+    NgClass
   ],
   templateUrl: './tournament-dashboard.component.html',
   styleUrl: './tournament-dashboard.component.css',
@@ -22,7 +23,9 @@ export class TournamentDashboardComponent implements OnInit {
   @Input() players: string[];
   @Input() capacity: number;
   @Input() tournamentMap!: TournamentMap;
+  public userIDMap: { [key: number]: boolean } = {};
   public playerNamesMap: { [key: number]: string } = {};
+  public personalUserID!: number;
   public isDataLoaded = false;
 
   constructor(public userService: UserService, private elementRef: ElementRef) {
@@ -32,10 +35,11 @@ export class TournamentDashboardComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    await this.userService.whenUserDataLoaded();
+    this.personalUserID = this.userService.getUserID();
     await this.fetchUsernames().then(
       () => {
-        console.log('fetchUsernames done');
-        this.isDataLoaded = true;
+        this.completeFetching();
       }
     );
   }
@@ -43,8 +47,7 @@ export class TournamentDashboardComponent implements OnInit {
   ngOnChanges(): void {
     this.fetchUsernames().then(
       () => {
-        console.log('fetchUsernames done');
-        this.isDataLoaded = true
+        this.completeFetching();
       });
   }
 
@@ -56,6 +59,7 @@ export class TournamentDashboardComponent implements OnInit {
           for (const userID of userIDs) {
             if (userID && !this.playerNamesMap[userID]) {
               this.playerNamesMap[userID] = await this.userService.getUsername(userID);
+              this.userIDMap[userID] = this.personalUserID.toString() === userID.toString();
             }
           }
         }
@@ -63,8 +67,8 @@ export class TournamentDashboardComponent implements OnInit {
     }
   }
 
-  public updateScale() {
-    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
-    this.elementRef.nativeElement.style.transform = `scale(${scale})`;
+  private completeFetching(): void {
+    console.log('fetchUsernames done');
+    this.isDataLoaded = true;
   }
 }
