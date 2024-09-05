@@ -87,9 +87,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateGameContainerScale() {
-    const gameContainer = this._elementRef.nativeElement.querySelector('.game-container');
-    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
-    gameContainer.style.transform = `scale(${scale})`;
+    this.game.first.updateScale();
   }
 
   public confirmGiveUp() {

@@ -1,11 +1,10 @@
 import {
   AfterViewInit, ChangeDetectorRef,
   Component,
-  ElementRef,
   HostListener,
   OnDestroy,
   OnInit,
-  QueryList,
+  QueryList, ViewChild,
   ViewChildren
 } from '@angular/core';
 import {GameComponent} from "../../components/gameplay/game/game.component";
@@ -16,8 +15,6 @@ import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
 import {GameStateService} from "../../services/game-state/game-state.service";
 import {TournamentDashboardComponent} from "../../components/tournament-dashboard/tournament-dashboard.component";
-import {UserService} from "../../services/user/user.service";
-import {TournamentMap} from "../../interfaces/tournament-map.interface";
 
 @Component({
   selector: 'app-tournament-page',
@@ -37,10 +34,9 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
   canGiveUp: boolean = true;
   arenaID: number | null = null;
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
-  @ViewChildren(TournamentDashboardComponent) tournamentDashboard!: QueryList<TournamentDashboardComponent>;
+  @ViewChild(TournamentDashboardComponent) tournamentDashboard!: TournamentDashboardComponent;
 
   constructor(
-    private _elementRef: ElementRef,
     private _router: Router,
     private _webSocketService: WebSocketService,
     private _route: ActivatedRoute,
@@ -51,13 +47,18 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
     console.log('TournamentPageComponent created')
   }
 
+  @HostListener('window:resize', ['$event'])
+  public onResize(event: Event) {
+    this.updateContainersScale();
+  }
+
   public ngOnInit() {
     this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
     this.gameStateService.setIsTournament(true);
   }
 
   public ngAfterViewInit()  {
-    this.updateGameContainerScale();
+    this.updateContainersScale();
     this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];
@@ -73,27 +74,20 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  public onResize(event: Event) {
+  private updateContainersScale() {
+    this.game.first.updateScale();
     this.updateTournamentDashboardContainer();
   }
 
   private updateTournamentDashboardContainer() {
-    const tournamentDashboardContainer = this._elementRef.nativeElement.querySelector('app-tournament-dashboard');
-    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
-    console.log('New scale', scale)
-    tournamentDashboardContainer.style.transform = `scale(${scale})`;
+    if (this.tournamentDashboard && typeof this.tournamentDashboard.updateScale === 'function') {
+      this.tournamentDashboard.updateScale();
+    }
   }
 
   public ngOnDestroy() {
     console.log('TournamentPageComponent destroyed')
     this._connectionService.endConnection();
-  }
-
-  private updateGameContainerScale() {
-    const gameContainer = this._elementRef.nativeElement.querySelector('.game-container');
-    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
-    gameContainer.style.transform = `scale(${scale})`;
   }
 
   public confirmGiveUp() {

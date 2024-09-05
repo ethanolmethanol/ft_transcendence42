@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {PlayerIconComponent} from "../player-icon/player-icon.component";
 import {AsyncPipe, KeyValuePipe, NgForOf, NgIf} from "@angular/common";
 import {TournamentMap} from "../../interfaces/tournament-map.interface";
@@ -25,7 +25,7 @@ export class TournamentDashboardComponent implements OnInit {
   public playerNamesMap: { [key: number]: string } = {};
   public isDataLoaded = false;
 
-  constructor(public userService: UserService) {
+  constructor(public userService: UserService, private elementRef: ElementRef) {
     this.players = [];
     this.capacity = 0;
     this.tournamentMap = {};
@@ -61,5 +61,10 @@ export class TournamentDashboardComponent implements OnInit {
         }
       }
     }
+  }
+
+  public updateScale() {
+    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    this.elementRef.nativeElement.style.transform = `scale(${scale})`;
   }
 }

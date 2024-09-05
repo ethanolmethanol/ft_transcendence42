@@ -154,6 +154,12 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     public gameStateService: GameStateService,
   ) {}
 
+  public updateScale(): void {
+    const gameContainer = this.el.nativeElement.querySelector('.game-container');
+    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    gameContainer.style.transform = `scale(${scale})`;
+  }
+
   async ngOnInit(): Promise<void> {
     this.gameStateService.isRemote$.subscribe(isRemote => {
       this.isRemote = isRemote;
