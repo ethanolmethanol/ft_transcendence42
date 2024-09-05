@@ -1,0 +1,24 @@
+<section class="request-container">
+  <section class="flip-card">
+    <section class="flip-card-inner">
+      <section class="flip-card-front image-container">
+        <img
+          [src]="avatarUrl"
+          [attr.alt]="'User Avatar'"
+          (error)="onImageError($event)"
+        />
+      </section>
+      <section class="flip-card-back image-container">
+        <img
+          [src]="avatarUrl"
+          [attr.alt]="'User Avatar'"
+          (error)="onImageError($event)"
+        />
+        <p class="friend-name">{{ friendName }}</p>
+        <section class="accept-friendship">
+          <button type="submit" (click)="onAccept()" class="accept"><i class="material-icons">check</i> Accept</button>
+          <button type="submit" (click)="onDecline()" class="decline"><i class="material-icons">close</i> Decline</button>
+        </section>
+      </section>
+    </section>
+</section>

@@ -22,6 +22,8 @@ def add_friend(request):
     try:
         data = json.loads(request.body)
         friend_name = data.get("friendName")
+        if friend_name == "":
+            return JsonResponse({"status": "Please enter a friend name."}, status=HTTPStatus.BAD_REQUEST)
         user = CustomUser.objects.get(pk=request.user.id)
         friend = CustomUser.objects.get(username=friend_name)
         request_status = user.send_friend_request(friend)
@@ -31,7 +33,6 @@ def add_friend(request):
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )
     except json.JSONDecodeError:
-        # Handle case where the JSON is malformed
         return JsonResponse(
             {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )
@@ -60,7 +61,6 @@ def remove_friend(request):
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND,
         )
     except json.JSONDecodeError:
-        # Handle case where the JSON is malformed
         return JsonResponse(
             {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )
@@ -86,7 +86,6 @@ def accept_friendship(request):
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )
     except json.JSONDecodeError:
-        # Handle case where the JSON is malformed
         return JsonResponse(
             {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )
@@ -115,23 +114,22 @@ def decline_friendship(request):
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )
     except json.JSONDecodeError:
-        # Handle case where the JSON is malformed
         return JsonResponse(
             {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 @csrf_protect
 @login_required
 def get_friends_info(request):
     #  send this request every 5 s (if user on the friend page)
     try:
         user = CustomUser.objects.get(pk=request.user.id)
-        friend_requests = user.get_friend_requests()
-        playing_friends = user.get_playing_friends()
-        online_friends = user.get_online_friends()
-        offline_friends = user.get_offline_friends()
+        friend_requests = list(user.get_friend_requests())
+        playing_friends = list(user.get_playing_friends())
+        online_friends = list(user.get_online_friends())
+        offline_friends = list(user.get_offline_friends())
         return JsonResponse({
             FRIENDS_REQUESTS_KEY: friend_requests,
             PLAYING_KEY: playing_friends,
@@ -142,7 +140,6 @@ def get_friends_info(request):
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )
     except json.JSONDecodeError:
-        # Handle case where the JSON is malformed
         return JsonResponse(
             {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
         )

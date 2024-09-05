@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Router } from "@angular/router";
-import {API_FRIENDS, API_USER} from "../../constants";
+import { API_FRIENDS } from "../../constants";
 
 interface FriendsInfo {
-  friend_requests: string[];
-  playing_friends: string[];
-  online_friends: string[];
-  offline_friends: string[];
+  requests: string[];
+  playing: string[];
+  online: string[];
+  offline: string[];
 }
 
 @Injectable({
@@ -21,10 +21,10 @@ export class FriendService {
   constructor(private http: HttpClient) {
     this._friendsDataLoaded = null;
     this._friendsData = {
-      friend_requests: [],
-      playing_friends: [],
-      online_friends: [],
-      offline_friends: [],
+      requests: [],
+      playing: [],
+      online: [],
+      offline: [],
     };
   }
   public async refreshFriendData(): Promise<void> {
@@ -33,30 +33,19 @@ export class FriendService {
       if (!friendData) {
         throw new Error('No friend data found');
       }
-      this._friendsData = {
-        friend_requests: friendData.friend_requests,
-        playing_friends: friendData.playing_friends,
-        online_friends: friendData.online_friends,
-        offline_friends: friendData.offline_friends,
-      };
-      console.log('Friend data loaded:', this._friendsData);
+      this._friendsData = friendData;
+      // console.log('Friend data refreshed:', this._friendsData);
     } catch (error) {
-      console.error('Error loading friend data:', error);
+      console.error('Error refreshing friend data:', error);
     }
   }
 
-  private async saveFriendData(): Promise<void> {
-    try {
-      await this.http.post(`${API_FRIENDS}/user_data/`, this._friendsData).toPromise();
-    } catch (error) {
-      console.error('Error saving user data:', error);
-    }
-  }
-
-  public whenFriendDataLoaded(): Promise<void> {
+  public async whenFriendDataLoaded(): Promise<void> {
     if (!this._friendsDataLoaded) {
       console.log('Loading user data -> send request')
       this._friendsDataLoaded = this.refreshFriendData();
+      await this._friendsDataLoaded;
+      // console.log('Friend data loaded:', this._friendsData);
     }
     return this._friendsDataLoaded;
   }
@@ -66,22 +55,31 @@ export class FriendService {
   }
 
   public getFriendsRequests(): string[] {
-    return this.getFriendData().friend_requests;
+    return this.getFriendData().requests;
   }
 
   public getPlayingFriends(): string[] {
-    return this.getFriendData().playing_friends;
+    return this.getFriendData().playing;
   }
 
   public getOnlineFriends(): string[] {
-    return this.getFriendData().online_friends;
+    return this.getFriendData().online;
   }
 
   public getOfflineFriends(): string[] {
-    return this.getFriendData().offline_friends;
+    return this.getFriendData().offline;
   }
 
   public addFriend(friendName: string): Observable<any> {
+    this.getFriendData().requests = this.getFriendsRequests().filter(friend => friend !== friendName);
     return this.http.post<any>(`${API_FRIENDS}/add_friend/`, { friendName });
+  }
+
+  public acceptFriendship(friendName: string): Observable<any> {
+    return this.http.post<any>(`${API_FRIENDS}/accept_friendship/`, { friendName });
+  }
+
+  public declineFriendship(friendName: string): Observable<any> {
+    return this.http.post<any>(`${API_FRIENDS}/decline_friendship/`, { friendName });
   }
 }

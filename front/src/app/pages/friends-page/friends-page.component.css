@@ -2,7 +2,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -15,20 +14,41 @@ body {
   align-items: center;
   justify-content: center;
   width: 100vw;
-  height: 100vh;
   overflow: scroll;
+  gap: 2em;
+  padding-top: 30vh;
+  padding-bottom: 10vh;
+}
+
+.friends-page-container::-webkit-scrollbar {
+  display: none;
 }
 
 .search-area {
   display: flex;
+  /*padding: 40% 0 10% 0;*/
+  /*height: 25%;*/
 }
 
-.friend-list {}
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  width: 100%;
+  padding-left: 1em;
+}
 
-.friend-requests{}
+p {
+  font-size: 1em;
+  color: white;
+}
 
-.playing-friends{}
-
-.online-friends{}
-
-.offline-friends{}
+.friend-requests-container {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}

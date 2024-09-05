@@ -23,6 +23,8 @@ export class AppComponent {
               console.error('Failed to refresh user data:', error);
             });
           }, 500);
+        }
+        else if (event.url === '/friends') {
           setTimeout(() => {
             this.friendService.refreshFriendData().then(() => {
               console.log('Friend data refreshed successfully.');

@@ -4,9 +4,24 @@
   <section class="search-area">
     <app-friend-search></app-friend-search>
   </section>
-  <section *ngIf="friend_requests" class="friend-list friend-requests"></section>
-  <section *ngIf="playing_friends" class="friend-list playing-friends"></section>
-  <section *ngIf="online_friends" class="friend-list online-friends"></section>
-  <section *ngIf="offline_friends" class="friend-list offline-friends"></section>
+  <section *ngIf="friend_requests.length > 0" class="friend-list">
+    <p>Friend requests</p>
+    <section class="friend-requests-container">
+      <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+    </section>
+  </section>
+  <section *ngIf="playing_friends.length > 0" class="friend-list">
+    <p>Playing</p>
+    <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+  </section>
+  <section *ngIf="online_friends.length > 0" class="friend-list">
+    <p>Online</p>
+    <p>{{ online_friends }}</p>
+    <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+  </section>
+  <section *ngIf="offline_friends.length > 0" class="friend-list">
+    <p>Offline</p>
+    <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+  </section>
 </section>
 </body>
