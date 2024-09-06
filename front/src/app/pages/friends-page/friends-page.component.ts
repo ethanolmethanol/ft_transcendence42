@@ -5,7 +5,9 @@ import { FriendSearchComponent } from "../../components/friend-search/friend-sea
 import { FriendService } from "../../services/friend/friend.service";
 import { RequestComponent } from "../../components/request/request.component";
 import { Observable } from 'rxjs';
-import {AvatarComponent} from "../../components/avatar/avatar.component";
+import { AvatarComponent } from "../../components/avatar/avatar.component";
+import { FriendCardComponent } from "../../components/friend-card/friend-card.component";
+import { PLAYING, ONLINE, OFFLINE } from "../../constants";
 
 @Component({
   selector: 'app-friends-page',
@@ -18,6 +20,7 @@ import {AvatarComponent} from "../../components/avatar/avatar.component";
     RequestComponent,
     AvatarComponent,
     CommonModule,
+    FriendCardComponent,
   ],
   templateUrl: './friends-page.component.html',
   styleUrl: './friends-page.component.css'
@@ -53,4 +56,8 @@ export class FriendsPageComponent implements OnInit {
       });
     }
   }
+
+  protected readonly ONLINE = ONLINE;
+  protected readonly PLAYING = PLAYING;
+  protected readonly OFFLINE = OFFLINE;
 }

@@ -7,10 +7,7 @@ import {
   MINIO_API,
   AVATARS_BUCKET,
   DEFAULT_AVATAR_URL,
-  NEUTRAL,
-  ONLINE,
-  PLAYING,
-  OFFLINE,
+  PLAIN,
   STATUS_COLORS,
 } from "../../constants";
 
@@ -31,7 +28,7 @@ export class AvatarComponent implements OnInit {
   private   fallbackUrl: string = DEFAULT_AVATAR_URL;
   @Input()  modify: boolean = false;
   @Input()  username: string = "";
-  @Input()  status: number = NEUTRAL;
+  @Input()  status: number = PLAIN;
 
   constructor(private userService: UserService, private http: HttpClient) {}
 

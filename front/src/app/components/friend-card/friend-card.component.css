@@ -1,0 +1,93 @@
+.friend-card-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: #2b2b2b;
+  color: #ffffff;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 10px;
+  opacity: 85%;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.friend-card-container:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.8);
+}
+
+.avatar {
+  transform: scale(0.9);
+  margin-bottom: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.friend-card-container:hover .avatar {
+  transform: scale(1.0);
+}
+
+button.delete-button {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  background-color: #ff4d4d;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+button.delete-button:hover {
+  background-color: #e60000;
+  cursor: pointer;
+}
+
+.friend-name {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+  color: #f0f0f0;
+  text-transform: capitalize;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .friend-card-container {
+    padding: 15px;
+    margin: 5px;
+  }
+
+  .avatar {
+    transform: scale(0.8);
+  }
+
+  button.delete-button {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+
+  .friend-name {
+    font-size: 1em;
+  }
+}
+
+i {
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: bold;
+}

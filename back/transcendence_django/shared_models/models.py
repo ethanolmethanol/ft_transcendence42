@@ -128,17 +128,17 @@ class FriendshipManager:
             return "Self-love is awesome!"
 
         if sender.friends.filter(id=receiver.id).exists():
-            return f"{receiver.username} is already your friend!"
+            return f"This user is already your friend!"
 
         if FriendRequest.objects.filter(from_user=sender, to_user=receiver).exists():
-            return f"Friend request to {receiver.username} already sent!"
+            return f"Friend request already sent!"
 
         if FriendRequest.objects.filter(from_user=receiver, to_user=sender).exists():
             FriendshipManager.accept_friendship(receiver, sender)
             return f"{receiver.username} is now your friend!"
 
         FriendRequest.objects.create(from_user=sender, to_user=receiver)
-        return f"Friend request sent to {receiver.username}!"
+        return f"Friend request sent!"
 
     @staticmethod
     def add_friend(friend1, friend2):
@@ -221,11 +221,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def logout_user(self, request):
         self.__clear_tokens()
         self.status = OFFLINE
+        self.save()
         logout(request)
 
     def login_user(self, request):
         login(request, self)
         self.status = ONLINE
+        self.save()
 
     def delete_account(self):
         avatar_uploader = AvatarUploader()

@@ -117,12 +117,12 @@ export const HOME: number = 3;
 export const ERROR_MESSAGE: string = "error-message"
 export const INFO_MESSAGE: string = "info-message"
 
-export const NEUTRAL = 0;
-export const ONLINE = 1;
-export const PLAYING = 2;
+export const PLAIN = 0;
+export const PLAYING = 1;
+export const ONLINE = 2;
 export const OFFLINE = 3;
 export const ONLINE_COLOR: string = "green";
 export const PLAYING_COLOR: string = "yellow";
 export const OFFLINE_COLOR: string = "red";
-export const NEUTRAL_COLOR: string = "paleturquoise";
-export const STATUS_COLORS: string[] = [NEUTRAL_COLOR, ONLINE_COLOR, PLAYING_COLOR, OFFLINE_COLOR];
+export const PLAIN_COLOR: string = "paleturquoise";
+export const STATUS_COLORS: string[] = [PLAIN_COLOR, PLAYING_COLOR, ONLINE_COLOR, OFFLINE_COLOR];

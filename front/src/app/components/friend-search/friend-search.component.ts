@@ -39,6 +39,7 @@ export class FriendSearchComponent {
         this.showMessage(error.error?.error || "An unknown error occurred.", ERROR_MESSAGE);
       }
     });
+    this.friendName = "";
   }
 
   private clearMessage() {
