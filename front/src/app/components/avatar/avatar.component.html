@@ -1,5 +1,6 @@
 <div class="avatar-container" >
-  <section class="image-container">
+  <section class="image-container"
+           [ngStyle]="getBoxShadowStyle()">
     <img class="image-container"
          [src]="fileUrl"
          [attr.alt]="'User Avatar'"

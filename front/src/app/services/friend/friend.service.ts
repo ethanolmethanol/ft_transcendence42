@@ -55,4 +55,12 @@ export class FriendService {
       })
     );
   }
+
+  public removeFriend(friendName: string): Observable<any> {
+    return this.http.post<any>(`${API_FRIENDS}/remove_friend/`, { friendName }).pipe(
+      tap(() => {
+        this.refreshFriendData().subscribe();
+      })
+    );
+  }
 }

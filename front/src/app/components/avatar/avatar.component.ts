@@ -3,8 +3,16 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http'
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule, NgStyle, NgIf } from "@angular/common"
 import { UserService } from "../../services/user/user.service";
-import { MINIO_API, AVATARS_BUCKET, DEFAULT_AVATAR_URL} from "../../constants"
-import {User} from "../../interfaces/user";
+import {
+  MINIO_API,
+  AVATARS_BUCKET,
+  DEFAULT_AVATAR_URL,
+  NEUTRAL,
+  ONLINE,
+  PLAYING,
+  OFFLINE,
+  STATUS_COLORS,
+} from "../../constants";
 
 @Component({
   selector: 'app-avatar',
@@ -23,6 +31,7 @@ export class AvatarComponent implements OnInit {
   private   fallbackUrl: string = DEFAULT_AVATAR_URL;
   @Input()  modify: boolean = false;
   @Input()  username: string = "";
+  @Input()  status: number = NEUTRAL;
 
   constructor(private userService: UserService, private http: HttpClient) {}
 
@@ -71,5 +80,11 @@ export class AvatarComponent implements OnInit {
   public updateAvatar(username: string): void {
     this.username = username;
     this.loadAvatar();
+  }
+
+  public getBoxShadowStyle(): { [key: string]: string } {
+    return {
+      'box-shadow': `0 0.5em 1.5em ${STATUS_COLORS[this.status]}`
+    };
   }
 }

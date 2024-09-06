@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { AvatarComponent } from "../avatar/avatar.component";
 import { AVATARS_BUCKET, DEFAULT_AVATAR_URL, MINIO_API } from "../../constants";
 
@@ -11,15 +11,11 @@ import { AVATARS_BUCKET, DEFAULT_AVATAR_URL, MINIO_API } from "../../constants";
   templateUrl: './request.component.html',
   styleUrl: './request.component.css'
 })
-export class RequestComponent implements OnInit {
+export class RequestComponent {
   @Input() friendName: string = "friendName";
-  avatarUrl: string = DEFAULT_AVATAR_URL;
+  avatarUrl: string = `${MINIO_API}/${AVATARS_BUCKET}/${this.friendName}_avatar.jpg`;
   readonly fallbackUrl: string = DEFAULT_AVATAR_URL;
   @Output() accept = new EventEmitter<{ friendName: string, accept: boolean }>();
-
-  ngOnInit() {
-    this.avatarUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${this.friendName}_avatar.jpg`;
-  }
 
   public onImageError(event: Event) {
     console.log('Image failed to load, using fallback URL.', this.avatarUrl);

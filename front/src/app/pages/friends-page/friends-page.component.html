@@ -13,19 +13,19 @@
   <section *ngIf="friendData.playing.length > 0" class="friend-list">
     <p>Playing</p>
     <section class="avatar-list">
-      <app-avatar *ngFor="let friend of friendData.playing" [username]="friend"></app-avatar>
+      <app-avatar *ngFor="let friend of friendData.playing" [username]="friend" [status]="2"></app-avatar>
     </section>
   </section>
   <section *ngIf="friendData.online.length > 0" class="friend-list">
     <p>Online</p>
     <section class="avatar-list">
-      <app-avatar *ngFor="let friend of friendData.online" [username]="friend"></app-avatar>
+      <app-avatar *ngFor="let friend of friendData.online" [username]="friend" [status]="1"></app-avatar>
     </section>
   </section>
   <section *ngIf="friendData.offline.length > 0" class="friend-list">
     <p>Offline</p>
     <section class="avatar-list">
-      <app-avatar *ngFor="let friend of friendData.playing" [username]="friend"></app-avatar>
+      <app-avatar *ngFor="let friend of friendData.offline" [username]="friend" [status]="3"></app-avatar>
     </section>  </section>
 </section>
 </body>
