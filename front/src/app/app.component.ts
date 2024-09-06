@@ -24,15 +24,6 @@ export class AppComponent {
             });
           }, 500);
         }
-        else if (event.url === '/friends') {
-          setTimeout(() => {
-            this.friendService.refreshFriendData().then(() => {
-              console.log('Friend data refreshed successfully.');
-            }).catch((error) => {
-              console.error('Failed to refresh friend data:', error);
-            });
-          }, 500);
-        }
       }
     });
   }

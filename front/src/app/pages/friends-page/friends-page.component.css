@@ -52,3 +52,12 @@ p {
   overflow-x: scroll;
   overflow-y: hidden;
 }
+
+.avatar-list {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}

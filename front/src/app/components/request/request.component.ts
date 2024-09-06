@@ -1,8 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { AvatarComponent } from "../avatar/avatar.component";
-import { UserService } from "../../services/user/user.service";
 import { AVATARS_BUCKET, DEFAULT_AVATAR_URL, MINIO_API } from "../../constants";
-import { FriendService } from "../../services/friend/friend.service";
 
 @Component({
   selector: 'app-request',
@@ -19,11 +17,7 @@ export class RequestComponent implements OnInit {
   readonly fallbackUrl: string = DEFAULT_AVATAR_URL;
   @Output() accept = new EventEmitter<{ friendName: string, accept: boolean }>();
 
-  constructor(private userService: UserService, private friendService: FriendService) {}
-
-  async ngOnInit() {
-    await this.userService.whenUserDataLoaded();
-    await this.friendService.whenFriendDataLoaded();
+  ngOnInit() {
     this.avatarUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${this.friendName}_avatar.jpg`;
   }
 

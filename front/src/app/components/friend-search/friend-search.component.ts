@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ErrorMessageComponent } from "../error-message/error-message.component";
 import { FormsModule } from '@angular/forms';
 import { ERROR_MESSAGE, INFO_MESSAGE } from "../../constants";
@@ -17,25 +17,22 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './friend-search.component.html',
   styleUrl: './friend-search.component.css'
 })
-export class FriendSearchComponent implements OnInit {
+export class FriendSearchComponent {
   friendName: string = "";
   message: string = "";
   messageClass: string = "";
 
   constructor(private friendService: FriendService) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.friendService.whenFriendDataLoaded();
-  }
-
   sendFriendRequest() {
     this.clearMessage();
-    // send a friend request
+
     this.friendService.addFriend(this.friendName).subscribe({
       next: (response: any): void => {
         const message: string = response.status;
         console.log(message);
         this.showMessage(message, INFO_MESSAGE);
+        this.friendService.refreshFriendData().subscribe();
       },
       error: (error: HttpErrorResponse) => {
         console.error("Failed to send friend request: ", error);

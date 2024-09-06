@@ -1,27 +1,31 @@
 <body>
 <app-header></app-header>
-<section class="friends-page-container">
+<section class="friends-page-container" *ngIf="friendData$ | async as friendData">
   <section class="search-area">
     <app-friend-search></app-friend-search>
   </section>
-  <section *ngIf="friend_requests.length > 0" class="friend-list">
+  <section *ngIf="friendData.requests.length > 0" class="friend-list">
     <p>Friend requests</p>
     <section class="friend-requests-container">
-      <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+      <app-request *ngFor="let friend of friendData.requests" [friendName]="friend" (accept)="acceptRequest($event)" class="request"></app-request>
     </section>
   </section>
-  <section *ngIf="playing_friends.length > 0" class="friend-list">
+  <section *ngIf="friendData.playing.length > 0" class="friend-list">
     <p>Playing</p>
-    <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+    <section class="avatar-list">
+      <app-avatar *ngFor="let friend of friendData.playing" [username]="friend"></app-avatar>
+    </section>
   </section>
-  <section *ngIf="online_friends.length > 0" class="friend-list">
+  <section *ngIf="friendData.online.length > 0" class="friend-list">
     <p>Online</p>
-    <p>{{ online_friends }}</p>
-    <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
+    <section class="avatar-list">
+      <app-avatar *ngFor="let friend of friendData.online" [username]="friend"></app-avatar>
+    </section>
   </section>
-  <section *ngIf="offline_friends.length > 0" class="friend-list">
+  <section *ngIf="friendData.offline.length > 0" class="friend-list">
     <p>Offline</p>
-    <app-request *ngFor="let request of friend_requests" [friendName]="request" (accept)="acceptRequest($event)" class="request"></app-request>
-  </section>
+    <section class="avatar-list">
+      <app-avatar *ngFor="let friend of friendData.playing" [username]="friend"></app-avatar>
+    </section>  </section>
 </section>
 </body>

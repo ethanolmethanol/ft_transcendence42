@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from "../../components/header/header.component";
-import { NgIf, NgFor } from "@angular/common"
+import { NgIf, NgFor, CommonModule } from "@angular/common"
 import { FriendSearchComponent } from "../../components/friend-search/friend-search.component";
 import { FriendService } from "../../services/friend/friend.service";
 import { RequestComponent } from "../../components/request/request.component";
+import { Observable } from 'rxjs';
+import {AvatarComponent} from "../../components/avatar/avatar.component";
 
 @Component({
   selector: 'app-friends-page',
@@ -14,63 +16,41 @@ import { RequestComponent } from "../../components/request/request.component";
     NgFor,
     FriendSearchComponent,
     RequestComponent,
+    AvatarComponent,
+    CommonModule,
   ],
   templateUrl: './friends-page.component.html',
   styleUrl: './friends-page.component.css'
 })
 export class FriendsPageComponent implements OnInit {
-  friend_requests: string[] = [];
-  playing_friends: string[] = [];
-  online_friends: string[] = [];
-  offline_friends: string[] = [];
+  friendData$: Observable<any>;
 
-  constructor(private friendService: FriendService) {}
+  constructor(private friendService: FriendService) {
+    this.friendData$ = this.friendService.friendsData$; // Replace with the actual observable
+  }
 
-  async ngOnInit(): Promise<void> {
-    await this.friendService.whenFriendDataLoaded();
-    this.setFriendsData();
+  ngOnInit(): void {
+    this.friendData$ = this.friendService.friendsData$;
+
+    this.friendService.refreshFriendData().subscribe({
+      next: () => console.log('Friend data refreshed on init'),
+      error: err => console.error('Failed to refresh friend data on init', err)
+    });
   }
 
   async acceptRequest(event: { friendName: string, accept: boolean }): Promise<void> {
     const { friendName, accept } = event;
 
-    if (accept)
-      await this.acceptFriendship(friendName);
-    else
-      await this.declineFriendship(friendName);
-    this.friend_requests = this.friend_requests.filter(friend => friend !== friendName);
-  }
-
-  private async refreshFriendData(): Promise<void> {
-    this.friendService.refreshFriendData().then(() => {
-      console.log('Friend data refreshed successfully.');
-    }).catch((error) => {
-      console.error('Failed to refresh friend data:', error);
-    })
-  }
-
-  private setFriendsData(): void {
-    this.friend_requests = this.friendService.getFriendsRequests();
-    this.playing_friends = this.friendService.getPlayingFriends();
-    this.online_friends = this.friendService.getOnlineFriends();
-    this.offline_friends = this.friendService.getOfflineFriends();
-  }
-
-  public async acceptFriendship(friendName: string): Promise<void> {
-    try {
-      const response = await this.friendService.acceptFriendship(friendName).toPromise();
-      console.log(response.status);
-    } catch (error) {
-      console.error("Failed to send friend request: ", error);
-    }
-  }
-
-  public async declineFriendship(friendName: string): Promise<void> {
-    try {
-      const response = await this.friendService.declineFriendship(friendName).toPromise();
-      console.log(response.status);
-    } catch (error) {
-      console.error("Failed to send friend request: ", error);
+    if (accept) {
+      this.friendService.acceptFriendship(friendName).subscribe({
+        next: () => console.log(`Accepted friendship with ${friendName}`),
+        error: err => console.error('Error accepting friendship:', err)
+      });
+    } else {
+      this.friendService.declineFriendship(friendName).subscribe({
+        next: () => console.log(`Declined friendship with ${friendName}`),
+        error: err => console.error('Error declining friendship:', err)
+      });
     }
   }
 }
