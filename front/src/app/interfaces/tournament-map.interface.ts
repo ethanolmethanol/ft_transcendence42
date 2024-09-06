@@ -1,5 +1,8 @@
 export interface TournamentMap {
-  [round: number]: {
-    [game: number]: number[] | null
-  }
+  rounds_map: {
+    [round: number]: {
+      [game: number]: number[] | null;
+    };
+  };
+  winner: number | null;
 }

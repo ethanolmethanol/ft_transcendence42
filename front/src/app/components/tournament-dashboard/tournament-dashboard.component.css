@@ -41,6 +41,13 @@ h5 {
   height: 100%;
 }
 
+.winner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+}
+
 .rounds {
   display: flex;
   flex-direction: column;

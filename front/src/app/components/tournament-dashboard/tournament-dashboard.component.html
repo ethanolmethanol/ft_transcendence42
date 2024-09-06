@@ -1,7 +1,7 @@
 <div *ngIf="isDataLoaded" class="dashboard-container">
   <h4>Tournament</h4>
   <section class="games-section">
-    <div *ngFor="let roundKey of tournamentMap | keyvalue" class="rounds">
+    <div *ngFor="let roundKey of tournamentMap.rounds_map | keyvalue" class="rounds">
       <h5>Round {{ roundKey.key }}</h5>
       <section class="game-list">
         <div *ngFor="let gameKey of roundKey.value | keyvalue" class="games">
@@ -19,5 +19,19 @@
         </div>
       </section>
     </div>
+    <section class="winner-section">
+      <h5>Winner</h5>
+      <section class="winner">
+        <app-player-icon
+          *ngIf="winnerID"
+          [playerName]="winnerName"
+          [ngClass]="{'current-user': userIDMap[winnerID]}">
+        </app-player-icon>
+        <app-player-icon
+          *ngIf="!winnerID"
+          [playerName]="'?'">
+        </app-player-icon>
+      </section>
+    </section>
   </section>
 </div>

@@ -12,7 +12,7 @@ export class GameStateService {
   private _isRematch = new BehaviorSubject<boolean>(true);
   private _channelID = new BehaviorSubject<string>('');
   private _isTournament = new BehaviorSubject<boolean>(false);
-  private _tournamentMap = new BehaviorSubject<TournamentMap>({});
+  private _tournamentMap = new BehaviorSubject<TournamentMap>({rounds_map: {}, winner: null});
   private _activePlayers = new BehaviorSubject<string[]>([]);
   private _channelPlayers = new BehaviorSubject<string[]>([]);
   private _channelCapacity = new BehaviorSubject<number>(2);
@@ -54,7 +54,7 @@ export class GameStateService {
     this.setIsRemote(true);
     this.setChannelID('');
     this.setIsTournament(false);
-    this.setTournamentMap({});
+    this.setTournamentMap({rounds_map: {}, winner: null});
     this.setActivePlayers([]);
     this.setChannelPlayers([]);
     this.setChannelCapacity(2);

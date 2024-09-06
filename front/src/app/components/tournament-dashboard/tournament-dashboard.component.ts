@@ -26,35 +26,41 @@ export class TournamentDashboardComponent implements OnInit {
   public userIDMap: { [key: number]: boolean } = {};
   public playerNamesMap: { [key: number]: string } = {};
   public personalUserID!: number;
+  public winnerName!: string;
+  public winnerID: number | null = null;
   public isDataLoaded = false;
 
   constructor(public userService: UserService, private elementRef: ElementRef) {
     this.players = [];
     this.capacity = 0;
-    this.tournamentMap = {};
+    this.tournamentMap = {rounds_map: {}, winner: null};
   }
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.personalUserID = this.userService.getUserID();
-    await this.fetchUsernames().then(
-      () => {
-        this.completeFetching();
-      }
-    );
+    await this.fetchData();
   }
 
-  ngOnChanges(): void {
-    this.fetchUsernames().then(
-      () => {
-        this.completeFetching();
+  async ngOnChanges(): Promise<void> {
+    await this.fetchData();
+  }
+
+  private async fetchData(): Promise<void> {
+    await this.fetchUsernames().then( async (): Promise<void> => {
+      if (this.tournamentMap.winner !== undefined && this.tournamentMap.winner !== null) {
+        this.winnerID = this.tournamentMap.winner;
+        this.winnerName = await this.userService.getUsername(this.winnerID);
+      }
+      this.completeFetching();
       });
   }
 
   private async fetchUsernames(): Promise<void> {
-    for (const round in this.tournamentMap) {
-      for (const game in this.tournamentMap[round]) {
-        let userIDs = this.tournamentMap[round][game];
+    const roundsMap = this.tournamentMap.rounds_map;
+    for (const round in roundsMap) {
+      for (const game in roundsMap[round]) {
+        let userIDs = roundsMap[round][game];
         if (userIDs) {
           for (const userID of userIDs) {
             if (userID && !this.playerNamesMap[userID]) {
@@ -68,7 +74,8 @@ export class TournamentDashboardComponent implements OnInit {
   }
 
   private completeFetching(): void {
-    console.log('fetchUsernames done');
+    console.log('TournamentMap:', this.tournamentMap);
+    console.log('RoundsMap:', this.tournamentMap.rounds_map);
     this.isDataLoaded = true;
   }
 }

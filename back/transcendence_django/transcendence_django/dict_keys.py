@@ -13,6 +13,8 @@ CAPACITY = "capacity"
 # Tournament
 ASSIGNATIONS = "assignations"
 TOURNAMENT_MAP = "tournament_map"
+ROUNDS_MAP = "rounds_map"
+TOURNAMENT_WINNER = "tournament_winner"
 
 # Game error
 GAME_ERROR = "game_error"
