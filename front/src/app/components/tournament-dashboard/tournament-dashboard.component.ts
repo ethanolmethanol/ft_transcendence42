@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnInit} from '@angular/core';
 import {PlayerIconComponent} from "../player-icon/player-icon.component";
 import {AsyncPipe, KeyValuePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {TournamentMap} from "../../interfaces/tournament-map.interface";
@@ -18,7 +18,7 @@ import { UserService } from '../../services/user/user.service';
   templateUrl: './tournament-dashboard.component.html',
   styleUrl: './tournament-dashboard.component.css',
 })
-export class TournamentDashboardComponent implements OnInit {
+export class TournamentDashboardComponent implements OnInit, OnChanges {
 
   @Input() players: string[];
   @Input() capacity: number;
@@ -74,8 +74,6 @@ export class TournamentDashboardComponent implements OnInit {
   }
 
   private completeFetching(): void {
-    console.log('TournamentMap:', this.tournamentMap);
-    console.log('RoundsMap:', this.tournamentMap.rounds_map);
     this.isDataLoaded = true;
   }
 }

@@ -33,7 +33,7 @@ h5 {
   width: 100%;
 }
 
-.game-list {
+.column-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -41,21 +41,14 @@ h5 {
   height: 100%;
 }
 
-.winner {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1em;
-}
-
-.rounds {
+.column {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1em;
 }
 
-.games {
+.card {
   width: 200px;
   height: 100px;
   background-color: #111111;

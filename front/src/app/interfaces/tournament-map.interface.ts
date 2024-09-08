@@ -1,6 +1,6 @@
 export interface TournamentMap {
   rounds_map: {
-    [round: number]: {
+    [round: string]: {
       [game: number]: number[] | null;
     };
   };
