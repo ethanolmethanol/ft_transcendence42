@@ -2,8 +2,8 @@
   <form (ngSubmit)="sendFriendRequest()">
     <input type="text" placeholder="Add friend" [(ngModel)]="friendName" required>
     <button type="submit"><i class="material-icons">add_reaction</i></button>
-    <section class="info-message-container">
-      <p *ngIf="message" [ngClass]="messageClass">{{ message }}</p>
-    </section>
   </form>
+  <section class="info-message-container">
+    <p *ngIf="message" [ngClass]="messageClass">{{ message }}</p>
+  </section>
 </section>
