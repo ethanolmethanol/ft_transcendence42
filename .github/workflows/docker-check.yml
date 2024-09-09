@@ -28,6 +28,9 @@ jobs:
             echo PGDATA="$PWD/db/data";
           } >> .env
 
+      - name: Create discord webhook file for alertmanager
+        run: echo "${{ secrets.DISCORD_WEBHOOK }}" > ./monitoring/alertmanager/very-secret-webhook-url
+
       - name: Install mkcert
         run: |
           sudo apt-get install -y libnss3-tools

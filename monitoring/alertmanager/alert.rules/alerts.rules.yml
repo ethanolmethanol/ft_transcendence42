@@ -148,7 +148,7 @@ groups:
   rules:
     - alert: ContainerKilled
       expr: 'time() - container_last_seen > 60'
-      for: 0m
+      for: 2m
       labels:
         severity: warning
       annotations:
@@ -183,7 +183,7 @@ groups:
         description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: ContainerVolumeUsage
-      expr: '(1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > 80'
+      expr: '(1 - (sum(container_fs_inodes_free{name!="cadvisor"}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > 80'
       for: 2m
       labels:
         severity: warning

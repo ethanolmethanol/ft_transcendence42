@@ -427,7 +427,7 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -829,7 +829,7 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -905,7 +905,7 @@
         {
           "datasource": "Prometheus",
           "editorMode": "code",
-          "expr": "count by(name) (count_over_time(container_last_seen{name=~\".+\"}[$__range]))",
+          "expr": "count by(name) (changes(container_last_seen{name=~\".+\"}[$__range]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,

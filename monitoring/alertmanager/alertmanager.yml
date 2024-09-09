@@ -7,7 +7,7 @@ route:
 receivers:
 - name: discord_alert
   discord_configs:
-  - webhook_url: # copy the webhook URL here (make an env var?)
+  - webhook_url_file: '/etc/alertmanager/very-secret-webhook-url'
     title: '{{ template "custom_title" . }}'
     message: '{{ template "custom_discord_message" . }}'
 

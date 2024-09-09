@@ -179,20 +179,23 @@ services:
     cadvisor:
         image: gcr.io/cadvisor/cadvisor:latest
         container_name: cadvisor
-        # command: --logtostderr --v=4
+        command:
+            # - --logtostderr --v=4
+            - '--housekeeping_interval=5s'
+            - '--docker_only'
         user: root
         group_add:
-            - 131
+            - 999
         restart: unless-stopped
         privileged: true
         healthcheck:
             test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
-            interval: 5s
+            interval: 10s
             timeout: 1s
-            retries: 10
+            retries: 5
             start_period: 5s
         volumes:
-            - /run/user/1000:/var/run:ro
+            - /run/user/${DOCKSOCKUID:?Please export the id at which the docker sock can be accessed}:/var/run:ro
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
             - /etc/machine-id:/etc/machine-id:ro
@@ -211,7 +214,7 @@ services:
             - transcendence
 
     alertmanager:
-        image: prom/alertmanager:v0.27.0
+        image: prom/alertmanager:main # current stable version 0.27.0 cannot parse webhook_url_file
         container_name: alertmanager
         healthcheck:
             test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093"]
@@ -220,8 +223,7 @@ services:
             retries: 10
             start_period: 5s
         volumes:
-            - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-            - ./monitoring/alertmanager/templates/default.tmpl:/etc/alertmanager/templates/default.tmpl
+            - ./monitoring/alertmanager/:/etc/alertmanager/
         command:
             - '--config.file=/etc/alertmanager/alertmanager.yml'
         ports:
