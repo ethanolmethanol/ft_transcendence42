@@ -71,7 +71,7 @@ class ChannelManager:
         channel = self.get_channel(channel_id)
         if channel is None:
             return None
-        arena_id: str = list(self.channel.arenas.keys())[0]
+        arena_id: str = list(channel.arenas.keys())[0]
         logger.info("Arena id: %s", arena_id)
         await self.add_user_to_channel(channel, arena_id, user_id)
         return channel

@@ -133,7 +133,6 @@ else
 	prompt_for_env
 	install_mkcert
 	generate_certificates
-	distribute_certificates
 	create_nginx_config_file
 	update_environment_ts
 fi
