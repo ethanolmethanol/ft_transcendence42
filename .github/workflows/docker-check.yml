@@ -26,6 +26,7 @@ jobs:
             echo POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}";
             echo POSTGRES_DB="${{ secrets.POSTGRES_DB }}";
             echo PGDATA="$PWD/db/data";
+            echo DOCKSOCKUID="$(id -u)";
           } >> .env
 
       - name: Create discord webhook file for alertmanager
