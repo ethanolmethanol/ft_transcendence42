@@ -141,12 +141,12 @@ app-copy-button {
 
 .player1 {
   position: absolute;
-  left: -20%;
+  left: -30%;
 }
 
 .player2 {
   position: absolute;
-  right: -20%;
+  right: -30%;
 }
 
 .player-avatar {

@@ -20,6 +20,10 @@ body {
   padding-top: 5vh;
 }
 
+.account-page-container::-webkit-scrollbar {
+  display: none;
+}
+
 h4 {
   font-size: 1.5em;
   color: #ffffff;
