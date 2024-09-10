@@ -25,9 +25,15 @@ SECRET_KEY = "django-insecure-*6@dzmyjvs5+h)h1e)a!7rh*(u7%cb1g@zaad_p!a11n(k((zb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-SERV_IP = os.getenv("SERV_IP", "")
+SERV_IP = os.getenv("SERV_IP")
 
-ALLOWED_HOSTS = [SERV_IP, "0.0.0.0"]
+# Oauth2 with 42
+OAUTH_CLIENT_SECRET = os.getenv("OAUTH_CLIENT_SECRET")
+OAUTH_CLIENT_UID = os.getenv("OAUTH_CLIENT_UID")
+OAUTH_REDIRECT_URI = f"https://{SERV_IP}:4200/oauth-callback"
+OAUTH_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
+
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "back-aipi", "back-user"]
 
 # Application definition
 
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "rest_framework",
     "shared_models",
     "back_auth",
@@ -95,6 +102,16 @@ CHANNEL_LAYERS = {
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -113,7 +130,6 @@ AUTH_USER_MODEL = "shared_models.CustomUser"
 
 CSRF_TRUSTED_ORIGINS = [
     f"https://{SERV_IP}:4200",
-    f"https://{SERV_IP}:1234",
 ]
 CORS_ALLOWED_ORIGINS = [
     f"https://{SERV_IP}:4200",

@@ -42,8 +42,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       this._optionsDict = {
         "ball_speed": state.options[0],
         "paddle_size": state.options[1],
-        "human_players": state.options[2],
-        "online_players": state.options[3],
+        "human_opponents_local": state.options[2],
+        "human_opponents_online": state.options[3],
         "ai_opponents_local": state.options[4],
         "ai_opponents_online": state.options[5],
         "is_private": state.options[6]
@@ -88,7 +88,12 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     } else {
       return JSON.stringify({
         "user_id": user_id,
-        "players_specs": {"nb_players": 2, "type": this._gameType, "options": this._optionsDict}
+        "players_specs":
+        {
+          "nb_players": this._optionsDict["human_opponents_local"] + this._optionsDict["ai_opponents_local"]
+            + this._optionsDict["human_opponents_online"] + this._optionsDict["ai_opponents_online"] + 1,
+          "type": this._gameType, "options": this._optionsDict
+        }
       });
     }
   }

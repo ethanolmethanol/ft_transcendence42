@@ -2,7 +2,7 @@ import time
 from typing import Any, NewType
 
 from back_game.game_settings.game_constants import AFK_TIMEOUT
-from transcendence_django.dict_keys import SCORE, USER_ID
+from transcendence_django.dict_keys import IS_BOT, SCORE, USER_ID
 
 ENABLED = 0
 DISABLED = 1
@@ -13,16 +13,18 @@ PlayerStatus = NewType("PlayerStatus", int)
 
 
 class Player:
-    def __init__(self, user_id: int, player_name: str):
+    def __init__(self, user_id: int, player_name: str, is_bot: bool):
         self.user_id: int = user_id
         self.player_name: str = player_name
         self.score: int = 0
         self.status: PlayerStatus = PlayerStatus(ENABLED)
         self.last_activity_time: float = time.time()
+        self.is_bot: bool = is_bot
 
     def to_dict(self) -> dict[str, Any]:
         return {
             USER_ID: self.user_id,
+            IS_BOT: self.is_bot,
             SCORE: self.score,
         }
 

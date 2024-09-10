@@ -14,6 +14,8 @@ export class BallComponent {
   @Input() positionX: number = 150;
   @Input() positionY: number = 150;
   @Input() ballSize = BALL_RADIUS * 2;
+  @Input() gameHeight = GAME_HEIGHT;
+  @Input() gameWidth = GAME_WIDTH;
 
   constructor(private renderer: Renderer2, private el: ElementRef) {}
 
@@ -27,7 +29,7 @@ export class BallComponent {
   }
 
   public updateBallPosition(position: Position) {
-    this.positionX = Math.max(0, Math.min(position.x, GAME_WIDTH));
-    this.positionY = Math.max(0, Math.min(position.y, GAME_HEIGHT));
+    this.positionX = Math.max(0, Math.min(position.x, this.gameWidth));
+    this.positionY = Math.max(0, Math.min(position.y, this.gameHeight));
   }
 }

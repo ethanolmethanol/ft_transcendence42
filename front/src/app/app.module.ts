@@ -8,15 +8,16 @@ import { CommonModule } from '@angular/common';
 import { ConnectionService } from "./services/connection/connection.service";
 
 @NgModule({
+  providers: [
+    ConnectionService,
+  ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
     FormsModule,
     CommonModule,
   ],
-  providers: [
-    ConnectionService,
-  ],
+  exports: [RouterModule],
   bootstrap: [AppComponent]
 })
 

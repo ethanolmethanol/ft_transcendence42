@@ -9,7 +9,7 @@ BROWSER			= firefox
 
 SHELL			= bash
 
-CONTAINERS		= back_auth back_user back_game front db prometheus grafana node_exporter blackbox_exporter redis
+CONTAINERS		= back_auth back_user back_game back_aipi front db prometheus grafana node_exporter blackbox_exporter redis
 
 COMPOSE_PATH	= docker-compose.yml
 
@@ -39,11 +39,6 @@ down:
 	${COMPOSE} down
 
 all: ${NAME}
-
-${ENV_FILE}:
-	@if test -f ${ENV_SRC} && cp ${ENV_SRC} $@; then echo -e "$GFetched environment file [$C.env$G] from ..$N"; \
-	else echo -e "$RPlease make an environment file [$C.env$R] using .env_template file$N"; \
-	exit 1; fi
 
 ######## INFO / DEBUGGING / TROUBLESHOOTING ########
 
@@ -180,7 +175,6 @@ fclean: clean
 ffclean: fclean
 	@docker --log-level=warn system prune -af
 	@ rm -rf ${DATADIRS}
-
 	@echo -e "$CDeleted data directories [$Y${DATADIRS}$C]$N"
 
 re: fclean all

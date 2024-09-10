@@ -1,4 +1,9 @@
 import math
+from transcendence_django.dict_keys import (
+    IS_REMOTE,
+    NB_PLAYERS,
+    OPTIONS,
+)
 
 # Channels errors
 NOT_JOINED = 1
@@ -9,12 +14,12 @@ UNKNOWN_CHANNEL_ID = "Unknown channel_id"
 UNKNOWN_ARENA_ID = "Unknown arena_id"
 
 # Game area dimensions
-GAME_HEIGHT = 600
-GAME_WIDTH = 1000
+GAME_HEIGHT = 800
+GAME_WIDTH = 1200
 
 # Game arena
 MIN_PLAYER = 2
-MAX_PLAYER = 10
+MAX_PLAYER = 2
 MAXIMUM_SCORE = 10
 
 # # Ball parameters
@@ -30,6 +35,8 @@ PADDLE_HEIGHT = 100
 PADDLE_OFFSET = PADDLE_WIDTH / 2
 LEFT_SLOT = 1
 RIGHT_SLOT = 2
+BOTTOM_SLOT = 3
+TOP_SLOT = 4
 CONVEXITY = 90
 VALID_DIRECTIONS = [-1, 1]
 
@@ -49,18 +56,19 @@ DEAD = 6
 # Tournament
 
 TOURNAMENT_SPECS = {
-    "nb_players": 2,
-    "type": "online",
-    "options": {
+    NB_PLAYERS: 2,
+    IS_REMOTE: "online",
+    OPTIONS: {
         "ball_speed": 2,
         "paddle_size": 2,
-        "human_players": 1,
-        "online_players": 0,
+        "human_opponents_local": 1,
+        "human_opponents_online": 0,
         "ai_opponents_local": 0,
         "ai_opponents_online": 0,
         "is_private": 0,
     },
 }
+
 TOURNAMENT_ARENA_COUNT = 2
 TOURNAMENT_MAX_ROUND = int(math.log2(TOURNAMENT_ARENA_COUNT) + 1)
 
@@ -82,6 +90,7 @@ TIME_START_INTERVAL = 1
 # Paddle status
 LISTENING = 1
 PROCESSING = 2
+MOVED = 3
 
 # Rectangle
 TANGENT_FACTOR = 1 / (2 * math.tan(CONVEXITY / 2))

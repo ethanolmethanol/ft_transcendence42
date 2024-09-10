@@ -29,6 +29,7 @@ async def create_channel(request) -> JsonResponse:
         if MONITOR.is_user_in_channel(user_id):
             raise ValueError("User is already in a channel.")
         channel = await MONITOR.create_new_channel(user_id, players_specs)
+        logger.info("User %s created a new channel and got the channel dict: %s", user_id, channel)
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, KeyError, ValueError) as e:
         logger.error(e)
