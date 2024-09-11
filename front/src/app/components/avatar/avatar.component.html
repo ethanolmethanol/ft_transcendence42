@@ -2,6 +2,7 @@
   <section class="image-container"
            [ngStyle]="getBoxShadowStyle()">
     <img class="image-container"
+         alt=""
          [src]="fileUrl"
          [attr.alt]="'User Avatar'"
          (error)="onImageError($event)"
