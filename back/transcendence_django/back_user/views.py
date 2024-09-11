@@ -18,7 +18,7 @@ from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
 from shared_models.avatar_uploader import AvatarUploader
-from shared_models.constants import ONLINE, PLAYING, OFFLINE
+from shared_models.constants import ONLINE, OFFLINE
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 # pylint: disable=no-member
 
@@ -246,7 +246,8 @@ def update_status(request) -> JsonResponse:
         user_id = request.user.id
 
         user = CustomUser.objects.get(pk=user_id)
-        user.update_status(player_status)
+        if user.status != OFFLINE:
+            user.update_status(player_status)
         return JsonResponse(
             {"detail": "User status successfully updated."}, status=status.HTTP_200_OK
         )

@@ -1,4 +1,4 @@
-FROM minio/minio
+FROM minio/minio:latest
 
 RUN mkdir -p /root/.minio/certs
 

@@ -4,14 +4,14 @@
       <section class="flip-card-front image-container">
         <img
           [src]="avatarUrl"
-          [attr.alt]="'User Avatar'"
+          [alt]="'User Avatar'"
           (error)="onImageError($event)"
         />
       </section>
       <section class="flip-card-back image-container">
         <img
           [src]="avatarUrl"
-          [attr.alt]="'User Avatar'"
+          [alt]="'User Avatar'"
           (error)="onImageError($event)"
         />
         <p class="friend-name">{{ friendName }}</p>
@@ -21,4 +21,5 @@
         </section>
       </section>
     </section>
+  </section>
 </section>
