@@ -158,10 +158,12 @@ class FriendshipManager:
     @staticmethod
     def find_friend_request(from_user, to_user):
         try:
+            # pylint: disable=no-member
             friend_request = FriendRequest.objects.get(
                 from_user=from_user, to_user=to_user
             )
             return friend_request
+        # pylint: disable=no-member
         except FriendRequest.DoesNotExist:
             return None
 
@@ -239,7 +241,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def delete_account(self):
         avatar_uploader = AvatarUploader()
         avatar_uploader.delete_avatar(self.username)
+        # pylint: disable=no-member
         FriendRequest.objects.filter(from_user=self).delete()
+        # pylint: disable=no-member
         FriendRequest.objects.filter(to_user=self).delete()
         # pylint: disable=no-member
         self.friends.clear()
