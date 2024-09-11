@@ -21,5 +21,6 @@
   "id-class-ad-disabled": false,
   "href-abs-or-rel": false,
   "attr-unsafe-chars": true,
-  "head-script-disabled": true
+  "head-script-disabled": true,
+  "alt-require": false,
 }

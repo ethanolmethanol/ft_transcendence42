@@ -3,7 +3,7 @@
            [ngStyle]="getBoxShadowStyle()">
     <img class="image-container"
          [src]="fileUrl"
-         [alt]="'User Avatar'"
+         [attr.alt]="'User Avatar'"
          (error)="onImageError($event)"
     />
     <label *ngIf="modify" for="avatar-input-file">
