@@ -1,8 +1,8 @@
 import logging
 
+from django.contrib.auth import authenticate
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import authenticate
 
 logger = logging.getLogger(__name__)
 

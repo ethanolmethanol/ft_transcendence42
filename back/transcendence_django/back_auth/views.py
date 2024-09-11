@@ -1,7 +1,6 @@
 import json
 import logging
 
-
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -11,8 +10,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from shared_models.models import CustomUser
 
-
-from .auth_helpers import perform_logout, perform_login
+from .auth_helpers import perform_login, perform_logout
 from .oauth import OAuthBackend
 from .serializers import UserSerializer
 
@@ -140,6 +138,7 @@ def set_username_42(request):
         return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
         )
+
 
 @api_view(["POST"])
 @csrf_protect

@@ -4,22 +4,23 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any, Dict
 
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from shared_models.avatar_uploader import AvatarUploader
+from shared_models.constants import OFFLINE_STATUS
 from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
-from shared_models.avatar_uploader import AvatarUploader
-from shared_models.constants import ONLINE, OFFLINE
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
+
 # pylint: disable=no-member
 
 
@@ -242,11 +243,11 @@ def update_avatar(request) -> JsonResponse:
 def update_status(request) -> JsonResponse:
     try:
         data = json.loads(request.body)
-        player_status = data.get('status')
+        player_status = data.get("status")
         user_id = request.user.id
 
         user = CustomUser.objects.get(pk=user_id)
-        if user.status != OFFLINE:
+        if user.status != OFFLINE_STATUS:
             user.update_status(player_status)
         return JsonResponse(
             {"detail": "User status successfully updated."}, status=status.HTTP_200_OK

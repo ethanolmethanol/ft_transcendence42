@@ -52,7 +52,9 @@ from .constants import CALC_PRECISION, DUMB_PRECISION, MAX_CONNECT_ATTEMPTS
 now = datetime.now
 
 ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-ssl_context.load_cert_chain(certfile="/etc/ssl/public.crt", keyfile="/etc/ssl/private.key")
+ssl_context.load_cert_chain(
+    certfile="/etc/ssl/public.crt", keyfile="/etc/ssl/private.key"
+)
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 # ssl_context.load_verify_locations(cafile='/etc/ssl/public.crt')

@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views import add_friend, remove_friend, accept_friendship, decline_friendship, get_friends_info
+from .views import (
+    accept_friendship,
+    add_friend,
+    decline_friendship,
+    get_friends_info,
+    remove_friend,
+)
 
 urlpatterns = [
     path("add_friend/", add_friend, name="add_friend"),
