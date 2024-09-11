@@ -127,12 +127,15 @@ class FriendshipManager:
         if sender == receiver:
             return "Self-love is awesome!"
 
+        # pylint: disable=no-member
         if sender.friends.filter(id=receiver.id).exists():
             return "This user is already your friend!"
 
+        # pylint: disable=no-member
         if FriendRequest.objects.filter(from_user=sender, to_user=receiver).exists():
             return "Friend request already sent!"
 
+        # pylint: disable=no-member
         if FriendRequest.objects.filter(from_user=receiver, to_user=sender).exists():
             FriendshipManager.accept_friendship(receiver, sender)
             return f"{receiver.username} is now your friend!"
@@ -319,7 +322,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.save()
 
 
-# pylint: disable=no-member
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(
         CustomUser, related_name="friend_requests_sent", on_delete=models.CASCADE
