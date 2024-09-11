@@ -147,4 +147,8 @@ export class UserService {
     this.getUserData().username = username;
     return this.http.post<any>(`${API_USER}/update_username/`, {username: username});
   }
+
+  public updateStatus(status: number): Observable<any> {
+    return this.http.post<any>(`${API_USER}/update_status/`, {status: status});
+  }
 }

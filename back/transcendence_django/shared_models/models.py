@@ -218,16 +218,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.oauth_token.store_tokens(token_data)
         self.save()
 
+    def update_status(self, status: int):
+        self.status = status
+        self.save()
+
     def logout_user(self, request):
         self.__clear_tokens()
-        self.status = OFFLINE
-        self.save()
+        self.update_status(OFFLINE)
         logout(request)
 
     def login_user(self, request):
         login(request, self)
-        self.status = ONLINE
-        self.save()
+        self.update_status(ONLINE)
 
     def delete_account(self):
         avatar_uploader = AvatarUploader()

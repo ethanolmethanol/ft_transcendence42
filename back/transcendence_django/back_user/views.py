@@ -18,6 +18,7 @@ from shared_models.models import CustomUser, Profile
 from transcendence_django.dict_keys import USER_ID
 
 from shared_models.avatar_uploader import AvatarUploader
+from shared_models.constants import ONLINE, PLAYING, OFFLINE
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 # pylint: disable=no-member
 
@@ -233,3 +234,25 @@ def update_avatar(request) -> JsonResponse:
         {"message": "Avatar file successfully uploaded to the server"},
         status=status.HTTP_200_OK,
     )
+
+
+@require_http_methods(["POST"])
+@csrf_protect
+@login_required
+def update_status(request) -> JsonResponse:
+    try:
+        data = json.loads(request.body)
+        player_status = data.get('status')
+        user_id = request.user.id
+
+        user = CustomUser.objects.get(pk=user_id)
+        user.update_status(player_status)
+        return JsonResponse(
+            {"detail": "User status successfully updated."}, status=status.HTTP_200_OK
+        )
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+        )
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON."}, status=400)
