@@ -238,6 +238,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         avatar_uploader.delete_avatar(self.username)
         FriendRequest.objects.filter(from_user=self).delete()
         FriendRequest.objects.filter(to_user=self).delete()
+        # pylint: disable=no-member
         self.friends.clear()
         self.delete()
 
@@ -254,21 +255,25 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return FriendshipManager.decline_friendship(friend, self)
 
     def get_friend_requests(self):
+        # pylint: disable=no-member
         return FriendRequest.objects.filter(to_user=self).values_list(
             "from_user__username", flat=True
         )
 
     def get_playing_friends(self):
+        # pylint: disable=no-member
         return self.friends.filter(status=PLAYING_STATUS).values_list(
             "username", flat=True
         )
 
     def get_online_friends(self):
+        # pylint: disable=no-member
         return self.friends.filter(status=ONLINE_STATUS).values_list(
             "username", flat=True
         )
 
     def get_offline_friends(self):
+        # pylint: disable=no-member
         return self.friends.filter(status=OFFLINE_STATUS).values_list(
             "username", flat=True
         )
@@ -314,6 +319,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.save()
 
 
+# pylint: disable=no-member
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(
         CustomUser, related_name="friend_requests_sent", on_delete=models.CASCADE

@@ -34,7 +34,7 @@ def add_friend(request):
         user = CustomUser.objects.get(pk=request.user.id)
         friend = CustomUser.objects.get(username=friend_name)
         request_status = user.send_friend_request(friend)
-        return JsonResponse({"status": request_status}, status=status.HTTP_200_OK)
+        return JsonResponse({"status": request_status}, status=HTTPStatus.OK)
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
@@ -56,14 +56,13 @@ def remove_friend(request):
         friend = CustomUser.objects.get(username=friend_name)
         if user.remove_friend(friend):
             return JsonResponse(
-                {"status": "Successfully removed %s from friends" % friend.username},
+                {"status": f"Successfully removed {friend.username} from friends"},
                 status=status.HTTP_200_OK,
             )
-        else:
-            return JsonResponse(
-                {"error": "Friend does not exist."},
-                status=HTTPStatus.NOT_FOUND,
-            )
+        return JsonResponse(
+            {"error": "Friend does not exist."},
+            status=HTTPStatus.NOT_FOUND,
+        )
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."},
@@ -86,14 +85,13 @@ def accept_friendship(request):
         friend = CustomUser.objects.get(username=friend_name)
         if user.accept_friendship_request(friend) is not None:
             return JsonResponse(
-                {"status": "%s is now your friend!" % friend.username},
+                {"status": f"{friend.username} is now your friend!"},
                 status=status.HTTP_200_OK,
             )
-        else:
-            return JsonResponse(
-                {"error": "Friend request does not exist."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        return JsonResponse(
+            {"error": "Friend request does not exist."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
@@ -115,14 +113,13 @@ def decline_friendship(request):
         friend = CustomUser.objects.get(username=friend_name)
         if user.decline_friendship_request(friend) is not None:
             return JsonResponse(
-                {"status": "Friendship request from %s declined" % friend.username},
+                {"status": f"Friendship request from {friend.username} declined"},
                 status=status.HTTP_200_OK,
             )
-        else:
-            return JsonResponse(
-                {"error": "Friend request does not exist."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        return JsonResponse(
+            {"error": "Friend request does not exist."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
@@ -137,7 +134,6 @@ def decline_friendship(request):
 @csrf_protect
 @login_required
 def get_friends_info(request):
-    #  send this request every 5 s (if user on the friend page)
     try:
         user = CustomUser.objects.get(pk=request.user.id)
         friend_requests = list(user.get_friend_requests())
@@ -150,9 +146,10 @@ def get_friends_info(request):
                     FRIENDS_REQUESTS_KEY: friend_requests,
                     PLAYING_KEY: playing_friends,
                     ONLINE_KEY: online_friends,
-                    OFFLINE_KEY: offline_friends
+                    OFFLINE_KEY: offline_friends,
                 },
-                status=status.HTTP_200_OK),
+                status=status.HTTP_200_OK,
+            )
         )
     except CustomUser.DoesNotExist:
         return JsonResponse(

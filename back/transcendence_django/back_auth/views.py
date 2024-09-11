@@ -74,11 +74,10 @@ def is_logged_view(request):
     try:
         if request.user.is_authenticated:
             return Response({"detail": "User is logged in."}, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {"detail": "User not found"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        return Response(
+            {"detail": "User not found"},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
     except ValueError as e:
         return Response(
             {"detail": "User isn't logged in: " + str(e)},

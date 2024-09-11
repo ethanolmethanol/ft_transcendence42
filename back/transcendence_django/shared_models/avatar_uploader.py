@@ -1,3 +1,4 @@
+# pylint: disable=no-name-in-module
 import logging
 
 import urllib3
@@ -22,7 +23,7 @@ class AvatarUploader:
         logger.info("AvatarUploader: Started")
 
     def get_file_name(self, username):
-        return "%s_avatar.jpg" % username
+        return f"{username}_avatar.jpg"
 
     def get_bucket_name(self):
         return settings.MINIO_STORAGE_MEDIA_BUCKET_NAME
