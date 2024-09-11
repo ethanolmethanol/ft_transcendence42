@@ -61,7 +61,8 @@ def remove_friend(request):
             )
         else:
             return JsonResponse(
-                {"error": "Friend does not exist."}, status=HTTPStatus.NOT_FOUND,
+                {"error": "Friend does not exist."},
+                status=HTTPStatus.NOT_FOUND,
             )
     except CustomUser.DoesNotExist:
         return JsonResponse(
@@ -143,14 +144,16 @@ def get_friends_info(request):
         playing_friends = list(user.get_playing_friends())
         online_friends = list(user.get_online_friends())
         offline_friends = list(user.get_offline_friends())
-        return JsonResponse(
-            {
-                FRIENDS_REQUESTS_KEY: friend_requests,
-                PLAYING_KEY: playing_friends,
-                ONLINE_KEY: online_friends,
-                OFFLINE_KEY: offline_friends
-            },
-            status=status.HTTP_200_OK),
+        return (
+            JsonResponse(
+                {
+                    FRIENDS_REQUESTS_KEY: friend_requests,
+                    PLAYING_KEY: playing_friends,
+                    ONLINE_KEY: online_friends,
+                    OFFLINE_KEY: offline_friends
+                },
+                status=status.HTTP_200_OK),
+        )
     except CustomUser.DoesNotExist:
         return JsonResponse(
             {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND

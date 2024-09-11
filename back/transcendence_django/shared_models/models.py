@@ -18,8 +18,8 @@ from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
-    ONLINE_STATUS,
     OFFLINE_STATUS,
+    ONLINE_STATUS,
     PLAYING_STATUS,
 )
 from sortedm2m.fields import SortedManyToManyField
@@ -36,7 +36,6 @@ from transcendence_django.dict_keys import (
 )
 
 from .avatar_uploader import AvatarUploader
-
 
 logger = logging.getLogger(__name__)
 
@@ -260,13 +259,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         )
 
     def get_playing_friends(self):
-        return self.friends.filter(status=PLAYING_STATUS).values_list("username", flat=True)
+        return self.friends.filter(status=PLAYING_STATUS).values_list(
+            "username", flat=True
+        )
 
     def get_online_friends(self):
-        return self.friends.filter(status=ONLINE_STATUS).values_list("username", flat=True)
+        return self.friends.filter(status=ONLINE_STATUS).values_list(
+            "username", flat=True
+        )
 
     def get_offline_friends(self):
-        return self.friends.filter(status=OFFLINE_STATUS).values_list("username", flat=True)
+        return self.friends.filter(status=OFFLINE_STATUS).values_list(
+            "username", flat=True
+        )
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
