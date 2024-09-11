@@ -191,8 +191,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)  # type: ignore
     login42 = models.CharField(max_length=150, null=True, blank=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
-    friends = models.ManyToManyField("self", symmetrical=True, blank=True)
-    status = models.IntegerField(default=ONLINE_STATUS)
+    friends = models.ManyToManyField("self", symmetrical=True, blank=True)  # type: ignore
+    status = models.IntegerField(default=ONLINE_STATUS)  # type: ignore
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
@@ -329,11 +329,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(
         CustomUser, related_name="friend_requests_sent", on_delete=models.CASCADE
-    )
+    )  # type: ignore
     to_user = models.ForeignKey(
         CustomUser, related_name="friend_requests_received", on_delete=models.CASCADE
-    )
-    timestamp = models.DateTimeField(auto_now_add=True)
+    )  # type: ignore
+    timestamp = models.DateTimeField(auto_now_add=True)  # type: ignore
 
     def accept(self):
         FriendshipManager.add_friend(self.from_user, self.to_user)

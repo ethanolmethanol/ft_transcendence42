@@ -36,6 +36,7 @@ def perform_login(request, username, password):
     user = authenticate(request, username=username, password=password)
 
     if user is not None:
+        # pylint: disable=attr-defined
         user.login_user(request)
         return True
 
