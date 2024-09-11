@@ -3,6 +3,7 @@
     <section class="flip-card-inner">
       <section class="flip-card-front image-container">
         <img
+          alt=""
           [src]="avatarUrl"
           [attr.alt]="'User Avatar'"
           (error)="onImageError($event)"
@@ -10,6 +11,7 @@
       </section>
       <section class="flip-card-back image-container">
         <img
+          alt=""
           [src]="avatarUrl"
           [attr.alt]="'User Avatar'"
           (error)="onImageError($event)"
