@@ -37,7 +37,7 @@ def perform_login(request, username, password):
 
     if user is not None:
         # pylint: disable=no-member
-        user.login_user(request)
+        user.login_user(request)  # type: ignore[attr-defined]
         return True
 
     return False
