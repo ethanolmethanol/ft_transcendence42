@@ -113,10 +113,7 @@ class PlayerManager:
     def get_game_summary(self) -> dict[str, Any]:
         winner = self.get_winner()
         return {
-            PLAYERS: [
-                player.to_dict()
-                for player in self.players.values()
-            ],
+            PLAYERS: [player.to_dict() for player in self.players.values()],
             WINNER: (
                 {PLAYER_NAME: winner.player_name, USER_ID: winner.user_id}
                 if winner

@@ -29,7 +29,12 @@ class ClassicChannel(Channel):
             if self.is_full():
                 logger.info("Channel %s is full!", self.id)
         else:
-            logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
+            logger.error(
+                "%s cannot be added in the arena %s: Channel %s is full!",
+                user_id,
+                arena_id,
+                self.id,
+            )
 
     def is_ready_to_start(self) -> bool:
         return self.is_full()

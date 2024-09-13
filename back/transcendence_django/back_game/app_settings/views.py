@@ -29,7 +29,11 @@ async def create_channel(request) -> JsonResponse:
         if MONITOR.is_user_in_channel(user_id):
             raise ValueError("User is already in a channel.")
         channel = await MONITOR.create_new_channel(user_id, players_specs)
-        logger.info("User %s created a new channel and got the channel dict: %s", user_id, channel)
+        logger.info(
+            "User %s created a new channel and got the channel dict: %s",
+            user_id,
+            channel,
+        )
         return JsonResponse(channel, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, KeyError, ValueError) as e:
         logger.error(e)
@@ -83,17 +87,21 @@ async def join_specific_channel(request) -> JsonResponse:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
+
 @require_http_methods(["POST"])
 async def join_tournament(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         channel = await MONITOR.join_tournament(user_id)
-        logger.info("User %s joined tournament and got the channel dict: %s", user_id, channel)
+        logger.info(
+            "User %s joined tournament and got the channel dict: %s", user_id, channel
+        )
         return JsonResponse(channel, status=HTTPStatus.OK, safe=False)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
+
 
 @require_http_methods(["POST"])
 def is_user_in_channel(request) -> JsonResponse:

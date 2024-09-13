@@ -90,7 +90,7 @@ class GameLogicInterface:
         user_id: int,
         player_name: str,
         arena_id: str,
-        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]]
+        callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
         try:
             self.monitor.init_arena(
@@ -101,13 +101,17 @@ class GameLogicInterface:
         except KeyError as e:
             raise ChannelError(INVALID_ARENA, UNKNOWN_ARENA_ID) from e
         try:
-            await self.monitor.join_arena(user_id, player_name, self.channel.id, arena_id)
+            await self.monitor.join_arena(
+                user_id, player_name, self.channel.id, arena_id
+            )
         except (KeyError, ValueError) as e:
             logger.error("Error: %s", e)
             raise ChannelError(NOT_ENTERED, "User cannot join this arena.") from e
 
     def get_tournament_map(self) -> Dict[str, Dict[str, list[int | None]]]:
         if not self.is_tournament:
-            raise ChannelError(INVALID_CHANNEL, "Attempt to get tournament map in a non-tournament")
+            raise ChannelError(
+                INVALID_CHANNEL, "Attempt to get tournament map in a non-tournament"
+            )
         tournament_channel: TournamentChannel = self.channel
         return tournament_channel.get_tournament_map()

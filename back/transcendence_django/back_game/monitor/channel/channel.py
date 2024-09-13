@@ -24,6 +24,7 @@ from transcendence_django.dict_keys import ARENA, ID, START_TIME
 
 logger = logging.getLogger(__name__)
 
+
 class Channel(ABC):
 
     def __init__(self, players_specs: dict[str, int]):
@@ -65,13 +66,18 @@ class Channel(ABC):
         if self.is_full():
             return None
         for arena in self.arenas.values():
-            if not arena.is_private() and arena.get_status() in [GameStatus(CREATED), GameStatus(WAITING)]:
+            if not arena.is_private() and arena.get_status() in [
+                GameStatus(CREATED),
+                GameStatus(WAITING),
+            ]:
                 if self.is_arena_available(arena):
                     return arena
         return None
 
     def is_arena_available(self, arena: Arena) -> bool:
-        user_count_in_arena = sum(1 for user_arena in self.users.values() if user_arena == arena)
+        user_count_in_arena = sum(
+            1 for user_arena in self.users.values() if user_arena == arena
+        )
         return user_count_in_arena < arena.player_manager.nb_players
 
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
@@ -110,11 +116,11 @@ class Channel(ABC):
     def are_all_arenas_in_status_list(self, status_list: list[GameStatus]) -> bool:
         return len(self.arenas) == sum(
             1 for arena in self.arenas.values() if arena.get_status() in status_list
-            )
+        )
 
     async def save_game_summary(
-            self,
-            summary: dict[str, Any],
+        self,
+        summary: dict[str, Any],
     ):
         if summary[START_TIME] is not None:
             await self.history_manager.save_game_summary(summary)
@@ -155,7 +161,7 @@ class Channel(ABC):
             await arena.send_update({ARENA: arena.to_dict()})
         time = TIMEOUT_GAME_OVER + 1
         while (
-                arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
+            arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
         ):
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:

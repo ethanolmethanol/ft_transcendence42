@@ -122,7 +122,12 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             OVER_CALLBACK: self.send_game_over,
             START_TIMER_CALLBACK: self.send_start_timer,
         }
-        logger.info("Joining game with user_id: %s, player_name: %s, arena_id: %s", user_id, player_name, arena_id)
+        logger.info(
+            "Joining game with user_id: %s, player_name: %s, arena_id: %s",
+            user_id,
+            player_name,
+            arena_id,
+        )
         await self.game.join(user_id, player_name, arena_id, callbacks)
         await self.send_message(f"{self.game.user_id} has joined the game.")
         await self.send_players()
@@ -153,16 +158,25 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     async def send_players(self):
         players = self.monitor.get_users_from_channel(self.game.channel.id)
-        await self.send_update({CHANNEL_PLAYERS: {USER_ID: players, CAPACITY: self.game.channel.user_count}})
+        await self.send_update(
+            {
+                CHANNEL_PLAYERS: {
+                    USER_ID: players,
+                    CAPACITY: self.game.channel.user_count,
+                }
+            }
+        )
 
     async def send_arena_data(self):
         if self.game.arena_id is None:
             return
         try:
-            arena: Arena = self.monitor.get_arena(self.game.channel.id, self.game.arena_id)
+            arena: Arena = self.monitor.get_arena(
+                self.game.channel.id, self.game.arena_id
+            )
             await self.send_update({ARENA: arena.to_dict()})
         except KeyError as e:
-            pass # Arena not found
+            pass  # Arena not found
 
     async def send_start_timer(self, time: float):
         logger.info("Game will begin in %s seconds...", time)
@@ -184,7 +198,9 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
                 {
                     GAME_OVER: {
                         PLAYERS: summary[PLAYERS],
-                        WINNER: summary[WINNER][PLAYER_NAME] if summary[WINNER] else None,
+                        WINNER: (
+                            summary[WINNER][PLAYER_NAME] if summary[WINNER] else None
+                        ),
                         TIME: time,
                         MESSAGE: "Game over. Thanks for playing!",
                     }
@@ -223,7 +239,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     async def send_update(self, update: dict[str, Any]):
         update = {**{ARENA_ID: self.game.arena_id}, **update}
-#         logger.info("Sending update: %s", update)
+        # logger.info("Sending update: %s", update)
         await self.send_data({TYPE: GAME_UPDATE, UPDATE: update})
 
     async def send_message(self, message: str):

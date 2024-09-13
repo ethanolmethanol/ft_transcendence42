@@ -13,9 +13,14 @@ from back_game.game_settings.game_constants import (
     TOURNAMENT_ARENA_COUNT,
     TOURNAMENT_MAX_ROUND,
     WAITING,
-    WAIT_NEXT_ROUND_INTERVAL
+    WAIT_NEXT_ROUND_INTERVAL,
 )
-from transcendence_django.dict_keys import ASSIGNATIONS, NB_PLAYERS, ROUNDS_MAP, TOURNAMENT_WINNER
+from transcendence_django.dict_keys import (
+    ASSIGNATIONS,
+    NB_PLAYERS,
+    ROUNDS_MAP,
+    TOURNAMENT_WINNER,
+)
 
 import logging
 
@@ -34,7 +39,9 @@ class TournamentChannel(Channel):
         self.update_sender = None
         self.tournament_map_sender = None
         self.is_active = True
-        self.rounds_map: Dict[str, Dict[str, list[dict[str, Any] | None]]] = self.__get_initial_rounds_map()
+        self.rounds_map: Dict[str, Dict[str, list[dict[str, Any] | None]]] = (
+            self.__get_initial_rounds_map()
+        )
         self.winner = None
 
     def is_tournament(self) -> bool:
@@ -55,17 +62,25 @@ class TournamentChannel(Channel):
                 logger.info("Channel %s is full!", self.id)
                 asyncio.create_task(self.next_round_loop())
         else:
-            logger.error("%s cannot be added in the arena %s: Channel %s is full!", user_id, arena_id, self.id)
+            logger.error(
+                "%s cannot be added in the arena %s: Channel %s is full!",
+                user_id,
+                arena_id,
+                self.id,
+            )
 
     def is_ready_to_start(self) -> bool:
         return (self.is_full() and self.round == 0) or (
-                self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
+            self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
         )
 
     def can_be_deleted(self) -> bool:
         if len(self.users) == 0:
             return True
-        return self.are_all_arenas_in_status_list([GameStatus(DEAD)]) and self.round == TOURNAMENT_MAX_ROUND + 1
+        return (
+            self.are_all_arenas_in_status_list([GameStatus(DEAD)])
+            and self.round == TOURNAMENT_MAX_ROUND + 1
+        )
 
     def set_next_round(self):
         if 1 <= self.round <= TOURNAMENT_MAX_ROUND:
@@ -105,8 +120,13 @@ class TournamentChannel(Channel):
         return self.is_ready_to_start()
 
     def get_tournament_map(self) -> Dict[str, Dict[str, list[int | None]]]:
-        logger.info("Tournament winner %s", self.winner.user_id if self.winner else None)
-        return {ROUNDS_MAP: self.rounds_map, TOURNAMENT_WINNER: self.winner.user_id if self.winner else None}
+        logger.info(
+            "Tournament winner %s", self.winner.user_id if self.winner else None
+        )
+        return {
+            ROUNDS_MAP: self.rounds_map,
+            TOURNAMENT_WINNER: self.winner.user_id if self.winner else None,
+        }
 
     async def __send_update(self, data: dict[str, Any]):
         if self.update_sender is not None:
@@ -116,7 +136,7 @@ class TournamentChannel(Channel):
         rounds_map = {}
         for i in range(TOURNAMENT_MAX_ROUND):
             round = {}
-            arena_count = TOURNAMENT_ARENA_COUNT // 2 ** i
+            arena_count = TOURNAMENT_ARENA_COUNT // 2**i
             for j in range(arena_count):
                 round[str(j)] = [None for _ in range(self.players_specs[NB_PLAYERS])]
             rounds_map[str(i + 1)] = round
@@ -141,7 +161,9 @@ class TournamentChannel(Channel):
     def __update_rounds_map(self):
         next_round = self.round + 1
         if next_round <= TOURNAMENT_MAX_ROUND:
-            self.rounds_map[str(next_round)] = self.__get_current_round_arenas(next_round)
+            self.rounds_map[str(next_round)] = self.__get_current_round_arenas(
+                next_round
+            )
 
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
@@ -162,11 +184,18 @@ class TournamentChannel(Channel):
                 logger.info("Arena %s winner: %s", arena.id, winner.player_name)
                 winners.append(winner)
             else:
-                logger.info("Arena %s has no winner and has %s status", arena.id, arena.get_status())
+                logger.info(
+                    "Arena %s has no winner and has %s status",
+                    arena.id,
+                    arena.get_status(),
+                )
         return winners
 
     def __assign_users_to_arenas(self, winners: list[Player | None]):
-        logger.info("Assign users to arenas: winners (%s)", [winner.player_name for winner in winners])
+        logger.info(
+            "Assign users to arenas: winners (%s)",
+            [winner.player_name for winner in winners],
+        )
         for user_id in self.users.keys():
             if user_id in (winner.user_id for winner in winners):
                 for new_arena in self.arenas.values():
@@ -176,4 +205,3 @@ class TournamentChannel(Channel):
                     break
             else:
                 self.users[user_id] = None
-

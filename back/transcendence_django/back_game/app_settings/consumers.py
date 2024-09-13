@@ -6,10 +6,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class ClassicConsumer(BaseConsumer):
 
     def get_game_logic_interface(self):
         return GameLogicInterface(is_tournament=False)
+
 
 class TournamentConsumer(BaseConsumer):
 
@@ -28,4 +30,3 @@ class TournamentConsumer(BaseConsumer):
     async def send_tournament_map(self):
         tournament_map = self.game.get_tournament_map()
         await self.send_update({TOURNAMENT_MAP: tournament_map})
-
