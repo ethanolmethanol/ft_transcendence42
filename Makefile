@@ -13,7 +13,7 @@ CONTAINERS		= back_auth back_user back_game back_aipi front db prometheus grafan
 
 COMPOSE_PATH	= docker-compose.yml
 
-COMPOSE			= docker-compose -f ${COMPOSE_PATH}
+COMPOSE			= docker compose -f ${COMPOSE_PATH}
 
 R				= \033[1;31m # RED
 G				= \033[1;32m # GREEN

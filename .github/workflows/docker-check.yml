@@ -35,11 +35,6 @@ jobs:
           chmod +x mkcert-v1.4.3-linux-amd64
           mv mkcert-v1.4.3-linux-amd64 /usr/local/bin/mkcert
 
-      - name: Run docker-compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: "./docker-compose.yml"
-
       - name: Build containers AND check healthiness
         run: |
           make || { make logs; exit 1; }
