@@ -212,6 +212,7 @@ class UpdateUsernameView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 @require_http_methods(["POST"])
 @csrf_protect
 def get_username(request) -> JsonResponse:

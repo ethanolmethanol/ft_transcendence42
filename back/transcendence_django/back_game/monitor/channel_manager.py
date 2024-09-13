@@ -17,7 +17,7 @@ from back_game.game_settings.game_constants import (
     TIMEOUT_GAME_OVER,
     TIMEOUT_INTERVAL,
     TOURNAMENT_SPECS,
-    WAITING
+    WAITING,
 )
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
@@ -45,7 +45,11 @@ class ChannelManager:
         self.ai_game_table: dict[int, Channel] = {}
 
     async def add_to_channel(
-        self, table: dict[int, Channel], user_id: int, channel_id: int, arena_id: str | None
+        self,
+        table: dict[int, Channel],
+        user_id: int,
+        channel_id: int,
+        arena_id: str | None,
     ):
         channel = self.get_channel(channel_id)
         if channel is None:
@@ -84,15 +88,13 @@ class ChannelManager:
                 self.channels.pop(channel_id)
                 logger.info("Channel %s deleted", channel_id)
 
-    async def join_channel(
-        self, user_id: int, channel_id: str
-    ) -> Channel | None:
+    async def join_channel(self, user_id: int, channel_id: str) -> Channel | None:
         channel = self.get_channel(channel_id)
         if channel is None:
             return None
         arena_id: str = list(channel.arenas.keys())[0]
         logger.info("Arena id: %s", arena_id)
-        await self.add_user_to_channel(user_id, channel_id, arena_id)
+        await self.add_user_to_channel(user_id, channel.id, arena_id)
         return channel
 
     def join_already_created_channel(
@@ -131,7 +133,9 @@ class ChannelManager:
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         channel_dict = self.__get_available_channel(is_tournament=True)
         if channel_dict is None:
-            channel = await self.create_new_channel(user_id, TOURNAMENT_SPECS, is_tournament=True)
+            channel = await self.create_new_channel(
+                user_id, TOURNAMENT_SPECS, is_tournament=True
+            )
             return self.get_channel_dict_from_user_id(user_id)
         return channel_dict
 
@@ -145,7 +149,9 @@ class ChannelManager:
         arena = channel.get_arena_from_user_id(user_id)
         return {"channel_id": channel.id, "arena": arena.to_dict()}
 
-    async def spawn_bots(self, players_specs: dict[str, Any], channel_id: str, arena_id: str):
+    async def spawn_bots(
+        self, players_specs: dict[str, Any], channel_id: str, arena_id: str
+    ):
         bots: int = int(players_specs[OPTIONS][AI_OPPONENTS_LOCAL]) + int(
             players_specs[OPTIONS][AI_OPPONENTS_ONLINE]
         )
@@ -219,11 +225,18 @@ class ChannelManager:
             return None
         return channel.get_arena_from_user_id(user_id)
 
-    def __get_available_channel(self, is_tournament: bool = False) -> dict[str, Any] | None:
+    def __get_available_channel(
+        self, is_tournament: bool = False
+    ) -> dict[str, Any] | None:
         for channel in self.channels.values():
             if channel.is_tournament() == is_tournament:
                 available_arena = channel.get_available_arena()
-                logger.info("Available arena: %s in channel %s", available_arena, channel.id)
+                logger.info(
+                    "Available arena: %s in channel %s", available_arena, channel.id
+                )
                 if available_arena:
-                    return {"channel_id": channel.id, "arena": available_arena.to_dict()}
+                    return {
+                        "channel_id": channel.id,
+                        "arena": available_arena.to_dict(),
+                    }
         return None
