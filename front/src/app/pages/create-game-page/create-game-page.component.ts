@@ -61,7 +61,7 @@ export class CreateGamePageComponent implements OnInit {
   }
 
   private _isBadSelection(): boolean {
-    return (this._totalOpponents > this.constants.MAX_OPPONENTS || (this._totalOpponents == 0 && !this.isRemote));
+    return (this._totalOpponents > this.constants.MAX_OPPONENTS || (this._totalOpponents == 0));
   }
 
   private _addOpponent(toAdjust: number): void {
@@ -75,7 +75,7 @@ export class CreateGamePageComponent implements OnInit {
   private _adjustSetting(toAdjust: number): void {
     if (this._totalOpponents == 0) {
       this._addOpponent(toAdjust);
-    } else {
+    } else if (this._totalOpponents >= this.constants.MAX_OPPONENTS) {
       this._removeOpponent(toAdjust);
     }
   }
@@ -136,8 +136,6 @@ export class CreateGamePageComponent implements OnInit {
     return [
       this.options[this.constants.BALL_SPEED],
       this.options[this.constants.PADDLE_SIZE],
-      this.options[this.constants.OPPONENTS_ONLINE],
-      this.options[this.constants.AI_OPPONENTS_ONLINE],
       this.options[this.constants.IS_PRIVATE],
     ];
   }

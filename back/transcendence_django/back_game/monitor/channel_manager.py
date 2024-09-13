@@ -47,7 +47,6 @@ class ChannelManager:
     async def add_to_channel(
         self, table: dict[int, Channel], user_id: int, channel_id: int, arena_id: str | None
     ):
-        logger.info("(inside method) Adding user %s to channel %s", user_id, channel_id)
         channel = self.get_channel(channel_id)
         if channel is None:
             return
@@ -93,7 +92,7 @@ class ChannelManager:
             return None
         arena_id: str = list(channel.arenas.keys())[0]
         logger.info("Arena id: %s", arena_id)
-        await self.add_user_to_channel(user_id, channel, arena_id)
+        await self.add_user_to_channel(user_id, channel_id, arena_id)
         return channel
 
     def join_already_created_channel(
@@ -164,13 +163,6 @@ class ChannelManager:
                 await self.add_ai_to_channel(ai_user_id, channel_id, arena_id)
             except (ConnectionRefusedError, JSONDecodeError) as e:
                 logger.error(e)
-
-    def get_channel_from_user_id(self, user_id: int) -> dict[str, Any] | None:
-        channel: dict[str, Any] | None = self.user_game_table.get(user_id)
-        if channel is None:
-            return None
-        arena = channel.get_arena_from_user_id(user_id)
-        return {"channel_id": channel.id, "arena": arena.to_dict()}
 
     async def add_user_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         await self.add_to_channel(self.user_game_table, user_id, channel_id, arena_id)
