@@ -69,7 +69,9 @@ class Monitor:
         logger.info("Adding user %s to channel %s", user_id, channel_id)
         channel = self.channel_manager.channels.get(channel_id)
         if channel:
-            await self.channel_manager.add_user_to_channel(user_id, channel_id, arena_id)
+            await self.channel_manager.add_user_to_channel(
+                user_id, channel_id, arena_id
+            )
         else:
             logger.error("Channel %s not found", channel_id)
 

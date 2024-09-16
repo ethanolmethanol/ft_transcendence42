@@ -1,5 +1,20 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: stable
+    rev: 24.8.0
     hooks:
       - id: black
+        name: black
+        entry: black
+        language: system
+        types: [ python3 ]
+        args: [ --config, .github/linters/pyproject.toml ]
+
+  - repo: local
+    hooks:
+      - id: autoflake
+        name: autoflake
+        entry: autoflake
+        language: system
+        types: [python3]
+        stages: [commit]
+        args: [-i, -r, .]

@@ -58,4 +58,3 @@
 # # 	await asyncio.sleep(2)
 # # 	assert(len(SINGLE.arenas) == 8)
 # # 	SINGLE.arenas.clear()
-
