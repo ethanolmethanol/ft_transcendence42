@@ -26,20 +26,24 @@ export class FriendSearchComponent {
 
   sendFriendRequest() {
     this.clearMessage();
-
-    this.friendService.addFriend(this.friendName).subscribe({
-      next: (response: any): void => {
-        const message: string = response.status;
-        console.log(message);
-        this.showMessage(message, INFO_MESSAGE);
-        this.friendService.refreshFriendData().subscribe();
-      },
-      error: (error: HttpErrorResponse) => {
-        console.error("Failed to send friend request: ", error);
-        this.showMessage(error.error?.error || "An unknown error occurred.", ERROR_MESSAGE);
-      }
-    });
-    this.friendName = "";
+    if (this.friendName === "") {
+      this.showMessage("Please enter a name.", ERROR_MESSAGE);
+    }
+    else {
+      this.friendService.addFriend(this.friendName).subscribe({
+        next: (response: any): void => {
+          const message: string = response.status;
+          console.log(message);
+          this.showMessage(message, INFO_MESSAGE);
+          this.friendService.refreshFriendData().subscribe();
+        },
+        error: (error: HttpErrorResponse) => {
+          console.error("Failed to send friend request: ", error);
+          this.showMessage(error.error?.error || "An unknown error occurred.", ERROR_MESSAGE);
+        }
+      });
+      this.friendName = "";
+    }
   }
 
   private clearMessage() {
