@@ -1,6 +1,6 @@
 from back_game.app_settings.base_consumer import BaseConsumer
 from back_game.app_settings.game_logic_interface import GameLogicInterface
-from transcendence_django.dict_keys import ASSIGNATIONS, TOURNAMENT_MAP
+from transcendence_django.dict_keys import TOURNAMENT_MAP
 import logging
 
 logger = logging.getLogger(__name__)

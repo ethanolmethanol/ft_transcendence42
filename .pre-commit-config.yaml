@@ -8,3 +8,19 @@ repos:
         language: system
         types: [ python3 ]
         args: [ --config, .github/linters/pyproject.toml ]
+  - repo: local
+    hooks:
+      - id: autoflake
+        name: autoflake
+        entry: autoflake
+        language: system
+        types: [ python3 ]
+        args: [
+          '--in-place',
+          '--remove-all-unused-imports',
+          '--remove-duplicate-keys',
+          '--expand-star-imports',
+          '--ignore-init-module-imports',
+          '--recursive',
+          '.'
+        ]

@@ -22,7 +22,6 @@ from transcendence_django.dict_keys import (
     HUMAN_OPPONENTS_LOCAL,
     HUMAN_OPPONENTS_ONLINE,
     INVALID_NB_PLAYERS,
-    IS_BOT,
     IS_REMOTE,
     NB_PLAYERS,
     OPTIONS,

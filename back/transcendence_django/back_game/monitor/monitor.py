@@ -6,10 +6,7 @@ from back_game.monitor.channel_manager import ChannelManager
 from django.apps import apps
 from django.conf import settings
 from transcendence_django.dict_keys import (
-    ARENA,
-    CHANNEL_ID,
     OVER_CALLBACK,
-    START_TIME,
     START_TIMER_CALLBACK,
     UPDATE_CALLBACK,
 )
@@ -28,7 +25,7 @@ class Monitor:
     async def create_new_channel(
         self, user_id: int, players_specs: dict[str, int]
     ) -> dict[str, Any]:
-        new_channel = await self.channel_manager.create_new_channel(
+        await self.channel_manager.create_new_channel(
             user_id, players_specs
         )
         return self.channel_manager.get_channel_dict_from_user_id(user_id)
@@ -36,7 +33,7 @@ class Monitor:
     async def join_channel(
         self, user_id: int, channel_id: str
     ) -> dict[str, Any] | None:
-        channel = await self.channel_manager.join_channel(user_id, channel_id)
+        await self.channel_manager.join_channel(user_id, channel_id)
         return self.channel_manager.get_channel_dict_from_user_id(user_id)
 
     def join_already_created_channel(

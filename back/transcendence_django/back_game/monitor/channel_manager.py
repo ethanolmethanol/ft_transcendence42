@@ -9,13 +9,6 @@ from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     CHANNEL_LOOP_INTERVAL,
     DEAD,
-    DYING,
-    MONITOR_LOOP_INTERVAL,
-    OVER,
-    RUN_LOOP_INTERVAL,
-    STARTED,
-    TIMEOUT_GAME_OVER,
-    TIMEOUT_INTERVAL,
     TOURNAMENT_SPECS,
     WAITING,
 )
@@ -27,10 +20,8 @@ from requests import get as http_get
 from transcendence_django.dict_keys import (
     AI_OPPONENTS_LOCAL,
     AI_OPPONENTS_ONLINE,
-    ARENA,
     ARENA_ID,
     CHANNEL_ID,
-    ID,
     OPTIONS,
     USER_ID,
 )

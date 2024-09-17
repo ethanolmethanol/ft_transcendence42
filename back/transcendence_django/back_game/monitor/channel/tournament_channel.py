@@ -6,13 +6,11 @@ from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import (
     ARENA_LOOP_INTERVAL,
-    CREATED,
     DEAD,
     DYING,
     NEXT_ROUND_LOOP_INTERVAL,
     TOURNAMENT_ARENA_COUNT,
     TOURNAMENT_MAX_ROUND,
-    WAITING,
     WAIT_NEXT_ROUND_INTERVAL,
 )
 from transcendence_django.dict_keys import (

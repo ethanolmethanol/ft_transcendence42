@@ -20,7 +20,7 @@ from back_game.game_settings.game_constants import (
     WAITING,
 )
 from back_game.monitor.history_manager import HistoryManager
-from transcendence_django.dict_keys import ARENA, ID, START_TIME
+from transcendence_django.dict_keys import ARENA, START_TIME
 
 logger = logging.getLogger(__name__)
 

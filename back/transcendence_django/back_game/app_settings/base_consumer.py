@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from typing import Any, Callable
+from typing import Any, Callable, Coroutine, Optional
 import logging
 import json
 import asyncio
 import autobahn
 
 from back_game.app_settings.channel_error import ChannelError
+from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
 from back_game.monitor.monitor import get_monitor
 from transcendence_django.dict_keys import (
@@ -175,7 +176,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
                 self.game.channel.id, self.game.arena_id
             )
             await self.send_update({ARENA: arena.to_dict()})
-        except KeyError as e:
+        except KeyError:
             pass  # Arena not found
 
     async def send_start_timer(self, time: float):
@@ -206,7 +207,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
                     }
                 }
             )
-        except KeyError as e:
+        except KeyError:
             pass  # Arena not found
 
     async def safe_send(self, data: dict[str, Any]):
