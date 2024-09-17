@@ -3,8 +3,8 @@ from django.urls import path
 from .views import (
     UpdateUsernameView,
     UserDataView,
-    get_game_summaries,
     get_game_status,
+    get_game_summaries,
     update_avatar,
     update_status,
 )
