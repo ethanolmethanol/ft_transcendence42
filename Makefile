@@ -70,7 +70,7 @@ $(addprefix %, $(PY_FMT_DEPS)): | %/venv
 	@cd $*/venv/bin && ./pip install $(notdir $(PY_FMT_DEPS)) $(PY_MOD_DEPS) > /dev/null
 
 format-python: | $(foreach tool,$(PY_FMT_DEPS),$(addsuffix $(tool),$(PY_SERVICES)))
-	for c in $(PY_SERVICES); do cd $$c; cp ../.github/linters/.flake8 .; $(foreach tool,$(PY_FMT_DEPS),echo -e "$(G)$(notdir $(tool)):$(N)"; .$(tool) $(if $(findstring pylint, $(tool)), $(PYLINT_ARGS), .); ) cd ..; done
+	for c in $(PY_SERVICES); do cd $$c; $(foreach tool,$(PY_FMT_DEPS),echo -e "$(G)$(notdir $(tool)):$(N)"; .$(tool) $(if $(findstring pylint, $(tool)), $(PYLINT_ARGS), .); ) cd ..; done
 
 format-cleanup:
 	rm -rf $(addsuffix /venv, $(PY_SERVICES))
