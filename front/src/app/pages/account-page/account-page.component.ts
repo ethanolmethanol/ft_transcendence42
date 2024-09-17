@@ -9,6 +9,8 @@ import { ErrorMessageComponent } from "../../components/error-message/error-mess
 import { Router } from '@angular/router';
 import { AuthService } from "../../services/auth/auth.service";
 import { HttpErrorResponse } from '@angular/common/http';
+import { PLAYING_STATUS } from "../../constants";
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-account-page',
@@ -53,27 +55,54 @@ export class AccountPageComponent implements OnInit {
 
   public updateUsername() {
     this.errorMessage = "";
-    if (this.usernameForm.valid) {
-      const newUsername: string = this.usernameForm.get('username')?.value;
-      this.userService.updateUsername(newUsername).subscribe({
-        next: (response: any): void => {
-          console.log(response);
-          this.username = newUsername;
-        },
-        error: (error: HttpErrorResponse) => {
-          console.error("Failed to update username: ", error);
-          this.errorMessage = error.error?.error || "An unknown error occurred.";
+
+    this.checkUserStatus().subscribe({
+      next: (status: any) => {
+        if (status.status == PLAYING_STATUS) {
+          this.handleStatusError();
+        } else if (this.usernameForm.valid) {
+          this.performUsernameUpdate();
+        } else {
+          this.invalidFormError();
         }
-      });
-    } else {
-      this.updateUsernameError();
-    }
+      },
+      error: () => {
+        this.errorMessage = "Failed to check user status.";
+      }
+    });
   }
 
-  private updateUsernameError() {
+  private checkUserStatus(): Observable<number> {
+    return this.userService.getStatus();
+  }
+
+  private performUsernameUpdate() {
+    const newUsername: string = this.usernameForm.get('username')?.value;
+
+    this.userService.updateUsername(newUsername).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        this.username = newUsername;
+        this.usernameForm.reset();
+      },
+      error: (error: HttpErrorResponse) => {
+        console.error("Failed to update username: ", error);
+        this.errorMessage = error.error?.error || "An unknown error occurred.";
+        this.usernameForm.reset();
+      }
+    });
+  }
+
+  private handleStatusError() {
+    this.errorMessage = "Cannot update the username while playing.";
+  }
+
+
+  private invalidFormError() {
     const control = this.usernameForm.get('username');
     if (control)
       this.errorMessage = this.getUsernameErrorMessage(control);
+    this.usernameForm.reset();
   }
 
   public deleteAccount() {

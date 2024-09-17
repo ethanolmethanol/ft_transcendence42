@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import {
   API_USER,
   DEFAULT_COLORS,
@@ -9,6 +9,7 @@ import {
   DEFAULT_WIN_DICT
 } from "../../constants";
 import { Observable } from "rxjs";
+import { map, tap } from 'rxjs/operators';
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
 import { GameCounter, Times, User, Wins } from "../../interfaces/user";
 
@@ -150,5 +151,9 @@ export class UserService {
 
   public updateStatus(status: number): Observable<any> {
     return this.http.post<any>(`${API_USER}/update_status/`, {status: status});
+  }
+
+  public getStatus(): Observable<any> {
+    return this.http.get<any>(`${API_USER}/get_game_status/`);
   }
 }

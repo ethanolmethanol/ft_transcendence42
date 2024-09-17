@@ -258,3 +258,20 @@ def update_status(request) -> JsonResponse:
         )
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON."}, status=400)
+
+
+@require_http_methods(["GET"])
+@csrf_protect
+@login_required
+def get_game_status(request) -> JsonResponse:
+    try:
+        user_id = request.user.id
+
+        user = CustomUser.objects.get(pk=user_id)
+        return JsonResponse(
+            {"status": user.status}, status=status.HTTP_200_OK
+        )
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+        )
