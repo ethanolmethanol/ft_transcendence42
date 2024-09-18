@@ -35,7 +35,7 @@ class ChannelManager:
         self,
         table: dict[int, Channel],
         user_id: int,
-        channel_id: int,
+        channel_id: str,
         arena_id: str | None,
     ):
         channel = self.get_channel(channel_id)

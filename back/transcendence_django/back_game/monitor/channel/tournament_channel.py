@@ -25,6 +25,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+RoundMapType = Dict[str, Dict[str, list[dict[str, Any] | None] | None]]
 
 class TournamentChannel(Channel):
 
@@ -38,7 +39,7 @@ class TournamentChannel(Channel):
         self.update_sender = None
         self.tournament_map_sender = None
         self.is_active = True
-        self.rounds_map: Dict[str, Dict[str, list[dict[str, Any] | None]]] = (
+        self.rounds_map: RoundMapType = (
             self.__get_initial_rounds_map()
         )
         self.winner = None
@@ -103,10 +104,11 @@ class TournamentChannel(Channel):
     def can_round_be_set(self):
         return self.is_ready_to_start()
 
-    def get_tournament_map(self) -> Dict[str, Dict[str, list[int | None]]]:
-        logger.info(
-            "Tournament winner %s", self.winner.user_id if self.winner else None
-        )
+    def get_tournament_map(self) -> RoundMapType:
+        if self.winner:
+            logger.info(
+                "Tournament winner %s", self.winner.user_id
+            )
         return {
             ROUNDS_MAP: self.rounds_map,
             TOURNAMENT_WINNER: self.winner.user_id if self.winner else None,
@@ -117,8 +119,8 @@ class TournamentChannel(Channel):
             logger.info("Sending assignations: %s", data)
             await self.update_sender(data)
 
-    def __get_initial_rounds_map(self) -> Dict[str, Dict[str, list[None]]]:
-        rounds_map = {}
+    def __get_initial_rounds_map(self) -> RoundMapType:
+        rounds_map: RoundMapType = {}
         for i in range(TOURNAMENT_MAX_ROUND):
             round_players = {}
             arena_count = TOURNAMENT_ARENA_COUNT // 2**i
@@ -127,7 +129,7 @@ class TournamentChannel(Channel):
             rounds_map[str(i + 1)] = round_players
         return rounds_map
 
-    def __get_current_round_arenas(self, round_count: int) -> Dict[str, list[int | None]]:
+    def __get_current_round_arenas(self, round_count: int) -> RoundMapType:
         arena_count = len(self.rounds_map[str(round_count)])
         round_arenas = {}
         user_ids = list(self.users.keys())
