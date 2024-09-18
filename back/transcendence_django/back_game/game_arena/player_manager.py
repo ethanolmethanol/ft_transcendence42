@@ -59,10 +59,6 @@ class PlayerManager:
         player = self.__get_player_from_user_id(user_id)
         return player.to_dict()
 
-    def add_player(self, user_id: int, player_name: str, is_bot: bool):
-        player = Player(user_id, player_name, is_bot)
-        self.players[player_name] = player
-
     def remove_player(self, player_name):
         del self.players[player_name]
 
@@ -79,11 +75,6 @@ class PlayerManager:
     def player_gave_up(self, user_id: int):
         self.__change_player_status(user_id, PlayerStatus(GIVEN_UP))
 
-    def finish_active_players(self):
-        for player in self.players.values():
-            if player.is_active():
-                self.__finish_player(player.user_id)
-
     def is_player_in_game(self, user_id: int) -> bool:
         return any(player.user_id == user_id for player in self.players.values())
 
@@ -93,6 +84,7 @@ class PlayerManager:
         return enable_players_count + disable_players_count == self.nb_players
 
     def rematch(self, user_id: int):
+        self.__finish_given_up_players()
         if not self.is_player_in_game(user_id):
             raise KeyError(UNKNOWN_USER)
         self.enable_player(user_id)
@@ -110,7 +102,7 @@ class PlayerManager:
             return False
 
     def get_game_summary(self) -> dict[str, Any]:
-        winner = self.get_winner()
+        winner = self.__get_winner()
         return {
             PLAYERS: [player.to_dict() for player in self.players.values()],
             WINNER: (
@@ -120,11 +112,6 @@ class PlayerManager:
             ),
             IS_REMOTE: self.is_remote,
         }
-
-    def finish_given_up_players(self):
-        for player in self.players.values():
-            if player.status == PlayerStatus(GIVEN_UP):
-                player.status = PlayerStatus(OVER)
 
     def update_activity_time(self, player_name: str):
         self.players[player_name].update_activity_time()
@@ -150,7 +137,29 @@ class PlayerManager:
     def get_player_name(self, user_id: int) -> str:
         return self.__get_player_from_user_id(user_id).player_name
 
-    def get_winner(self) -> Player | None:
+    def register_player(self, user_id: int, player_name: str, is_bot: bool):
+        self.player_manager.__finish_given_up_players()
+        self.player_manager.__add_player(user_id, player_name, is_bot)
+
+    def conclude(self):
+        self.winner = self.__get_winner()
+        self.__finish_active_players()
+
+    def __add_player(self, user_id: int, player_name: str, is_bot: bool):
+        player = Player(user_id, player_name, is_bot)
+        self.players[player_name] = player
+
+    def __finish_active_players(self):
+        for player in self.players.values():
+            if player.is_active():
+                self.__finish_player(player.user_id)
+
+    def __finish_given_up_players(self):
+        for player in self.players.values():
+            if player.status == PlayerStatus(GIVEN_UP):
+                player.status = PlayerStatus(OVER)
+
+    def __get_winner(self) -> Player | None:
         active_players = [
             player for player in self.players.values() if player.is_active()
         ]

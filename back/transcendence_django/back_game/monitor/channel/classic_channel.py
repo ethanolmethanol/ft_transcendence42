@@ -1,7 +1,6 @@
 import logging
 
 from back_game.monitor.channel.channel import Channel
-from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import DEAD
 

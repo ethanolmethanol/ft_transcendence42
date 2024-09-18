@@ -139,13 +139,11 @@ class Arena:
         await self.send_update({ARENA: self.to_dict()})
 
     def conclude_game(self):
-        self.player_manager.get_winner()
-        self.player_manager.finish_active_players()
+        self.player_manager.conclude()
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
     def rematch(self, user_id: int):
-        self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
         if self.is_full():
             self.game.set_status(READY_TO_START)
@@ -268,6 +266,5 @@ class Arena:
             self.__register_player(user_id, player_name, False)
 
     def __register_player(self, user_id: int, player_name: str, is_bot: bool):
-        self.player_manager.finish_given_up_players()
-        self.player_manager.add_player(user_id, player_name, is_bot)
+        self.player_manager.register_player(user_id, player_name, is_bot)
         self.game.add_paddle(player_name)
