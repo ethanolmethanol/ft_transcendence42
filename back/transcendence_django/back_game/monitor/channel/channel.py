@@ -123,7 +123,7 @@ class Channel(ABC):
         assignations = {}
         for user_id, arena in self.users.items():
             if arena and arena.get_status() != GameStatus(DEAD):
-                assignations[user_id] = arena.to_dict()
+                assignations[str(user_id)] = arena.to_dict()
         return assignations
 
     def delete_user(self, user_id: int):
