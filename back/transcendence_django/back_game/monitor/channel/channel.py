@@ -156,9 +156,8 @@ class Channel(ABC):
             arena.set_status(GameStatus(DEAD))
             await arena.send_update({ARENA: arena.to_dict()})
             return
-        else:
-            arena.set_status(GameStatus(DYING))
-            await arena.send_update({ARENA: arena.to_dict()})
+        arena.set_status(GameStatus(DYING))
+        await arena.send_update({ARENA: arena.to_dict()})
         time = TIMEOUT_GAME_OVER + 1
         while (
             arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0

@@ -1,6 +1,6 @@
-from .channel import Channel
 import asyncio
 from typing import Any, Dict
+
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
@@ -13,6 +13,7 @@ from back_game.game_settings.game_constants import (
     TOURNAMENT_MAX_ROUND,
     WAIT_NEXT_ROUND_INTERVAL,
 )
+from back_game.monitor.channel.channel import Channel
 from transcendence_django.dict_keys import (
     ASSIGNATIONS,
     NB_PLAYERS,
@@ -33,7 +34,7 @@ class TournamentChannel(Channel):
         for _ in range(TOURNAMENT_ARENA_COUNT):
             self.add_arena()
         self.user_count: int = self.players_specs[NB_PLAYERS] * len(self.arenas)
-        self.round: int = 0
+        self.round_count: int = 0
         self.update_sender = None
         self.tournament_map_sender = None
         self.is_active = True
@@ -68,7 +69,7 @@ class TournamentChannel(Channel):
             )
 
     def is_ready_to_start(self) -> bool:
-        return (self.is_full() and self.round == 0) or (
+        return (self.is_full() and self.round_count == 0) or (
             self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
         )
 
@@ -77,23 +78,23 @@ class TournamentChannel(Channel):
             return True
         return (
             self.are_all_arenas_in_status_list([GameStatus(DEAD)])
-            and self.round == TOURNAMENT_MAX_ROUND + 1
+            and self.round_count == TOURNAMENT_MAX_ROUND + 1
         )
 
     def set_next_round(self):
-        if 1 <= self.round <= TOURNAMENT_MAX_ROUND:
+        if 1 <= self.round_count <= TOURNAMENT_MAX_ROUND:
             self.__set_next_round_arenas()
-        self.round += 1
-        logger.info("Tournament round %s", self.round)
+        self.round_count += 1
+        logger.info("Tournament round %s", self.round_count)
 
     async def arena_loop(self, arena: Arena):
-        while self.round <= TOURNAMENT_MAX_ROUND and self.is_active:
+        while self.round_count <= TOURNAMENT_MAX_ROUND and self.is_active:
             logger.info("Arena %s loop", arena.id)
             await super().arena_loop(arena)
             await asyncio.sleep(ARENA_LOOP_INTERVAL)
 
     async def next_round_loop(self):
-        while self.round <= TOURNAMENT_MAX_ROUND:
+        while self.round_count <= TOURNAMENT_MAX_ROUND:
             self.set_next_round()
             await self.send_tournament_map()
             await asyncio.sleep(WAIT_NEXT_ROUND_INTERVAL)
@@ -105,10 +106,8 @@ class TournamentChannel(Channel):
                 await asyncio.sleep(NEXT_ROUND_LOOP_INTERVAL)
 
     async def send_assignations(self):
-        if self.update_sender is not None:
-            assignations: dict[str, Any] = self.get_assignations()
-            logger.info("Send assignations %s", assignations)
-            await self.update_sender({ASSIGNATIONS: assignations})
+        assignations: dict[str, Any] = self.get_assignations()
+        await self.__send_update({ASSIGNATIONS: assignations})
 
     async def send_tournament_map(self):
         if self.tournament_map_sender is not None:
@@ -128,6 +127,7 @@ class TournamentChannel(Channel):
 
     async def __send_update(self, data: dict[str, Any]):
         if self.update_sender is not None:
+            logger.info("Sending assignations: %s", data)
             await self.update_sender(data)
 
     def __get_initial_rounds_map(self) -> Dict[str, Dict[str, list[None]]]:
@@ -157,7 +157,7 @@ class TournamentChannel(Channel):
         return round_arenas
 
     def __update_rounds_map(self):
-        next_round = self.round + 1
+        next_round = self.round_count + 1
         if next_round <= TOURNAMENT_MAX_ROUND:
             self.rounds_map[str(next_round)] = self.__get_current_round_arenas(
                 next_round
@@ -166,7 +166,7 @@ class TournamentChannel(Channel):
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
         active_winners = [winner for winner in winners if winner.user_id in self.users]
-        if len(active_winners) == 1 and self.round == TOURNAMENT_MAX_ROUND:
+        if len(active_winners) == 1 and self.round_count == TOURNAMENT_MAX_ROUND:
             self.winner = active_winners[0]
         self.arenas = {}
         for _ in range(len(active_winners) // 2):

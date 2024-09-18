@@ -25,9 +25,7 @@ class Monitor:
     async def create_new_channel(
         self, user_id: int, players_specs: dict[str, int]
     ) -> dict[str, Any]:
-        await self.channel_manager.create_new_channel(
-            user_id, players_specs
-        )
+        await self.channel_manager.create_new_channel(user_id, players_specs)
         return self.channel_manager.get_channel_dict_from_user_id(user_id)
 
     async def join_channel(

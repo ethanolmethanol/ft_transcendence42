@@ -8,9 +8,7 @@ from back_game.monitor.channel.tournament_channel import TournamentChannel
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     CHANNEL_LOOP_INTERVAL,
-    DEAD,
     TOURNAMENT_SPECS,
-    WAITING,
 )
 from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
@@ -124,7 +122,7 @@ class ChannelManager:
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         channel_dict = self.__get_available_channel(is_tournament=True)
         if channel_dict is None:
-            channel = await self.create_new_channel(
+            await self.create_new_channel(
                 user_id, TOURNAMENT_SPECS, is_tournament=True
             )
             return self.get_channel_dict_from_user_id(user_id)
@@ -166,15 +164,6 @@ class ChannelManager:
 
     async def add_ai_to_channel(self, user_id: int, channel_id: str, arena_id: str):
         await self.add_to_channel(self.ai_game_table, user_id, channel_id, arena_id)
-
-    def delete_arena(self, arenas: dict[str, Arena], arena_id: str):
-        arena = arenas[arena_id]
-        arena.set_status(GameStatus(DEAD))
-        logger.info("Arena %s is dead", arena.id)
-        player_list: dict[str, Player] = arena.get_players()
-        for player in player_list.values():
-            self.delete_user(player.user_id, arena_id)
-        arenas.pop(arena_id)
 
     def get_arena(self, channel_id: str, arena_id: str) -> Arena | None:
         channel = self.get_channel(channel_id)

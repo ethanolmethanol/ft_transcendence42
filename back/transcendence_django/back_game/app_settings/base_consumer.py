@@ -79,12 +79,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await self.add_user_to_channel_group()
         logger.info("WebSocket connected: %s", self.scope["path"])
 
-    async def add_user_to_channel_group(self):
-        logger.info("Adding user to channel group (Tournament)")
-        self.room_group_name = f"game_{self.game.channel.id}"
-        logger.info("User Connected to %s", self.room_group_name)
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-
     async def disconnect(self, close_code: int):
         try:
             await self.leave(None)
@@ -157,17 +151,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         paddle_data = self.game.move_paddle(player_name, direction)
         await self.send_update({PADDLE: paddle_data})
 
-    async def send_players(self):
-        players = self.monitor.get_users_from_channel(self.game.channel.id)
-        await self.send_update(
-            {
-                CHANNEL_PLAYERS: {
-                    USER_ID: players,
-                    CAPACITY: self.game.channel.user_count,
-                }
-            }
-        )
-
     async def send_arena_data(self):
         if self.game.arena_id is None:
             return
@@ -210,7 +193,24 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         except KeyError:
             pass  # Arena not found
 
-    async def safe_send(self, data: dict[str, Any]):
+    async def send_players(self):
+        players = self.monitor.get_users_from_channel(self.game.channel.id)
+        await self.send_update(
+            {
+                CHANNEL_PLAYERS: {
+                    USER_ID: players,
+                    CAPACITY: self.game.channel.user_count,
+                }
+            }
+        )
+
+    async def add_user_to_channel_group(self):
+        logger.info("Adding user to channel group (Tournament)")
+        self.room_group_name = f"game_{self.game.channel.id}"
+        logger.info("User Connected to %s", self.room_group_name)
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+
+    async def __safe_send(self, data: dict[str, Any]):
         try:
             await self.send(text_data=json.dumps(data))
         except ValueError as e:
@@ -224,19 +224,19 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
 
     async def game_message(self, event: dict[str, str]):
         message = event[MESSAGE]
-        await self.safe_send({TYPE: GAME_MESSAGE, MESSAGE: message})
+        await self.__safe_send({TYPE: GAME_MESSAGE, MESSAGE: message})
 
     async def game_error(self, event: dict[str, str]):
         error = event[ERROR]
-        await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
+        await self.__safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def game_update(self, event: dict[str, str]):
         message = event[UPDATE]
-        await self.safe_send({TYPE: GAME_UPDATE, UPDATE: message})
+        await self.__safe_send({TYPE: GAME_UPDATE, UPDATE: message})
 
     async def send_error(self, error: dict[str, Any]):
         logger.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
-        await self.safe_send({TYPE: GAME_ERROR, ERROR: error})
+        await self.__safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def send_update(self, update: dict[str, Any]):
         update = {**{ARENA_ID: self.game.arena_id}, **update}

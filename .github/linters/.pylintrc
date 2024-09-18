@@ -426,6 +426,7 @@ disable=raw-checker-failed,
         bad-inline-option,
         locally-disabled,
         file-ignored,
+        no-name-in-module,
         suppressed-message,
         useless-suppression,
         deprecated-pragma,
@@ -439,6 +440,7 @@ disable=raw-checker-failed,
         import-error,
         invalid-name,
         unsupported-assignment-operation,
+        wrong-import-order,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
