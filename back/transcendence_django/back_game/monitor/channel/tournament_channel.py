@@ -25,7 +25,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-RoundMapType = Dict[str, Dict[str, list[dict[str, Any] | None] | None]]
+RoundType = Dict[str, list[dict[str, Any] | None]]
+RoundMapType = Dict[str, RoundType]
 
 class TournamentChannel(Channel):
 
@@ -104,7 +105,7 @@ class TournamentChannel(Channel):
     def can_round_be_set(self):
         return self.is_ready_to_start()
 
-    def get_tournament_map(self) -> RoundMapType:
+    def get_tournament_map(self) -> Dict[str, RoundMapType | str | None]:
         if self.winner:
             logger.info(
                 "Tournament winner %s", self.winner.user_id
@@ -122,7 +123,7 @@ class TournamentChannel(Channel):
     def __get_initial_rounds_map(self) -> RoundMapType:
         rounds_map: RoundMapType = {}
         for i in range(TOURNAMENT_MAX_ROUND):
-            round_players = {}
+            round_players: RoundType = {}
             arena_count = TOURNAMENT_ARENA_COUNT // 2**i
             for j in range(arena_count):
                 round_players[str(j)] = [None for _ in range(self.players_specs[NB_PLAYERS])]
@@ -130,8 +131,8 @@ class TournamentChannel(Channel):
         return rounds_map
 
     def __get_current_round_arenas(self, round_count: int) -> RoundMapType:
-        arena_count = len(self.rounds_map[str(round_count)])
-        round_arenas = {}
+        arena_count: int = len(self.rounds_map[str(round_count)])
+        round_arenas: RoundMapType = {}
         user_ids = list(self.users.keys())
         user_index = 0
         for arena_id in range(arena_count):
@@ -145,7 +146,7 @@ class TournamentChannel(Channel):
         return round_arenas
 
     def __update_rounds_map(self):
-        next_round = self.round_count + 1
+        next_round: int = self.round_count + 1
         if next_round <= TOURNAMENT_MAX_ROUND:
             self.rounds_map[str(next_round)] = self.__get_current_round_arenas(
                 next_round
