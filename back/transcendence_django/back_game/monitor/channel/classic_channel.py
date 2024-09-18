@@ -18,22 +18,11 @@ class ClassicChannel(Channel):
     def is_tournament(self) -> bool:
         return False
 
-    async def add_user_into_arena(self, user_id: int, arena_id: str):
-        if user_id in self.users:
-            return
-        if len(self.users) < self.user_count:
-            arena: Arena = self.arenas[arena_id]
-            self.users[user_id] = arena
-            logger.info("User %s added to channel %s", user_id, self.id)
-            if self.is_full():
-                logger.info("Channel %s is full!", self.id)
-        else:
-            logger.error(
-                "%s cannot be added in the arena %s: Channel %s is full!",
-                user_id,
-                arena_id,
-                self.id,
-            )
+    def on_user_added(self):
+        pass
+
+    async def on_channel_full(self):
+        pass
 
     def is_ready_to_start(self) -> bool:
         return self.is_full()

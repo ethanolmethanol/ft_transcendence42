@@ -49,24 +49,11 @@ class TournamentChannel(Channel):
     def disable(self):
         self.is_active = False
 
-    async def add_user_into_arena(self, user_id: int, arena_id: str):
-        if user_id in self.users:
-            return
-        if len(self.users) < self.user_count:
-            arena: Arena = self.arenas[arena_id]
-            self.users[user_id] = arena
-            self.__update_rounds_map()
-            logger.info("User %s added to channel %s", user_id, self.id)
-            if self.is_full():
-                logger.info("Channel %s is full!", self.id)
-                asyncio.create_task(self.next_round_loop())
-        else:
-            logger.error(
-                "%s cannot be added in the arena %s: Channel %s is full!",
-                user_id,
-                arena_id,
-                self.id,
-            )
+    def on_user_added(self):
+        self.__update_rounds_map()
+
+    async def on_channel_full(self):
+        asyncio.create_task(self.next_round_loop())
 
     def is_ready_to_start(self) -> bool:
         return (self.is_full() and self.round_count == 0) or (
@@ -133,15 +120,15 @@ class TournamentChannel(Channel):
     def __get_initial_rounds_map(self) -> Dict[str, Dict[str, list[None]]]:
         rounds_map = {}
         for i in range(TOURNAMENT_MAX_ROUND):
-            round = {}
+            round_players = {}
             arena_count = TOURNAMENT_ARENA_COUNT // 2**i
             for j in range(arena_count):
-                round[str(j)] = [None for _ in range(self.players_specs[NB_PLAYERS])]
-            rounds_map[str(i + 1)] = round
+                round_players[str(j)] = [None for _ in range(self.players_specs[NB_PLAYERS])]
+            rounds_map[str(i + 1)] = round_players
         return rounds_map
 
-    def __get_current_round_arenas(self, round) -> Dict[str, list[int | None]]:
-        arena_count = len(self.rounds_map[str(round)])
+    def __get_current_round_arenas(self, round_count: int) -> Dict[str, list[int | None]]:
+        arena_count = len(self.rounds_map[str(round_count)])
         round_arenas = {}
         user_ids = list(self.users.keys())
         user_index = 0
@@ -153,7 +140,6 @@ class TournamentChannel(Channel):
                     user_index += 1
                 else:
                     round_arenas[str(arena_id)].append(None)
-
         return round_arenas
 
     def __update_rounds_map(self):

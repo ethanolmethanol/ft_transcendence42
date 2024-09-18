@@ -10,9 +10,7 @@ from back_game.game_settings.game_constants import (
     CHANNEL_LOOP_INTERVAL,
     TOURNAMENT_SPECS,
 )
-from back_game.game_arena.game import GameStatus
-from back_game.game_arena.player import Player
-from back_game.game_settings.game_constants import DEAD, WAITING
+from back_game.game_settings.game_constants import WAITING
 from requests import JSONDecodeError, Response
 from requests import get as http_get
 from transcendence_django.dict_keys import (
@@ -122,9 +120,7 @@ class ChannelManager:
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         channel_dict = self.__get_available_channel(is_tournament=True)
         if channel_dict is None:
-            await self.create_new_channel(
-                user_id, TOURNAMENT_SPECS, is_tournament=True
-            )
+            await self.create_new_channel(user_id, TOURNAMENT_SPECS, is_tournament=True)
             return self.get_channel_dict_from_user_id(user_id)
         return channel_dict
 

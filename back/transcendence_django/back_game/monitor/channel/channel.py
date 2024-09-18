@@ -55,6 +55,14 @@ class Channel(ABC):
     def disable(self):
         pass
 
+    @abstractmethod
+    def on_user_added(self):
+        pass
+
+    @abstractmethod
+    async def on_channel_full(self):
+        pass
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "channel_id": self.id,
@@ -92,9 +100,24 @@ class Channel(ABC):
         asyncio.create_task(self.run_game_loop(new_arena))
         self.arenas[new_arena.id] = new_arena
 
-    @abstractmethod
     async def add_user_into_arena(self, user_id: int, arena_id: str):
-        pass
+        if user_id in self.users:
+            return
+        if len(self.users) < self.user_count:
+            arena: Arena = self.arenas[arena_id]
+            self.users[user_id] = arena
+            self.on_user_added()
+            logger.info("User %s added to channel %s", user_id, self.id)
+            if self.is_full():
+                logger.info("Channel %s is full!", self.id)
+                await self.on_channel_full()
+        else:
+            logger.error(
+                "%s cannot be added in the arena %s: Channel %s is full!",
+                user_id,
+                arena_id,
+                self.id,
+            )
 
     def get_assignations(self) -> Dict[str, Any]:
         assignations = {}
