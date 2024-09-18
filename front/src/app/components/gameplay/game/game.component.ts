@@ -112,8 +112,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @Input() arenaID: number = -1;
-  @Output() hasStarted = new EventEmitter<void>();
-  @Output() startCounterStarted = new EventEmitter<void>();
   private playerName: string | null = null;
   private isRemote: boolean = false;
   private isTournament: boolean = false;
@@ -272,6 +270,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       const player_name: string = user.username
       playerList.push(player_name)
     }
+    if (players.capacity == playerList.length) {
+      this.gameStateService.setCanGiveUp(false)
+    }
     this.gameStateService.setChannelPlayers(playerList)
     this.gameStateService.setChannelCapacity(players.capacity)
     this.gameStateService.setDataLoaded(true)
@@ -308,7 +309,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startTimer.first.message = timer.message;
     this.startTimer.first.time = timer.time;
     this.startTimer.first.show = true;
-    this.startCounterStarted.emit();
+    this.gameStateService.setCanGiveUp(false);
   }
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
@@ -342,9 +343,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleStartCounterCompletion() {
-    if (this.hasStarted.observed) {
-      this.hasStarted.emit();
-    }
+    this.gameStateService.setCanGiveUp(true);
   }
 
   private updateStatus(status: number) {

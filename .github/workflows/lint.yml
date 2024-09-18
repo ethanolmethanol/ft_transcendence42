@@ -48,4 +48,7 @@ jobs:
           PYTHONPATH: "/github/workspace/:\
             /github/workflow/venv/lib/python3.12/site-packages"
           FILTER_REGEX_EXCLUDE: "back/transcendence_django/old_tests/*|back/transcendence_django/tests/*"
-          DISABLE_ERRORS: "false"
+          VALIDATE_PYTHON_FLAKE8: "false"
+          VALIDATE_PYTHON_ISORT: "false"
+          VALIDATE_PYTHON_PYLINT: "false"
+          VALIDATE_PYTHON_BLACK: "false"

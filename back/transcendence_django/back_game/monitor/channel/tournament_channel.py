@@ -152,8 +152,9 @@ class TournamentChannel(Channel):
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
         active_winners = [winner for winner in winners if winner.user_id in self.users]
-        if len(active_winners) == 1 and self.round_count == TOURNAMENT_MAX_ROUND:
+        if len(active_winners) == 1:
             self.winner = active_winners[0]
+            return
         self.arenas = {}
         for _ in range(len(active_winners) // 2):
             self.add_arena()

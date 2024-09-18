@@ -39,7 +39,6 @@ import {PlayerIconComponent} from "../../components/player-icon/player-icon.comp
 
 export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  canGiveUp: boolean = true;
   arenaID: number | null = null;
 
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
@@ -61,6 +60,7 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit() {
     this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
     this.gameStateService.setIsTournament(false);
+    this.gameStateService.setCanGiveUp(true);
   }
 
   public ngAfterViewInit() {
@@ -73,12 +73,6 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('Channel ID:', channel_id);
       console.log('Arena ID:', arena_id);
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
-    });
-    this.game.first.startCounterStarted.subscribe(() => {
-      this.canGiveUp = false;
-    });
-    this.game.first.hasStarted.subscribe(() => {
-      this.canGiveUp = true;
     });
   }
 

@@ -31,7 +31,6 @@ import {TournamentDashboardComponent} from "../../components/tournament-dashboar
   styleUrl: './tournament-page.component.css'
 })
 export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy {
-  canGiveUp: boolean = true;
   arenaID: number | null = null;
   @ViewChildren(GameComponent) game!: QueryList<GameComponent>;
   @ViewChild(TournamentDashboardComponent) tournamentDashboard!: TournamentDashboardComponent;
@@ -55,6 +54,7 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
   public ngOnInit() {
     this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
     this.gameStateService.setIsTournament(true);
+    this.gameStateService.setCanGiveUp(true);
   }
 
   public ngAfterViewInit()  {
@@ -65,12 +65,6 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
       this.arenaID = arena_id;
       this.cdr.detectChanges();
       this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id, true);
-    });
-    this.game.first.startCounterStarted.subscribe(() => {
-      this.canGiveUp = false;
-    });
-    this.game.first.hasStarted.subscribe(() => {
-      this.canGiveUp = true;
     });
   }
 

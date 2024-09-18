@@ -17,6 +17,7 @@ export class GameStateService {
   private _channelPlayers = new BehaviorSubject<string[]>([]);
   private _channelCapacity = new BehaviorSubject<number>(2);
   private _maxPlayers = new BehaviorSubject<number>(2);
+  private _canGiveUp = new BehaviorSubject<boolean>(true);
 
   get dataLoaded$() { return this._dataLoaded.asObservable(); }
   get isWaiting$() { return this._isWaiting.asObservable(); }
@@ -29,7 +30,7 @@ export class GameStateService {
   get channelPlayers$() { return this._channelPlayers.asObservable(); }
   get channelCapacity$() { return this._channelCapacity.asObservable(); }
   get maxPlayers$() { return this._maxPlayers.asObservable(); }
-
+  get canGiveUp$() { return this._canGiveUp.asObservable(); }
 
   setDataLoaded(value: boolean) { this._dataLoaded.next(value); }
   setIsWaiting(value: boolean) { this._isWaiting.next(value); }
@@ -42,11 +43,13 @@ export class GameStateService {
   setChannelPlayers(value: string[]) { this._channelPlayers.next(value); }
   setChannelCapacity(value: number) { this._channelCapacity.next(value); }
   setMaxPlayers(value: number) { this._maxPlayers.next(value); }
+  setCanGiveUp(value: boolean) { this._canGiveUp.next(value); }
 
   restrictReset() {
     this.setDataLoaded(false);
     this.setIsWaiting(true);
     this.setIsRematch(true);
+    this.setCanGiveUp(false);
   }
 
   reset() {

@@ -138,8 +138,8 @@ class PlayerManager:
         return self.__get_player_from_user_id(user_id).player_name
 
     def register_player(self, user_id: int, player_name: str, is_bot: bool):
-        self.player_manager.__finish_given_up_players()
-        self.player_manager.__add_player(user_id, player_name, is_bot)
+        self.__finish_given_up_players()
+        self.__add_player(user_id, player_name, is_bot)
 
     def conclude(self):
         self.winner = self.__get_winner()
