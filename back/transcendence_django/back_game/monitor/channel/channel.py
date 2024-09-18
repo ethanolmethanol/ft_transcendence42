@@ -91,7 +91,7 @@ class Channel(ABC):
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
         return self.users.get(user_id)
 
-    def get_arena(self, arena_id: int) -> Arena | None:
+    def get_arena(self, arena_id: str) -> Arena | None:
         return self.arenas.get(arena_id)
 
     def add_arena(self):
