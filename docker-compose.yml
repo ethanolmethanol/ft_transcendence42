@@ -28,7 +28,9 @@ services:
         ports:
             - "8000:443"
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - back-auth
         restart: unless-stopped
         env_file: .env
 
@@ -232,7 +234,7 @@ services:
             - transcendence
 
     blackbox:
-        image: prom/blackbox-exporter
+        image: prom/blackbox-exporter:master
         container_name: blackbox_exporter
         deploy:
             replicas: 1
@@ -245,7 +247,13 @@ services:
         volumes:
             - ./monitoring/blackbox:/config
         networks:
-            - transcendence
+            transcendence:
+                aliases:
+                    - blackbox
+        command:
+            - '--config.file=/config/blackbox.yml'
+        ports:
+            - "9115:9115"
 
     node_exporter:
         image: prom/node-exporter:v0.18.1
