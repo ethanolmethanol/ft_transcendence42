@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: discord_alert
+
+receivers:
+- name: discord_alert
+  discord_configs:
+  - webhook_url_file: '/etc/alertmanager/very-secret-webhook-url'
+    title: '{{ template "custom_title" . }}'
+    message: '{{ template "custom_discord_message" . }}'
+
+templates:
+  - '/etc/alertmanager/templates/default.tmpl'

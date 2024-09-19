@@ -33,6 +33,7 @@ prompt_for_env() {
 		echo "SERV_IP='${IP_ADDR}'"
 		echo "OAUTH_CLIENT_UID='${OAUTH_CLIENT_UID}'"
 		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
+		echo "DOCKSOCKUID=$(id -u)"
 	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
