@@ -58,7 +58,6 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
 
   public ngAfterViewInit()  {
     this.updateContainersScale();
-    this.gameStateService.setCanGiveUp(true);
     this._route.params.subscribe(params => {
       const channel_id = params['channel_id'];
       const arena_id = params['arena_id'];

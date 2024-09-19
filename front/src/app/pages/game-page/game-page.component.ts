@@ -60,7 +60,6 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit() {
     this.gameStateService.setIsRemote(this._route.snapshot.data['gameType'] === 'online');
     this.gameStateService.setIsTournament(false);
-    this.gameStateService.setCanGiveUp(true);
   }
 
   public ngAfterViewInit() {

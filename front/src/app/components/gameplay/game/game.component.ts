@@ -348,7 +348,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private updateStatus(status: number) {
     let gameOverOverlay: GameOverComponent = this.gameOver.first;
-    this.gameStateService.setIsWaiting(status == CREATED || status == WAITING)
+    const isWaiting = status == CREATED || status == WAITING;
+    this.gameStateService.setIsWaiting(isWaiting)
+    this.gameStateService.setCanGiveUp(!isWaiting)
     if (gameOverOverlay.hasRematched === false) {
       if (status == STARTED) {
         this.handleStartCounterCompletion()
