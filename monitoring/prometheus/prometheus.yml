@@ -8,13 +8,11 @@ global:
 
 # spécification du serveur alertmanager
 
-# alerting:
-#   alertmanagers:
-#   - static_configs:
-#     - targets:
-#       - localhost:9093
-#     scheme: http
-#     timeout: 10s
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - alertmanager:9093
 
 # fichier de règles pour l'alerting, c'est dans ce fichier que sont les définitions des alertes
 
@@ -24,12 +22,10 @@ rule_files:
 # la scrape configuration de prometheus, les hosts qu'il va contacter pour chercher les métrique
 scrape_configs:
 
-  - job_name: 'localhost'     # <-- j'ai mis ce titre de job mais le truc c'est de mettre un nom de job explicite
+  - job_name: 'node_exporter'
     static_configs:
       - targets: ['node_exporter:9100']
     scrape_interval: 5s
-
-    ### configuration de blackbox, notre probe http 
 
   - job_name: 'blackbox'
     metrics_path: /probe
@@ -43,8 +39,18 @@ scrape_configs:
       - source_labels: [__address__]
         target_label: instance
       - target_label: __address__
-        replacement: blackbox:9115  # The blackbox exporter's real hostname:port.
-
+        replacement: blackbox:9115
     static_configs:
       - targets: 
+        - https://front:443,front
+        - https://back-auth:443/health,back-auth
+        - https://back-game:443/health,back-game
+        - https://back-user:443/health,back-user
+        - https://back-aipi:443/health,back-aipi
         - http://prometheus:9090,prometheus
+        - http://alertmanager:9093,alertmanager
+        - http://cadvisor:8080,cadvisor
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']

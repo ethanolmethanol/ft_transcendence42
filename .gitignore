@@ -215,3 +215,5 @@ ssl
 **/ssl
 *.crt
 *.key
+
+very-secret-webhook-url

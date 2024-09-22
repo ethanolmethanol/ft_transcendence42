@@ -1,0 +1,219 @@
+groups:
+- name: Node Exporter Alerts
+  rules:
+    - alert: NodeHasSwapIn
+      expr: irate(node_vmstat_pswpin{job="prod"}[5m]) > 0 
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Node has swap in (instance {{ $labels.instance }})"
+        description: "<!channel>  VM SWAP (in)  LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: NodeHasSwapOut
+      expr: irate(node_vmstat_pswpin{job="prod"}[5m]) > 0 
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Node has swap out (instance {{ $labels.instance }})"
+        description: "<!channel>  VM SWAP (out)  LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: OutOfInodes
+      expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint ="/rootfs"} * 100 < 10
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Out of inodes (instance {{ $labels.instance }})"
+        description: "<!channel>  Disk almost out of inodes (< 10% remaining)    VALUE = {{ humanize $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+
+    - alert: OutOfMemory
+      expr: (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes * 100 < 10
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Out of memory (instance {{ $labels.instance }})"
+        description: "<!channel>  Host almost out of RAM (< 10% remaining)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+
+    - alert: UnusualNetworkThroughputIn
+      expr: sum by (instance) (irate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 100
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Unusual network throughput in (instance {{ $labels.instance }})"
+        description: "<!channel>  Network interfaces receiving unusually high amounts of data (> 100 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: UnusualNetworkThroughputOut
+      expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Unusual network throughput out (instance {{ $labels.instance }})"
+        description: "<!channel>  Network interfaces sending unusually high amounts of data (> 100 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: UnusualDiskReadRate
+      expr: sum by (instance) (irate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Unusual disk read rate (instance {{ $labels.instance }})"
+        description: "<!channel>  Disk reads unusually high amounts of data (> 50 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: UnusualDiskWriteRate
+      expr: sum by (instance) (irate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Unusual disk write rate (instance {{ $labels.instance }})"
+        description: "<!channel>  Disk writes unusually high amounts of data (> 50 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: OutOfDiskSpace
+      expr: node_filesystem_free_bytes{mountpoint ="/"} / node_filesystem_size_bytes{mountpoint ="/"} * 100 < 20
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Out of disk space (instance {{ $labels.instance }})"
+        description: "<!channel>  Disk almost out of space (< 20% remaining)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: UnusualDiskReadLatency
+      expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 100
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Unusual disk read latency (instance {{ $labels.instance }})"
+        description: "<!channel> Disk has unusually high latency  (read operations > 100ms)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: CpuLoad
+      expr: node_load15 / (count without (cpu, mode) (node_cpu_seconds_total{mode="system"})) > 2
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "CPU load (instance {{ $labels.instance }})"
+        description: "<!channel> CPU load (15m) is high    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: ContextSwitching
+      expr: rate(node_context_switches_total[5m]) > ((count without (cpu, mode) (node_cpu_seconds_total{mode="system"})) * 1500) 
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Context switching (instance {{ $labels.instance }})"
+        description: "<!channel>  Host context switching unusually high   VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+
+    - alert: Health endpoint down
+      expr: probe_success == 0
+      for: 10s
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "Health endpoint is down"
+        description: "<!channel>  URL does not respond : {{ $labels.addresse }}"
+
+    - alert: Certificate expired
+      expr: probe_ssl_earliest_cert_expiry{job="blackbox"} - time() < 86400 * 30
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        identifier: "{{ $labels.instance }}"
+        summary: "SSL certificate expire"
+        description: "<!channel>  SSL certificate expires in 3 months  {{ $labels.addresse }}"
+
+- name: GoogleCadvisor Alerts
+
+  rules:
+    - alert: ContainerKilled
+      expr: 'time() - container_last_seen > 60'
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Container killed (instance {{ $labels.instance }})
+        description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerAbsent
+      expr: 'absent(container_last_seen)'
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: Container absent (instance {{ $labels.instance }})
+        description: "A container is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerHighCpuUtilization
+      expr: '(sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, container) / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, container) * 100) > 80'
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Container High CPU utilization (instance {{ $labels.instance }})
+        description: "Container CPU utilization is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerHighMemoryUsage
+      expr: '(sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80'
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Container High Memory usage (instance {{ $labels.instance }})
+        description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerVolumeUsage
+      expr: '(1 - (sum(container_fs_inodes_free{name!="cadvisor"}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > 80'
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Container Volume usage (instance {{ $labels.instance }})
+        description: "Container Volume usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerHighThrottleRate
+      expr: 'sum(increase(container_cpu_cfs_throttled_periods_total{container!=""}[5m])) by (container, pod, namespace) / sum(increase(container_cpu_cfs_periods_total[5m])) by (container, pod, namespace) > ( 25 / 100 )'
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: Container high throttle rate (instance {{ $labels.instance }})
+        description: "Container is being throttled\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerLowCpuUtilization
+      expr: '(sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, container) / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, container) * 100) < 20'
+      for: 7d
+      labels:
+        severity: info
+      annotations:
+        summary: Container Low CPU utilization (instance {{ $labels.instance }})
+        description: "Container CPU utilization is under 20% for 1 week. Consider reducing the allocated CPU.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+    - alert: ContainerLowMemoryUsage
+      expr: '(sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) < 20'
+      for: 7d
+      labels:
+        severity: info
+      annotations:
+        summary: Container Low Memory usage (instance {{ $labels.instance }})
+        description: "Container Memory usage is under 20% for 1 week. Consider reducing the allocated memory.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

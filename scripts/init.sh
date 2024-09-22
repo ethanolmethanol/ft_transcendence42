@@ -34,6 +34,7 @@ prompt_for_env() {
 		echo "SERV_IP='${IP_ADDR}'"
 		echo "OAUTH_CLIENT_UID='${OAUTH_CLIENT_UID}'"
 		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
+		echo "DOCKSOCKUID=$(id -u)"
 		echo "DJANGO_SECRET_KEY='${DJANGO_SECRET_KEY}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
