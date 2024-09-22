@@ -133,6 +133,10 @@ export_env_instructions() {
 	echo -e "*********************************************************************************\n"
 }
 
+share_data () {
+  ./scripts/share_data.sh
+}
+
 IP_ADDR=$(get_ip "$1")
 CERT_DIR="ssl/"
 SSL_CONT_DIRS=(front/ssl back/ssl)
@@ -149,4 +153,5 @@ else
 	create_nginx_config_file
 	update_environment_ts
 	export_env_instructions
+  share_data
 fi
