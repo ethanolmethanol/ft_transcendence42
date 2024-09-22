@@ -25,6 +25,7 @@ prompt_for_env() {
 	[ -z "${POSTGRES_DB}" ] && read -rp "Enter PostgreSQL Database Name: " POSTGRES_DB
 	[ -z "${OAUTH_CLIENT_UID}" ] && read -rp "Enter OAuth Client UID: " OAUTH_CLIENT_UID
 	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET
+  [ -z "${DJANGO_SECRET_KEY}" ] && read -rp "Enter Django Secret: " DJANGO_SECRET_KEY
 
 	echo "POSTGRES_USER='${POSTGRES_USER}'" >"${ENV_FILE_GLOBAL}"
 	{
@@ -33,6 +34,7 @@ prompt_for_env() {
 		echo "SERV_IP='${IP_ADDR}'"
 		echo "OAUTH_CLIENT_UID='${OAUTH_CLIENT_UID}'"
 		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
+		echo "DJANGO_SECRET_KEY='${DJANGO_SECRET_KEY}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"

@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from requests.exceptions import ConnectionError
 from typing import Any, Callable, Coroutine, Optional
 import logging
 import json
 import asyncio
 import autobahn
-
 from back_game.app_settings.channel_error import ChannelError
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
@@ -208,8 +208,10 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         logger.info("Adding user to channel group (Tournament)")
         self.room_group_name = f"game_{self.game.channel.id}"
         logger.info("User Connected to %s", self.room_group_name)
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-
+        try:
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        except ConnectionError as e:
+            logger.error("Connection error: %s", e)
     async def __safe_send(self, data: dict[str, Any]):
         try:
             await self.send(text_data=json.dumps(data))
