@@ -1,8 +1,8 @@
 import asyncio
-from abc import ABC, abstractmethod
 import logging
 import random
 import string
+from abc import ABC, abstractmethod
 from typing import Any, Dict
 
 from back_game.game_arena.arena import Arena
@@ -15,8 +15,8 @@ from back_game.game_settings.game_constants import (
     OVER,
     RUN_LOOP_INTERVAL,
     STARTED,
-    TIMEOUT_INTERVAL,
     TIMEOUT_GAME_OVER,
+    TIMEOUT_INTERVAL,
     WAITING,
 )
 from back_game.monitor.history_manager import HistoryManager

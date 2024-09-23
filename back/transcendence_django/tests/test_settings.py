@@ -1,4 +1,3 @@
-from transcendence_django.settings import *
 
 SECRET_KEY = "fake-key"
 

@@ -1,9 +1,6 @@
 import math
-from transcendence_django.dict_keys import (
-    IS_REMOTE,
-    NB_PLAYERS,
-    OPTIONS,
-)
+
+from transcendence_django.dict_keys import IS_REMOTE, NB_PLAYERS, OPTIONS
 
 # Channels errors
 NOT_JOINED = 1

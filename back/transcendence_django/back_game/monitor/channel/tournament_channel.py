@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Any, Dict
 
 from back_game.game_arena.arena import Arena
@@ -21,12 +22,11 @@ from transcendence_django.dict_keys import (
     TOURNAMENT_WINNER,
 )
 
-import logging
-
 logger = logging.getLogger(__name__)
 
 RoundType = Dict[str, list[dict[str, Any] | None]]
 RoundMapType = Dict[str, RoundType]
+
 
 class TournamentChannel(Channel):
 
@@ -40,9 +40,7 @@ class TournamentChannel(Channel):
         self.update_sender = None
         self.tournament_map_sender = None
         self.is_active = True
-        self.rounds_map: RoundMapType = (
-            self.__get_initial_rounds_map()
-        )
+        self.rounds_map: RoundMapType = self.__get_initial_rounds_map()
         self.winner = None
 
     def is_tournament(self) -> bool:
@@ -107,9 +105,7 @@ class TournamentChannel(Channel):
 
     def get_tournament_map(self) -> Dict[str, RoundMapType | str | None]:
         if self.winner:
-            logger.info(
-                "Tournament winner %s", self.winner.user_id
-            )
+            logger.info("Tournament winner %s", self.winner.user_id)
         return {
             ROUNDS_MAP: self.rounds_map,
             TOURNAMENT_WINNER: self.winner.user_id if self.winner else None,
@@ -126,7 +122,9 @@ class TournamentChannel(Channel):
             round_players: RoundType = {}
             arena_count = TOURNAMENT_ARENA_COUNT // 2**i
             for j in range(arena_count):
-                round_players[str(j)] = [None for _ in range(self.players_specs[NB_PLAYERS])]
+                round_players[str(j)] = [
+                    None for _ in range(self.players_specs[NB_PLAYERS])
+                ]
             rounds_map[str(i + 1)] = round_players
         return rounds_map
 

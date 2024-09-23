@@ -1,15 +1,16 @@
-from abc import ABC, abstractmethod
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from requests.exceptions import ConnectionError
-from typing import Any, Callable, Coroutine, Optional
-import logging
-import json
 import asyncio
+import json
+import logging
+from abc import ABC, abstractmethod
+from typing import Any, Callable, Coroutine, Optional
+
 import autobahn
 from back_game.app_settings.channel_error import ChannelError
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
 from back_game.monitor.monitor import get_monitor
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from requests.exceptions import ConnectionError
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
@@ -18,8 +19,8 @@ from transcendence_django.dict_keys import (
     CHANNEL_PLAYERS,
     DIRECTION,
     ERROR,
-    GAME_MESSAGE,
     GAME_ERROR,
+    GAME_MESSAGE,
     GAME_OVER,
     GAME_UPDATE,
     GIVE_UP,
@@ -30,8 +31,8 @@ from transcendence_django.dict_keys import (
     OVER_CALLBACK,
     PADDLE,
     PLAYER,
-    PLAYERS,
     PLAYER_NAME,
+    PLAYERS,
     REMATCH,
     START_TIMER,
     START_TIMER_CALLBACK,
@@ -42,7 +43,6 @@ from transcendence_django.dict_keys import (
     USER_ID,
     WINNER,
 )
-
 
 logger = logging.getLogger(__name__)
 
@@ -212,6 +212,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         except ConnectionError as e:
             logger.error("Connection error: %s", e)
+
     async def __safe_send(self, data: dict[str, Any]):
         try:
             await self.send(text_data=json.dumps(data))

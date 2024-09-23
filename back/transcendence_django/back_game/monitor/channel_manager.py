@@ -2,15 +2,15 @@ import asyncio
 import logging
 from typing import Any
 
-from back_game.monitor.channel.channel import Channel
-from back_game.monitor.channel.classic_channel import ClassicChannel
-from back_game.monitor.channel.tournament_channel import TournamentChannel
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     CHANNEL_LOOP_INTERVAL,
     TOURNAMENT_SPECS,
+    WAITING,
 )
-from back_game.game_settings.game_constants import WAITING
+from back_game.monitor.channel.channel import Channel
+from back_game.monitor.channel.classic_channel import ClassicChannel
+from back_game.monitor.channel.tournament_channel import TournamentChannel
 from requests import JSONDecodeError, Response
 from requests import get as http_get
 from transcendence_django.dict_keys import (

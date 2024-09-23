@@ -1,6 +1,5 @@
 import pytest
 from channels.testing import WebsocketCommunicator
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from transcendence_django.asgi import application
 
 
