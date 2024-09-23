@@ -12,7 +12,14 @@ class UserSerializer(serializers.ModelSerializer[CustomUser]):
             )
         ]
     )
-    username = serializers.CharField()
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=CustomUser.objects.all(),
+                message="This username is already in use. Please choose another one.",
+            )
+        ]
+    )
 
     class Meta:
         model = CustomUser

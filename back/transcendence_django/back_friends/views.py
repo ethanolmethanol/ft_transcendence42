@@ -4,6 +4,8 @@ from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_http_methods
 from rest_framework import status
@@ -20,113 +22,70 @@ from transcendence_django.dict_keys import (
 logger = logging.getLogger(__name__)
 
 
-@require_http_methods(["POST"])
-@csrf_protect
-@login_required
-def add_friend(request):
-    try:
-        data = json.loads(request.body)
-        friend_name = data.get("friendName")
-        if friend_name == "":
+@method_decorator([require_http_methods(["POST"]), csrf_protect, login_required], name='dispatch')
+class FriendshipView(View):
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            friend_name = data["friendName"]
+            if not friend_name:
+                return JsonResponse(
+                    {"error": "Friend name must be provided."}, status=HTTPStatus.BAD_REQUEST
+                )
+            self.user = CustomUser.objects.get(pk=request.user.id)
+            self.friend = CustomUser.objects.get(username=friend_name)
+        except CustomUser.DoesNotExist:
             return JsonResponse(
-                {"status": "Please enter a friend name."}, status=HTTPStatus.BAD_REQUEST
+                {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
             )
-        user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(username=friend_name)
-        request_status = user.send_friend_request(friend)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
+            )
+        except KeyError:
+            return JsonResponse(
+                {"error": "Friend name must be provided."}, status=HTTPStatus.BAD_REQUEST
+            )
+        return super().dispatch(request, *args, **kwargs)
+
+
+class AddFriendView(FriendshipView):
+    def post(self, request, *args, **kwargs):
+        request_status = self.user.send_friend_request(self.friend)
         return JsonResponse({"status": request_status}, status=HTTPStatus.OK)
-    except CustomUser.DoesNotExist:
-        return JsonResponse(
-            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
-        )
-    except json.JSONDecodeError:
-        return JsonResponse(
-            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
-        )
 
 
-@require_http_methods(["POST"])
-@csrf_protect
-@login_required
-def remove_friend(request):
-    try:
-        data = json.loads(request.body)
-        friend_name = data.get("friendName")
-        user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(username=friend_name)
-        if user.remove_friend(friend):
+class RemoveFriendView(FriendshipView):
+    def post(self, request, *args, **kwargs):
+        if self.user.remove_friend(self.friend):
             return JsonResponse(
-                {"status": f"Successfully removed {friend.username} from friends"},
-                status=status.HTTP_200_OK,
+                {"status": f"Successfully removed {self.friend.username} from friends"},
+                status=HTTPStatus.OK,
             )
         return JsonResponse(
-            {"error": "Friend does not exist."},
-            status=HTTPStatus.NOT_FOUND,
-        )
-    except CustomUser.DoesNotExist:
-        return JsonResponse(
-            {"error": "User does not exist."},
-            status=HTTPStatus.NOT_FOUND,
-        )
-    except json.JSONDecodeError:
-        return JsonResponse(
-            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
+            {"error": "Friend does not exist."}, status=HTTPStatus.NOT_FOUND
         )
 
 
-@require_http_methods(["POST"])
-@csrf_protect
-@login_required
-def accept_friendship(request):
-    try:
-        data = json.loads(request.body)
-        friend_name = data.get("friendName")
-        user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(username=friend_name)
-        if user.accept_friendship_request(friend) is not None:
+class AcceptFriendshipView(FriendshipView):
+    def post(self, request, *args, **kwargs):
+        if self.user.accept_friendship_request(self.friend) is not None:
             return JsonResponse(
-                {"status": f"{friend.username} is now your friend!"},
-                status=status.HTTP_200_OK,
+                {"status": f"{self.friend.username} is now your friend!"}, status=HTTPStatus.OK
             )
         return JsonResponse(
-            {"error": "Friend request does not exist."},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    except CustomUser.DoesNotExist:
-        return JsonResponse(
-            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
-        )
-    except json.JSONDecodeError:
-        return JsonResponse(
-            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
+            {"error": "Friend request does not exist."}, status=HTTPStatus.BAD_REQUEST
         )
 
 
-@require_http_methods(["POST"])
-@csrf_protect
-@login_required
-def decline_friendship(request):
-    try:
-        data = json.loads(request.body)
-        friend_name = data.get("friendName")
-        user = CustomUser.objects.get(pk=request.user.id)
-        friend = CustomUser.objects.get(username=friend_name)
-        if user.decline_friendship_request(friend) is not None:
+class DeclineFriendshipView(FriendshipView):
+    def post(self, request, *args, **kwargs):
+        if self.user.decline_friendship_request(self.friend) is not None:
             return JsonResponse(
-                {"status": f"Friendship request from {friend.username} declined"},
-                status=status.HTTP_200_OK,
+                {"status": f"Friendship request from {self.friend.username} declined"}, status=HTTPStatus.OK
             )
         return JsonResponse(
-            {"error": "Friend request does not exist."},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    except CustomUser.DoesNotExist:
-        return JsonResponse(
-            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
-        )
-    except json.JSONDecodeError:
-        return JsonResponse(
-            {"error": "Invalid JSON data."}, status=HTTPStatus.BAD_REQUEST
+            {"error": "Friend request does not exist."}, status=HTTPStatus.BAD_REQUEST
         )
 
 
