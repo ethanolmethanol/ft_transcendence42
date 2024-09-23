@@ -107,9 +107,6 @@ class Arena:
     def get_players(self) -> dict[str, Player]:
         return self.player_manager.players
 
-    def get_player_info(self, user_id: int) -> dict[str, Any]:
-        return self.player_manager.get_player_info(user_id)
-
     def get_status(self) -> GameStatus:
         return self.game.status
 
@@ -127,7 +124,7 @@ class Arena:
 
     async def start_game(self):
         self.game.set_status(READY_TO_START)
-        self.reset()
+        self.__reset()
         await self.send_update({ARENA: self.to_dict()})
         for time in range(0, TIME_START):
             if self.start_timer_callback is not None:
@@ -244,7 +241,7 @@ class Arena:
                 return paddle.player_name
         return None
 
-    def reset(self):
+    def __reset(self):
         self.player_manager.reset()
         self.game.reset()
 

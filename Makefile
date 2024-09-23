@@ -59,7 +59,7 @@ format-css: | front/.stylelintrc.json
 
 PY_SERVICES = back
 
-PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint mypy)
+PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint mypy isort)
 
 PY_MOD_DEPS = django pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
 

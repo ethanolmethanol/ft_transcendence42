@@ -55,10 +55,6 @@ class PlayerManager:
         )
         return enable_players_count + disable_players_count == self.nb_players
 
-    def get_player_info(self, user_id: int) -> dict[str, Any]:
-        player = self.__get_player_from_user_id(user_id)
-        return player.to_dict()
-
     def remove_player(self, player_name):
         del self.players[player_name]
 
