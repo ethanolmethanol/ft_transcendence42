@@ -37,7 +37,7 @@ prompt_for_env() {
 		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
 		echo "DOCKSOCKUID=$(id -u)"
 		echo "MINIO_ROOT_USER='${MINIO_ROOT_USER}'"
-        echo "MINIO_ROOT_PASSWORD='${MINIO_ROOT_PASSWORD}'"
+		echo "MINIO_ROOT_PASSWORD='${MINIO_ROOT_PASSWORD}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"

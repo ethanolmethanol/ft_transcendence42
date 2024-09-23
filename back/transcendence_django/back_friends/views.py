@@ -22,16 +22,19 @@ from transcendence_django.dict_keys import (
 logger = logging.getLogger(__name__)
 
 
-@method_decorator([require_http_methods(["POST"]), csrf_protect, login_required], name='dispatch')
+@method_decorator(
+    [require_http_methods(["POST"]), csrf_protect, login_required], name='dispatch'
+)
 class FriendshipView(View):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.user = None
+        self.friend = None
+
     def dispatch(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)
             friend_name = data["friendName"]
-            if not friend_name:
-                return JsonResponse(
-                    {"error": "Friend name must be provided."}, status=HTTPStatus.BAD_REQUEST
-                )
             self.user = CustomUser.objects.get(pk=request.user.id)
             self.friend = CustomUser.objects.get(username=friend_name)
         except CustomUser.DoesNotExist:
@@ -44,18 +47,22 @@ class FriendshipView(View):
             )
         except KeyError:
             return JsonResponse(
-                {"error": "Friend name must be provided."}, status=HTTPStatus.BAD_REQUEST
+                {"error": "Friend name must be provided."},
+                status=HTTPStatus.BAD_REQUEST,
             )
         return super().dispatch(request, *args, **kwargs)
 
 
-class AddFriendView(FriendshipView):
+class AddView(FriendshipView):
     def post(self, request, *args, **kwargs):
         request_status = self.user.send_friend_request(self.friend)
-        return JsonResponse({"status": request_status}, status=HTTPStatus.OK)
+        return JsonResponse(
+            {"status": request_status},
+            status=HTTPStatus.OK,
+        )
 
 
-class RemoveFriendView(FriendshipView):
+class RemoveView(FriendshipView):
     def post(self, request, *args, **kwargs):
         if self.user.remove_friend(self.friend):
             return JsonResponse(
@@ -67,7 +74,7 @@ class RemoveFriendView(FriendshipView):
         )
 
 
-class AcceptFriendshipView(FriendshipView):
+class AcceptView(FriendshipView):
     def post(self, request, *args, **kwargs):
         if self.user.accept_friendship_request(self.friend) is not None:
             return JsonResponse(
@@ -78,11 +85,12 @@ class AcceptFriendshipView(FriendshipView):
         )
 
 
-class DeclineFriendshipView(FriendshipView):
+class DeclineView(FriendshipView):
     def post(self, request, *args, **kwargs):
         if self.user.decline_friendship_request(self.friend) is not None:
             return JsonResponse(
-                {"status": f"Friendship request from {self.friend.username} declined"}, status=HTTPStatus.OK
+                {"status": f"Friendship request from {self.friend.username} declined"},
+                status=HTTPStatus.OK,
             )
         return JsonResponse(
             {"error": "Friend request does not exist."}, status=HTTPStatus.BAD_REQUEST
