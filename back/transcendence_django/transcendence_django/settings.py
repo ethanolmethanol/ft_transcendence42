@@ -33,7 +33,7 @@ OAUTH_CLIENT_UID = os.getenv("OAUTH_CLIENT_UID")
 OAUTH_REDIRECT_URI = f"https://{SERV_IP}:4200/oauth-callback"
 OAUTH_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
 
-ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "minio", "back-aipi", "back-user"]
+ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "back-auth", "back-game", "back-aipi", "back-user", "minio", "back-friends"]
 
 # Application definition
 
