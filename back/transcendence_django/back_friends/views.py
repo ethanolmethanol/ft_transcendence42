@@ -16,6 +16,7 @@ from transcendence_django.dict_keys import (
     ONLINE_KEY,
     PLAYING_KEY,
 )
+from typing import Optional
 
 # pylint: disable=no-member
 
@@ -23,13 +24,13 @@ logger = logging.getLogger(__name__)
 
 
 @method_decorator(
-    [require_http_methods(["POST"]), csrf_protect, login_required], name='dispatch'
+    [require_http_methods(["POST"]), csrf_protect, login_required], name="dispatch"
 )
 class FriendshipView(View):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.user = None
-        self.friend = None
+        self.user: Optional[CustomUser] = None
+        self.friend: Optional[CustomUser] = None
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -78,7 +79,8 @@ class AcceptView(FriendshipView):
     def post(self, request, *args, **kwargs):
         if self.user.accept_friendship_request(self.friend) is not None:
             return JsonResponse(
-                {"status": f"{self.friend.username} is now your friend!"}, status=HTTPStatus.OK
+                {"status": f"{self.friend.username} is now your friend!"},
+                status=HTTPStatus.OK,
             )
         return JsonResponse(
             {"error": "Friend request does not exist."}, status=HTTPStatus.BAD_REQUEST
