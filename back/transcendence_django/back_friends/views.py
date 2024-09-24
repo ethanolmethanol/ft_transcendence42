@@ -70,7 +70,9 @@ class AddView(FriendshipView):
 class RemoveView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):
         assert self.user is not None, "User should have been initialized in dispatch"
-        assert self.friend is not None, "Friend should have been initialized in dispatch"
+        assert (
+            self.friend is not None
+        ), "Friend should have been initialized in dispatch"
         if self.user.remove_friend(self.friend):
             return JsonResponse(
                 {"status": f"Successfully removed {self.friend.username} from friends"},
@@ -85,7 +87,7 @@ class AcceptView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):
         assert self.user is not None, "User should have been initialized in dispatch"
         assert (
-                   self.friend is not None
+            self.friend is not None
         ), "Friend should have been initialized in dispatch"
         if self.user.accept_friendship_request(self.friend) is not None:
             return JsonResponse(
@@ -101,7 +103,7 @@ class DeclineView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):
         assert self.user is not None, "User should have been initialized in dispatch"
         assert (
-                self.friend is not None
+            self.friend is not None
         ), "Friend should have been initialized in dispatch"
         if self.user.decline_friendship_request(self.friend) is not None:
             return JsonResponse(
