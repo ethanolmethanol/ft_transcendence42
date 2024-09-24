@@ -41,7 +41,7 @@ ALLOWED_HOSTS = [
     "back-aipi",
     "back-user",
     "minio",
-    "back-friends"
+    "back-friends",
 ]
 
 # Application definition
