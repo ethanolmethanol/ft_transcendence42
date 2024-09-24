@@ -23,21 +23,6 @@ from transcendence_django.dict_keys import (
 logger = logging.getLogger(__name__)
 
 
-from typing import Optional  # Standard library imports first
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_protect
-from http import HTTPStatus
-import json
-
-# Local application imports after third-party imports
-from rest_framework import status
-from shared_models.models import CustomUser
-from transcendence_django.dict_keys import FRIENDS_REQUESTS_KEY
-
-
 @method_decorator(
     [require_http_methods(["POST"]), csrf_protect, login_required], name="dispatch"
 )
@@ -72,7 +57,9 @@ class FriendshipView(View):
 class AddView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):  # Unused parameters prefixed with '_'
         assert self.user is not None, "User should have been initialized in dispatch"
-        assert self.friend is not None, "Friend should have been initialized in dispatch"
+        assert (
+            self.friend is not None
+        ), "Friend should have been initialized in dispatch"
         request_status = self.user.send_friend_request(self.friend)
         return JsonResponse(
             {"status": request_status},
@@ -97,7 +84,9 @@ class RemoveView(FriendshipView):
 class AcceptView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):
         assert self.user is not None, "User should have been initialized in dispatch"
-        assert self.friend is not None, "Friend should have been initialized in dispatch"
+        assert (
+                   self.friend is not None
+        ), "Friend should have been initialized in dispatch"
         if self.user.accept_friendship_request(self.friend) is not None:
             return JsonResponse(
                 {"status": f"{self.friend.username} is now your friend!"},
@@ -111,7 +100,9 @@ class AcceptView(FriendshipView):
 class DeclineView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):
         assert self.user is not None, "User should have been initialized in dispatch"
-        assert self.friend is not None, "Friend should have been initialized in dispatch"
+        assert (
+                self.friend is not None
+        ), "Friend should have been initialized in dispatch"
         if self.user.decline_friendship_request(self.friend) is not None:
             return JsonResponse(
                 {"status": f"Friendship request from {self.friend.username} declined"},
