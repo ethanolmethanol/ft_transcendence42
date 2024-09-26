@@ -35,7 +35,7 @@ class TournamentChannel(Channel):
         logger.info("Tournament channel created: %s", TOURNAMENT_MAX_ROUND)
         for _ in range(TOURNAMENT_ARENA_COUNT):
             self.add_arena()
-        self.user_count: int = self.players_specs[NB_PLAYERS] * len(self.arenas)
+        self.user_count: int = self.players_specs[NB_PLAYERS] * TOURNAMENT_ARENA_COUNT
         self.round_count: int = 0
         self.update_sender = None
         self.tournament_map_sender = None
@@ -182,6 +182,7 @@ class TournamentChannel(Channel):
             "Assign users to arenas: winners (%s)",
             [winner.player_name for winner in winners],
         )
+        losers: list[int] = []
         for user_id in self.users.keys():
             if user_id in (winner.user_id for winner in winners):
                 for new_arena in self.arenas.values():
@@ -191,3 +192,6 @@ class TournamentChannel(Channel):
                     break
             else:
                 self.users[user_id] = None
+                losers.append(user_id)
+        for loser in losers:
+            self.delete_user(loser)
