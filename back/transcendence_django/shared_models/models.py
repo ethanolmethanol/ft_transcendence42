@@ -123,7 +123,7 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
 class FriendshipManager:
 
     @staticmethod
-    def send_friend_request(sender, receiver):
+    def send_friend_request(sender, receiver) -> str:
         if sender == receiver:
             return "Self-love is awesome!"
 
@@ -333,7 +333,6 @@ class FriendRequest(models.Model):
     to_user = models.ForeignKey(
         CustomUser, related_name="friend_requests_received", on_delete=models.CASCADE
     )  # type: ignore
-    timestamp = models.DateTimeField(auto_now_add=True)  # type: ignore
 
     def accept(self):
         FriendshipManager.add_friend(self.from_user, self.to_user)

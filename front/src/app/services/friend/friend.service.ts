@@ -36,8 +36,8 @@ export class FriendService {
     );
   }
 
-  public addFriend(friendName: string): Observable<any> {
-    return this.http.post<any>(`${API_FRIENDS}/add_friend/`, { friendName });
+  public sendRequest(friendName: string): Observable<any> {
+    return this.http.post<any>(`${API_FRIENDS}/send_request/`, { friendName });
   }
 
   public acceptFriendship(friendName: string): Observable<any> {

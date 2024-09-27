@@ -55,7 +55,6 @@ body {
 
 .no-friends-container {
   display: flex;
-  /* align-items: center; */
   justify-content: center;
   text-align: center;
   padding: 20px;

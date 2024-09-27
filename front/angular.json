@@ -26,12 +26,9 @@
             ],
             "styles": [
               "node_modules/bootstrap/scss/bootstrap.scss",
-              "src/styles.css",
-              "node_modules/cropperjs/dist/cropper.css"
+              "src/styles.css"
             ],
-            "scripts": [
-              "node_modules/cropperjs/dist/cropper.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {

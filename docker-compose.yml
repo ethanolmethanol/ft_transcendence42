@@ -112,8 +112,8 @@ services:
         depends_on:
             back_game:
                 condition: service_healthy
-#        volumes:
-#            - front-data:/usr/share/nginx/html
+        volumes:
+            - front-data:/usr/share/nginx/html
         ports:
             - "4200:443"
         networks:
@@ -313,12 +313,12 @@ services:
 volumes:
     prometheus-data:
     grafana-data:
-#    front-data:
-#        driver: local
-#        driver_opts:
-#            type: 'none'
-#            o: 'bind'
-#            device: './front/dist/transcendence/browser'
+    front-data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './front/dist/transcendence/browser'
     db-data:
     minio_data:
 

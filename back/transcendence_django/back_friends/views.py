@@ -54,7 +54,7 @@ class FriendshipView(View):
         return super().dispatch(request, *args, **kwargs)
 
 
-class AddView(FriendshipView):
+class SendRequestView(FriendshipView):
     def post(self, _request, *_args, **_kwargs):  # Unused parameters prefixed with '_'
         assert self.user is not None, "User should have been initialized in dispatch"
         assert (

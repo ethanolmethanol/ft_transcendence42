@@ -1,9 +1,9 @@
 from django.urls import path
 
-from .views import AcceptView, AddView, DeclineView, RemoveView, get_friends_info
+from .views import AcceptView, DeclineView, RemoveView, SendRequestView, get_friends_info
 
 urlpatterns = [
-    path("add_friend/", AddView.as_view(), name="add_friend"),
+    path("send_request/", SendRequestView.as_view(), name="send_request"),
     path("remove_friend/", RemoveView.as_view(), name="remove_friend"),
     path("accept_friendship/", AcceptView.as_view(), name="accept_friendship"),
     path("decline_friendship/", DeclineView.as_view(), name="decline_friendship"),

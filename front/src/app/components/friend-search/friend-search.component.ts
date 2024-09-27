@@ -30,7 +30,7 @@ export class FriendSearchComponent {
       this.showMessage("Please enter a name.", ERROR_MESSAGE);
     }
     else {
-      this.friendService.addFriend(this.friendName).subscribe({
+      this.friendService.sendRequest(this.friendName).subscribe({
         next: (response: any): void => {
           const message: string = response.status;
           console.log(message);

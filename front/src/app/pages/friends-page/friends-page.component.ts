@@ -41,7 +41,7 @@ export class FriendsPageComponent implements OnInit {
     });
   }
 
-  async acceptRequest(event: { friendName: string, accept: boolean }): Promise<void> {
+  async acceptOrDecline(event: { friendName: string, accept: boolean }): Promise<void> {
     const { friendName, accept } = event;
 
     if (accept) {

@@ -7,14 +7,14 @@
     <section class="friend-list">
       <p>Friend requests</p>
       <section *ngIf="friendData.requests.length > 0" class="friend-requests-container">
-        <app-request *ngFor="let friend of friendData.requests" [friendName]="friend" (accept)="acceptRequest($event)" class="request"></app-request>
+        <app-request *ngFor="let friend of friendData.requests" [friendName]="friend" (accept)="acceptOrDecline($event)" class="request"></app-request>
       </section>
       <section *ngIf="friendData.requests.length == 0" class="no-friends-container">
         <p><i class="material-icons">block</i> No friend requests</p>
       </section>
     </section>
   </section>
-  
+
   <section class="friends-overview">
     <section class="friend-list">
       <p>Playing</p>
