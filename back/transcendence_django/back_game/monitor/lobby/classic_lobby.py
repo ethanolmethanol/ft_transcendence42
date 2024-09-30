@@ -1,7 +1,6 @@
 import logging
 
-from back_game.game_arena.game import GameStatus
-from back_game.game_settings.game_constants import DEAD
+from back_game.game_settings.game_constants import GameStatus
 from back_game.monitor.lobby.lobby import Lobby
 
 logger = logging.getLogger(__name__)
@@ -38,4 +37,4 @@ class ClassicLobby(Lobby):
     def can_be_deleted(self) -> bool:
         if len(self.users) == 0:
             return True
-        return self.are_all_arenas_in_status_list([GameStatus(DEAD)])
+        return self.are_all_arenas_in_status_list([GameStatus.DEAD])

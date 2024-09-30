@@ -8,16 +8,11 @@ from typing import Any, Dict
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import (
-    CREATED,
-    DEAD,
-    DYING,
     MONITOR_LOOP_INTERVAL,
-    OVER,
     RUN_LOOP_INTERVAL,
-    STARTED,
     TIMEOUT_GAME_OVER,
     TIMEOUT_INTERVAL,
-    WAITING,
+    GameStatus,
 )
 from back_game.monitor.history_manager import HistoryManager
 from transcendence_django.dict_keys import ARENA, START_TIME
@@ -75,8 +70,8 @@ class Lobby(ABC):
             return None
         for arena in self.arenas.values():
             if not arena.is_private() and arena.get_status() in [
-                GameStatus(CREATED),
-                GameStatus(WAITING),
+                GameStatus.CREATED,
+                GameStatus.WAITING,
             ]:
                 if self.is_arena_available(arena):
                     return arena
@@ -122,7 +117,7 @@ class Lobby(ABC):
     def get_assignations(self) -> Dict[str, Any]:
         assignations = {}
         for user_id, arena in self.users.items():
-            if arena and arena.get_status() != GameStatus(DEAD):
+            if arena and arena.get_status() != GameStatus.DEAD:
                 assignations[str(user_id)] = arena.to_dict()
         return assignations
 
@@ -156,19 +151,19 @@ class Lobby(ABC):
             arena.conclude_game()
             summary = arena.get_game_summary()
             await self.save_game_summary(summary)
-            if arena_status != GameStatus(STARTED):
-                arena.set_status(GameStatus(DEAD))
-        elif arena_status == GameStatus(OVER):
+            if arena_status != GameStatus.STARTED:
+                arena.set_status(GameStatus.DEAD)
+        elif arena_status == GameStatus.OVER:
             await self.__game_over(arena)
 
     async def arena_loop(self, arena: Arena):
-        while arena.get_status() != GameStatus(DEAD):
+        while arena.get_status() != GameStatus.DEAD:
             await self.__update_game_states(arena)
             await asyncio.sleep(MONITOR_LOOP_INTERVAL)
 
     async def run_game_loop(self, arena: Arena):
         while arena:
-            if arena.get_status() == GameStatus(STARTED):
+            if arena.get_status() == GameStatus.STARTED:
                 update_message = arena.update_game()
                 await arena.send_update(update_message)
             await asyncio.sleep(RUN_LOOP_INTERVAL)
@@ -176,20 +171,20 @@ class Lobby(ABC):
     async def __game_over(self, arena: Arena):
         logger.info("Game over in arena %s", arena.id)
         if self.is_tournament():
-            arena.set_status(GameStatus(DEAD))
+            arena.set_status(GameStatus.DEAD)
             await arena.send_update({ARENA: arena.to_dict()})
             return
-        arena.set_status(GameStatus(DYING))
+        arena.set_status(GameStatus.DYING)
         await arena.send_update({ARENA: arena.to_dict()})
         time = TIMEOUT_GAME_OVER + 1
         while (
-            arena.get_status() in [GameStatus(DYING), GameStatus(WAITING)] and time > 0
+            arena.get_status() in [GameStatus.DYING, GameStatus.WAITING] and time > 0
         ):
             time -= TIMEOUT_INTERVAL
             if arena.game_over_callback is not None:
                 await arena.game_over_callback(time)
-            if time <= 0 and arena.get_status() == GameStatus(DYING):
-                arena.set_status(GameStatus(DEAD))
+            if time <= 0 and arena.get_status() == GameStatus.DYING:
+                arena.set_status(GameStatus.DEAD)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
 

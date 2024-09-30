@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import Any, NewType
+from typing import Any
 
 from back_game.game_geometry.edges import Edges
 from back_game.game_geometry.position import Position
@@ -8,12 +8,11 @@ from back_game.game_geometry.rectangle import Rectangle
 from back_game.game_settings.game_constants import (
     GAME_HEIGHT,
     GAME_WIDTH,
-    LISTENING,
-    MOVED,
     PADDLE_HEIGHT,
     PADDLE_INITIAL_SPEED_RATE,
     PADDLE_OFFSET,
     PADDLE_WIDTH,
+    PaddleStatus,
 )
 from transcendence_django.dict_keys import (
     END,
@@ -28,8 +27,6 @@ from transcendence_django.dict_keys import (
 
 log = logging.getLogger(__name__)
 
-PaddleStatus = NewType("PaddleStatus", int)
-
 size_factor: dict[int, float] = {
     0: 0.1,
     1: 0.5,
@@ -43,7 +40,7 @@ class Paddle:
     def __init__(self, slot: int, num_players: int, paddle_size: int):
         self.slot: int = slot
         self.player_name: str | None = None
-        self.status: PaddleStatus = PaddleStatus(LISTENING)
+        self.status: PaddleStatus = PaddleStatus.LISTENING
         self.speed_rate: float = PADDLE_INITIAL_SPEED_RATE
         self.rectangle: Rectangle = Rectangle(
             slot,
@@ -134,8 +131,8 @@ class Paddle:
         self.__update_position()
 
     def reset_status(self):
-        if self.status == PaddleStatus(MOVED):
-            self.status = PaddleStatus(LISTENING)
+        if self.status == PaddleStatus.MOVED:
+            self.status = PaddleStatus.LISTENING
 
     def update(self, config: dict[str, Any]):
         self.rectangle.width = config[WIDTH]

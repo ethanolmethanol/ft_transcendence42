@@ -7,12 +7,11 @@ from back_game.game_arena.game import GameStatus
 from back_game.game_arena.player import Player
 from back_game.game_settings.game_constants import (
     ARENA_LOOP_INTERVAL,
-    DEAD,
-    DYING,
     NEXT_ROUND_LOOP_INTERVAL,
     TOURNAMENT_ARENA_COUNT,
     TOURNAMENT_MAX_ROUND,
     WAIT_NEXT_ROUND_INTERVAL,
+    GameStatus,
 )
 from back_game.monitor.lobby.lobby import Lobby
 from transcendence_django.dict_keys import (
@@ -57,7 +56,7 @@ class TournamentLobby(Lobby):
 
     def is_ready_to_start(self) -> bool:
         return (self.is_full() and self.round_count == 0) or (
-            self.are_all_arenas_in_status_list([GameStatus(DEAD), GameStatus(DYING)])
+            self.are_all_arenas_in_status_list([GameStatus.DEAD, GameStatus.DYING])
         )
 
     def can_be_deleted(self) -> bool:

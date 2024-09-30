@@ -6,7 +6,7 @@ from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     LOBBY_LOOP_INTERVAL,
     TOURNAMENT_SPECS,
-    WAITING,
+    GameStatus,
 )
 from back_game.monitor.lobby.classic_lobby import ClassicLobby
 from back_game.monitor.lobby.lobby import Lobby
@@ -175,7 +175,7 @@ class LobbyManager:
         if arena is None:
             return
         if arena and not arena.did_player_give_up(user_id):
-            if arena.get_status() == WAITING:
+            if arena.get_status() == GameStatus.WAITING:
                 arena.player_gave_up(user_id)
             else:
                 arena.player_leave(user_id)

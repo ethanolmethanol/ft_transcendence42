@@ -1,4 +1,5 @@
 import math
+from enum import IntEnum
 
 from transcendence_django.dict_keys import IS_REMOTE, NB_PLAYERS, OPTIONS
 
@@ -38,19 +39,6 @@ TOP_SLOT = 4
 CONVEXITY = 90
 VALID_DIRECTIONS = [-1, 1]
 
-# Game mode
-# LOCAL_MODE = 0
-# ONLINE_MODE = 1
-
-# Game status
-CREATED = 0
-WAITING = 1
-READY_TO_START = 2
-STARTED = 3
-OVER = 4
-DYING = 5
-DEAD = 6
-
 # Tournament
 
 TOURNAMENT_SPECS = {
@@ -85,10 +73,19 @@ AFK_WARNING_THRESHOLD = 10  # seconds
 TIME_START = 3
 TIME_START_INTERVAL = 1
 
-# Paddle status
-LISTENING = 1
-PROCESSING = 2
-MOVED = 3
-
 # Rectangle
 TANGENT_FACTOR = 1 / (2 * math.tan(CONVEXITY / 2))
+
+class PaddleStatus(IntEnum):
+    LISTENING = 1
+    PROCESSING = 2
+    MOVED = 3
+
+class GameStatus(IntEnum):
+    CREATED = 0
+    WAITING = 1
+    READY_TO_START = 2
+    STARTED = 3
+    OVER = 4
+    DYING = 5
+    DEAD = 6
