@@ -4,7 +4,7 @@ import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.game import Game, GameStatus
-from back_game.game_arena.player import ENABLED, Player, PlayerStatus
+from back_game.game_arena.player import Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.game_constants import (
     CREATED,
@@ -70,7 +70,7 @@ class Arena:
             PLAYERS: [
                 player.player_name
                 for player in self.player_manager.players.values()
-                if player.status == PlayerStatus(ENABLED)
+                if player.status == PlayerStatus.ENABLED
             ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),
@@ -94,7 +94,7 @@ class Arena:
         if self.game.status == GameStatus(WAITING):
             return False
         return any(
-            player.user_id == user_id and player.status == PlayerStatus(ENABLED)
+            player.user_id == user_id and player.status == PlayerStatus.ENABLED
             for player in self.player_manager.players.values()
         )
 
@@ -206,8 +206,8 @@ class Arena:
         return self.game.is_private
 
     async def send_update(self, update_dict: dict[str, Any]):
-        if self.game_update_callback is not None:
-            await self.game_update_callback(update_dict)
+        assert self.game_update_callback, "Game update callback undefined"
+        await self.game_update_callback(update_dict)
 
     def __disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
