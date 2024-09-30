@@ -14,7 +14,7 @@ export class ConnectionService {
   private WebSocketSubscription?: Subscription;
   private WebSocketMessagesSubscription?: Subscription;
   private joinSubscription?: Subscription;
-  private channelID: string = '';
+  private lobbyID: string = '';
 
   constructor(private webSocketService: WebSocketService) {
     console.log('Connection service initialized');
@@ -35,11 +35,11 @@ export class ConnectionService {
     });
   }
 
-  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id: number | null = null, isTournament: boolean =false) {
-    if (channel_id) {
+  public establishConnection(arenaSetter: (response: ArenaResponse) => void, lobby_id?: string, arena_id: number | null = null, isTournament: boolean =false) {
+    if (lobby_id) {
       // Connect to the existing arena
-      this.channelID = channel_id;
-      this.webSocketService.connect(channel_id, isTournament);
+      this.lobbyID = lobby_id;
+      this.webSocketService.connect(lobby_id, isTournament);
       this.handleWebSocketConnection(arena_id, arenaSetter);
     }
   }
@@ -63,7 +63,7 @@ export class ConnectionService {
     console.log('WebSocket connection closed');
   }
 
-  public getChannelID(): string {
-    return this.channelID;
+  public getLobbyID(): string {
+    return this.lobbyID;
   }
 }

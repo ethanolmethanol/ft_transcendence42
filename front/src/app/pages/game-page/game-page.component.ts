@@ -65,13 +65,13 @@ export class GamePageComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngAfterViewInit() {
     this.updateGameContainerScale();
     this._route.params.subscribe(params => {
-      const channel_id = params['channel_id'];
+      const lobby_id = params['lobby_id'];
       const arena_id = params['arena_id'];
       this.arenaID = arena_id;
       this.cdr.detectChanges();
-      console.log('Channel ID:', channel_id);
+      console.log('Lobby ID:', lobby_id);
       console.log('Arena ID:', arena_id);
-      this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id);
+      this._connectionService.establishConnection(this.game.first.setArena.bind(this), lobby_id, arena_id);
     });
   }
 

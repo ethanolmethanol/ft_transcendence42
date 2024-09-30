@@ -5,9 +5,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Coroutine, Optional
 
 import autobahn
-from back_game.app_settings.channel_error import ChannelError
+from back_game.app_settings.lobby_error import LobbyError
 from back_game.game_arena.arena import Arena
-from back_game.game_settings.game_constants import INVALID_CHANNEL, UNKNOWN_CHANNEL_ID
+from back_game.game_settings.game_constants import INVALID_LOBBY, UNKNOWN_LOBBY_ID
 from back_game.monitor.monitor import get_monitor
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from requests.exceptions import ConnectionError
@@ -15,8 +15,6 @@ from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
     CAPACITY,
-    CHANNEL_ERROR_CODE,
-    CHANNEL_PLAYERS,
     DIRECTION,
     ERROR,
     GAME_ERROR,
@@ -26,6 +24,8 @@ from transcendence_django.dict_keys import (
     GIVE_UP,
     JOIN,
     LEAVE,
+    LOBBY_ERROR_CODE,
+    LOBBY_PLAYERS,
     MESSAGE,
     MOVE_PADDLE,
     OVER_CALLBACK,
@@ -66,14 +66,14 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         logger.info("WebSocket connecting: %s", self.scope["path"])
         try:
             await self.accept()
-            self.game.init_channel(self.scope["url_route"]["kwargs"]["channel_id"])
-        except ChannelError as e:
-            await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
+            self.game.init_lobby(self.scope["url_route"]["kwargs"]["lobby_id"])
+        except LobbyError as e:
+            await self.send_error({LOBBY_ERROR_CODE: e.code, MESSAGE: e.message})
             await self.close()
             return
-        if self.game.channel is None:
+        if self.game.lobby is None:
             await self.send_error(
-                {CHANNEL_ERROR_CODE: INVALID_CHANNEL, MESSAGE: UNKNOWN_CHANNEL_ID}
+                {LOBBY_ERROR_CODE: INVALID_LOBBY, MESSAGE: UNKNOWN_LOBBY_ID}
             )
         else:
             await self.add_user_to_channel_group()
@@ -82,7 +82,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
     async def disconnect(self, close_code: int):
         try:
             await self.leave(None)
-        except ChannelError:
+        except LobbyError:
             pass
         if self.room_group_name is not None:
             await self.channel_layer.group_discard(
@@ -105,8 +105,8 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         }
         try:
             await message_binding[message_type](message)
-        except ChannelError as e:
-            await self.send_error({CHANNEL_ERROR_CODE: e.code, MESSAGE: e.message})
+        except LobbyError as e:
+            await self.send_error({LOBBY_ERROR_CODE: e.code, MESSAGE: e.message})
 
     async def join(self, message: dict[str, Any]):
         user_id = message[USER_ID]
@@ -156,7 +156,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             return
         try:
             arena: Arena = self.monitor.get_arena(
-                self.game.channel.id, self.game.arena_id
+                self.game.lobby.id, self.game.arena_id
             )
             await self.send_update({ARENA: arena.to_dict()})
         except KeyError:
@@ -176,7 +176,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
     async def send_game_over(self, time: float):
         try:
             summary = self.monitor.get_game_summary(
-                self.game.channel.id, self.game.arena_id
+                self.game.lobby.id, self.game.arena_id
             )
             await self.send_update(
                 {
@@ -194,19 +194,19 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             pass  # Arena not found
 
     async def send_players(self):
-        players = self.monitor.get_users_from_channel(self.game.channel.id)
+        players = self.monitor.get_users_from_lobby(self.game.lobby.id)
         await self.send_update(
             {
-                CHANNEL_PLAYERS: {
+                LOBBY_PLAYERS: {
                     USER_ID: players,
-                    CAPACITY: self.game.channel.user_count,
+                    CAPACITY: self.game.lobby.user_count,
                 }
             }
         )
 
     async def add_user_to_channel_group(self):
-        logger.info("Adding user to channel group (Tournament)")
-        self.room_group_name = f"game_{self.game.channel.id}"
+        logger.info("Adding user to lobby group (Tournament)")
+        self.room_group_name = f"game_{self.game.lobby.id}"
         logger.info("User Connected to %s", self.room_group_name)
         try:
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -238,7 +238,7 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.__safe_send({TYPE: GAME_UPDATE, UPDATE: message})
 
     async def send_error(self, error: dict[str, Any]):
-        logger.info("Sending error: %s: %s", error[CHANNEL_ERROR_CODE], error[MESSAGE])
+        logger.info("Sending error: %s: %s", error[LOBBY_ERROR_CODE], error[MESSAGE])
         await self.__safe_send({TYPE: GAME_ERROR, ERROR: error})
 
     async def send_update(self, update: dict[str, Any]):

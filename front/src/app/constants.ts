@@ -22,7 +22,7 @@ export const LOCALE = 'en-US';
 
 // INTERFACES
 
-export const CHANNEL_ID_LENGTH = 10;
+export const LOBBY_ID_LENGTH = 10;
 
 // TIME
 
@@ -32,7 +32,7 @@ export const JOIN_GAME_RETRY_DELAY_MS = 2000;
 
 export const NOT_JOINED = 1
 export const INVALID_ARENA = 2
-export const INVALID_CHANNEL = 3
+export const INVALID_LOBBY = 3
 export const NOT_ENTERED = 4
 export const GIVEN_UP = 5
 

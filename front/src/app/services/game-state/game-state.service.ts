@@ -10,12 +10,12 @@ export class GameStateService {
   private _isWaiting = new BehaviorSubject<boolean>(true);
   private _isRemote = new BehaviorSubject<boolean>(true);
   private _isRematch = new BehaviorSubject<boolean>(true);
-  private _channelID = new BehaviorSubject<string>('');
+  private _lobbyID = new BehaviorSubject<string>('');
   private _isTournament = new BehaviorSubject<boolean>(false);
   private _tournamentMap = new BehaviorSubject<TournamentMap>({rounds_map: {}, winner: null});
   private _activePlayers = new BehaviorSubject<string[]>([]);
-  private _channelPlayers = new BehaviorSubject<string[]>([]);
-  private _channelCapacity = new BehaviorSubject<number>(2);
+  private _lobbyPlayers = new BehaviorSubject<string[]>([]);
+  private _lobbyCapacity = new BehaviorSubject<number>(2);
   private _maxPlayers = new BehaviorSubject<number>(2);
   private _canGiveUp = new BehaviorSubject<boolean>(true);
 
@@ -23,12 +23,12 @@ export class GameStateService {
   get isWaiting$() { return this._isWaiting.asObservable(); }
   get isRemote$() { return this._isRemote.asObservable(); }
   get isRematch$() { return this._isRematch.asObservable(); }
-  get channelID$() { return this._channelID.asObservable(); }
+  get lobbyID$() { return this._lobbyID.asObservable(); }
   get isTournament$() { return this._isTournament.asObservable(); }
   get tournamentMap$() { return this._tournamentMap.asObservable(); }
   get activePlayers$() { return this._activePlayers.asObservable(); }
-  get channelPlayers$() { return this._channelPlayers.asObservable(); }
-  get channelCapacity$() { return this._channelCapacity.asObservable(); }
+  get lobbyPlayers$() { return this._lobbyPlayers.asObservable(); }
+  get lobbyCapacity$() { return this._lobbyCapacity.asObservable(); }
   get maxPlayers$() { return this._maxPlayers.asObservable(); }
   get canGiveUp$() { return this._canGiveUp.asObservable(); }
 
@@ -36,12 +36,12 @@ export class GameStateService {
   setIsWaiting(value: boolean) { this._isWaiting.next(value); }
   setIsRemote(value: boolean) { this._isRemote.next(value); }
   setIsRematch(value: boolean) { this._isRematch.next(value); }
-  setChannelID(value: string) { this._channelID.next(value); }
+  setLobbyID(value: string) { this._lobbyID.next(value); }
   setIsTournament(value: boolean) { this._isTournament.next(value); }
   setTournamentMap(value: TournamentMap) { this._tournamentMap.next(value); }
   setActivePlayers(value: string[]) { this._activePlayers.next(value); }
-  setChannelPlayers(value: string[]) { this._channelPlayers.next(value); }
-  setChannelCapacity(value: number) { this._channelCapacity.next(value); }
+  setLobbyPlayers(value: string[]) { this._lobbyPlayers.next(value); }
+  setLobbyCapacity(value: number) { this._lobbyCapacity.next(value); }
   setMaxPlayers(value: number) { this._maxPlayers.next(value); }
   setCanGiveUp(value: boolean) { this._canGiveUp.next(value); }
 
@@ -55,12 +55,12 @@ export class GameStateService {
   reset() {
     this.restrictReset();
     this.setIsRemote(true);
-    this.setChannelID('');
+    this.setLobbyID('');
     this.setIsTournament(false);
     this.setTournamentMap({rounds_map: {}, winner: null});
     this.setActivePlayers([]);
-    this.setChannelPlayers([]);
-    this.setChannelCapacity(2);
+    this.setLobbyPlayers([]);
+    this.setLobbyCapacity(2);
     this.setMaxPlayers(2);
   }
 }

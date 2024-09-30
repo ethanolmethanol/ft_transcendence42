@@ -20,20 +20,20 @@ export class MonitorService {
   }
 
   public createWebSocketUrl(postData: string): Observable<WebSocketUrlResponse> {
-    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/create_channel/`, postData).pipe(
+    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/create_lobby/`, postData).pipe(
       catchError(this.handleError<WebSocketUrlResponse>('createWebSocketUrl'))
     );
   }
 
   public joinWebSocketUrl(postData: string): Observable<WebSocketUrlResponse> {
-    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_channel/`, postData).pipe(
+    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_lobby/`, postData).pipe(
       catchError(this.handleError<WebSocketUrlResponse>('joinWebSocketUrl'))
     );
   }
 
   public joinSpecificWebSocketUrl(postData: string): Observable<WebSocketUrlResponse> {
-    console.log("Joining specific channel with data: " + postData);
-    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_specific_channel/`, postData).pipe(
+    console.log("Joining specific lobby with data: " + postData);
+    return this.http.post<WebSocketUrlResponse>(`${API_GAME}/join_specific_lobby/`, postData).pipe(
       catchError(this.handleError<WebSocketUrlResponse>('joinSpecificWebSocketUrl'))
     );
   }

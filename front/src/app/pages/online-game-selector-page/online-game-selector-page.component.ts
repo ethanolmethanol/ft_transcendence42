@@ -4,7 +4,7 @@ import {Router, RouterLink} from '@angular/router';
 import { FormsModule } from "@angular/forms";
 import { ButtonWithIconComponent } from "../../components/button-with-icon/button-with-icon.component";
 import { CopyButtonComponent } from "../../components/copy-button/copy-button.component";
-import {CHANNEL_ID_LENGTH} from "../../constants";
+import {LOBBY_ID_LENGTH} from "../../constants";
 
 @Component({
   selector: 'app-online-game-selector-page',
@@ -40,5 +40,5 @@ export class OnlineGameSelectorPageComponent {
     }
   }
 
-    protected readonly CHANNEL_ID_LENGTH = CHANNEL_ID_LENGTH;
+    protected readonly LOBBY_ID_LENGTH = LOBBY_ID_LENGTH;
 }

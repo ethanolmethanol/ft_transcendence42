@@ -6,8 +6,8 @@
            && (gameStateService.isWaiting$ | async)
            && (gameStateService.isRemote$ | async)">
     <app-tournament-dashboard
-      [players]="(gameStateService.channelPlayers$ | async)!"
-      [capacity]="(gameStateService.channelCapacity$ | async)!"
+      [players]="(gameStateService.lobbyPlayers$ | async)!"
+      [capacity]="(gameStateService.lobbyCapacity$ | async)!"
       [tournamentMap]="(gameStateService.tournamentMap$ | async)!">
     </app-tournament-dashboard>
   </section>

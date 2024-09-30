@@ -12,7 +12,7 @@ export class WebSocketService implements OnInit, OnDestroy {
   socket?: WebSocket | null;
   private _connectionOpened: Subject<void> = new Subject<void>();
   private _messages: Subject<string> = new Subject<string>();
-  private _logoutChannel: BroadcastChannel;
+  private _logoutLobby: BroadcastChannel;
   private _username: string = '';
   private _usernameLoaded: Promise<void> | null = null;
 
@@ -21,36 +21,36 @@ export class WebSocketService implements OnInit, OnDestroy {
     this.socket = null;
 
     // Initialize the BroadcastChannel
-    this._logoutChannel = new BroadcastChannel('_logoutChannel');
+    this._logoutLobby = new BroadcastChannel('_logoutLobby');
 
     // Listen for messages on the BroadcastChannel
-    this._logoutChannel.onmessage = (message) => {
+    this._logoutLobby.onmessage = (message) => {
       if (message.data === 'logout') {
         this.giveUp();
       }
     };
   }
 
-  public connect(channel_id: string, isTournament: boolean): void {
+  public connect(lobby_id: string, isTournament: boolean): void {
     this.userService.whenUserDataLoaded().then(() => {
       this.whenUsernameLoaded().then(() => {
-        this.attemptToConnect(channel_id, isTournament);
+        this.attemptToConnect(lobby_id, isTournament);
       });
     });
   }
 
-  private attemptToConnect(channel_id: string, isTournament: boolean): void {
+  private attemptToConnect(lobby_id: string, isTournament: boolean): void {
     if (this.socket) {
       console.log('WebSocket connection already open');
       return;
     }
 
-    console.log('Connecting to WebSocket -> ', channel_id);
+    console.log('Connecting to WebSocket -> ', lobby_id);
     let url;
     if (isTournament) {
-      url = `${API_GAME_SOCKET}/ws/game/tournament/${channel_id}/`;
+      url = `${API_GAME_SOCKET}/ws/game/tournament/${lobby_id}/`;
     } else {
-      url = `${API_GAME_SOCKET}/ws/game/classic/${channel_id}/`;
+      url = `${API_GAME_SOCKET}/ws/game/classic/${lobby_id}/`;
     }
 
     const socket = new WebSocket(url);
@@ -179,6 +179,6 @@ export class WebSocketService implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.disconnect();
-    this._logoutChannel.close();
+    this._logoutLobby.close();
   }
 }

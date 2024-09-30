@@ -14,7 +14,7 @@ from back_game.game_settings.game_constants import (
     TOURNAMENT_MAX_ROUND,
     WAIT_NEXT_ROUND_INTERVAL,
 )
-from back_game.monitor.channel.channel import Channel
+from back_game.monitor.lobby.lobby import Lobby
 from transcendence_django.dict_keys import (
     ASSIGNATIONS,
     NB_PLAYERS,
@@ -28,11 +28,11 @@ RoundType = Dict[str, list[dict[str, Any] | None]]
 RoundMapType = Dict[str, RoundType]
 
 
-class TournamentChannel(Channel):
+class TournamentLobby(Lobby):
 
     def __init__(self, players_specs: dict[str, int]):
         super().__init__(players_specs)
-        logger.info("Tournament channel created: %s", TOURNAMENT_MAX_ROUND)
+        logger.info("Tournament lobby created: %s", TOURNAMENT_MAX_ROUND)
         for _ in range(TOURNAMENT_ARENA_COUNT):
             self.add_arena()
         self.user_count: int = self.players_specs[NB_PLAYERS] * TOURNAMENT_ARENA_COUNT
@@ -52,7 +52,7 @@ class TournamentChannel(Channel):
     def on_user_added(self):
         self.__update_rounds_map()
 
-    async def on_channel_full(self):
+    async def on_lobby_full(self):
         asyncio.create_task(self.next_round_loop())
 
     def is_ready_to_start(self) -> bool:

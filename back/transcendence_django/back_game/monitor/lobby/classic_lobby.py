@@ -2,12 +2,12 @@ import logging
 
 from back_game.game_arena.game import GameStatus
 from back_game.game_settings.game_constants import DEAD
-from back_game.monitor.channel.channel import Channel
+from back_game.monitor.lobby.lobby import Lobby
 
 logger = logging.getLogger(__name__)
 
 
-class ClassicChannel(Channel):
+class ClassicLobby(Lobby):
 
     def __init__(self, players_specs: dict[str, int]):
         super().__init__(players_specs)
@@ -20,7 +20,7 @@ class ClassicChannel(Channel):
     def on_user_added(self):
         pass
 
-    async def on_channel_full(self):
+    async def on_lobby_full(self):
         pass
 
     def is_ready_to_start(self) -> bool:

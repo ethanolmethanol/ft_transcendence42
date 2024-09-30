@@ -11,9 +11,9 @@
     </h4>
     <section class="share-code">
       <h5>
-        {{ (gameStateService.channelID$ | async) }}
+        {{ (gameStateService.lobbyID$ | async) }}
       </h5>
-      <app-copy-button [textToCopy]="(gameStateService.channelID$ | async)!"></app-copy-button>
+      <app-copy-button [textToCopy]="(gameStateService.lobbyID$ | async)!"></app-copy-button>
     </section>
     <h4>
       Waiting for players to join... <br><br>

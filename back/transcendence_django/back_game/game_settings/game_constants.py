@@ -2,12 +2,12 @@ import math
 
 from transcendence_django.dict_keys import IS_REMOTE, NB_PLAYERS, OPTIONS
 
-# Channels errors
+# Lobby errors
 NOT_JOINED = 1
 INVALID_ARENA = 2
-INVALID_CHANNEL = 3
+INVALID_LOBBY = 3
 NOT_ENTERED = 4
-UNKNOWN_CHANNEL_ID = "Unknown channel_id"
+UNKNOWN_LOBBY_ID = "Unknown lobby_id"
 UNKNOWN_ARENA_ID = "Unknown arena_id"
 
 # Game area dimensions
@@ -72,7 +72,7 @@ TOURNAMENT_MAX_ROUND = int(math.log2(TOURNAMENT_ARENA_COUNT) + 1)
 
 # Game loop parameters
 ARENA_LOOP_INTERVAL = 0.5
-CHANNEL_LOOP_INTERVAL = 0.5
+LOBBY_LOOP_INTERVAL = 0.5
 MONITOR_LOOP_INTERVAL = 0.5
 NEXT_ROUND_LOOP_INTERVAL = 0.5
 WAIT_NEXT_ROUND_INTERVAL = 3

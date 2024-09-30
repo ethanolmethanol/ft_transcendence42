@@ -1,13 +1,13 @@
-# Channel error code
-CHANNEL_ERROR_CODE = "code"
+# Lobby error code
+LOBBY_ERROR_CODE = "code"
 
-# Channel messages
+# Lobby messages
 MESSAGE = "message"
 TYPE = "type"
 
-# Channel
-CHANNEL_ID = "channel_id"
-CHANNEL_PLAYERS = "channel_players"
+# Lobby
+LOBBY_ID = "lobby_id"
+LOBBY_PLAYERS = "lobby_players"
 CAPACITY = "capacity"
 
 # Tournament

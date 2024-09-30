@@ -20,8 +20,8 @@ class TournamentConsumer(BaseConsumer):
 
     async def add_user_to_channel_group(self):
         await super().add_user_to_channel_group()
-        self.game.channel.update_sender = self.send_update
-        self.game.channel.tournament_map_sender = self.send_tournament_map
+        self.game.lobby.update_sender = self.send_update
+        self.game.lobby.tournament_map_sender = self.send_tournament_map
 
     async def send_players(self):
         await super().send_players()

@@ -71,11 +71,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     this._destroy$.complete();
   }
 
-  private getGameUrl(channel_id: string, arenaID: number): string {
+  private getGameUrl(lobby_id: string, arenaID: number): string {
     if (this._actionType === "tournament") {
-      return `/online/tournament/${channel_id}`;
+      return `/online/tournament/${lobby_id}`;
     }
-    return `/${this._gameType}/${channel_id}/${arenaID}`;
+    return `/${this._gameType}/${lobby_id}/${arenaID}`;
   }
 
   private getPostData(): string {
@@ -83,7 +83,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     if (this._actionType === "join_specific") {
       return JSON.stringify({
         "user_id": user_id,
-        "channel_id": this._route.snapshot.params['channel_id']
+        "lobby_id": this._route.snapshot.params['lobby_id']
       });
     } else {
       return JSON.stringify({
@@ -101,7 +101,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
   private joinLocalGame(postData: string): Observable<any> {
     return this.monitorService.joinWebSocketUrl(postData).pipe(
       tap(response => {
-        this.navigateToGame(response.channel_id, response.arena.id);
+        this.navigateToGame(response.lobby_id, response.arena.id);
       }),
       catchError((error) => {
         this.handleError(error);
@@ -117,11 +117,11 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
       switchMap(() =>
         this.monitorService.joinWebSocketUrl(postData).pipe(
           tap(response => {
-            this.navigateToGame(response.channel_id, response.arena.id);
+            this.navigateToGame(response.lobby_id, response.arena.id);
           }),
           catchError((error) => {
-            if (error.error.error === 'No available channel.') {
-              console.log('No available channel. Retrying...');
+            if (error.error.error === 'No available lobby.') {
+              console.log('No available lobby. Retrying...');
               return of(null); // Signal to retry
             } else {
               this.handleError(error);
@@ -144,19 +144,19 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
 
   private joinToTournament(postData: string): void {
     this.monitorService.joinTournamentWebSocketUrl(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
+      this.navigateToGame(response.lobby_id, response.arena.id);
     }, error => this.handleError(error));
   }
 
   private createGame(postData: string): void {
     this.monitorService.createWebSocketUrl(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
+      this.navigateToGame(response.lobby_id, response.arena.id);
     }, error => this.handleError(error));
   }
 
-  private joinSpecificChannel(postData: string): void {
+  private joinSpecificLobby(postData: string): void {
     this.monitorService.joinSpecificWebSocketUrl(postData).subscribe(response => {
-      this.navigateToGame(response.channel_id, response.arena.id);
+      this.navigateToGame(response.lobby_id, response.arena.id);
     }, error => this.handleError(error));
   }
 
@@ -164,7 +164,7 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     if (this._actionType == "join") {
       this.joinGame(postData).subscribe();
     } else if (this._actionType == "join_specific") {
-      this.joinSpecificChannel(postData);
+      this.joinSpecificLobby(postData);
     } else if (this._actionType == "create") {
       this.createGame(postData);
     } else if (this._actionType == "tournament") {
@@ -181,8 +181,8 @@ export class MonitorPageComponent implements OnInit, OnDestroy {
     console.log('Error joining game: ' + this.errorMessage);
   }
 
-  private navigateToGame(channelID: string, arenaID: number): void {
-    const gameUrl: string = this.getGameUrl(channelID, arenaID);
+  private navigateToGame(lobbyID: string, arenaID: number): void {
+    const gameUrl: string = this.getGameUrl(lobbyID, arenaID);
     console.log('Navigating to game at: ' + gameUrl);
     this.router.navigateByUrl(gameUrl);
   }

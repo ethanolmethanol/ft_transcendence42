@@ -25,7 +25,7 @@ from transcendence_django.dict_keys import ARENA, START_TIME
 logger = logging.getLogger(__name__)
 
 
-class Channel(ABC):
+class Lobby(ABC):
 
     def __init__(self, players_specs: dict[str, int]):
         self.id: str = self._generate_random_id(10)
@@ -60,12 +60,12 @@ class Channel(ABC):
         pass
 
     @abstractmethod
-    async def on_channel_full(self):
+    async def on_lobby_full(self):
         pass
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "channel_id": self.id,
+            "lobby_id": self.id,
             "arenas": [arena.to_dict() for arena in self.arenas.values()],
             "is_tournament": self.is_tournament(),
         }
@@ -107,13 +107,13 @@ class Channel(ABC):
             arena: Arena = self.arenas[arena_id]
             self.users[user_id] = arena
             self.on_user_added()
-            logger.info("User %s added to channel %s", user_id, self.id)
+            logger.info("User %s added to lobby %s", user_id, self.id)
             if self.is_full():
-                logger.info("Channel %s is full!", self.id)
-                await self.on_channel_full()
+                logger.info("Lobby %s is full!", self.id)
+                await self.on_lobby_full()
         else:
             logger.error(
-                "%s cannot be added in the arena %s: Channel %s is full!",
+                "%s cannot be added in the arena %s: Lobby %s is full!",
                 user_id,
                 arena_id,
                 self.id,

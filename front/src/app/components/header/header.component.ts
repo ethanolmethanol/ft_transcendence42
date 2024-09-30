@@ -24,8 +24,8 @@ export class HeaderComponent {
   public logOut() {
     this.authService.logout();
     this.userService.clearUserData();
-    const logoutChannel = new BroadcastChannel('logoutChannel');
-    logoutChannel.postMessage('logout');
-    logoutChannel.close();
+    const logoutLobby = new BroadcastChannel('logoutLobby');
+    logoutLobby.postMessage('logout');
+    logoutLobby.close();
   }
 }

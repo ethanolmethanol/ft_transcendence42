@@ -59,11 +59,11 @@ export class TournamentPageComponent implements OnInit, AfterViewInit, OnDestroy
   public ngAfterViewInit()  {
     this.updateContainersScale();
     this._route.params.subscribe(params => {
-      const channel_id = params['channel_id'];
+      const lobby_id = params['lobby_id'];
       const arena_id = params['arena_id'];
       this.arenaID = arena_id;
       this.cdr.detectChanges();
-      this._connectionService.establishConnection(this.game.first.setArena.bind(this), channel_id, arena_id, true);
+      this._connectionService.establishConnection(this.game.first.setArena.bind(this), lobby_id, arena_id, true);
     });
   }
 

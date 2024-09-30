@@ -12,7 +12,7 @@ import {
 import {
   NOT_JOINED,
   INVALID_ARENA,
-  INVALID_CHANNEL,
+  INVALID_LOBBY,
   NOT_ENTERED,
   GAME_HEIGHT,
   GAME_WIDTH,
@@ -83,7 +83,7 @@ interface ErrorMapping {
   [key: number]: (value: ErrorResponse) => void;
 }
 
-interface ChannelPlayersResponse {
+interface LobbyPlayersResponse {
   user_id: number[];
   capacity: number;
 }
@@ -115,8 +115,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   private playerName: string | null = null;
   private isRemote: boolean = false;
   private isTournament: boolean = false;
-  private channelID: string = '';
-  private channelSubscription: Subscription | null = null;
+  private lobbyID: string = '';
+  private lobbySubscription: Subscription | null = null;
   private activePlayersSubscription: Subscription | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
@@ -136,7 +136,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly _errorMapping: ErrorMapping = {
     [NOT_JOINED]: this.redirectToHome.bind(this),
     [INVALID_ARENA]: this.redirectToHome.bind(this),
-    [INVALID_CHANNEL]: this.redirectToHome.bind(this),
+    [INVALID_LOBBY]: this.redirectToHome.bind(this),
     [NOT_ENTERED]: this.redirectToHome.bind(this),
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
@@ -166,8 +166,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gameStateService.isTournament$.subscribe(isTournament => {
       this.isTournament = isTournament;
     });
-    this.gameStateService.channelID$.subscribe(channelID => {
-      this.channelID = channelID;
+    this.gameStateService.lobbyID$.subscribe(lobbyID => {
+      this.lobbyID = lobbyID;
     });
     if (this.isRemote) {
       await this.userService.whenUserDataLoaded();
@@ -243,9 +243,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
         'give_up': (value: number) => { this.giveUp(value) },
         'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) },
     };
-    const variableMappingChannel : VariableMapping = {
-      'channel_players': async (value: ChannelPlayersResponse) => {
-        await this.updateChannelPlayers(value);
+    const variableMappingLobby : VariableMapping = {
+      'lobby_players': async (value: LobbyPlayersResponse) => {
+        await this.updateLobbyPlayers(value);
       },
       'assignations': (value: AssignationsResponse) => {
         this.handleRedirection(value);
@@ -256,14 +256,14 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     };
 
-    await this.__updateGameState(gameState, variableMappingChannel);
+    await this.__updateGameState(gameState, variableMappingLobby);
     if (gameState['arena_id'] !== this.arenaID) {
       return;
     }
     await this.__updateGameState(gameState, variableMappingArena);
   }
 
-  private async updateChannelPlayers(players: ChannelPlayersResponse) {
+  private async updateLobbyPlayers(players: LobbyPlayersResponse) {
     let playerList: string[] = []
     for (const user_id of players.user_id) {
       const user: User = await this.userService.getUser(user_id)
@@ -273,8 +273,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     if (players.capacity == playerList.length) {
       this.gameStateService.setCanGiveUp(false)
     }
-    this.gameStateService.setChannelPlayers(playerList)
-    this.gameStateService.setChannelCapacity(players.capacity)
+    this.gameStateService.setLobbyPlayers(playerList)
+    this.gameStateService.setLobbyCapacity(players.capacity)
     this.gameStateService.setDataLoaded(true)
   }
 
@@ -298,9 +298,9 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     const userID = this.userService.getUserID();
     const arena = response[userID];
     if (arena && arena.status != DYING && arena.status != DEAD) {
-        console.log('Redirecting to:', this.channelID, arena.id);
+        console.log('Redirecting to:', this.lobbyID, arena.id);
         setTimeout(() => {
-          this.router.navigate(['/online/tournament', this.channelID, arena.id]);
+          this.router.navigate(['/online/tournament', this.lobbyID, arena.id]);
         }, 0); // 3000 milliseconds = 3 seconds
     }
   }
@@ -430,7 +430,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Arena ID:', arenaID)
     if (arenaID) {
       console.log('Redirecting to lobby');
-      this.router.navigate(['/online/tournament/', this.connectionService.getChannelID()]);
+      this.router.navigate(['/online/tournament/', this.connectionService.getLobbyID()]);
     }
   }
 
@@ -486,14 +486,14 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.connectionService.listenToWebSocketMessages(
       this.handleGameUpdate.bind(this), this.handleGameError.bind(this)
     );
-    this.gameStateService.setChannelID(this.connectionService.getChannelID());
+    this.gameStateService.setLobbyID(this.connectionService.getLobbyID());
     this._setGameStyle();
     this.gameLoop()
   }
 
   ngOnDestroy() {
-    if (this.channelSubscription) {
-      this.channelSubscription.unsubscribe();
+    if (this.lobbySubscription) {
+      this.lobbySubscription.unsubscribe();
     }
     if (this.activePlayersSubscription) {
       this.activePlayersSubscription.unsubscribe();
