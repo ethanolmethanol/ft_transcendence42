@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { UsernameErrorComponent } from "../sign-up/username-error/username-error.component";
 import { ErrorMessageComponent } from "../error-message/error-message.component";
-import { usernameValidator } from '../../validators/username.validator';
+import { usernameValidator } from '../../validators/validators';
 
 @Component({
   selector: 'app-oauth-callback',

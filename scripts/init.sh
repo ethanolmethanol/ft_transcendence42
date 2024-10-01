@@ -27,6 +27,7 @@ prompt_for_env() {
 	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rsp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET && echo
 	[ -z "${MINIO_ROOT_USER}" ] && read -rp "Enter Minio Root User: " MINIO_ROOT_USER
 	[ -z "${MINIO_ROOT_PASSWORD}" ] && read -rsp "Enter Minio Root Password: " MINIO_ROOT_PASSWORD && echo
+	[ -z "${DJANGO_SECRET_KEY}" ] && read -rp "Enter Django Secret: " DJANGO_SECRET_KEY
 
 	echo "POSTGRES_USER='${POSTGRES_USER}'" >"${ENV_FILE_GLOBAL}"
 	{
@@ -38,6 +39,7 @@ prompt_for_env() {
 		echo "DOCKSOCKUID=$(id -u)"
 		echo "MINIO_ROOT_USER='${MINIO_ROOT_USER}'"
 		echo "MINIO_ROOT_PASSWORD='${MINIO_ROOT_PASSWORD}'"
+		echo "DJANGO_SECRET_KEY='${DJANGO_SECRET_KEY}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
 	echo "'${ENV_FILE_GLOBAL}' file created with the following content:"
@@ -136,6 +138,10 @@ export_env_instructions() {
 	echo -e "*********************************************************************************\n"
 }
 
+share_data () {
+  ./scripts/share_data.sh
+}
+
 IP_ADDR=$(get_ip "$1")
 CERT_DIR="ssl/"
 SSL_CONT_DIRS=(front/ssl back/ssl minio/ssl)
@@ -152,4 +158,5 @@ else
 	create_nginx_config_file
 	update_environment_ts
 	export_env_instructions
+	share_data
 fi

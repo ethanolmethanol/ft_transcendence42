@@ -25,7 +25,7 @@
 # @pytest.mark.middle
 # @pytest.mark.start_end
 # @pytest.mark.parametrize("final_scores, expected_winner", [
-#     ((10, 8), "left"), 
+#     ((10, 8), "left"),
 #     ((7, 10), "right"),
 # ])
 # def test_game_end_by_score(final_scores, expected_winner):

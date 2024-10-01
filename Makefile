@@ -59,7 +59,7 @@ format-css: | front/.stylelintrc.json
 
 PY_SERVICES = back
 
-PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint flake8 isort mypy)
+PY_FMT_DEPS = $(addprefix /venv/bin/, black pylint mypy isort)
 
 PY_MOD_DEPS = django pylint-django django-stubs djangorestframework-stubs djangorestframework django-health-check django-cors-headers psycopg2-binary werkzeug django-extensions pyOpenSSL
 
@@ -70,7 +70,7 @@ $(addprefix %, $(PY_FMT_DEPS)): | %/venv
 	@cd $*/venv/bin && ./pip install $(notdir $(PY_FMT_DEPS)) $(PY_MOD_DEPS) > /dev/null
 
 format-python: | $(foreach tool,$(PY_FMT_DEPS),$(addsuffix $(tool),$(PY_SERVICES)))
-	for c in $(PY_SERVICES); do cd $$c; cp ../.github/linters/.flake8 .; $(foreach tool,$(PY_FMT_DEPS),echo -e "$(G)$(notdir $(tool)):$(N)"; .$(tool) $(if $(findstring pylint, $(tool)), $(PYLINT_ARGS), .); ) cd ..; done
+	for c in $(PY_SERVICES); do cd $$c; $(foreach tool,$(PY_FMT_DEPS),echo -e "$(G)$(notdir $(tool)):$(N)"; .$(tool) $(if $(findstring pylint, $(tool)), $(PYLINT_ARGS), .); ) cd ..; done
 
 format-cleanup:
 	rm -rf $(addsuffix /venv, $(PY_SERVICES))

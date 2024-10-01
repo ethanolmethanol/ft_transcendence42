@@ -16,8 +16,8 @@
 #             'paddle_positions': {'left': 1, 'right': 1},
 #         }
 #         response = authenticated_client.patch(
-#             f'/api/game/{game.id}/update/', 
-#             data=json.dumps(data), 
+#             f'/api/game/{game.id}/update/',
+#             data=json.dumps(data),
 #             content_type='application/json'
 #         )
 #         assert response.status_code == 200
@@ -28,13 +28,13 @@
 # def test_performance_simultaneous_game_creations(api_client):
 #     user = User.objects.create_user('testuser', 'test@example.com', 'password')
 #     api_client.force_authenticate(user=user)
-    
+
 #     game_data = {
 #         # Assuming these are the fields required to create a game
 #         "name": "Test Game",
 #         "settings": {}
 #     }
-    
+
 #     for _ in range(50):  # Simulate 50 concurrent game creations
 #         response = api_client.post('/api/game/create/', data=json.dumps(game_data), content_type='application/json')
 #         assert response.status_code == 201
@@ -58,9 +58,8 @@
 #             'paddle_positions': {'left': 1, 'right': 1},
 #         }
 #         response = authenticated_client.patch(
-#             f'/api/game/{game.id}/update/', 
-#             data=json.dumps(data), 
+#             f'/api/game/{game.id}/update/',
+#             data=json.dumps(data),
 #             content_type='application/json'
 #         )
 #         assert response.status_code == 200
-

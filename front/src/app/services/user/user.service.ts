@@ -76,8 +76,22 @@ export class UserService {
     return this._userData!;
   }
 
-  public getUsername(): string {
-    return this.getUserData().username;
+  public async getUsername(userID: number | null = null): Promise<string> {
+    try {
+      if (userID === null) {
+        return this.getUserData().username;
+      }
+      const response = await this.http.post<string>(
+        `${API_USER}/get_username/`, {"user_id": userID}
+      ).toPromise();
+      if (!response) {
+        throw new Error('No username found');
+      }
+      return response;
+    } catch (error) {
+      console.error('Error fetching username:', error);
+      throw error;
+    }
   }
 
   public getUserID(): number {

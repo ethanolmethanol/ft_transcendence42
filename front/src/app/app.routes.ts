@@ -14,6 +14,7 @@ import { GamePageComponent } from "./pages/game-page/game-page.component";
 import { MonitorPageComponent } from "./pages/monitor-page/monitor-page.component";
 import { OnlineGameSelectorPageComponent } from "./pages/online-game-selector-page/online-game-selector-page.component";
 import { CreateGamePageComponent } from './pages/create-game-page/create-game-page.component';
+import {TournamentPageComponent} from "./pages/tournament-page/tournament-page.component";
 import { OauthCallbackComponent } from './components/oauth-callback/oauth-callback.component';
 
 export const routes: Routes = [

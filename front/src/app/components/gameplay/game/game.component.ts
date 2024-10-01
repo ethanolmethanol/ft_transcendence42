@@ -6,15 +6,13 @@ import {
   QueryList,
   ViewChildren,
   Input,
-  SimpleChanges,
-  OnChanges,
   Renderer2,
-  ElementRef, EventEmitter, Output,
+  ElementRef, EventEmitter, Output, OnInit,
 } from '@angular/core';
 import {
   NOT_JOINED,
   INVALID_ARENA,
-  INVALID_CHANNEL,
+  INVALID_LOBBY,
   NOT_ENTERED,
   GAME_HEIGHT,
   GAME_WIDTH,
@@ -33,13 +31,19 @@ import { Position } from "../../../interfaces/position.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
-import { NgForOf, NgIf } from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import { ConnectionService } from "../../../services/connection/connection.service";
 import { UserService } from "../../../services/user/user.service";
 import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
+import {GameStateService} from "../../../services/game-state/game-state.service";
+import {isEmpty, map, Subscription, timeout} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
+import {AssignationsResponse} from "../../../interfaces/assignation.interface";
+import {User} from "../../../interfaces/user";
+import {isEmptyObject} from "../../../utils/object";
 import { AvatarComponent } from "../../avatar/avatar.component";
 
 interface PaddleUpdateResponse {
@@ -80,44 +84,48 @@ interface ErrorMapping {
   [key: number]: (value: ErrorResponse) => void;
 }
 
+interface LobbyPlayersResponse {
+  user_id: number[];
+  capacity: number;
+}
+
 @Component({
   selector: 'app-game',
   standalone: true,
-      imports: [
-        PaddleComponent,
-        BallComponent,
-        GameOverComponent,
-        LoadingSpinnerComponent,
-        NgIf,
-        NgForOf,
-        PlayerIconComponent,
-        StartTimerComponent,
-        CopyButtonComponent,
-        AvatarComponent,
-      ],
+  imports: [
+    PaddleComponent,
+    BallComponent,
+    GameOverComponent,
+    LoadingSpinnerComponent,
+    NgIf,
+    NgForOf,
+    PlayerIconComponent,
+    StartTimerComponent,
+    CopyButtonComponent,
+    AsyncPipe,
+    AvatarComponent,
+  ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
 })
-export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren(BallComponent) ball!: QueryList<BallComponent>;
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
   @ViewChildren(AvatarComponent) avatars!: QueryList<AvatarComponent>;
-  @Input() isRemote: boolean = false;
-  @Output() hasStarted = new EventEmitter<void>();
-  @Output() startCounterStarted = new EventEmitter<void>();
+  @Input() arenaID: number = -1;
   private playerName: string | null = null;
+  private isRemote: boolean = false;
+  private isTournament: boolean = false;
+  private lobbyID: string = '';
+  private lobbySubscription: Subscription | null = null;
+  private activePlayersSubscription: Subscription | null = null;
   readonly lineThickness: number = LINE_THICKNESS;
   gameWidth: number = GAME_WIDTH;
   gameHeight: number = GAME_HEIGHT;
   player1Score: number = 0;
   player2Score: number = 0;
-  maxPlayers: number = 2;
-  channelID: string = '';
-  dataLoaded: boolean = false;
-  isWaiting: boolean = true;
-  activePlayers: string[] = [];
   bots: string[] = [];
   constants = Constants;
 
@@ -131,7 +139,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   private readonly _errorMapping: ErrorMapping = {
     [NOT_JOINED]: this.redirectToHome.bind(this),
     [INVALID_ARENA]: this.redirectToHome.bind(this),
-    [INVALID_CHANNEL]: this.redirectToHome.bind(this),
+    [INVALID_LOBBY]: this.redirectToHome.bind(this),
     [NOT_ENTERED]: this.redirectToHome.bind(this),
     [GIVEN_UP]: this.redirectToHome.bind(this),
   };
@@ -143,12 +151,31 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     private connectionService: ConnectionService,
     private renderer: Renderer2,
     private el: ElementRef,
+    private route: ActivatedRoute,
+    private router: Router,
+    public gameStateService: GameStateService,
   ) {}
 
-  async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.isRemote && this.isRemote) {
+  public updateScale(): void {
+    const gameContainer = this.el.nativeElement.querySelector('.game-container');
+    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    gameContainer.style.transform = `scale(${scale})`;
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.gameStateService.isRemote$.subscribe(isRemote => {
+      this.isRemote = isRemote;
+    });
+    this.gameStateService.isTournament$.subscribe(isTournament => {
+      this.isTournament = isTournament;
+    });
+    this.gameStateService.lobbyID$.subscribe(lobbyID => {
+      this.lobbyID = lobbyID;
+    });
+    if (this.isRemote) {
       await this.userService.whenUserDataLoaded();
-      this.playerName = this.userService.getUsername();
+      this.playerName = await this.userService.getUsername();
+      console.log('Player name:', this.playerName);
     }
   }
 
@@ -202,17 +229,17 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.gameWidth = arena.map.width;
     this.player1Score = arena.scores[0];
     this.player2Score = arena.scores[1];
-    this.maxPlayers = arena.players_specs.nb_players;
+    this.gameStateService.setMaxPlayers(arena.players_specs.nb_players)
     this.updateStatus(arena.status)
-    this.activePlayers = arena.players;
+    this.gameStateService.setActivePlayers(arena.players);
+    this.gameStateService.setDataLoaded(true);
     this.bots = arena.players_specs.bots;
-    this.dataLoaded = true;
     this.startTimer.first.show = false;
     this.gameOver.first.hasRematched = false;
   }
 
-  private handleGameUpdate(gameState: any) {
-    const variableMapping : VariableMapping = {
+  private async handleGameUpdate(gameState: any) {
+    const variableMappingArena : VariableMapping = {
         'paddle': (value: PaddleUpdateResponse) => this.updatePaddle(value),
         'ball': (value: BallUpdateResponse) => { this.updateBall(value) },
         'score': (value: ScoreUpdateResponse) => { this.updateScore(value) },
@@ -221,13 +248,67 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         'arena': (value: ArenaResponse) => { this.setArena(value) },
         'status': (value: number) => { this.updateStatus(value) },
         'give_up': (value: number) => { this.giveUp(value) },
-        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) }
+        'kicked_players': (value: Array<AFKResponse>) => { this.updateInactivity(value) },
+    };
+    const variableMappingLobby : VariableMapping = {
+      'lobby_players': async (value: LobbyPlayersResponse) => {
+        await this.updateLobbyPlayers(value);
+      },
+      'assignations': (value: AssignationsResponse) => {
+        this.handleRedirection(value);
+      },
+      'tournament_map': (value: any) => {
+        this.gameStateService.setTournamentMap(value);
+        console.log('Tournament map:', value);
+      },
     };
 
+    await this.__updateGameState(gameState, variableMappingLobby);
+    if (gameState['arena_id'] !== this.arenaID) {
+      return;
+    }
+    await this.__updateGameState(gameState, variableMappingArena);
+  }
+
+  private async updateLobbyPlayers(players: LobbyPlayersResponse) {
+    let playerList: string[] = []
+    for (const user_id of players.user_id) {
+      const user: User = await this.userService.getUser(user_id)
+      const player_name: string = user.username
+      playerList.push(player_name)
+    }
+    if (players.capacity == playerList.length) {
+      this.gameStateService.setCanGiveUp(false)
+    }
+    this.gameStateService.setLobbyPlayers(playerList)
+    this.gameStateService.setLobbyCapacity(players.capacity)
+    this.gameStateService.setDataLoaded(true)
+  }
+
+  private async __updateGameState(gameState: any, variableMapping: VariableMapping) {
     for (const variable in gameState) {
-        if (variable in variableMapping) {
-            variableMapping[variable](gameState[variable]);
-        }
+      if (variable in variableMapping) {
+        await variableMapping[variable](gameState[variable]);
+      }
+    }
+  }
+
+  private handleRedirection(response: AssignationsResponse) {
+    const { actionType } = this.route.snapshot.data;
+    if (actionType !== 'tournament') return;
+
+    if (isEmptyObject(response)) {
+      console.log('Redirecting to home');
+      this.redirectToHome();
+    }
+
+    const userID = this.userService.getUserID();
+    const arena = response[userID];
+    if (arena && arena.status != DYING && arena.status != DEAD) {
+        console.log('Redirecting to:', this.lobbyID, arena.id);
+        setTimeout(() => {
+          this.router.navigate(['/online/tournament', this.lobbyID, arena.id]);
+        }, 0); // 3000 milliseconds = 3 seconds
     }
   }
 
@@ -235,7 +316,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.startTimer.first.message = timer.message;
     this.startTimer.first.time = timer.time;
     this.startTimer.first.show = true;
-    this.startCounterStarted.emit();
+    this.gameStateService.setCanGiveUp(false);
   }
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
@@ -269,22 +350,29 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private handleStartCounterCompletion() {
-    if (this.hasStarted.observed) {
-      this.hasStarted.emit();
-    }
+    this.gameStateService.setCanGiveUp(true);
   }
 
   private updateStatus(status: number) {
-    let gameOverOverlay = this.gameOver.first;
-    this.isWaiting = (status == CREATED || status == WAITING)
+    let gameOverOverlay: GameOverComponent = this.gameOver.first;
+    const isWaiting = status == CREATED || status == WAITING;
+    this.gameStateService.setIsWaiting(isWaiting)
+    this.gameStateService.setCanGiveUp(!isWaiting)
     if (gameOverOverlay.hasRematched === false) {
-      if (status == DYING) {
-        gameOverOverlay.show = true;
-      } else if (status == DEAD) {
-        this.redirectToHome();
-      } else if (status == STARTED) {
+      if (status == STARTED) {
         this.handleStartCounterCompletion()
         gameOverOverlay.show = false;
+        this.gameStateService.setIsRematch(false);
+      } else if (status == DYING || status == DEAD) {
+        if (this.isTournament) {
+          this.redirectToLobby();
+          return;
+        }
+        if (status == DYING) {
+          gameOverOverlay.show = true;
+        } else if (status == DEAD) {
+          this.redirectToHome();
+        }
       }
     }
   }
@@ -314,9 +402,13 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private updateGameOver(info: GameOverUpdateResponse) {
     let gameOverOverlay = this.gameOver.first;
-    let player = this.activePlayers.find(name => name === this.playerName);
+    let player: string | undefined;
+    this.activePlayersSubscription = this.gameStateService.activePlayers$.pipe(
+      map(players => players.find((name: string) => name === this.playerName))
+    ).subscribe(foundPlayer => player = foundPlayer);
     if (this.isRemote && player) {
       gameOverOverlay.hasRematched = true;
+      this.gameStateService.setIsRematch(true);
     }
     if (gameOverOverlay.hasRematched === false) {
       if (info.winner === "") {
@@ -325,7 +417,7 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
         gameOverOverlay.message = info.winner + " won! " + info.message
       }
       gameOverOverlay.time = info.time
-      gameOverOverlay.show = true
+      gameOverOverlay.show = true;
       // for online mode, use info.winner to update the user score db?
 
       if (info.time === 0) {
@@ -335,7 +427,18 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private redirectToHome() {
-    this.gameOver.first.redirectToHome();
+    this.gameStateService.reset();
+    this.router.navigate(['/home']);
+  }
+
+  private redirectToLobby() {
+    this.gameStateService.reset();
+    const arenaID = this.route.snapshot.params['arena_id'];
+    console.log('Arena ID:', arenaID)
+    if (arenaID) {
+      console.log('Redirecting to lobby');
+      this.router.navigate(['/online/tournament/', this.connectionService.getLobbyID()]);
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -385,16 +488,27 @@ export class GameComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   async ngAfterViewInit() : Promise<void> {
+    console.log('GameComponent created');
     await this.userService.whenUserDataLoaded();
-    this.connectionService.listenToWebSocketMessages(this.handleGameUpdate.bind(this), this.handleGameError.bind(this));
-    this.channelID = this.connectionService.getChannelID();
+    await this.connectionService.listenToWebSocketMessages(
+      this.handleGameUpdate.bind(this), this.handleGameError.bind(this)
+    );
+    this.gameStateService.setLobbyID(this.connectionService.getLobbyID());
     this._setGameStyle();
-    this.channelID = this.connectionService.getChannelID();
     this.gameLoop()
   }
 
   ngOnDestroy() {
+    if (this.lobbySubscription) {
+      this.lobbySubscription.unsubscribe();
+    }
+    if (this.activePlayersSubscription) {
+      this.activePlayersSubscription.unsubscribe();
+    }
+    this.gameStateService.restrictReset();
     console.log('GameComponent destroyed');
   }
+
+  protected readonly length = length;
 }
 

@@ -18,7 +18,7 @@ class Collision:
     def resolve_collision(ball: Ball) -> dict[str, Any]:
         new_position = ball.get_next_position()
         collided_slot = Collision.handle_collision(new_position, ball)
-        ball_position_update = {BALL: {POSITION: ball.position.__dict__}}
+        ball_position_update = {BALL: {POSITION: ball.position.to_dict()}}
         return (
             {**collided_slot, **ball_position_update}
             if collided_slot is not None
@@ -50,7 +50,6 @@ class Collision:
                 paddle, collision_point
             )
         )
-        logger.info("New speed is: %s", ball.speed.__dict__)
 
     @staticmethod
     def handle_collision(new_position: Position, ball: Ball) -> dict[str, int] | None:

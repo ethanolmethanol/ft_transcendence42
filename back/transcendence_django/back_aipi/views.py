@@ -11,7 +11,7 @@ from requests import Response as HTTPResponse
 from requests import get as http_get
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from transcendence_django.dict_keys import ARENA_ID, CHANNEL_ID, ERROR, USER_ID
+from transcendence_django.dict_keys import ARENA_ID, ERROR, LOBBY_ID, USER_ID
 
 from .client import AipiClient
 from .constants import (
@@ -40,13 +40,13 @@ class AipiView(APIView):
 
         data: dict[str, Any] = json.loads(request.body.decode("utf-8"))
 
-        channel_id: str = data[CHANNEL_ID]
+        lobby_id: str = data[LOBBY_ID]
 
         self.arena_id = data[ARENA_ID]
 
-        logger.info("AIPI got request for channel id %s", channel_id)
+        logger.info("AIPI got request for lobby id %s", lobby_id)
 
-        self.wss_address = f"{API_GAME_SOCKET}/ws/game/{channel_id}/"
+        self.wss_address = f"{API_GAME_SOCKET}/ws/game/classic/{lobby_id}/"
 
         self.ai_user_id = self.__new_ai_uid()
 

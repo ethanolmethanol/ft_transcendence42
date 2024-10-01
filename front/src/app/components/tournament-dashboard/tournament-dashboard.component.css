@@ -1,0 +1,73 @@
+.dashboard-container {
+  padding: 2em;
+  max-width: 1200px; /* Set a maximum width */
+  margin: 0 auto; /* Center the container */
+}
+
+h4 {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: #e1e1e1;
+  font-size: 2em;
+  padding: 1em;
+}
+
+h5 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e1e1e1;
+  padding: 1em;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.games-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 3em;
+  margin-top: 2em;
+  width: 100%;
+}
+
+.column-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+  height: 100%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.card {
+  width: 200px;
+  height: 100px;
+  background-color: #111111;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.players {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  list-style-type: none;
+}
+
+.current-user {
+  color: #2b669a;
+}

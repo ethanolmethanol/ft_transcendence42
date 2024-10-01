@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule} from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router, RouterLink } from "@angular/router";
@@ -8,10 +8,9 @@ import { PasswordErrorComponent } from "./password-error/password-error.componen
 import { EmailErrorComponent } from "./email-error/email-error.component";
 import { UsernameErrorComponent } from "./username-error/username-error.component";
 import { ErrorMessageComponent } from "../error-message/error-message.component";
-import { usernameValidator } from '../../validators/username.validator';
-import { emailValidator } from '../../validators/email.validator';
-import { matchValidator } from '../../validators/match.validator';
-import { Oauth42ButtonComponent } from "../oauth42-button/oauth42-button.component";
+import { usernameValidator, emailValidator, passwordValidator } from '../../validators/validators';
+import {matchValidator} from "../../validators/match.validator";
+import {Oauth42ButtonComponent} from "../oauth42-button/oauth42-button.component";
 
 @Component({
   selector: 'app-sign-up',
@@ -44,7 +43,7 @@ export class SignUpComponent implements OnInit {
     this.signupForm = this._formBuilder.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), usernameValidator()]],
       email: ['', [Validators.required, Validators.email, emailValidator()]],
-      password: ['', [Validators.required, Validators.minLength(8), matchValidator('c_password', true)]],
+      password: ['', [Validators.required, passwordValidator(), matchValidator('c_password', true)]],
       c_password: ['', [Validators.required, matchValidator('password')]],
       updateOn: 'blur'
     });

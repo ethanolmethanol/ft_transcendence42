@@ -38,7 +38,7 @@ export class HomePageComponent implements AfterViewInit {
 
   async ngAfterViewInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
-    this.welcome = `Welcome, ${this.userService.getUsername()}`;
+    this.welcome = `Welcome, ${await this.userService.getUsername()}`;
     this.userID = this.userService.getUserID();
   }
 

@@ -9,9 +9,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from transcendence_django.dict_keys import (
     ARENA,
-    CHANNEL_ID,
     ERROR,
     IS_REMOTE,
+    LOBBY_ID,
     PLAYER_SPECS,
     USER_ID,
 )
@@ -21,76 +21,96 @@ MONITOR = get_monitor()
 
 
 @require_http_methods(["POST"])
-async def create_channel(request) -> JsonResponse:
+async def create_lobby(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         players_specs = data[PLAYER_SPECS]
-        if MONITOR.is_user_in_channel(user_id):
-            raise ValueError("User is already in a channel.")
-        channel = await MONITOR.create_new_channel(user_id, players_specs)
-        return JsonResponse(channel, status=HTTPStatus.OK)
+        if MONITOR.is_user_in_lobby(user_id):
+            raise ValueError("User is already in a lobby.")
+        lobby = await MONITOR.create_new_lobby(user_id, players_specs)
+        logger.info(
+            "User %s created a new lobby and got the lobby dict: %s",
+            user_id,
+            lobby,
+        )
+        return JsonResponse(lobby, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, KeyError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
 
 @require_http_methods(["POST"])
-async def join_channel(request) -> JsonResponse:
+async def join_lobby(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
         request_player_specs = data[PLAYER_SPECS]
         asked_mode = request_player_specs[IS_REMOTE]
-        channel: dict[str, Any] | None = None
-        if CHANNEL_ID not in data:
-            logger.info("Joining already created channel.")
-            channel = MONITOR.join_already_created_channel(user_id, asked_mode)
-            if channel is None:
-                raise ValueError("No available channel.")
+        lobby: dict[str, Any] | None = None
+        if LOBBY_ID not in data:
+            logger.info("Joining already created lobby.")
+            lobby = MONITOR.join_already_created_lobby(user_id, asked_mode)
+            if lobby is None:
+                raise ValueError("No available lobby.")
         else:
-            channel_id: str = data[CHANNEL_ID]
-            logger.info("Joining channel: %s", channel_id)
-            channel = await MONITOR.join_channel(user_id, channel_id)
-            if channel is None:
-                raise ValueError("The channel does not exist.")
-        mode = channel[ARENA][PLAYER_SPECS][IS_REMOTE]
+            lobby_id: str = data[LOBBY_ID]
+            logger.info("Joining lobby: %s", lobby_id)
+            lobby = await MONITOR.join_lobby(user_id, lobby_id)
+            if lobby is None:
+                raise ValueError("The lobby does not exist.")
+        mode = lobby[ARENA][PLAYER_SPECS][IS_REMOTE]
         if asked_mode != mode:
             if mode == "online":
-                raise ValueError("User is already in a remote channel.")
-            raise ValueError("User is already in a local channel.")
-        return JsonResponse(channel, status=HTTPStatus.OK)
+                raise ValueError("User is already in a remote lobby.")
+            raise ValueError("User is already in a local lobby.")
+        return JsonResponse(lobby, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
 
 @require_http_methods(["POST"])
-async def join_specific_channel(request) -> JsonResponse:
+async def join_specific_lobby(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
-        channel_id: str = data[CHANNEL_ID]
-        logger.info("Joining channel: %s", channel_id)
-        if MONITOR.is_user_in_channel(user_id):
-            raise ValueError("User is already in a channel.")
-        channel = await MONITOR.join_channel(user_id, channel_id)
-        if channel is None:
-            raise ValueError("Channel does not exist")
-        return JsonResponse(channel, status=HTTPStatus.OK)
+        lobby_id: str = data[LOBBY_ID]
+        logger.info("Joining lobby: %s", lobby_id)
+        if MONITOR.is_user_in_lobby(user_id):
+            raise ValueError("User is already in a lobby.")
+        lobby = await MONITOR.join_lobby(user_id, lobby_id)
+        if lobby is None:
+            raise ValueError("Lobby does not exist")
+        return JsonResponse(lobby, status=HTTPStatus.OK)
     except (JSONDecodeError, TypeError, ValueError) as e:
         logger.error(e)
         return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
 
 
 @require_http_methods(["POST"])
-def is_user_in_channel(request) -> JsonResponse:
+async def join_tournament(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
-        is_user_in_channel_value: bool = MONITOR.is_user_in_channel(user_id)
+        lobby = await MONITOR.join_tournament(user_id)
+        logger.info(
+            "User %s joined tournament and got the lobby dict: %s", user_id, lobby
+        )
+        return JsonResponse(lobby, status=HTTPStatus.OK, safe=False)
+    except (JSONDecodeError, TypeError, ValueError) as e:
+        logger.error(e)
+        return JsonResponse({ERROR: str(e)}, status=HTTPStatus.BAD_REQUEST)
+
+
+@require_http_methods(["POST"])
+def is_user_in_lobby(request) -> JsonResponse:
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data[USER_ID]
+        is_user_in_lobby_value: bool = MONITOR.is_user_in_lobby(user_id)
         return JsonResponse(
-            {"isInChannel": is_user_in_channel_value}, status=HTTPStatus.OK
+            {"isInLobby": is_user_in_lobby_value}, status=HTTPStatus.OK
         )
     except (JSONDecodeError, TypeError) as e:
         logger.error(e)

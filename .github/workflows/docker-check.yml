@@ -26,6 +26,7 @@ jobs:
             echo POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}";
             echo POSTGRES_DB="${{ secrets.POSTGRES_DB }}";
             echo PGDATA="$PWD/db/data";
+            echo DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}";
             echo DOCKSOCKUID="$(id -u)";
           } >> .env
 

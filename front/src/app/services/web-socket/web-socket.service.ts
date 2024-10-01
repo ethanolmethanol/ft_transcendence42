@@ -12,37 +12,46 @@ export class WebSocketService implements OnInit, OnDestroy {
   socket?: WebSocket | null;
   private _connectionOpened: Subject<void> = new Subject<void>();
   private _messages: Subject<string> = new Subject<string>();
-  private _logoutChannel: BroadcastChannel;
+  private _logoutLobby: BroadcastChannel;
+  private _username: string = '';
+  private _usernameLoaded: Promise<void> | null = null;
 
   constructor(private userService: UserService) {
     console.log('WebSocketService created');
     this.socket = null;
 
     // Initialize the BroadcastChannel
-    this._logoutChannel = new BroadcastChannel('_logoutChannel');
+    this._logoutLobby = new BroadcastChannel('_logoutLobby');
 
     // Listen for messages on the BroadcastChannel
-    this._logoutChannel.onmessage = (message) => {
+    this._logoutLobby.onmessage = (message) => {
       if (message.data === 'logout') {
         this.giveUp();
       }
     };
   }
 
-  public connect(channel_id: string): void {
+  public connect(lobby_id: string, isTournament: boolean): void {
     this.userService.whenUserDataLoaded().then(() => {
-      this.attemptToConnect(channel_id);
+      this.whenUsernameLoaded().then(() => {
+        this.attemptToConnect(lobby_id, isTournament);
+      });
     });
   }
 
-  private attemptToConnect(channel_id: string): void {
+  private attemptToConnect(lobby_id: string, isTournament: boolean): void {
     if (this.socket) {
       console.log('WebSocket connection already open');
       return;
     }
 
-    console.log('Connecting to WebSocket -> ', channel_id);
-    const url = `${API_GAME_SOCKET}/ws/game/${channel_id}/`;
+    console.log('Connecting to WebSocket -> ', lobby_id);
+    let url;
+    if (isTournament) {
+      url = `${API_GAME_SOCKET}/ws/game/tournament/${lobby_id}/`;
+    } else {
+      url = `${API_GAME_SOCKET}/ws/game/classic/${lobby_id}/`;
+    }
 
     const socket = new WebSocket(url);
 
@@ -118,11 +127,15 @@ export class WebSocketService implements OnInit, OnDestroy {
     }
   }
 
-  public join(arena_id: number): Observable<ArenaResponse> {
-    console.log(`Join ${arena_id}`);
+  public join(arena_id: number | null): Observable<ArenaResponse> {
+    if (arena_id === null) {
+      console.log('Arena ID is null');
+    } else {
+      console.log(`Join ${arena_id}`);
+    }
     const subject = new Subject<ArenaResponse>();
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('join', {"user_id": this.userService.getUserID(), "player": this.userService.getUsername(), "arena_id": arena_id});
+      this.send('join', {"user_id": this.userService.getUserID(), "player": this._username, "arena_id": arena_id});
       this.getMessages().subscribe(message => {
         const data = JSON.parse(message);
         if (data.type === 'arena') {
@@ -153,10 +166,19 @@ export class WebSocketService implements OnInit, OnDestroy {
 
   async ngOnInit() : Promise<void> {
     await this.userService.whenUserDataLoaded();
+    this._username = await this.userService.getUsername();
+    this._usernameLoaded = Promise.resolve();
+  }
+
+  public whenUsernameLoaded(): Promise<void> {
+    if (!this._usernameLoaded) {
+      this._usernameLoaded = this.ngOnInit();
+    }
+    return this._usernameLoaded;
   }
 
   ngOnDestroy(): void {
     this.disconnect();
-    this._logoutChannel.close();
+    this._logoutLobby.close();
   }
 }

@@ -3,6 +3,7 @@ import { Subscription } from "rxjs";
 import { WebSocketService } from "../web-socket/web-socket.service";
 import { ErrorResponse } from "../../interfaces/error-response.interface";
 import { ArenaResponse } from "../../interfaces/arena-response.interface";
+import {AssignationsResponse} from "../../interfaces/assignation.interface";
 
 @Injectable({
   providedIn: 'root'
@@ -13,38 +14,37 @@ export class ConnectionService {
   private WebSocketSubscription?: Subscription;
   private WebSocketMessagesSubscription?: Subscription;
   private joinSubscription?: Subscription;
-  private channelID: string = '';
+  private lobbyID: string = '';
 
   constructor(private webSocketService: WebSocketService) {
     console.log('Connection service initialized');
   }
 
-  public listenToWebSocketMessages(handleGameUpdate: (response: string) => void, handleGameError: (response: ErrorResponse) => void) {
-    this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(message => {
+  public async listenToWebSocketMessages(
+    handleGameUpdate: (response: string) => Promise<void>,
+    handleGameError: (response: ErrorResponse) => void
+  ){
+    this.WebSocketMessagesSubscription = this.webSocketService.getMessages().subscribe(async message => {
       // console.log('Received WebSocket message:', message);
       const data = JSON.parse(message);
       if (data.type === 'game_update') {
-        handleGameUpdate(data.update);
+        await handleGameUpdate(data.update);
       } else if (data.type === 'game_error') {
         handleGameError(data.error);
       }
     });
   }
 
-  public establishConnection(arenaSetter: (response: ArenaResponse) => void, channel_id?: string, arena_id?: number) {
-    if (channel_id && arena_id) {
+  public establishConnection(arenaSetter: (response: ArenaResponse) => void, lobby_id?: string, arena_id: number | null = null, isTournament: boolean =false) {
+    if (lobby_id) {
       // Connect to the existing arena
-      this.accessArena(channel_id, arena_id, arenaSetter)
+      this.lobbyID = lobby_id;
+      this.webSocketService.connect(lobby_id, isTournament);
+      this.handleWebSocketConnection(arena_id, arenaSetter);
     }
   }
 
-  private accessArena(channel_id: string, arena_id: number, arenaSetter: (response: ArenaResponse) => void) {
-    this.webSocketService.connect(channel_id);
-    this.channelID = channel_id;
-    this.handleWebSocketConnection(arena_id, arenaSetter);
-  }
-
-  private handleWebSocketConnection(arena_id: number, arenaSetter: (response: ArenaResponse) => void){
+  private handleWebSocketConnection(arena_id: number | null = null, arenaSetter: (response: ArenaResponse) => void){
     this.connectionOpenedSubscription = this.webSocketService.getConnectionOpenedEvent().subscribe(() => {
       console.log('WebSocket connection opened');
       this.joinSubscription = this.webSocketService.join(arena_id).subscribe((arena: ArenaResponse) => {
@@ -57,13 +57,13 @@ export class ConnectionService {
   public endConnection() {
     this.webSocketService.disconnect();
     this.connectionOpenedSubscription?.unsubscribe();
+    this.joinSubscription?.unsubscribe();
     this.WebSocketSubscription?.unsubscribe();
     this.WebSocketMessagesSubscription?.unsubscribe();
-    this.joinSubscription?.unsubscribe();
     console.log('WebSocket connection closed');
   }
 
-  public getChannelID(): string {
-    return this.channelID;
+  public getLobbyID(): string {
+    return this.lobbyID;
   }
 }
