@@ -146,7 +146,7 @@ class LobbyManager:
                 aipi_response: Response = http_get(
                     url="https://back-aipi/aipi/spawn/",
                     verify=False,  # does not work otherwise
-                    cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
+                    cert=("/etc/ssl/public.crt", "/etc/ssl/private.key"),
                     json={LOBBY_ID: lobby_id, ARENA_ID: arena_id},
                     timeout=3,
                 )
