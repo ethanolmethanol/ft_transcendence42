@@ -38,9 +38,9 @@ export class AvatarComponent implements OnInit {
     console.log("username: ", this.username);
   }
 
-  private loadAvatar(): void {
+  private async loadAvatar() {
     if (this.modify || this.username === "Player1" || this.username === "Player2")
-      this.username = this.userService.getUsername();
+      this.username = await this.userService.getUsername();
     this.fileUrl =  `${MINIO_API}/${AVATARS_BUCKET}/${this.username}_avatar.jpg`;
     console.log(this.fileUrl);
   }

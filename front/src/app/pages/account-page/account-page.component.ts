@@ -3,7 +3,7 @@ import { AvatarComponent } from "../../components/avatar/avatar.component";
 import { HeaderComponent } from "../../components/header/header.component";
 import { UserService } from "../../services/user/user.service";
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors} from '@angular/forms';
-import { usernameValidator } from "../../validators/username.validator";
+import { usernameValidator } from "../../validators/validators";
 import { UsernameErrorComponent } from "../../components/sign-up/username-error/username-error.component";
 import { ErrorMessageComponent } from "../../components/error-message/error-message.component";
 import { Router } from '@angular/router';
@@ -46,7 +46,7 @@ export class AccountPageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
-    this.username = this.userService.getUsername();
+    this.username = await this.userService.getUsername();
   }
 
   private deleteValidator(control: AbstractControl): ValidationErrors | null {
