@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
@@ -23,8 +23,8 @@ from transcendence_django.dict_keys import (
 
 logger = logging.getLogger(__name__)
 
-RoundType = Dict[str, list[dict[str, Any] | None]]
-RoundMapType = Dict[str, RoundType]
+RoundType = List[list[dict[str, Any] | None]]
+RoundMapType = List[RoundType]
 
 
 class TournamentLobby(Lobby):
@@ -116,38 +116,36 @@ class TournamentLobby(Lobby):
             await self.update_sender(data)
 
     def __get_initial_rounds_map(self) -> RoundMapType:
-        rounds_map: RoundMapType = {}
+        rounds_map: RoundMapType = []
         for i in range(TOURNAMENT_MAX_ROUND):
-            round_players: RoundType = {}
+            round_players: RoundType = []
             arena_count = TOURNAMENT_ARENA_COUNT // 2**i
             for j in range(arena_count):
-                round_players[str(j)] = [
+                round_players.append([
                     None for _ in range(self.players_specs[NB_PLAYERS])
-                ]
-            rounds_map[str(i + 1)] = round_players
+                ])
+            rounds_map.append(round_players)
         return rounds_map
 
-    def __get_current_round_arenas(self, round_count: int) -> RoundMapType:
-        arena_count: int = len(self.rounds_map[str(round_count)])
-        round_arenas: RoundMapType = {}
+    def __get_current_round_arenas(self) -> RoundMapType:
+        arena_count: int = len(self.rounds_map[self.round_count])
+        round_map: RoundMapType = []
         user_ids = list(self.users.keys())
         user_index = 0
-        for arena_id in range(arena_count):
-            round_arenas[str(arena_id)] = []
+        for _ in range(arena_count):
+            round_arena = []
             for _ in range(self.players_specs[NB_PLAYERS]):
                 if user_index < len(user_ids):
-                    round_arenas[str(arena_id)].append(user_ids[user_index])
+                    round_arena.append(user_ids[user_index])
                     user_index += 1
                 else:
-                    round_arenas[str(arena_id)].append(None)
-        return round_arenas
+                    round_arena.append(None)
+            round_map.append(round_arena)
+        return round_map
 
     def __update_rounds_map(self):
-        next_round: int = self.round_count + 1
-        if next_round <= TOURNAMENT_MAX_ROUND:
-            self.rounds_map[str(next_round)] = self.__get_current_round_arenas(
-                next_round
-            )
+        if self.round_count <= TOURNAMENT_MAX_ROUND:
+            self.rounds_map[self.round_count] = self.__get_current_round_arenas()
 
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()

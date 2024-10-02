@@ -2,7 +2,7 @@
   <h4>Tournament</h4>
   <section class="games-section">
     <div *ngFor="let roundKey of tournamentMap.rounds_map | keyvalue" class="column">
-      <h5>Round {{ roundKey.key }}</h5>
+      <h5>Round {{ Number(roundKey.key) + 1 }} </h5>
       <section class="column-content">
         <div *ngFor="let gameKey of roundKey.value | keyvalue" class="card">
           <li *ngFor="let userID of gameKey.value" class="players">

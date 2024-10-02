@@ -76,4 +76,6 @@ export class TournamentDashboardComponent implements OnInit, OnChanges {
   private completeFetching(): void {
     this.isDataLoaded = true;
   }
+
+  protected readonly Number = Number;
 }
