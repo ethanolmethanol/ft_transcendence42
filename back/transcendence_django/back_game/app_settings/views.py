@@ -45,12 +45,12 @@ async def join_lobby(request) -> JsonResponse:
     try:
         data = json.loads(request.body.decode("utf-8"))
         user_id = data[USER_ID]
-        request_player_specs = data[PLAYER_SPECS]
-        asked_mode = request_player_specs[IS_REMOTE]
+        player_specs = data[PLAYER_SPECS]
+        mode = player_specs[IS_REMOTE]
         lobby: dict[str, Any] | None = None
         if LOBBY_ID not in data:
             logger.info("Joining already created lobby.")
-            lobby = MONITOR.join_already_created_lobby(user_id, asked_mode)
+            lobby = MONITOR.join_already_created_lobby(user_id, mode)
             if lobby is None:
                 raise ValueError("No available lobby.")
         else:
@@ -59,9 +59,9 @@ async def join_lobby(request) -> JsonResponse:
             lobby = await MONITOR.join_lobby(user_id, lobby_id)
             if lobby is None:
                 raise ValueError("The lobby does not exist.")
-        mode = lobby[ARENA][PLAYER_SPECS][IS_REMOTE]
-        if asked_mode != mode:
-            if mode == "online":
+        lobby_mode = lobby[ARENA][PLAYER_SPECS][IS_REMOTE]
+        if lobby_mode != mode:
+            if lobby_mode == "online":
                 raise ValueError("User is already in a remote lobby.")
             raise ValueError("User is already in a local lobby.")
         return JsonResponse(lobby, status=HTTPStatus.OK)

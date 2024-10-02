@@ -63,7 +63,7 @@ class TournamentLobby(Lobby):
         if len(self.users) == 0:
             return True
         return (
-            self.are_all_arenas_in_status_list([GameStatus(DEAD)])
+            self.are_all_arenas_in_status_list([GameStatus.DEAD])
             and self.round_count == TOURNAMENT_MAX_ROUND + 1
         )
 
@@ -144,7 +144,7 @@ class TournamentLobby(Lobby):
         return round_map
 
     def __update_rounds_map(self):
-        if self.round_count <= TOURNAMENT_MAX_ROUND:
+        if self.round_count < TOURNAMENT_MAX_ROUND:
             self.rounds_map[self.round_count] = self.__get_current_round_arenas()
 
     def __set_next_round_arenas(self):
