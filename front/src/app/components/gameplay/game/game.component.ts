@@ -39,7 +39,7 @@ import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
 import {GameStateService} from "../../../services/game-state/game-state.service";
-import {isEmpty, map, Subscription, timeout} from "rxjs";
+import {map, Subscription} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AssignationsResponse} from "../../../interfaces/assignation.interface";
 import {User} from "../../../interfaces/user";
@@ -299,9 +299,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     const arena = response[userID];
     if (arena && arena.status != DYING && arena.status != DEAD) {
         console.log('Redirecting to:', this.lobbyID, arena.id);
-        setTimeout(() => {
-          this.router.navigate(['/online/tournament', this.lobbyID, arena.id]);
-        }, 0); // 3000 milliseconds = 3 seconds
+        this.router.navigate(['/online/tournament', this.lobbyID, arena.id]);
     }
   }
 
