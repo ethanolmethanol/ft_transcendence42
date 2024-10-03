@@ -5,11 +5,6 @@ from back_game.game_arena.arena import Arena
 from back_game.monitor.lobby_manager import LobbyManager
 from django.apps import apps
 from django.conf import settings
-from transcendence_django.dict_keys import (
-    OVER_CALLBACK,
-    START_TIMER_CALLBACK,
-    UPDATE_CALLBACK,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -77,9 +72,7 @@ class Monitor:
         callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
         arena: Arena = self.get_arena(lobby_id, arena_id)
-        arena.game_update_callback = callbacks[UPDATE_CALLBACK]
-        arena.game_over_callback = callbacks[OVER_CALLBACK]
-        arena.start_timer_callback = callbacks[START_TIMER_CALLBACK]
+        arena.update_callbacks(callbacks)
 
     async def join_arena(
         self, user_id: int, player_name: str, lobby_id: str, arena_id: str
