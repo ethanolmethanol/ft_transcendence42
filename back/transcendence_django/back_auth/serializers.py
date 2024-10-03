@@ -8,7 +8,7 @@ from shared_models.models import CustomUser
 
 # Load validation rules
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-validation_rules_path = os.path.join(base_dir, "shared_models", "validation-rules.json")
+validation_rules_path = os.path.join(base_dir, "shared_models/shared", "validation-rules.json")
 
 with open(validation_rules_path) as f:
     validation_rules = json.load(f)
