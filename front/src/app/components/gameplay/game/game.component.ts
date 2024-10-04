@@ -155,7 +155,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public updateScale(): void {
     const gameContainer = this.el.nativeElement.querySelector('.game-container');
-    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    const scale = Math.min(window.innerWidth / 1800, window.innerHeight / 1000);
     gameContainer.style.transform = `scale(${scale})`;
   }
 

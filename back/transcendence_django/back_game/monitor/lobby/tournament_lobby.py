@@ -31,7 +31,7 @@ class TournamentLobby(Lobby):
 
     def __init__(self, players_specs: dict[str, int]):
         super().__init__(players_specs)
-        logger.info("Tournament lobby created: %s", TOURNAMENT_MAX_ROUND)
+        logger.debug("Tournament lobby created: %s", TOURNAMENT_MAX_ROUND)
         for _ in range(TOURNAMENT_ARENA_COUNT):
             self.add_arena()
         self.user_count: int = self.players_specs[NB_PLAYERS] * TOURNAMENT_ARENA_COUNT
@@ -71,11 +71,11 @@ class TournamentLobby(Lobby):
         if 1 <= self.round_count <= TOURNAMENT_MAX_ROUND:
             self.__set_next_round_arenas()
         self.round_count += 1
-        logger.info("Tournament round %s", self.round_count)
+        logger.debug("Tournament round %s", self.round_count)
 
     async def arena_loop(self, arena: Arena):
         while self.round_count <= TOURNAMENT_MAX_ROUND and self.is_active:
-            logger.info("Arena %s loop", arena.id)
+            logger.debug("Arena %s loop", arena.id)
             await super().arena_loop(arena)
             await asyncio.sleep(ARENA_LOOP_INTERVAL)
 
@@ -88,7 +88,7 @@ class TournamentLobby(Lobby):
             while not self.can_round_be_set():
                 if not self.is_active:
                     return
-                logger.info("Waiting for next round")
+                logger.debug("Waiting for next round")
                 await asyncio.sleep(NEXT_ROUND_LOOP_INTERVAL)
 
     async def send_assignations(self):
@@ -104,7 +104,7 @@ class TournamentLobby(Lobby):
 
     def get_tournament_map(self) -> Dict[str, RoundMapType | str | None]:
         if self.winner:
-            logger.info("Tournament winner %s", self.winner.user_id)
+            logger.debug("Tournament winner %s", self.winner.user_id)
         return {
             ROUNDS_MAP: self.rounds_map,
             TOURNAMENT_WINNER: self.winner.user_id if self.winner else None,
@@ -112,7 +112,7 @@ class TournamentLobby(Lobby):
 
     async def __send_update(self, data: dict[str, Any]):
         if self.update_sender is not None:
-            logger.info("Sending assignations: %s", data)
+            logger.debug("Sending assignations: %s", data)
             await self.update_sender(data)
 
     def __get_initial_rounds_map(self) -> RoundMapType:
@@ -164,10 +164,10 @@ class TournamentLobby(Lobby):
         for arena in self.arenas.values():
             winner = arena.get_winner()
             if winner:
-                logger.info("Arena %s winner: %s", arena.id, winner.player_name)
+                logger.debug("Arena %s winner: %s", arena.id, winner.player_name)
                 winners.append(winner)
             else:
-                logger.info(
+                logger.debug(
                     "Arena %s has no winner and has %s status",
                     arena.id,
                     arena.get_status(),
@@ -175,7 +175,7 @@ class TournamentLobby(Lobby):
         return winners
 
     def __assign_users_to_arenas(self, winners: list[Player | None]):
-        logger.info(
+        logger.debug(
             "Assign users to arenas: winners (%s)",
             [winner.player_name for winner in winners],
         )

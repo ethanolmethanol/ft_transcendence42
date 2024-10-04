@@ -28,12 +28,9 @@ logger = logging.getLogger(__name__)
 class LobbyManager:
     def __init__(self):
         self.lobbies: dict[str, Lobby] = {}
-        self.user_game_table: dict[int, Lobby] = {}
-        self.ai_game_table: dict[int, Lobby] = {}
 
     async def add_to_lobby(
         self,
-        table: dict[int, Lobby],
         user_id: int,
         lobby_id: str,
         arena_id: str | None,
@@ -47,20 +44,19 @@ class LobbyManager:
                 return
             arena_id = arena.id
         await lobby.add_user_into_arena(user_id, arena_id)
-        table[user_id] = lobby
 
     def delete_user_from_lobby(self, user_id: int, lobby: Lobby = None):
         try:
             if lobby is None:
-                lobby = self.user_game_table.get(user_id)
-            elif lobby != self.user_game_table.get(user_id):
+                lobby = self.get_lobby_from_user_id(user_id)
+            elif lobby != self.get_lobby_from_user_id(user_id):
                 raise KeyError
-            self.user_game_table.pop(user_id)
+#             self.user_game_table.pop(user_id)
             if lobby is not None:
                 lobby.delete_user(user_id)
                 if lobby.can_be_deleted():
                     self.delete_lobby(lobby.id)
-                logger.info("User %s deleted from user_game_table", user_id)
+#                 logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
 
@@ -87,7 +83,7 @@ class LobbyManager:
     def join_already_created_lobby(
         self, user_id: int, is_remote: bool
     ) -> dict[str, Any] | None:
-        lobby = self.user_game_table.get(user_id)
+        lobby = self.get_lobby_from_user_id(user_id)
         if lobby is None and is_remote:
             logger.info("User %s is not in a lobby and is remote", user_id)
             return self.__get_available_lobby()
@@ -120,15 +116,17 @@ class LobbyManager:
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         lobby_dict = self.__get_available_lobby(is_tournament=True)
         if lobby_dict is None:
-            await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
-            return self.get_lobby_dict_from_user_id(user_id)
+            lobby = self.get_lobby_from_user_id(user_id)
+            if lobby is None:
+                await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
+                return self.get_lobby_dict_from_user_id(user_id)
         return lobby_dict
 
     def get_lobby(self, lobby_id: str) -> Lobby | None:
         return self.lobbies.get(lobby_id)
 
     def get_lobby_dict_from_user_id(self, user_id: int) -> dict[str, Any] | None:
-        lobby: Lobby | None = self.user_game_table.get(user_id)
+        lobby: Lobby | None = self.get_lobby_from_user_id(user_id)
         if lobby is None:
             return None
         arena = lobby.get_arena_from_user_id(user_id)
@@ -156,10 +154,10 @@ class LobbyManager:
                 logger.error(e)
 
     async def add_user_to_lobby(self, user_id: int, lobby_id: str, arena_id: str):
-        await self.add_to_lobby(self.user_game_table, user_id, lobby_id, arena_id)
+        await self.add_to_lobby(user_id, lobby_id, arena_id)
 
     async def add_ai_to_lobby(self, user_id: int, lobby_id: str, arena_id: str):
-        await self.add_to_lobby(self.ai_game_table, user_id, lobby_id, arena_id)
+        await self.add_to_lobby(user_id, lobby_id, arena_id)
 
     def get_arena(self, lobby_id: str, arena_id: str) -> Arena | None:
         lobby = self.get_lobby(lobby_id)
@@ -196,10 +194,16 @@ class LobbyManager:
         return False
 
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
-        lobby = self.user_game_table.get(user_id)
+        lobby = self.get_lobby_from_user_id(user_id)
         if lobby is None:
             return None
         return lobby.get_arena_from_user_id(user_id)
+
+    def get_lobby_from_user_id(self, user_id: int) -> Lobby | None:
+        for lobby in self.lobbies.values():
+            if user_id in lobby.users:
+                return lobby
+        return None
 
     def __get_available_lobby(
         self, is_tournament: bool = False

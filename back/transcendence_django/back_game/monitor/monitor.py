@@ -39,6 +39,8 @@ class Monitor:
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         lobby_dict = await self.lobby_manager.join_tournament(user_id)
+        if lobby_dict is None:
+            raise ValueError("User is already in a lobby.")
         return lobby_dict
 
     def get_arena(self, lobby_id: str, arena_id: str) -> Arena:
@@ -51,7 +53,7 @@ class Monitor:
         return self.lobby_manager.get_arena_from_user_id(user_id)
 
     def is_user_in_lobby(self, user_id: int) -> bool:
-        return self.lobby_manager.user_game_table.get(user_id) is not None
+        return self.lobby_manager.get_lobby_from_user_id(user_id) is not None
 
     async def add_user_to_lobby(
         self, lobby_id: str, arena_id: str | None, user_id: int
