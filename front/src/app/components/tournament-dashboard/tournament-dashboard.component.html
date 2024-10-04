@@ -1,39 +1,41 @@
-<div *ngIf="isDataLoaded" class="dashboard-container">
-  <h4>Tournament</h4>
-  <section class="games-section">
-    <div *ngFor="let roundKey of tournamentMap.rounds_map | keyvalue" class="column">
-      <h5>Round {{ Number(roundKey.key) + 1 }} </h5>
-      <section class="column-content">
-        <div *ngFor="let gameKey of roundKey.value | keyvalue" class="card">
-          <li *ngFor="let userID of gameKey.value" class="players">
+<div class="dashboard-container">
+  <div *ngIf="isDataLoaded">
+    <h4>Tournament</h4>
+    <section class="games-section">
+      <div *ngFor="let roundKey of tournamentMap.rounds_map | keyvalue" class="column">
+        <h5>Round {{ Number(roundKey.key) + 1 }} </h5>
+        <section class="column-content">
+          <div *ngFor="let gameKey of roundKey.value | keyvalue" class="card">
+            <li *ngFor="let userID of gameKey.value" class="players">
+              <app-player-icon
+                *ngIf="userID"
+                [playerName]="playerNamesMap[userID]"
+                [ngClass]="{'current-user': userIDMap[userID]}">
+              </app-player-icon>
+              <app-player-icon
+                *ngIf="!userID"
+                [playerName]="'?'">
+              </app-player-icon>
+            </li>
+          </div>
+        </section>
+      </div>
+      <section class="column">
+        <h5>Winner</h5>
+        <section class="column-content">
+          <div class="card">
             <app-player-icon
-              *ngIf="userID"
-              [playerName]="playerNamesMap[userID]"
-              [ngClass]="{'current-user': userIDMap[userID]}">
+              *ngIf="winnerID"
+              [playerName]="winnerName"
+              [ngClass]="{'current-user': userIDMap[winnerID]}">
             </app-player-icon>
             <app-player-icon
-              *ngIf="!userID"
+              *ngIf="!winnerID"
               [playerName]="'?'">
             </app-player-icon>
-          </li>
-        </div>
-      </section>
-    </div>
-    <section class="column">
-      <h5>Winner</h5>
-      <section class="column-content">
-        <div class="card">
-          <app-player-icon
-            *ngIf="winnerID"
-            [playerName]="winnerName"
-            [ngClass]="{'current-user': userIDMap[winnerID]}">
-          </app-player-icon>
-          <app-player-icon
-            *ngIf="!winnerID"
-            [playerName]="'?'">
-          </app-player-icon>
-        </div>
+          </div>
+        </section>
       </section>
     </section>
-  </section>
+  </div>
 </div>

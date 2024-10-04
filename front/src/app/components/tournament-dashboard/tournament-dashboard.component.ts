@@ -36,6 +36,12 @@ export class TournamentDashboardComponent implements OnInit, OnChanges {
     this.tournamentMap = {rounds_map: {}, winner: null};
   }
 
+  public updateScale(): void {
+    const tournamentContainer = this.elementRef.nativeElement.querySelector('.dashboard-container');
+    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    tournamentContainer.style.transform = `scale(${scale})`;
+  }
+
   async ngOnInit(): Promise<void> {
     await this.userService.whenUserDataLoaded();
     this.personalUserID = this.userService.getUserID();
@@ -44,6 +50,7 @@ export class TournamentDashboardComponent implements OnInit, OnChanges {
 
   async ngOnChanges(): Promise<void> {
     await this.fetchData();
+    this.updateScale()
   }
 
   private async fetchData(): Promise<void> {
