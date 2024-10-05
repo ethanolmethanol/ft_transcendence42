@@ -1,0 +1,9 @@
+<section class="friend-list">
+  <p>{{ sectionName }}</p>
+  <section *ngIf="friendList.length > 0" class="avatar-list">
+    <app-friend-card *ngFor="let friend of friendList" [friendName]="friend" [friendStatus]="friendStatus"></app-friend-card>
+  </section>
+  <section *ngIf="friendList.length == 0" class="no-friends-container">
+    <p><i class="material-icons">block</i> No users</p>
+  </section>
+</section>

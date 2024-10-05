@@ -16,35 +16,9 @@
   </section>
 
   <section class="friends-overview">
-    <section class="friend-list">
-      <p>Playing</p>
-      <section *ngIf="friendData.playing.length > 0" class="avatar-list">
-        <app-friend-card *ngFor="let friend of friendData.playing" [friendName]="friend" [friendStatus]="PLAYING"></app-friend-card>
-      </section>
-      <section *ngIf="friendData.playing.length == 0" class="no-friends-container">
-        <p><i class="material-icons">block</i> No users</p>
-      </section>
-    </section>
-
-    <section class="friend-list">
-      <p>Online</p>
-      <section *ngIf="friendData.online.length > 0" class="avatar-list">
-        <app-friend-card *ngFor="let friend of friendData.online" [friendName]="friend" [friendStatus]="ONLINE"></app-friend-card>
-      </section>
-      <section *ngIf="friendData.online.length == 0" class="no-friends-container">
-        <p><i class="material-icons">block</i> No users</p>
-      </section>
-    </section>
-
-    <section class="friend-list">
-      <p>Offline</p>
-      <section *ngIf="friendData.offline.length > 0" class="avatar-list">
-        <app-friend-card *ngFor="let friend of friendData.offline" [friendName]="friend" [friendStatus]="OFFLINE"></app-friend-card>
-      </section>
-      <section *ngIf="friendData.offline.length == 0" class="no-friends-container">
-        <p><i class="material-icons">block</i> No users</p>
-      </section>
-    </section>
+    <app-friend-box [friendStatus]="PLAYING" [friendList]="friendData.playing" [sectionName]="'Playing'"></app-friend-box>
+    <app-friend-box [friendStatus]="ONLINE" [friendList]="friendData.online" [sectionName]="'Online'"></app-friend-box>
+    <app-friend-box [friendStatus]="OFFLINE" [friendList]="friendData.offline" [sectionName]="'Offline'"></app-friend-box>
   </section>
 
 </section>

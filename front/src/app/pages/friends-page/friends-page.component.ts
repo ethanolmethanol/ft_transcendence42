@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { AvatarComponent } from "../../components/avatar/avatar.component";
 import { FriendCardComponent } from "../../components/friend-card/friend-card.component";
 import { PLAYING, ONLINE, OFFLINE } from "../../constants";
+import {FriendBoxComponent} from "../../components/friend-box/friend-box.component";
 
 @Component({
   selector: 'app-friends-page',
@@ -21,6 +22,7 @@ import { PLAYING, ONLINE, OFFLINE } from "../../constants";
     AvatarComponent,
     CommonModule,
     FriendCardComponent,
+    FriendBoxComponent,
   ],
   templateUrl: './friends-page.component.html',
   styleUrl: './friends-page.component.css'
