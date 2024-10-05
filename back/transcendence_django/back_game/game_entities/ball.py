@@ -5,7 +5,12 @@ from back_game.game_entities.ball_speed_randomizer import BallSpeedRandomizer
 from back_game.game_entities.paddle import Paddle
 from back_game.game_geometry.position import Position
 from back_game.game_physics.speed import Speed
-from back_game.game_settings.game_constants import BALL_RADIUS, GAME_HEIGHT, GAME_WIDTH
+from back_game.game_settings.game_constants import (
+    BALL_RADIUS,
+    GAME_HEIGHT,
+    GAME_WIDTH,
+    SPEED_INCREASE_RATE,
+)
 from transcendence_django.dict_keys import (
     BALL_X_OUT_OF_BOUNDS,
     BALL_Y_OUT_OF_BOUNDS,
@@ -18,10 +23,10 @@ logger = logging.getLogger(__name__)
 
 speed_rate = {
     0: 2,
-    1: 5,
-    2: 8,
-    3: 14,
-    4: 20,
+    1: 3,
+    2: 5,
+    3: 9,
+    4: 13,
 }
 
 
@@ -33,13 +38,9 @@ class Ball:
         self.paddles: dict[str, Paddle] = paddles
         self.player_turn = 0
         self.speed = Speed(0, 0)
-        self.speed_rate = speed_rate[speed_index]
+        self.initial_speed_rate = speed_rate[speed_index]
+        self.speed_rate = self.initial_speed_rate
         self.__set_random_speed()
-
-    def update(self, new_position: Position, new_speed: Speed, new_radius: float):
-        self.position.set_coordinates(new_position.x, new_position.y)
-        self.speed.update(new_speed)
-        self.radius = new_radius
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -61,12 +62,13 @@ class Ball:
         return Position(self.position.x + self.speed.x, self.position.y + self.speed.y)
 
     def set_speed(self, speed: Speed):
+        self.speed_rate *= SPEED_INCREASE_RATE
         speed.multiply_by_scalar(self.speed_rate)
-        logger.info("New speed is: %s", speed.__dict__)
         self.speed.update(speed)
 
     def reset(self):
         self.position = Position(GAME_WIDTH / 2, GAME_HEIGHT / 2)
+        self.speed_rate = self.initial_speed_rate
         self.__set_random_speed()
 
     def __set_random_speed(self):

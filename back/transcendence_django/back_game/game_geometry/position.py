@@ -3,6 +3,9 @@ class Position:
         self.x: float = x
         self.y: float = y
 
+    def to_dict(self) -> dict[str, int]:
+        return {"x": int(self.x), "y": int(self.y)}
+
     def set_coordinates(self, x: float, y: float):
         self.x = x
         self.y = y

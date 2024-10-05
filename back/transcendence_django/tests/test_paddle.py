@@ -53,5 +53,3 @@
 # # #     # Check that both paddle positions have been updated accurately
 # # #     assert game_state['paddle_positions']['left'] == 20, "Left paddle did not update correctly."
 # # #     assert game_state['paddle_positions']['right'] == 20, "Right paddle did not update correctly."
-
-

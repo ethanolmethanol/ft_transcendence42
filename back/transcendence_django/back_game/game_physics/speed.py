@@ -3,8 +3,8 @@ from back_game.game_geometry.vector import Vector
 
 class Speed(Vector):
 
-    def __init__(self, speed_x: float, speed_y: float):
-        super().__init__(speed_x, speed_y)
+    def __init__(self, x: float, y: float):
+        super().__init__(x, y)
         self.absolute_velocity = self.magnitude()
 
     def update(self, new_speed: "Speed"):

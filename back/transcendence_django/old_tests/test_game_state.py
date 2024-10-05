@@ -91,7 +91,7 @@
 # def test_game_state_transition(authenticated_client, game):
 #     game.game_state = "ongoing"
 #     game.save()
-    
+
 #     data = {
 #         'ball_position': {'x': 5, 'y': 5},
 #         'ball_velocity': {'x': 1, 'y': 1},
@@ -101,7 +101,7 @@
 #     response = authenticated_client.patch(url, data=json.dumps(data), content_type='application/json')
 #     assert response.status_code == status.HTTP_200_OK
 #     assert json.loads(response.content) == {'message': 'Game state updated'}
-    
+
 #     game.game_state = "finished"
 #     game.save()
 #     url = reverse('game-detail', kwargs={'pk': game.id})  # Adjust 'game-detail' to your actual URL name
@@ -116,12 +116,12 @@
 # def test_game_result_consistency(authenticated_client, game, test_user1, test_user2):
 #     game.game_state = "ongoing"
 #     game.save()
-    
+
 #     Player.objects.filter(user=test_user1, game=game).update(score=12)
 #     Player.objects.filter(user=test_user2, game=game).update(score=10)
 #     game.game_state = "finished"
 #     game.save()
-    
+
 #     url = reverse('game-result', kwargs={'pk': game.id})  # Adjust 'game-result' to your actual URL name
 #     response = authenticated_client.get(url)
 #     assert response.status_code == status.HTTP_200_OK

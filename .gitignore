@@ -2,7 +2,13 @@
 .env
 .angular/
 db/*
+back/transcendence_django/shared_models/shared
+front/shared
+
 # See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Auto-format
+.pre-commit-config.yaml
 
 # Compiled output
 */dist

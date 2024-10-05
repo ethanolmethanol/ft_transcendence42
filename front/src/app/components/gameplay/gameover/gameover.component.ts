@@ -25,7 +25,7 @@ export class GameOverComponent {
     this.redirectToHome();
   }
 
-  public redirectToHome() {
+  private redirectToHome() {
     this.router.navigate(['/home']);
   }
 

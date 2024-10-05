@@ -4,16 +4,13 @@ import logging
 from typing import Any, Callable, Coroutine, Optional
 
 from back_game.game_arena.game import Game, GameStatus
-from back_game.game_arena.player import ENABLED, Player, PlayerStatus
+from back_game.game_arena.player import Player, PlayerStatus
 from back_game.game_arena.player_manager import PlayerManager
 from back_game.game_settings.game_constants import (
-    CREATED,
     MAXIMUM_SCORE,
-    READY_TO_START,
-    STARTED,
     TIME_START,
     TIME_START_INTERVAL,
-    WAITING,
+    GameStatus,
 )
 from django.utils import timezone
 from transcendence_django.dict_keys import (
@@ -27,6 +24,7 @@ from transcendence_django.dict_keys import (
     KICKED_PLAYERS,
     MAP,
     NB_PLAYERS,
+    OVER_CALLBACK,
     PADDLES,
     PLAYER1,
     PLAYER2,
@@ -36,7 +34,9 @@ from transcendence_django.dict_keys import (
     SCORE,
     SCORES,
     START_TIME,
+    START_TIMER_CALLBACK,
     STATUS,
+    UPDATE_CALLBACK,
 )
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class Arena:
             PLAYERS: [
                 player.player_name
                 for player in self.player_manager.players.values()
-                if player.status == PlayerStatus(ENABLED)
+                if player.status == PlayerStatus.ENABLED
             ],
             SCORES: self.player_manager.get_scores(),
             BALL: self.game.ball.to_dict(),
@@ -91,10 +91,10 @@ class Arena:
         return self.player_manager.is_full()
 
     def is_user_active_in_game(self, user_id: int) -> bool:
-        if self.game.status == GameStatus(WAITING):
+        if self.game.status == GameStatus.WAITING:
             return False
         return any(
-            player.user_id == user_id and player.status == PlayerStatus(ENABLED)
+            player.user_id == user_id and player.status == PlayerStatus.ENABLED
             for player in self.player_manager.players.values()
         )
 
@@ -112,9 +112,9 @@ class Arena:
 
     def enter_arena(self, user_id: int, player_name: str) -> None:
         self.player_manager.allow_player_enter_arena(user_id)
-        if self.get_status() == GameStatus(CREATED):
-            self.game.set_status(WAITING)
-        if self.get_status() != GameStatus(WAITING):
+        if self.get_status() == GameStatus.CREATED:
+            self.game.set_status(GameStatus.WAITING)
+        if self.get_status() != GameStatus.WAITING:
             return
         logger.info("Player %s entered the arena %s", user_id, self.id)
         if self.player_manager.is_remote:
@@ -123,10 +123,9 @@ class Arena:
             self.__enter_local_mode(user_id, player_name)
 
     async def start_game(self):
-        self.game.set_status(READY_TO_START)
+        self.game.set_status(GameStatus.READY_TO_START)
         self.__reset()
-        if self.game_update_callback is not None:
-            await self.game_update_callback({ARENA: self.to_dict()})
+        await self.send_update({ARENA: self.to_dict()})
         for time in range(0, TIME_START):
             if self.start_timer_callback is not None:
                 await self.start_timer_callback(TIME_START - time)
@@ -134,24 +133,22 @@ class Arena:
         self.game.start()
         logger.info("Game started. %s", self.id)
         self.start_time = timezone.now()
-        if self.game_update_callback is not None:
-            await self.game_update_callback({ARENA: self.to_dict()})
+        await self.send_update({ARENA: self.to_dict()})
 
     def conclude_game(self):
-        self.player_manager.finish_active_players()
+        self.player_manager.conclude()
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
 
     def rematch(self, user_id: int):
-        self.player_manager.finish_given_up_players()
         self.player_manager.rematch(user_id)
         if self.is_full():
-            self.game.set_status(READY_TO_START)
+            self.game.set_status(GameStatus.READY_TO_START)
         else:
-            self.game.set_status(WAITING)
+            self.game.set_status(GameStatus.WAITING)
 
     def player_leave(self, user_id: int):
-        if self.game.status == GameStatus(WAITING):
+        if self.game.status == GameStatus.WAITING:
             player_name = self.player_manager.get_player_name(user_id)
             self.player_manager.remove_player(player_name)
             self.game.remove_paddle(player_name)
@@ -162,7 +159,7 @@ class Arena:
         self.player_manager.player_gave_up(user_id)
 
     def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
-        if self.game.status != GameStatus(STARTED):
+        if self.game.status != GameStatus.STARTED:
             return {}
         paddle_dict: dict[str, Any] = self.game.move_paddle(player_name, direction)
         self.player_manager.update_activity_time(player_name)
@@ -183,26 +180,47 @@ class Arena:
 
     def can_be_started(self) -> bool:
         return (
-            self.game.status in [GameStatus(WAITING), GameStatus(READY_TO_START)]
+            self.game.status in [GameStatus.WAITING, GameStatus.READY_TO_START]
             and self.__has_enough_players()
         )
 
     def can_be_over(self) -> bool:
         status = self.game.status
-        if status == GameStatus(WAITING):
+        if status == GameStatus.WAITING:
             return self.player_manager.is_empty()
-        if status == GameStatus(STARTED):
+        if status == GameStatus.STARTED:
             return self.__has_enough_players() is False or self.__did_player_win()
         return False
 
     def set_status(self, status: GameStatus):
         self.game.set_status(status)
+        logger.info("Arena %s game status: %s", self.id, status)
 
     def did_player_give_up(self, user_id: int) -> bool:
         return self.player_manager.did_player_give_up(user_id)
 
+    def get_winner(self) -> Player | None:
+        return self.player_manager.winner
+
     def is_private(self) -> bool:
         return self.game.is_private
+
+    async def send_update(self, update_dict: dict[str, Any]):
+        assert self.game_update_callback, "Game update callback undefined"
+        await self.game_update_callback(update_dict)
+
+    def update_callbacks(self, callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]]):
+        if not self.__are_callbacks_set():
+            self.game_update_callback = callbacks[UPDATE_CALLBACK]
+            self.game_over_callback = callbacks[OVER_CALLBACK]
+            self.start_timer_callback = callbacks[START_TIMER_CALLBACK]
+
+    def __are_callbacks_set(self) -> bool:
+        return (
+            self.start_timer_callback is not None
+            and self.game_update_callback is not None
+            and self.game_over_callback is not None
+        )
 
     def __disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
@@ -248,16 +266,15 @@ class Arena:
             if (
                 self.player_manager.nb_humans
             ):  # modify when able to handle 2 humans + bots
-                self.__register_player(user_id, PLAYER2, False)
-            self.__register_player(user_id, PLAYER1, False)
+                self.__register_player(user_id, PLAYER1, False)
+            self.__register_player(user_id, PLAYER2, False)
 
     def __enter_remote_mode(self, user_id: int, player_name: str):
         if self.player_manager.is_player_in_game(user_id):
             self.player_manager.enable_player(user_id)
         else:
-            self.__register_player(user_id, player_name, True)
+            self.__register_player(user_id, player_name, False)
 
     def __register_player(self, user_id: int, player_name: str, is_bot: bool):
-        self.player_manager.finish_given_up_players()
-        self.player_manager.add_player(user_id, player_name, is_bot)
+        self.player_manager.register_player(user_id, player_name, is_bot)
         self.game.add_paddle(player_name)

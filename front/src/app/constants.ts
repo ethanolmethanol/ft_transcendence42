@@ -22,7 +22,7 @@ export const LOCALE = 'en-US';
 
 // INTERFACES
 
-export const CHANNEL_ID_LENGTH = 10;
+export const LOBBY_ID_LENGTH = 10;
 
 // TIME
 
@@ -32,7 +32,7 @@ export const JOIN_GAME_RETRY_DELAY_MS = 2000;
 
 export const NOT_JOINED = 1
 export const INVALID_ARENA = 2
-export const INVALID_CHANNEL = 3
+export const INVALID_LOBBY = 3
 export const NOT_ENTERED = 4
 export const GIVEN_UP = 5
 
@@ -76,20 +76,19 @@ export const OPTIONS_LABELS = ['Ball Speed', 'Paddle Size', 'Human Opponents', '
 export const BALL_SPEED_OPTIONS = ['snail', 'deer', 'lion', 'hawk', 'jet']
 export const PADDLE_SIZE_OPTIONS = ['tiny', 'small', 'medium', 'large', 'jumbo']
 export const OPPONENTS_LOCAL_OPTIONS = ['0', '1']
-export const OPPONENTS_ONLINE_OPTIONS = ['1', '2', '3']
-export const AI_OPPONENTS_LOCAL_OPTIONS = ['0', '1', '2', '3']
-export const AI_OPPONENTS_ONLINE_OPTIONS = ['0', '1', '2']
+export const OPPONENTS_ONLINE_OPTIONS = ['0', '1']
+export const AI_OPPONENTS_LOCAL_OPTIONS = ['0', '1']
+export const AI_OPPONENTS_ONLINE_OPTIONS = ['0', '1']
 export const IS_PRIVATE_OPTIONS = ['public', 'private']
 export const OPTIONS = [BALL_SPEED_OPTIONS, PADDLE_SIZE_OPTIONS, OPPONENTS_LOCAL_OPTIONS, OPPONENTS_ONLINE_OPTIONS, AI_OPPONENTS_LOCAL_OPTIONS, AI_OPPONENTS_ONLINE_OPTIONS, IS_PRIVATE_OPTIONS]
 
 export const BALL_SPEED_DEFAULT = 2
 export const PADDLE_SIZE_DEFAULT = 2
-export const NUMBER_PLAYERS_DEFAULT = 1
 export const HUMAN_OPPONENTS_DEFAULT = 1
 export const AI_OPPONENTS_DEFAULT = 0
 export const IS_PRIVATE_DEFAULT = 1
-export const DEFAULT_SETTINGS = [BALL_SPEED_DEFAULT, PADDLE_SIZE_DEFAULT, NUMBER_PLAYERS_DEFAULT, HUMAN_OPPONENTS_DEFAULT, AI_OPPONENTS_DEFAULT, AI_OPPONENTS_DEFAULT, IS_PRIVATE_DEFAULT]
-export const MAX_OPPONENTS = 3
+export const DEFAULT_SETTINGS = [BALL_SPEED_DEFAULT, PADDLE_SIZE_DEFAULT, HUMAN_OPPONENTS_DEFAULT, HUMAN_OPPONENTS_DEFAULT, AI_OPPONENTS_DEFAULT, AI_OPPONENTS_DEFAULT, IS_PRIVATE_DEFAULT]
+export const MAX_OPPONENTS = 1
 
 export const BALL_COLOR = 0
 export const PADDLE_COLOR = 1

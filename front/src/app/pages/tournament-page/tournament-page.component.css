@@ -1,0 +1,34 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #2b669a;
+}
+
+button {
+  background-color: rgb(255, 0, 0, 0.5);
+  position: absolute;
+  overflow: hidden;
+  top: 2%;
+  left: 3%;
+  z-index: 1;
+  margin: 2%
+}
+
+app-game {
+  display: none;
+}
+
+.remote-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,14 @@
+<body>
+  <button *ngIf="(gameStateService.canGiveUp$ | async)!" (click)="confirmGiveUp()">Give up</button>
+  <app-game [arenaID]="arenaID!"></app-game>
+  <section class="remote-section"
+           *ngIf="(gameStateService.dataLoaded$ | async)
+           && (gameStateService.isWaiting$ | async)
+           && (gameStateService.isRemote$ | async)">
+    <app-tournament-dashboard
+      [players]="(gameStateService.lobbyPlayers$ | async)!"
+      [capacity]="(gameStateService.lobbyCapacity$ | async)!"
+      [tournamentMap]="(gameStateService.tournamentMap$ | async)!">
+    </app-tournament-dashboard>
+  </section>
+</body>
