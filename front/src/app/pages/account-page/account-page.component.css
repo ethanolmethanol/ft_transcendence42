@@ -42,11 +42,10 @@ h4 {
   width: 40vw;
   height: 100%;
   text-align: center;
-  background-color: #262424;
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   border-radius: 10px 10px 0 0;
-  opacity: 65%;
+  background-color: rgba(38, 36, 36, 0.65);
   padding: 0 5vw;
 }
 
@@ -80,6 +79,12 @@ input {
 }
 
 .delete-button {
+  background-color: red;
+  color: #ffffff;
+}
+
+.disabled-button {
+  cursor: not-allowed;
   background-color: red;
   color: #ffffff;
 }
