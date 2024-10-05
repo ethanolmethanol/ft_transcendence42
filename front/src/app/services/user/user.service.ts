@@ -167,7 +167,7 @@ export class UserService {
     return this.http.post<any>(`${API_USER}/update_status/`, {status: status});
   }
 
-  public getStatus(): Observable<any> {
-    return this.http.get<any>(`${API_USER}/get_game_status/`);
+  public isUserPlaying(): Observable<any> {
+    return this.http.get<any>(`${API_USER}/is_user_playing/`);
   }
 }

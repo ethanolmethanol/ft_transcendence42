@@ -125,7 +125,3 @@ export const PLAYING_COLOR: string = "yellow";
 export const OFFLINE_COLOR: string = "red";
 export const PLAIN_COLOR: string = "paleturquoise";
 export const STATUS_COLORS: string[] = [PLAIN_COLOR, PLAYING_COLOR, ONLINE_COLOR, OFFLINE_COLOR];
-
-export const ONLINE_STATUS: number = 0;
-export const PLAYING_STATUS: number = 1;
-export const OFFLINE_STATUS: number = 2;

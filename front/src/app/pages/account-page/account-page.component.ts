@@ -9,7 +9,6 @@ import { ErrorMessageComponent } from "../../components/error-message/error-mess
 import { Router } from '@angular/router';
 import { AuthService } from "../../services/auth/auth.service";
 import { HttpErrorResponse } from '@angular/common/http';
-import { PLAYING_STATUS } from "../../constants";
 import { Observable } from 'rxjs';
 
 @Component({
@@ -56,9 +55,9 @@ export class AccountPageComponent implements OnInit {
   public updateUsername() {
     this.errorMessage = "";
 
-    this.checkUserStatus().subscribe({
+    this.isUserPlaying().subscribe({
       next: (status: any) => {
-        if (status.status == PLAYING_STATUS) {
+        if (status.status === true) {
           this.handleStatusError();
         } else if (this.usernameForm.valid) {
           this.performUsernameUpdate();
@@ -72,8 +71,8 @@ export class AccountPageComponent implements OnInit {
     });
   }
 
-  private checkUserStatus(): Observable<number> {
-    return this.userService.getStatus();
+  private isUserPlaying(): Observable<number> {
+    return this.userService.isUserPlaying();
   }
 
   private performUsernameUpdate() {
