@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import aiohttp
 from typing import Any
 
 from back_game.game_arena.arena import Arena
@@ -47,9 +48,10 @@ class LobbyManager:
                 return
             arena_id = arena.id
         await lobby.add_user_into_arena(user_id, arena_id)
+        await self.update_user_playing_status(user_id, True)
         table[user_id] = lobby
 
-    def delete_user_from_lobby(self, user_id: int, lobby: Lobby = None):
+    async def delete_user_from_lobby(self, user_id: int, lobby: Lobby = None):
         try:
             if lobby is None:
                 lobby = self.user_game_table.get(user_id)
@@ -58,18 +60,19 @@ class LobbyManager:
             self.user_game_table.pop(user_id)
             if lobby is not None:
                 lobby.delete_user(user_id)
-                if lobby.can_be_deleted():
-                    self.delete_lobby(lobby.id)
+                await self.update_user_playing_status(user_id, False)
+            if lobby.can_be_deleted():
+                await self.delete_lobby(lobby.id)
                 logger.info("User %s deleted from user_game_table", user_id)
         except KeyError:
             pass
 
-    def delete_lobby(self, lobby_id: str):
+    async def delete_lobby(self, lobby_id: str):
         lobby = self.get_lobby(lobby_id)
         if lobby is not None:
             if lobby.users:
                 for user_id in list(lobby.users.keys()):
-                    self.delete_user_from_lobby(user_id, lobby)
+                    await self.delete_user_from_lobby(user_id, lobby)
             else:
                 lobby.disable()
                 self.lobbies.pop(lobby_id)
@@ -115,7 +118,7 @@ class LobbyManager:
     async def run_lobby_loop(self, lobby: Lobby):
         while lobby and not lobby.can_be_deleted():
             await asyncio.sleep(LOBBY_LOOP_INTERVAL)
-        self.delete_lobby(lobby.id)
+        await self.delete_lobby(lobby.id)
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         lobby_dict = self.__get_available_lobby(is_tournament=True)
@@ -167,7 +170,7 @@ class LobbyManager:
             return lobby.get_arena(arena_id)
         return None
 
-    def leave_arena(self, user_id: int, lobby_id: str, arena_id: str):
+    async def leave_arena(self, user_id: int, lobby_id: str, arena_id: str):
         lobby = self.get_lobby(lobby_id)
         if lobby is None:
             return
@@ -200,6 +203,23 @@ class LobbyManager:
         if lobby is None:
             return None
         return lobby.get_arena_from_user_id(user_id)
+
+    async def update_user_playing_status(self, user_id, is_playing):
+        url = f'https://back-user/user/update_playing_status/'
+        params = {
+            'user_id': user_id,
+            'is_playing': int(is_playing),
+        }
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url, params=params, ssl=False) as response:
+                    if response.status == 200:
+                        logger.info(f"Successfully updated playing status for user {user_id}")
+                    else:
+                        logger.error(f"Failed to update playing status: {response}")
+            except aiohttp.ClientError as e:
+                logger.error(f"Error updating playing status: {e}")
 
     def __get_available_lobby(
         self, is_tournament: bool = False

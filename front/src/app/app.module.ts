@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ConnectionService } from "./services/connection/connection.service";
 
+
 @NgModule({
   providers: [
     ConnectionService,

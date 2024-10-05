@@ -39,8 +39,8 @@ class OAuthBackend:
             self._clear_cache(state)
             token_data = token_response.json()
             user, created = self._process_token_data(token_data)
-            if not created:
-                login(request, user)
+            if user and not created:
+                user.login_user(request)
             token_response.user_id = user.id
             token_response.new_user_created = created
 

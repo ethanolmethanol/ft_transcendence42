@@ -15,9 +15,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from shared_models.avatar_uploader import AvatarUploader
-from shared_models.constants import OFFLINE_STATUS
 from shared_models.models import CustomUser, Profile
-from transcendence_django.dict_keys import USER_ID
+from transcendence_django.dict_keys import USER_ID, IS_PLAYING
 
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 
@@ -237,29 +236,6 @@ def update_avatar(request) -> JsonResponse:
     )
 
 
-@require_http_methods(["POST"])
-@csrf_protect
-@login_required
-def update_status(request) -> JsonResponse:
-    try:
-        data = json.loads(request.body)
-        player_status = data.get("status")
-        user_id = request.user.id
-
-        user = CustomUser.objects.get(pk=user_id)
-        if user.status != OFFLINE_STATUS:
-            user.update_status(player_status)
-        return JsonResponse(
-            {"detail": "User status successfully updated."}, status=status.HTTP_200_OK
-        )
-    except CustomUser.DoesNotExist:
-        return JsonResponse(
-            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
-        )
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON."}, status=400)
-
-
 @require_http_methods(["GET"])
 @csrf_protect
 @login_required
@@ -290,4 +266,27 @@ def get_username(request) -> JsonResponse:
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse(
             {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
+        )
+
+
+@require_http_methods(["GET"])
+def update_playing_status(request) -> JsonResponse:
+    try:
+        user_id = request.GET.get(USER_ID)
+        is_playing = request.GET.get(IS_PLAYING)
+
+        if not user_id or not is_playing:
+            return JsonResponse(
+                {"error": "user_id or is_playing parameter is missing"},
+                status=HTTPStatus.BAD_REQUEST
+            )
+
+        user = CustomUser.objects.get(pk=user_id)
+        user.is_playing = bool(int(is_playing))
+        logger.info("New playing status: " + str(is_playing))
+        user.save()
+        return JsonResponse({"message": "playing status updated"}, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )

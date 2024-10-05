@@ -129,12 +129,12 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.send_arena_data()
 
     async def leave(self, _):
-        self.game.leave()
+        await self.game.leave()
         await self.send_players()
         await self.send_message(f"{self.game.user_id} has left the game.")
 
     async def give_up(self, _):
-        self.game.give_up()
+        await self.game.give_up()
         await self.send_message(f"{self.game.user_id} has given up.")
         await self.send_update({GIVE_UP: self.game.user_id})
         await self.send_players()

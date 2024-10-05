@@ -13,6 +13,8 @@ from back_game.game_settings.game_constants import (
     GameStatus,
 )
 from django.utils import timezone
+
+
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,

@@ -13,14 +13,12 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
-    OFFLINE_STATUS,
-    ONLINE_STATUS,
-    PLAYING_STATUS,
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import (
@@ -192,7 +190,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     login42 = models.CharField(max_length=150, null=True, blank=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
     friends = models.ManyToManyField("self", symmetrical=True, blank=True)  # type: ignore
-    status = models.IntegerField(default=ONLINE_STATUS)  # type: ignore
+    is_playing = models.BooleanField(default=False)  # type: ignore
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
@@ -203,6 +201,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     time_played = models.JSONField(default=DEFAULT_TIME_PLAYED)
     win_loss_tie = models.JSONField(default=DEFAULT_WIN_LOSS_TIE)
     game_counter = models.JSONField(default=DEFAULT_GAME_COUNTER)
+    last_seen = models.DateTimeField(default=timezone.now)
+    is_authenticated = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -218,6 +218,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.username = new_username
         self.save()
 
+    def update_last_seen(self):
+        if timezone.now() - self.last_seen >= timedelta(minutes=5):
+            self.last_seen = timezone.now()
+            self.save()
+
     def store_tokens(self, token_data):
         if self.oauth_token is None:
             # pylint: disable=no-member
@@ -225,18 +230,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.oauth_token.store_tokens(token_data)
         self.save()
 
-    def update_status(self, status: int):
-        self.status = status
-        self.save()
-
     def logout_user(self, request):
         self.__clear_tokens()
-        self.update_status(OFFLINE_STATUS)
+        self.is_authenticated = False
+        self.save()
         logout(request)
 
     def login_user(self, request):
         login(request, self)
-        self.update_status(ONLINE_STATUS)
+        self.is_authenticated = True
+        self.save()
 
     def delete_account(self):
         avatar_uploader = AvatarUploader()
@@ -269,21 +272,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_playing_friends(self):
         # pylint: disable=no-member
-        return self.friends.filter(status=PLAYING_STATUS).values_list(
+        return self.friends.filter(is_authenticated=True, is_playing=True).values_list(
             "username", flat=True
         )
 
     def get_online_friends(self):
         # pylint: disable=no-member
-        return self.friends.filter(status=ONLINE_STATUS).values_list(
+        timeout = timezone.now() - timedelta(minutes=5)
+        return self.friends.filter(is_authenticated=True, last_seen__gte=timeout, is_playing=False).values_list(
             "username", flat=True
         )
 
     def get_offline_friends(self):
         # pylint: disable=no-member
-        return self.friends.filter(status=OFFLINE_STATUS).values_list(
-            "username", flat=True
-        )
+        timeout = timezone.now() - timedelta(minutes=5)
+        return self.friends.filter(
+            Q(is_authenticated=False) | Q(last_seen__lt=timeout),
+            is_playing=False
+        ).values_list("username", flat=True)
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)

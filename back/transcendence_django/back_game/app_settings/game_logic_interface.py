@@ -46,21 +46,21 @@ class GameLogicInterface:
         self.user_id = user_id
         self.has_joined = True
 
-    def leave(self):
+    async def leave(self):
         if not self.has_joined:
             raise LobbyError(NOT_JOINED, "Attempt to leave without joining.")
         try:
-            self.monitor.leave_arena(self.user_id, self.lobby.id, self.arena_id)
+            await self.monitor.leave_arena(self.user_id, self.lobby.id, self.arena_id)
         except KeyError as e:
             raise LobbyError(
                 NOT_ENTERED, "User cannot leave or has already left this arena."
             ) from e
         self.has_joined = False
 
-    def give_up(self):
+    async def give_up(self):
         if not self.has_joined:
             raise LobbyError(NOT_JOINED, "Attempt to give up without joining.")
-        self.monitor.give_up(self.user_id, self.lobby.id, self.arena_id)
+        await self.monitor.give_up(self.user_id, self.lobby.id, self.arena_id)
         self.has_joined = False
 
     def rematch(self):

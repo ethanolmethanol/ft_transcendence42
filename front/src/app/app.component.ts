@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SignInPageComponent } from "./pages/sign-in-page/sign-in-page.component";
 import { UserService } from "./services/user/user.service";
-import { FriendService } from "./services/friend/friend.service";
 
 @Component({
   selector: 'app-root',
@@ -12,9 +11,13 @@ import { FriendService } from "./services/friend/friend.service";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  constructor(private router: Router, private userService: UserService, private friendService: FriendService) {
+  constructor(
+    private router: Router,
+    private userService: UserService,
+  ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        // this.heartbeatService.sendHeartBeat().subscribe();
         if (event.url === '/home') {
           setTimeout(() => {
             this.userService.refreshUserData().then(() => {

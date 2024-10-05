@@ -71,6 +71,7 @@ PLAYER2 = "Player2"
 
 # Game
 STATUS = "status"
+IS_PLAYING = "is_playing"
 
 # Player manager
 PLAYER_GAVE_UP = "The player has given up."

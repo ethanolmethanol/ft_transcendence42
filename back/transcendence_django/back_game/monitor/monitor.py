@@ -90,11 +90,11 @@ class Monitor:
         arena.enter_arena(user_id, player_name)
         await self.add_user_to_lobby(lobby_id, arena_id, user_id)
 
-    def give_up(self, user_id: int, lobby_id: str, arena_id: str | None):
+    async def give_up(self, user_id: int, lobby_id: str, arena_id: str | None):
         if arena_id is not None:
             arena: Arena = self.get_arena(lobby_id, arena_id)
             arena.player_gave_up(user_id)
-        self.lobby_manager.delete_user_from_lobby(user_id)
+        await self.lobby_manager.delete_user_from_lobby(user_id)
 
     def rematch(self, user_id: int, lobby_id: str, arena_id: str):
         arena: Arena = self.get_arena(lobby_id, arena_id)
@@ -118,9 +118,9 @@ class Monitor:
         arena: Arena = self.get_arena(lobby_id, arena_id)
         return arena.move_paddle(player_name, direction)
 
-    def leave_arena(self, user_id: int, lobby_id: str, arena_id: str | None):
+    async def leave_arena(self, user_id: int, lobby_id: str, arena_id: str | None):
         if arena_id is not None:
-            self.lobby_manager.leave_arena(user_id, lobby_id, arena_id)
+            await self.lobby_manager.leave_arena(user_id, lobby_id, arena_id)
 
     def is_user_active_in_game(
         self, user_id: int, lobby_id: str, arena_id: str

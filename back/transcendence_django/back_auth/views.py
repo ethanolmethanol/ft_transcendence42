@@ -73,6 +73,8 @@ def logout_view(request):
 def is_logged_view(request):
     try:
         if request.user.is_authenticated:
+            user = CustomUser.objects.get(pk=request.user.id)
+            user.update_last_seen()
             return Response({"detail": "User is logged in."}, status=status.HTTP_200_OK)
         return Response(
             {"detail": "User not found"},
@@ -81,6 +83,11 @@ def is_logged_view(request):
     except ValueError as e:
         return Response(
             {"detail": "User isn't logged in: " + str(e)},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    except CustomUser.DoesNotExist:
+        return Response(
+            {"error": "User does not exist."},
             status=status.HTTP_401_UNAUTHORIZED,
         )
 

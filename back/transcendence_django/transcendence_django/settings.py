@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     "health_check.storage",
     "health_check.contrib.migrations",
     "django_extensions",
+    "requests",
+    "aiohttp",
 ]
 
 MIDDLEWARE = [
