@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Any, Callable, Coroutine, Optional
 
@@ -5,11 +6,6 @@ from back_game.game_arena.arena import Arena
 from back_game.monitor.lobby_manager import LobbyManager
 from django.apps import apps
 from django.conf import settings
-from transcendence_django.dict_keys import (
-    OVER_CALLBACK,
-    START_TIMER_CALLBACK,
-    UPDATE_CALLBACK,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +40,8 @@ class Monitor:
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         lobby_dict = await self.lobby_manager.join_tournament(user_id)
+        if lobby_dict is None:
+            raise ValueError("User is already in a lobby.")
         return lobby_dict
 
     def get_arena(self, lobby_id: str, arena_id: str) -> Arena:
@@ -56,7 +54,7 @@ class Monitor:
         return self.lobby_manager.get_arena_from_user_id(user_id)
 
     def is_user_in_lobby(self, user_id: int) -> bool:
-        return self.lobby_manager.user_game_table.get(user_id) is not None
+        return self.lobby_manager.get_lobby_from_user_id(user_id) is not None
 
     async def add_user_to_lobby(
         self, lobby_id: str, arena_id: str | None, user_id: int
@@ -77,9 +75,7 @@ class Monitor:
         callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]],
     ):
         arena: Arena = self.get_arena(lobby_id, arena_id)
-        arena.game_update_callback = callbacks[UPDATE_CALLBACK]
-        arena.game_over_callback = callbacks[OVER_CALLBACK]
-        arena.start_timer_callback = callbacks[START_TIMER_CALLBACK]
+        arena.update_callbacks(callbacks)
 
     async def join_arena(
         self, user_id: int, player_name: str, lobby_id: str, arena_id: str
@@ -118,9 +114,9 @@ class Monitor:
         arena: Arena = self.get_arena(lobby_id, arena_id)
         return arena.move_paddle(player_name, direction)
 
-    async def leave_arena(self, user_id: int, lobby_id: str, arena_id: str | None):
+    def leave_arena(self, user_id: int, lobby_id: str, arena_id: str | None):
         if arena_id is not None:
-            await self.lobby_manager.leave_arena(user_id, lobby_id, arena_id)
+            self.lobby_manager.leave_arena(user_id, lobby_id, arena_id)
 
     def is_user_active_in_game(
         self, user_id: int, lobby_id: str, arena_id: str

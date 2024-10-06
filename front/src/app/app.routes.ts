@@ -21,6 +21,7 @@ export const routes: Routes = [
   { path: 'account', component: AccountPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'custom', component: CustomPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'friends', component: FriendsPageComponent, pathMatch: 'full', canActivate: [AuthGuard] },  { path: 'local', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
+  { path: 'local', component: CreateGamePageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'local/waiting', component: MonitorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'local/:lobby_id/:arena_id', component: GamePageComponent, pathMatch: 'prefix', canActivate: [AuthGuard], data: { gameType: 'local' } },
   { path: 'online', component: OnlineGameSelectorPageComponent, pathMatch: 'full', canActivate: [AuthGuard], data: { gameType: 'online' } },

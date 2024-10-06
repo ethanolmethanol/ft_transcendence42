@@ -1,5 +1,5 @@
 import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
-import validationRules from '../../../validation-rules.json';
+import validationRules from '../../../shared/validation-rules.json';
 
 export function usernameValidator(): ValidatorFn {
   return (control: AbstractControl): { [key: string]: any } | null => {

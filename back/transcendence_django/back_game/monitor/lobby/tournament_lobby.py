@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from back_game.game_arena.arena import Arena
 from back_game.game_arena.game import GameStatus
@@ -23,15 +23,15 @@ from transcendence_django.dict_keys import (
 
 logger = logging.getLogger(__name__)
 
-RoundType = Dict[str, list[dict[str, Any] | None]]
-RoundMapType = Dict[str, RoundType]
+RoundType = List[list[dict[str, Any] | None]]
+RoundMapType = List[RoundType]
 
 
 class TournamentLobby(Lobby):
 
     def __init__(self, players_specs: dict[str, int]):
         super().__init__(players_specs)
-        logger.info("Tournament lobby created: %s", TOURNAMENT_MAX_ROUND)
+        logger.debug("Tournament lobby created: %s", TOURNAMENT_MAX_ROUND)
         for _ in range(TOURNAMENT_ARENA_COUNT):
             self.add_arena()
         self.user_count: int = self.players_specs[NB_PLAYERS] * TOURNAMENT_ARENA_COUNT
@@ -63,7 +63,7 @@ class TournamentLobby(Lobby):
         if len(self.users) == 0:
             return True
         return (
-            self.are_all_arenas_in_status_list([GameStatus(DEAD)])
+            self.are_all_arenas_in_status_list([GameStatus.DEAD])
             and self.round_count == TOURNAMENT_MAX_ROUND + 1
         )
 
@@ -71,11 +71,11 @@ class TournamentLobby(Lobby):
         if 1 <= self.round_count <= TOURNAMENT_MAX_ROUND:
             self.__set_next_round_arenas()
         self.round_count += 1
-        logger.info("Tournament round %s", self.round_count)
+        logger.debug("Tournament round %s", self.round_count)
 
     async def arena_loop(self, arena: Arena):
         while self.round_count <= TOURNAMENT_MAX_ROUND and self.is_active:
-            logger.info("Arena %s loop", arena.id)
+            logger.debug("Arena %s loop", arena.id)
             await super().arena_loop(arena)
             await asyncio.sleep(ARENA_LOOP_INTERVAL)
 
@@ -88,7 +88,7 @@ class TournamentLobby(Lobby):
             while not self.can_round_be_set():
                 if not self.is_active:
                     return
-                logger.info("Waiting for next round")
+                logger.debug("Waiting for next round")
                 await asyncio.sleep(NEXT_ROUND_LOOP_INTERVAL)
 
     async def send_assignations(self):
@@ -104,7 +104,7 @@ class TournamentLobby(Lobby):
 
     def get_tournament_map(self) -> Dict[str, RoundMapType | str | None]:
         if self.winner:
-            logger.info("Tournament winner %s", self.winner.user_id)
+            logger.debug("Tournament winner %s", self.winner.user_id)
         return {
             ROUNDS_MAP: self.rounds_map,
             TOURNAMENT_WINNER: self.winner.user_id if self.winner else None,
@@ -112,42 +112,40 @@ class TournamentLobby(Lobby):
 
     async def __send_update(self, data: dict[str, Any]):
         if self.update_sender is not None:
-            logger.info("Sending assignations: %s", data)
+            logger.debug("Sending assignations: %s", data)
             await self.update_sender(data)
 
     def __get_initial_rounds_map(self) -> RoundMapType:
-        rounds_map: RoundMapType = {}
+        rounds_map: RoundMapType = []
         for i in range(TOURNAMENT_MAX_ROUND):
-            round_players: RoundType = {}
+            round_players: RoundType = []
             arena_count = TOURNAMENT_ARENA_COUNT // 2**i
             for j in range(arena_count):
-                round_players[str(j)] = [
+                round_players.append([
                     None for _ in range(self.players_specs[NB_PLAYERS])
-                ]
-            rounds_map[str(i + 1)] = round_players
+                ])
+            rounds_map.append(round_players)
         return rounds_map
 
-    def __get_current_round_arenas(self, round_count: int) -> RoundMapType:
-        arena_count: int = len(self.rounds_map[str(round_count)])
-        round_arenas: RoundMapType = {}
+    def __get_current_round_arenas(self) -> RoundMapType:
+        arena_count: int = len(self.rounds_map[self.round_count])
+        round_map: RoundMapType = []
         user_ids = list(self.users.keys())
         user_index = 0
-        for arena_id in range(arena_count):
-            round_arenas[str(arena_id)] = []
+        for _ in range(arena_count):
+            round_arena = []
             for _ in range(self.players_specs[NB_PLAYERS]):
                 if user_index < len(user_ids):
-                    round_arenas[str(arena_id)].append(user_ids[user_index])
+                    round_arena.append(user_ids[user_index])
                     user_index += 1
                 else:
-                    round_arenas[str(arena_id)].append(None)
-        return round_arenas
+                    round_arena.append(None)
+            round_map.append(round_arena)
+        return round_map
 
     def __update_rounds_map(self):
-        next_round: int = self.round_count + 1
-        if next_round <= TOURNAMENT_MAX_ROUND:
-            self.rounds_map[str(next_round)] = self.__get_current_round_arenas(
-                next_round
-            )
+        if self.round_count < TOURNAMENT_MAX_ROUND:
+            self.rounds_map[self.round_count] = self.__get_current_round_arenas()
 
     def __set_next_round_arenas(self):
         winners: list[Player | None] = self.__get_winners()
@@ -166,10 +164,10 @@ class TournamentLobby(Lobby):
         for arena in self.arenas.values():
             winner = arena.get_winner()
             if winner:
-                logger.info("Arena %s winner: %s", arena.id, winner.player_name)
+                logger.debug("Arena %s winner: %s", arena.id, winner.player_name)
                 winners.append(winner)
             else:
-                logger.info(
+                logger.debug(
                     "Arena %s has no winner and has %s status",
                     arena.id,
                     arena.get_status(),
@@ -177,7 +175,7 @@ class TournamentLobby(Lobby):
         return winners
 
     def __assign_users_to_arenas(self, winners: list[Player | None]):
-        logger.info(
+        logger.debug(
             "Assign users to arenas: winners (%s)",
             [winner.player_name for winner in winners],
         )

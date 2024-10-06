@@ -1,7 +1,13 @@
 .dashboard-container {
   padding: 2em;
-  max-width: 1200px; /* Set a maximum width */
-  margin: 0 auto; /* Center the container */
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2%;
+  background-color: #1c1c1c;
+  border-radius: 8px;
+  width: 100%;
 }
 
 h4 {

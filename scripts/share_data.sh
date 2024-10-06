@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cp -rf ./shared/* front/
-cp -rf ./shared/* back/transcendence_django/shared_models/
+cp -r ./shared front/
+cp -r ./shared back/transcendence_django/shared_models/

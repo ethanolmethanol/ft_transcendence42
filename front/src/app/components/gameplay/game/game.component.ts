@@ -31,19 +31,19 @@ import { Position } from "../../../interfaces/position.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe, NgForOf, NgIf } from "@angular/common";
 import { ConnectionService } from "../../../services/connection/connection.service";
 import { UserService } from "../../../services/user/user.service";
 import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
-import {GameStateService} from "../../../services/game-state/game-state.service";
-import {isEmpty, map, Subscription, timeout} from "rxjs";
-import {ActivatedRoute, Router} from "@angular/router";
-import {AssignationsResponse} from "../../../interfaces/assignation.interface";
-import {User} from "../../../interfaces/user";
-import {isEmptyObject} from "../../../utils/object";
+import { GameStateService } from "../../../services/game-state/game-state.service";
+import { map, Subscription } from "rxjs";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AssignationsResponse } from "../../../interfaces/assignation.interface";
+import { User } from "../../../interfaces/user";
+import { isEmptyObject } from "../../../utils/object";
 import { AvatarComponent } from "../../avatar/avatar.component";
 
 interface PaddleUpdateResponse {
@@ -158,7 +158,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public updateScale(): void {
     const gameContainer = this.el.nativeElement.querySelector('.game-container');
-    const scale = Math.min(window.innerWidth / 1000, window.innerHeight / 1000);
+    const scale = Math.min(window.innerWidth / 1800, window.innerHeight / 1000);
     gameContainer.style.transform = `scale(${scale})`;
   }
 
@@ -306,9 +306,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     const arena = response[userID];
     if (arena && arena.status != DYING && arena.status != DEAD) {
         console.log('Redirecting to:', this.lobbyID, arena.id);
-        setTimeout(() => {
-          this.router.navigate(['/online/tournament', this.lobbyID, arena.id]);
-        }, 0); // 3000 milliseconds = 3 seconds
+        this.router.navigate(['/online/tournament', this.lobbyID, arena.id]);
     }
   }
 

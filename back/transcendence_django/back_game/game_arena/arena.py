@@ -26,6 +26,7 @@ from transcendence_django.dict_keys import (
     KICKED_PLAYERS,
     MAP,
     NB_PLAYERS,
+    OVER_CALLBACK,
     PADDLES,
     PLAYER1,
     PLAYER2,
@@ -35,7 +36,9 @@ from transcendence_django.dict_keys import (
     SCORE,
     SCORES,
     START_TIME,
+    START_TIMER_CALLBACK,
     STATUS,
+    UPDATE_CALLBACK,
 )
 
 logger = logging.getLogger(__name__)
@@ -207,6 +210,19 @@ class Arena:
     async def send_update(self, update_dict: dict[str, Any]):
         assert self.game_update_callback, "Game update callback undefined"
         await self.game_update_callback(update_dict)
+
+    def update_callbacks(self, callbacks: dict[str, Optional[Callable[[Any], Coroutine[Any, Any, None]]]]):
+        if not self.__are_callbacks_set():
+            self.game_update_callback = callbacks[UPDATE_CALLBACK]
+            self.game_over_callback = callbacks[OVER_CALLBACK]
+            self.start_timer_callback = callbacks[START_TIMER_CALLBACK]
+
+    def __are_callbacks_set(self) -> bool:
+        return (
+            self.start_timer_callback is not None
+            and self.game_update_callback is not None
+            and self.game_over_callback is not None
+        )
 
     def __disable_player(self, user_id: int):
         self.player_manager.disable_player(user_id)
