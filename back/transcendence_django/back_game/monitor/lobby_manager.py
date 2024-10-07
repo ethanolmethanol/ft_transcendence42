@@ -23,6 +23,7 @@ from transcendence_django.dict_keys import (
     LOBBY_ID,
     OPTIONS,
     USER_ID,
+    IS_PLAYING,
 )
 
 logger = logging.getLogger(__name__)
@@ -213,8 +214,8 @@ class LobbyManager:
     async def update_user_playing_status(self, user_id, is_playing):
         url = f'https://back-user/user/update_playing_status/'
         params = {
-            'user_id': user_id,
-            'is_playing': int(is_playing),
+            USER_ID: user_id,
+            IS_PLAYING: int(is_playing),
         }
 
         async with aiohttp.ClientSession() as session:
