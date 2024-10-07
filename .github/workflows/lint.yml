@@ -32,7 +32,7 @@ jobs:
           key: ${{ runner.os }}-pydeps
       - name: Create virtual environment and install dependencies
         run: |
-          python3 -m venv venv
+          python -m venv venv
           venv/bin/pip install django django-stubs djangorestframework djangorestframework-stubs django-cors-headers django-health-check psycopg[binary]
       - name: Copy the dependencies
         run: |
