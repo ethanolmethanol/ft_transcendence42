@@ -79,7 +79,8 @@ class Monitor:
     async def join_arena(
         self, user_id: int, player_name: str, lobby_id: str, arena_id: str
     ):
-        if self.is_user_active_in_game(user_id, lobby_id, arena_id):
+        found_arena: Arena | None = self.lobby_manager.get_arena_from_user_id(user_id)
+        if found_arena and found_arena.id != arena_id:
             raise ValueError("User already in another arena")
         arena: Arena = self.get_arena(lobby_id, arena_id)
         arena.enter_arena(user_id, player_name)

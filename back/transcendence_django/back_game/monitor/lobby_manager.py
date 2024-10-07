@@ -1,10 +1,9 @@
 import asyncio
 import logging
 from http import HTTPStatus
-
-import aiohttp
 from typing import Any
 
+import aiohttp
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     LOBBY_LOOP_INTERVAL,
@@ -20,10 +19,10 @@ from transcendence_django.dict_keys import (
     AI_OPPONENTS_LOCAL,
     AI_OPPONENTS_ONLINE,
     ARENA_ID,
+    IS_PLAYING,
     LOBBY_ID,
     OPTIONS,
     USER_ID,
-    IS_PLAYING,
 )
 
 logger = logging.getLogger(__name__)
@@ -121,7 +120,7 @@ class LobbyManager:
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
         lobby_dict = self.__get_available_lobby(user_id, is_tournament=True)
-        if lobby_dict is None:
+        if lobby_dict is None and self.get_lobby_from_user_id(user_id) is None:
             await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
             return self.get_lobby_dict_from_user_id(user_id)
         return lobby_dict
