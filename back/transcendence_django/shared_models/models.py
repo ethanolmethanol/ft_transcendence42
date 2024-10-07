@@ -213,7 +213,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return str(self.username)
 
     def __eq__(self, other):
-        return self.id == other.id
+        return isinstance(other, CustomUser) and self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
 
     def set_username(self, new_username):
         avatar_uploader = AvatarUploader()
