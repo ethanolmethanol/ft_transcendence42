@@ -9,7 +9,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Node has swap in (instance {{ $labels.instance }})"
-        description: "<!lobby>  VM SWAP (in)  LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  VM SWAP (in)  LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: NodeHasSwapOut
       expr: irate(node_vmstat_pswpin{job="prod"}[5m]) > 0 
@@ -19,7 +19,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Node has swap out (instance {{ $labels.instance }})"
-        description: "<!lobby>  VM SWAP (out)  LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  VM SWAP (out)  LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: OutOfInodes
       expr: node_filesystem_files_free{mountpoint ="/rootfs"} / node_filesystem_files{mountpoint ="/rootfs"} * 100 < 10
@@ -29,7 +29,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Out of inodes (instance {{ $labels.instance }})"
-        description: "<!lobby>  Disk almost out of inodes (< 10% remaining)    VALUE = {{ humanize $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Disk almost out of inodes (< 10% remaining)    VALUE = {{ humanize $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
 
     - alert: OutOfMemory
@@ -40,7 +40,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Out of memory (instance {{ $labels.instance }})"
-        description: "<!lobby>  Host almost out of RAM (< 10% remaining)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Host almost out of RAM (< 10% remaining)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
 
     - alert: UnusualNetworkThroughputIn
@@ -51,7 +51,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Unusual network throughput in (instance {{ $labels.instance }})"
-        description: "<!lobby>  Network interfaces receiving unusually high amounts of data (> 100 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Network interfaces receiving unusually high amounts of data (> 100 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: UnusualNetworkThroughputOut
       expr: sum by (instance) (irate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100
@@ -61,7 +61,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Unusual network throughput out (instance {{ $labels.instance }})"
-        description: "<!lobby>  Network interfaces sending unusually high amounts of data (> 100 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Network interfaces sending unusually high amounts of data (> 100 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: UnusualDiskReadRate
       expr: sum by (instance) (irate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50
@@ -71,7 +71,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Unusual disk read rate (instance {{ $labels.instance }})"
-        description: "<!lobby>  Disk reads unusually high amounts of data (> 50 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Disk reads unusually high amounts of data (> 50 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: UnusualDiskWriteRate
       expr: sum by (instance) (irate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50
@@ -81,7 +81,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Unusual disk write rate (instance {{ $labels.instance }})"
-        description: "<!lobby>  Disk writes unusually high amounts of data (> 50 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Disk writes unusually high amounts of data (> 50 MB/s)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: OutOfDiskSpace
       expr: node_filesystem_free_bytes{mountpoint ="/"} / node_filesystem_size_bytes{mountpoint ="/"} * 100 < 20
@@ -91,7 +91,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Out of disk space (instance {{ $labels.instance }})"
-        description: "<!lobby>  Disk almost out of space (< 20% remaining)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Disk almost out of space (< 20% remaining)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: UnusualDiskReadLatency
       expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 100
@@ -101,7 +101,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Unusual disk read latency (instance {{ $labels.instance }})"
-        description: "<!lobby> Disk has unusually high latency  (read operations > 100ms)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel> Disk has unusually high latency  (read operations > 100ms)    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: CpuLoad
       expr: node_load15 / (count without (cpu, mode) (node_cpu_seconds_total{mode="system"})) > 2
@@ -111,7 +111,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "CPU load (instance {{ $labels.instance }})"
-        description: "<!lobby> CPU load (15m) is high    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel> CPU load (15m) is high    VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: ContextSwitching
       expr: rate(node_context_switches_total[5m]) > ((count without (cpu, mode) (node_cpu_seconds_total{mode="system"})) * 1500) 
@@ -121,7 +121,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Context switching (instance {{ $labels.instance }})"
-        description: "<!lobby>  Host context switching unusually high   VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
+        description: "<!channel>  Host context switching unusually high   VALUE = {{ $value }}    LABELS: {{ $labels.job }} : {{ $labels.instance }}"
 
     - alert: Health endpoint down
       expr: probe_success == 0
@@ -131,7 +131,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "Health endpoint is down"
-        description: "<!lobby>  URL does not respond : {{ $labels.addresse }}"
+        description: "<!channel>  URL does not respond : {{ $labels.addresse }}"
 
     - alert: Certificate expired
       expr: probe_ssl_earliest_cert_expiry{job="blackbox"} - time() < 86400 * 30
@@ -141,7 +141,7 @@ groups:
       annotations:
         identifier: "{{ $labels.instance }}"
         summary: "SSL certificate expire"
-        description: "<!lobby>  SSL certificate expires in 3 months  {{ $labels.addresse }}"
+        description: "<!channel>  SSL certificate expires in 3 months  {{ $labels.addresse }}"
 
 - name: GoogleCadvisor Alerts
 

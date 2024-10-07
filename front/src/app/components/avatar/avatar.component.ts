@@ -9,6 +9,7 @@ import {
   DEFAULT_AVATAR_URL,
   PLAIN,
   STATUS_COLORS,
+  MAX_FILE_SIZE
 } from "../../constants";
 
 @Component({
@@ -48,7 +49,7 @@ export class AvatarComponent implements OnInit {
   public onFileChange(event: any) {
       const file: File = event.target.files[0];
 
-      if (file) {
+      if (file && file.size < MAX_FILE_SIZE) {
         this.fileUrl = URL.createObjectURL(file);
         this.userService.updateAvatar(file).subscribe({
           next: (response: any): void => {
@@ -59,6 +60,8 @@ export class AvatarComponent implements OnInit {
           }
         });
       }
+      else
+        console.log("File size too large")
       this.resetInput();
   }
 

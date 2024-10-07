@@ -19,6 +19,7 @@ from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
+    TIME_OUT_ONLINE,
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import (
@@ -202,7 +203,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     win_loss_tie = models.JSONField(default=DEFAULT_WIN_LOSS_TIE)
     game_counter = models.JSONField(default=DEFAULT_GAME_COUNTER)
     last_seen = models.DateTimeField(default=timezone.now)
-    is_authenticated = models.BooleanField(default=False)
+    # is_authenticated = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -212,6 +213,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.username)
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def set_username(self, new_username):
         avatar_uploader = AvatarUploader()
         avatar_uploader.update_avatar_filename(self.username, new_username)
@@ -219,9 +223,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.save()
 
     def update_last_seen(self):
-        if timezone.now() - self.last_seen >= timedelta(minutes=5):
-            self.last_seen = timezone.now()
-            self.save()
+        # if timezone.now() - self.last_seen >= timedelta(minutes=5):
+        self.last_seen = timezone.now()
+        self.save()
 
     def store_tokens(self, token_data):
         if self.oauth_token is None:
@@ -232,14 +236,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def logout_user(self, request):
         self.__clear_tokens()
-        self.is_authenticated = False
-        self.save()
+        # self.is_authenticated = False
+        # self.save()
         logout(request)
 
     def login_user(self, request):
         login(request, self)
-        self.is_authenticated = True
-        self.save()
+        # self.is_authenticated = True
+        # self.save()
 
     def delete_account(self):
         avatar_uploader = AvatarUploader()
@@ -278,14 +282,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_online_friends(self):
         # pylint: disable=no-member
-        timeout = timezone.now() - timedelta(minutes=5)
+        timeout = timezone.now() - timedelta(minutes=TIME_OUT_ONLINE)
         return self.friends.filter(is_authenticated=True, last_seen__gte=timeout, is_playing=False).values_list(
             "username", flat=True
         )
 
     def get_offline_friends(self):
         # pylint: disable=no-member
-        timeout = timezone.now() - timedelta(minutes=5)
+        timeout = timezone.now() - timedelta(minutes=TIME_OUT_ONLINE)
         return self.friends.filter(
             Q(is_authenticated=False) | Q(last_seen__lt=timeout),
             is_playing=False

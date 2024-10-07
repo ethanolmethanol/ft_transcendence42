@@ -163,9 +163,6 @@ export class UserService {
     return this.http.post<any>(`${API_USER}/update_username/`, {username: username});
   }
 
-  public updateStatus(status: number): Observable<any> {
-    return this.http.post<any>(`${API_USER}/update_status/`, {status: status});
-  }
 
   public isUserPlaying(): Observable<any> {
     return this.http.get<any>(`${API_USER}/is_user_playing/`);

@@ -177,7 +177,6 @@ def get_game_summaries(request) -> JsonResponse:
 class UpdateUsernameView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.former_username: str = ""
         self.new_username: str = ""
         self.user_id: str = ""
         self.user: CustomUser | None = None
@@ -208,7 +207,6 @@ class UpdateUsernameView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             self.user = CustomUser.objects.get(pk=request.user.id)
-            self.former_username = self.user.username
             response = self.update_username()
             return response
         except ObjectDoesNotExist:

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AvatarComponent } from "../../components/avatar/avatar.component";
 import { HeaderComponent } from "../../components/header/header.component";
 import { UserService } from "../../services/user/user.service";
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors} from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, Validators, FormControl, AbstractControl, ValidationErrors} from '@angular/forms';
 import { usernameValidator } from "../../validators/validators";
 import { UsernameErrorComponent } from "../../components/sign-up/username-error/username-error.component";
 import { ErrorMessageComponent } from "../../components/error-message/error-message.component";

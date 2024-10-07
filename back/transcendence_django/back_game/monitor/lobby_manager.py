@@ -1,5 +1,7 @@
 import asyncio
 import logging
+from http import HTTPStatus
+
 import aiohttp
 from typing import Any
 
@@ -218,7 +220,7 @@ class LobbyManager:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url, params=params, ssl=False) as response:
-                    if response.status == 200:
+                    if response.status == HTTPStatus.OK:
                         logger.info(f"Successfully updated playing status for user {user_id}")
                     else:
                         logger.error(f"Failed to update playing status: {response}")

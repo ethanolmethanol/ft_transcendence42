@@ -17,7 +17,6 @@ export class AppComponent {
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // this.heartbeatService.sendHeartBeat().subscribe();
         if (event.url === '/home') {
           setTimeout(() => {
             this.userService.refreshUserData().then(() => {
