@@ -71,6 +71,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "transcendence_django.middleware.HandleDisallowedHostMiddleware",
 ]
 
 ROOT_URLCONF = "transcendence_django.urls"
