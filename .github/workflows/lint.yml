@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-      - MVE*
+      - MVE[0-9]
 
 jobs:
   build:
