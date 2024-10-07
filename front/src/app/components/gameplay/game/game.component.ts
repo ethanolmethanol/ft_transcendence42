@@ -312,10 +312,10 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateStartTimer(timer: StartTimerResponse) {
+    this.gameStateService.setCanGiveUp(false);
     this.startTimer.first.message = timer.message;
     this.startTimer.first.time = timer.time;
     this.startTimer.first.show = true;
-    this.gameStateService.setCanGiveUp(false);
   }
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
