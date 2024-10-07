@@ -202,8 +202,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     time_played = models.JSONField(default=DEFAULT_TIME_PLAYED)
     win_loss_tie = models.JSONField(default=DEFAULT_WIN_LOSS_TIE)
     game_counter = models.JSONField(default=DEFAULT_GAME_COUNTER)
-    last_seen = models.DateTimeField(default=timezone.now)
-    # is_authenticated = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     objects = CustomUserManager()
 
@@ -223,7 +222,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.save()
 
     def update_last_seen(self):
-        # if timezone.now() - self.last_seen >= timedelta(minutes=5):
         self.last_seen = timezone.now()
         self.save()
 
@@ -236,14 +234,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def logout_user(self, request):
         self.__clear_tokens()
-        # self.is_authenticated = False
-        # self.save()
+        self.last_seen = None
+        self.save()
         logout(request)
 
     def login_user(self, request):
+        self.update_last_seen()
         login(request, self)
-        # self.is_authenticated = True
-        # self.save()
 
     def delete_account(self):
         avatar_uploader = AvatarUploader()
@@ -276,14 +273,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_playing_friends(self):
         # pylint: disable=no-member
-        return self.friends.filter(is_authenticated=True, is_playing=True).values_list(
+        return self.friends.filter(last_seen__isnull=False, is_playing=True).values_list(
             "username", flat=True
         )
 
     def get_online_friends(self):
         # pylint: disable=no-member
         timeout = timezone.now() - timedelta(minutes=TIME_OUT_ONLINE)
-        return self.friends.filter(is_authenticated=True, last_seen__gte=timeout, is_playing=False).values_list(
+        return self.friends.filter(last_seen__isnull=False, last_seen__gte=timeout, is_playing=False).values_list(
             "username", flat=True
         )
 
@@ -291,7 +288,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # pylint: disable=no-member
         timeout = timezone.now() - timedelta(minutes=TIME_OUT_ONLINE)
         return self.friends.filter(
-            Q(is_authenticated=False) | Q(last_seen__lt=timeout),
+            Q(last_seen__isnull=True) | Q(last_seen__lt=timeout),
             is_playing=False
         ).values_list("username", flat=True)
 
