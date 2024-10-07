@@ -1,6 +1,6 @@
 <body>
   <button *ngIf="(gameStateService.canGiveUp$ | async)!" (click)="confirmGiveUp()">Give up</button>
-  <app-game [arenaID]="arenaID!"></app-game>
+  <app-game [arenaID]="arenaID!" [class.hidden]="!(gameStateService.dataLoaded$ | async) || (gameStateService.isWaiting$ | async)"></app-game>
   <section class="remote-section"
            *ngIf="(gameStateService.dataLoaded$ | async)
            && (gameStateService.isWaiting$ | async)

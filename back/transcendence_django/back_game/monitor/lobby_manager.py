@@ -39,7 +39,7 @@ class LobbyManager:
         if lobby is None:
             return
         if arena_id is None:
-            arena = lobby.get_available_arena()
+            arena = lobby.get_available_arena(user_id)
             if arena is None:
                 return
             arena_id = arena.id
@@ -86,7 +86,7 @@ class LobbyManager:
         lobby = self.get_lobby_from_user_id(user_id)
         if lobby is None and is_remote:
             logger.info("User %s is not in a lobby and is remote", user_id)
-            return self.__get_available_lobby()
+            return self.__get_available_lobby(user_id)
         if lobby is None or lobby.is_tournament():
             return None
         arena = self.get_arena_from_user_id(user_id)
@@ -114,12 +114,10 @@ class LobbyManager:
         self.delete_lobby(lobby.id)
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
-        lobby_dict = self.__get_available_lobby(is_tournament=True)
+        lobby_dict = self.__get_available_lobby(user_id, is_tournament=True)
         if lobby_dict is None:
-            lobby = self.get_lobby_from_user_id(user_id)
-            if lobby is None:
-                await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
-                return self.get_lobby_dict_from_user_id(user_id)
+            await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
+            return self.get_lobby_dict_from_user_id(user_id)
         return lobby_dict
 
     def get_lobby(self, lobby_id: str) -> Lobby | None:
@@ -206,11 +204,11 @@ class LobbyManager:
         return None
 
     def __get_available_lobby(
-        self, is_tournament: bool = False
+        self, user_id: int, is_tournament: bool = False
     ) -> dict[str, Any] | None:
         for lobby in self.lobbies.values():
             if lobby.is_tournament() == is_tournament:
-                available_arena = lobby.get_available_arena()
+                available_arena = lobby.get_available_arena(user_id)
                 logger.info(
                     "Available arena: %s in lobby %s", available_arena, lobby.id
                 )
