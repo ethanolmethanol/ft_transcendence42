@@ -302,6 +302,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       this.redirectToHome();
     }
 
+    console.log("Handle redirection", response);
     const userID = this.userService.getUserID();
     const arena = response[userID];
     if (arena && arena.status != DYING && arena.status != DEAD) {
@@ -355,7 +356,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     let gameOverOverlay: GameOverComponent = this.gameOver.first;
     const isWaiting = status == CREATED || status == WAITING;
     this.gameStateService.setIsWaiting(isWaiting)
-    this.gameStateService.setCanGiveUp(!isWaiting)
+    // this.gameStateService.setCanGiveUp(!isWaiting)
     if (gameOverOverlay.hasRematched === false) {
       if (status == STARTED) {
         this.handleStartCounterCompletion()

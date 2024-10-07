@@ -11,7 +11,7 @@ import {GameComponent} from "../../components/gameplay/game/game.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {WebSocketService} from "../../services/web-socket/web-socket.service";
 import {ConnectionService} from "../../services/connection/connection.service";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {PlayerIconComponent} from "../../components/player-icon/player-icon.component";
 import {GameStateService} from "../../services/game-state/game-state.service";
 import {TournamentDashboardComponent} from "../../components/tournament-dashboard/tournament-dashboard.component";
@@ -25,7 +25,8 @@ import {TournamentDashboardComponent} from "../../components/tournament-dashboar
     AsyncPipe,
     NgForOf,
     PlayerIconComponent,
-    TournamentDashboardComponent
+    TournamentDashboardComponent,
+    NgClass
   ],
   templateUrl: './tournament-page.component.html',
   styleUrl: './tournament-page.component.css'

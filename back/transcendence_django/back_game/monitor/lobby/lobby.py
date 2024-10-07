@@ -65,7 +65,7 @@ class Lobby(ABC):
             "is_tournament": self.is_tournament(),
         }
 
-    def get_available_arena(self) -> Arena | None:
+    def get_available_arena(self, user_id: int) -> Arena | None:
         if self.is_full():
             return None
         for arena in self.arenas.values():
@@ -73,15 +73,15 @@ class Lobby(ABC):
                 GameStatus.CREATED,
                 GameStatus.WAITING,
             ]:
-                if self.is_arena_available(arena):
+                if self.is_arena_available(arena, user_id):
                     return arena
         return None
 
-    def is_arena_available(self, arena: Arena) -> bool:
+    def is_arena_available(self, arena: Arena, user_id: int) -> bool:
         user_count_in_arena = sum(
             1 for user_arena in self.users.values() if user_arena == arena
         )
-        return user_count_in_arena < arena.player_manager.nb_players
+        return str(user_id) in arena.get_players().keys() or user_count_in_arena < arena.player_manager.nb_players
 
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
         return self.users.get(user_id)
