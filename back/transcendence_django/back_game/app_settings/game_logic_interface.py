@@ -50,7 +50,7 @@ class GameLogicInterface:
         if not self.has_joined:
             raise LobbyError(NOT_JOINED, "Attempt to leave without joining.")
         try:
-            await self.monitor.leave_arena(self.user_id, self.lobby.id, self.arena_id)
+            self.monitor.leave_arena(self.user_id, self.lobby.id, self.arena_id)
         except KeyError as e:
             raise LobbyError(
                 NOT_ENTERED, "User cannot leave or has already left this arena."

@@ -38,7 +38,7 @@ export class DashboardComponent implements OnInit {
       this.initWinDict();
       this.initGameCounter();
       this.isWaiting = false;
-    }, 1000);
+    }, 2000);
   }
 
 

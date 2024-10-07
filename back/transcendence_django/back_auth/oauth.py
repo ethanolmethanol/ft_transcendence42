@@ -7,7 +7,6 @@ from typing import Dict, Tuple
 
 import requests
 from django.conf import settings
-from django.contrib.auth import login
 from django.core.cache import cache
 from rest_framework import status
 from shared_models.models import CustomUser
