@@ -49,18 +49,16 @@ class LobbyManager:
         await lobby.add_user_into_arena(user_id, arena_id)
         await self.update_user_playing_status(user_id, True)
 
-    async def delete_user_from_lobby(self, user_id: int, lobby: Lobby = None):
+    async def delete_user_from_lobby(self, user_id: int, lobby: Lobby | None = None):
         try:
             if lobby is None:
                 lobby = self.get_lobby_from_user_id(user_id)
             elif lobby != self.get_lobby_from_user_id(user_id):
                 raise KeyError
-#             self.user_game_table.pop(user_id)
             if lobby is not None:
                 lobby.delete_user(user_id)
                 if lobby.can_be_deleted():
                     await self.delete_lobby(lobby.id)
-#                 logger.info("User %s deleted from user_game_table", user_id)
             await self.update_user_playing_status(user_id, False)
         except KeyError:
             pass
