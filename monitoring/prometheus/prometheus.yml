@@ -51,7 +51,7 @@ scrape_configs:
         - http://prometheus:9090,prometheus
         - http://alertmanager:9093,alertmanager
         - http://cadvisor:8080,cadvisor
-        - https://minio:443,minio
+        - https://minio:9001,minio
 
   - job_name: 'cadvisor'
     static_configs:
