@@ -1,5 +1,5 @@
 # hadolint global ignore=DL3013,DL3042
-FROM python:3
+FROM python:3.12
 
 RUN apt-get update -y && \
 	apt-get install -y postgresql-client-15=15.8-0+deb12u1 --no-install-recommends && \
