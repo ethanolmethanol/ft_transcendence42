@@ -13,8 +13,6 @@ from back_game.game_settings.game_constants import (
     GameStatus,
 )
 from django.utils import timezone
-
-
 from transcendence_django.dict_keys import (
     ARENA,
     ARENA_ID,
@@ -141,13 +139,6 @@ class Arena:
         self.player_manager.conclude()
         self.game.conclude()
         logger.info("Game is over. %s", self.id)
-
-    def rematch(self, user_id: int):
-        self.player_manager.rematch(user_id)
-        if self.is_full():
-            self.game.set_status(GameStatus.READY_TO_START)
-        else:
-            self.game.set_status(GameStatus.WAITING)
 
     def player_leave(self, user_id: int):
         if self.game.status == GameStatus.WAITING:

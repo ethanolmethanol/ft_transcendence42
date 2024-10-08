@@ -118,15 +118,6 @@ export class WebSocketService implements OnInit, OnDestroy {
     }
   }
 
-  public rematch(): void {
-    console.log('Rematching');
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.send('rematch', {});
-    } else {
-      console.log('WebSocket is not open when trying to rematch');
-    }
-  }
-
   public join(arena_id: number | null): Observable<ArenaResponse> {
     if (arena_id === null) {
       console.log('Arena ID is null');

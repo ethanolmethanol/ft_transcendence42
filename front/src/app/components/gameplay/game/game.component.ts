@@ -235,7 +235,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gameStateService.setDataLoaded(true);
     this.bots = arena.players_specs.bots;
     this.startTimer.first.show = false;
-    this.gameOver.first.hasRematched = false;
   }
 
   private async handleGameUpdate(gameState: any) {
@@ -356,22 +355,18 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     let gameOverOverlay: GameOverComponent = this.gameOver.first;
     const isWaiting = status == CREATED || status == WAITING;
     this.gameStateService.setIsWaiting(isWaiting)
-    // this.gameStateService.setCanGiveUp(!isWaiting)
-    if (gameOverOverlay.hasRematched === false) {
-      if (status == STARTED) {
-        this.handleStartCounterCompletion()
-        gameOverOverlay.show = false;
-        this.gameStateService.setIsRematch(false);
-      } else if (status == DYING || status == DEAD) {
-        if (this.isTournament) {
-          this.redirectToLobby();
-          return;
-        }
-        if (status == DYING) {
-          gameOverOverlay.show = true;
-        } else if (status == DEAD) {
-          this.redirectToHome();
-        }
+    if (status == STARTED) {
+      this.handleStartCounterCompletion()
+      gameOverOverlay.show = false;
+    } else if (status == DYING || status == DEAD) {
+      if (this.isTournament) {
+        this.redirectToLobby();
+        return;
+      }
+      if (status == DYING) {
+        gameOverOverlay.show = true;
+      } else if (status == DEAD) {
+        this.redirectToHome();
       }
     }
   }
@@ -405,11 +400,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePlayersSubscription = this.gameStateService.activePlayers$.pipe(
       map(players => players.find((name: string) => name === this.playerName))
     ).subscribe(foundPlayer => player = foundPlayer);
-    if (this.isRemote && player) {
-      gameOverOverlay.hasRematched = true;
-      this.gameStateService.setIsRematch(true);
-    }
-    if (gameOverOverlay.hasRematched === false) {
       if (info.winner === "") {
         gameOverOverlay.message = "It's a tie! " + info.message
       } else {
@@ -422,7 +412,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       if (info.time === 0) {
         this.redirectToHome();
       }
-    }
   }
 
   private redirectToHome() {

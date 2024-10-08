@@ -51,7 +51,7 @@ async def join_lobby(request) -> JsonResponse:
         if LOBBY_ID not in data:
             logger.info("Joining already created lobby.")
             lobby = MONITOR.join_already_created_lobby(user_id, mode)
-            if lobby is None:
+            if lobby is None or lobby[ARENA][PLAYER_SPECS][IS_REMOTE] != mode:
                 raise ValueError("No available lobby.")
         else:
             lobby_id: str = data[LOBBY_ID]

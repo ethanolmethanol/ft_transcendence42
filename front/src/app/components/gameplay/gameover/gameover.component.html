@@ -1,8 +1,6 @@
 <section *ngIf="show && message" class="gameover">
   <div class="message"><h3>{{message}}</h3></div>
-  <section class="choices">
-    <button (click)="backToHomePage()">Back to homepage</button>
+  <section class="time">
     <h4>{{time}}</h4>
-    <button (click)="reMatch()">Rematch?</button>
   </section>
 </section>

@@ -9,7 +9,6 @@ export class GameStateService {
   private _dataLoaded = new BehaviorSubject<boolean>(false);
   private _isWaiting = new BehaviorSubject<boolean>(true);
   private _isRemote = new BehaviorSubject<boolean>(true);
-  private _isRematch = new BehaviorSubject<boolean>(true);
   private _lobbyID = new BehaviorSubject<string>('');
   private _isTournament = new BehaviorSubject<boolean>(false);
   private _tournamentMap = new BehaviorSubject<TournamentMap>({rounds_map: {}, winner: null});
@@ -22,7 +21,6 @@ export class GameStateService {
   get dataLoaded$() { return this._dataLoaded.asObservable(); }
   get isWaiting$() { return this._isWaiting.asObservable(); }
   get isRemote$() { return this._isRemote.asObservable(); }
-  get isRematch$() { return this._isRematch.asObservable(); }
   get lobbyID$() { return this._lobbyID.asObservable(); }
   get isTournament$() { return this._isTournament.asObservable(); }
   get tournamentMap$() { return this._tournamentMap.asObservable(); }
@@ -35,7 +33,6 @@ export class GameStateService {
   setDataLoaded(value: boolean) { this._dataLoaded.next(value); }
   setIsWaiting(value: boolean) { this._isWaiting.next(value); }
   setIsRemote(value: boolean) { this._isRemote.next(value); }
-  setIsRematch(value: boolean) { this._isRematch.next(value); }
   setLobbyID(value: string) { this._lobbyID.next(value); }
   setIsTournament(value: boolean) { this._isTournament.next(value); }
   setTournamentMap(value: TournamentMap) { this._tournamentMap.next(value); }
@@ -48,7 +45,6 @@ export class GameStateService {
   restrictReset() {
     this.setDataLoaded(false);
     this.setIsWaiting(true);
-    this.setIsRematch(true);
     this.setCanGiveUp(false);
   }
 

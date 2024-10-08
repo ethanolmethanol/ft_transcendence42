@@ -89,7 +89,7 @@ class LobbyManager:
         lobby = self.get_lobby_from_user_id(user_id)
         if lobby is None and is_remote:
             logger.info("User %s is not in a lobby and is remote", user_id)
-            return self.__get_available_lobby(user_id)
+            return self.__get_available_lobby(user_id, is_remote=True)
         if lobby is None or lobby.is_tournament():
             return None
         arena = self.get_arena_from_user_id(user_id)
@@ -117,7 +117,7 @@ class LobbyManager:
         await self.delete_lobby(lobby.id)
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
-        lobby_dict = self.__get_available_lobby(user_id, is_tournament=True)
+        lobby_dict = self.__get_available_lobby(user_id, is_remote=True, is_tournament=True)
         if lobby_dict is None and self.get_lobby_from_user_id(user_id) is None:
             await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
             return self.get_lobby_dict_from_user_id(user_id)
@@ -224,7 +224,7 @@ class LobbyManager:
                 logger.error(f"Error updating playing status: {e}")
 
     def __get_available_lobby(
-        self, user_id: int, is_tournament: bool = False
+        self, user_id: int, is_remote: bool = True, is_tournament: bool = False
     ) -> dict[str, Any] | None:
         for lobby in self.lobbies.values():
             if lobby.is_tournament() == is_tournament:

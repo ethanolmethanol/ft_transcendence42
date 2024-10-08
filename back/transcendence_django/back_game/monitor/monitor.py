@@ -92,10 +92,6 @@ class Monitor:
             arena.player_gave_up(user_id)
         await self.lobby_manager.delete_user_from_lobby(user_id)
 
-    def rematch(self, user_id: int, lobby_id: str, arena_id: str):
-        arena: Arena = self.get_arena(lobby_id, arena_id)
-        arena.rematch(user_id)
-
     def get_game_summary(self, lobby_id: str, arena_id: str) -> dict[str, Any]:
         arena: Arena = self.get_arena(lobby_id, arena_id)
         summary: dict[str, Any] = arena.get_game_summary()
