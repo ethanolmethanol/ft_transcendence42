@@ -1,0 +1,49 @@
+.friend-list {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-gap: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: rgba(43, 43, 43, 0.8);
+  height: 100%;
+}
+
+.no-friends-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.avatar-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-around;
+  overflow-y: auto;
+}
+
+.avatar-list > app-friend-card {
+  flex: 1 1 30%;
+}
+
+p {
+  font-size: 1em;
+  color: white;
+}
+
+i {
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.friend-requests-container::-webkit-scrollbar,
+.avatar-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.friend-list::-webkit-scrollbar {
+  display: none;
+}

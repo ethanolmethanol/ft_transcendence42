@@ -70,7 +70,7 @@ class AipiView(APIView):
             user_response: HTTPResponse = http_get(
                 url=f"{API_USER_ENDPOINT}/{uid}/",
                 verify=False,  # does not work otherwise
-                cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
+                cert=("/etc/ssl/public.crt", "/etc/ssl/private.key"),
                 timeout=3,
             )
             status: str = (

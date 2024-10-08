@@ -24,8 +24,10 @@ prompt_for_env() {
 	[ -z "${POSTGRES_PASSWORD}" ] && read -rsp "Enter PostgreSQL Password: " POSTGRES_PASSWORD && echo
 	[ -z "${POSTGRES_DB}" ] && read -rp "Enter PostgreSQL Database Name: " POSTGRES_DB
 	[ -z "${OAUTH_CLIENT_UID}" ] && read -rp "Enter OAuth Client UID: " OAUTH_CLIENT_UID
-	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET
-  [ -z "${DJANGO_SECRET_KEY}" ] && read -rp "Enter Django Secret: " DJANGO_SECRET_KEY
+	[ -z "${OAUTH_CLIENT_SECRET}" ] && read -rsp "Enter OAuth Client Secret: " OAUTH_CLIENT_SECRET && echo
+	[ -z "${MINIO_ROOT_USER}" ] && read -rp "Enter Minio Root User: " MINIO_ROOT_USER
+	[ -z "${MINIO_ROOT_PASSWORD}" ] && read -rsp "Enter Minio Root Password: " MINIO_ROOT_PASSWORD && echo
+	[ -z "${DJANGO_SECRET_KEY}" ] && read -rp "Enter Django Secret: " DJANGO_SECRET_KEY
 
 	echo "POSTGRES_USER='${POSTGRES_USER}'" >"${ENV_FILE_GLOBAL}"
 	{
@@ -35,6 +37,8 @@ prompt_for_env() {
 		echo "OAUTH_CLIENT_UID='${OAUTH_CLIENT_UID}'"
 		echo "OAUTH_CLIENT_SECRET='${OAUTH_CLIENT_SECRET}'"
 		echo "DOCKSOCKUID=$(id -u)"
+		echo "MINIO_ROOT_USER='${MINIO_ROOT_USER}'"
+		echo "MINIO_ROOT_PASSWORD='${MINIO_ROOT_PASSWORD}'"
 		echo "DJANGO_SECRET_KEY='${DJANGO_SECRET_KEY}'"
 	} >>"${ENV_FILE_GLOBAL}"
 
@@ -48,8 +52,8 @@ generate_certificates() {
 		return
 	fi
 
-	local key_path="${CERT_DIR}/serv.key"
-	local cert_path="${CERT_DIR}/serv.crt"
+	local key_path="${CERT_DIR}/private.key"
+	local cert_path="${CERT_DIR}/public.crt"
 
 	# generate certificates files
 	mkcert serv "${IP_ADDR}" 127.0.0.1 ::1
@@ -140,7 +144,7 @@ share_data () {
 
 IP_ADDR=$(get_ip "$1")
 CERT_DIR="ssl/"
-SSL_CONT_DIRS=(front/ssl back/ssl)
+SSL_CONT_DIRS=(front/ssl back/ssl minio/ssl)
 ENV_FILE_FRONT="front/src/environments/environment.ts"
 NGINX_CONFIG_FILE="front/nginx/nginx.conf"
 ENV_FILE_GLOBAL=".env"
@@ -154,5 +158,5 @@ else
 	create_nginx_config_file
 	update_environment_ts
 	export_env_instructions
-  share_data
+	share_data
 fi

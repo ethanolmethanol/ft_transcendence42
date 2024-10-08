@@ -47,9 +47,11 @@ scrape_configs:
         - https://back-game:443/health,back-game
         - https://back-user:443/health,back-user
         - https://back-aipi:443/health,back-aipi
+        - https://back-friends:443/health,back-friends
         - http://prometheus:9090,prometheus
         - http://alertmanager:9093,alertmanager
         - http://cadvisor:8080,cadvisor
+        - https://minio:9001,minio
 
   - job_name: 'cadvisor'
     static_configs:

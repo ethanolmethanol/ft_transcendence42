@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    delete_account,
     exchange_code_for_user_id,
     get_authorize_url,
     is_logged_view,
@@ -22,4 +23,5 @@ urlpatterns = [
         name="exchange_code_for_user_id",
     ),
     path("set_username_42/", set_username_42, name="set_username_42"),
+    path("delete_account/", delete_account, name="delete_account"),
 ]

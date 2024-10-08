@@ -1,6 +1,6 @@
 import logging
 
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -32,11 +32,22 @@ def get_user_id(session):
     return user_id
 
 
+def perform_login(request, username, password):
+    user = authenticate(request, username=username, password=password)
+
+    if user is not None:
+        # pylint: disable=no-member
+        user.login_user(request)  # type: ignore[attr-defined]
+        return True
+
+    return False
+
+
 def perform_logout(request):
+    get_session_from_request(request)
     try:
         user = request.user
-        user.clear_tokens()
-        logout(request)
+        user.logout_user(request)
         logger.info("User successfully logged out.")
     except Exception as e:
         logger.error("Error logging out: %s", e)

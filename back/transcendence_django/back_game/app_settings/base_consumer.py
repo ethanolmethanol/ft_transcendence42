@@ -33,7 +33,6 @@ from transcendence_django.dict_keys import (
     PLAYER,
     PLAYER_NAME,
     PLAYERS,
-    REMATCH,
     START_TIMER,
     START_TIMER_CALLBACK,
     TIME,
@@ -101,7 +100,6 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
             JOIN: self.join,
             LEAVE: self.leave,
             GIVE_UP: self.give_up,
-            REMATCH: self.rematch,
         }
         try:
             await message_binding[message_type](message)
@@ -134,15 +132,10 @@ class BaseConsumer(AsyncJsonWebsocketConsumer, ABC):
         await self.send_message(f"{self.game.user_id} has left the game.")
 
     async def give_up(self, _):
-        self.game.give_up()
+        await self.game.give_up()
         await self.send_message(f"{self.game.user_id} has given up.")
         await self.send_update({GIVE_UP: self.game.user_id})
         await self.send_players()
-        await self.send_arena_data()
-
-    async def rematch(self, _):
-        self.game.rematch()
-        await self.send_message(f"{self.game.user_id} asked for a rematch.")
         await self.send_arena_data()
 
     async def move_paddle(self, message: dict[str, Any]):

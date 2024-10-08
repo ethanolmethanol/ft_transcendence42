@@ -4,6 +4,7 @@ from http import HTTPStatus
 from json import JSONDecodeError
 from typing import Any, Dict
 
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -13,12 +14,14 @@ from django.views.decorators.http import require_http_methods
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from shared_models.avatar_uploader import AvatarUploader
 from shared_models.models import CustomUser, Profile
-from transcendence_django.dict_keys import USER_ID
+from transcendence_django.dict_keys import USER_ID, IS_PLAYING
 
 from .constants import ALL, DEFAULT_COLORS, DEFAULT_SETTINGS, FILTERS, ONLINE
 
 # pylint: disable=no-member
+
 
 logger = logging.getLogger(__name__)
 
@@ -170,15 +173,16 @@ def get_game_summaries(request) -> JsonResponse:
 
 
 @method_decorator(csrf_protect, name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class UpdateUsernameView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.username: str = ""
+        self.new_username: str = ""
         self.user_id: str = ""
         self.user: CustomUser | None = None
 
     def username_already_taken(self) -> bool:
-        if CustomUser.objects.filter(username=self.username).exists():
+        if CustomUser.objects.filter(username=self.new_username).exists():
             logger.info("Username is already taken")
             return True
         return False
@@ -188,7 +192,7 @@ class UpdateUsernameView(APIView):
             return Response({"error": "Username already taken."}, status=400)
 
         if self.user:
-            self.user.set_username(self.username)
+            self.user.set_username(self.new_username)
             return Response({"success": True}, status=status.HTTP_200_OK)
         return Response(
             {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
@@ -196,21 +200,53 @@ class UpdateUsernameView(APIView):
 
     def post(self, request):
         try:
-            self.username = request.data["username"]
-            self.user_id = request.data["user_id"]
-            self.user = CustomUser.objects.get(id=self.user_id)
+            self.new_username = request.data.get("username")
+            if not self.new_username:
+                return Response(
+                    {"error": "Username missing in request data"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            self.user = CustomUser.objects.get(pk=request.user.id)
             response = self.update_username()
             return response
-        except KeyError:
-            return Response(
-                {"error": "username or user_id missing in request data"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
         except ObjectDoesNotExist:
             return Response(
                 {"error": "Cannot update username of unknown user."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+@require_http_methods(["POST"])
+@csrf_protect
+@login_required
+def update_avatar(request) -> JsonResponse:
+    avatar_uploader = AvatarUploader()
+    avatar_file = request.FILES.get("avatar")
+
+    if not avatar_file:
+        return JsonResponse({"error": "Avatar file not found."}, status=400)
+
+    user = CustomUser.objects.get(pk=request.user.id)
+    avatar_uploader.upload_avatar(avatar_file, user.username)
+    return JsonResponse(
+        {"message": "Avatar file successfully uploaded to the server"},
+        status=status.HTTP_200_OK,
+    )
+
+
+@require_http_methods(["GET"])
+@csrf_protect
+@login_required
+def is_user_playing(request) -> JsonResponse:
+    try:
+        user_id = request.user.id
+
+        user = CustomUser.objects.get(pk=user_id)
+        return JsonResponse({"status": user.is_playing}, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 @require_http_methods(["POST"])
@@ -228,4 +264,27 @@ def get_username(request) -> JsonResponse:
     except (JSONDecodeError, TypeError, ValueError) as e:
         return JsonResponse(
             {"error": "Invalid request data: " + str(e)}, status=HTTPStatus.BAD_REQUEST
+        )
+
+
+@require_http_methods(["GET"])
+def update_playing_status(request) -> JsonResponse:
+    try:
+        user_id = request.GET.get(USER_ID)
+        is_playing = request.GET.get(IS_PLAYING)
+
+        if not user_id or not is_playing:
+            return JsonResponse(
+                {"error": "user_id or is_playing parameter is missing"},
+                status=HTTPStatus.BAD_REQUEST
+            )
+
+        user = CustomUser.objects.get(pk=user_id)
+        user.is_playing = bool(int(is_playing))
+        logger.info("New playing status: " + str(is_playing))
+        user.save()
+        return JsonResponse({"message": "playing status updated"}, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        return JsonResponse(
+            {"error": "User does not exist."}, status=HTTPStatus.NOT_FOUND
         )

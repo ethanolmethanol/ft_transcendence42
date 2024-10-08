@@ -31,19 +31,20 @@ import { Position } from "../../../interfaces/position.interface";
 import { ErrorResponse } from "../../../interfaces/error-response.interface";
 import { GameOverComponent } from '../gameover/gameover.component';
 import { LoadingSpinnerComponent } from "../../loading-spinner/loading-spinner.component";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import { AsyncPipe, NgForOf, NgIf } from "@angular/common";
 import { ConnectionService } from "../../../services/connection/connection.service";
 import { UserService } from "../../../services/user/user.service";
 import { PlayerIconComponent } from "../../player-icon/player-icon.component";
 import { StartTimerComponent } from "../start-timer/start-timer.component";
 import * as Constants from "../../../constants";
 import { CopyButtonComponent } from "../../copy-button/copy-button.component";
-import {GameStateService} from "../../../services/game-state/game-state.service";
-import {map, Subscription} from "rxjs";
-import {ActivatedRoute, Router} from "@angular/router";
-import {AssignationsResponse} from "../../../interfaces/assignation.interface";
-import {User} from "../../../interfaces/user";
-import {isEmptyObject} from "../../../utils/object";
+import { GameStateService } from "../../../services/game-state/game-state.service";
+import { map, Subscription } from "rxjs";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AssignationsResponse } from "../../../interfaces/assignation.interface";
+import { User } from "../../../interfaces/user";
+import { isEmptyObject } from "../../../utils/object";
+import { AvatarComponent } from "../../avatar/avatar.component";
 
 interface PaddleUpdateResponse {
   slot: number;
@@ -102,6 +103,7 @@ interface LobbyPlayersResponse {
     StartTimerComponent,
     CopyButtonComponent,
     AsyncPipe,
+    AvatarComponent,
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css'
@@ -111,6 +113,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren(PaddleComponent) paddles!: QueryList<PaddleComponent>;
   @ViewChildren(StartTimerComponent) startTimer!: QueryList<StartTimerComponent>;
   @ViewChildren(GameOverComponent) gameOver!: QueryList<GameOverComponent>;
+  @ViewChildren(AvatarComponent) avatars!: QueryList<AvatarComponent>;
   @Input() arenaID: number = -1;
   private playerName: string | null = null;
   private isRemote: boolean = false;
@@ -202,7 +205,8 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public setArena(arena: ArenaResponse) {
-    this.paddles.forEach(paddle => {
+    this.paddles.forEach((paddle, index) => {
+      // console.log("Index = ", index);
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
         paddle.playerName = paddleData.player_name;
@@ -211,6 +215,10 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
         paddle.width = paddleData.width;
         paddle.height = paddleData.height;
         paddle.afkLeftTime = null;
+        const avatar = this.avatars.toArray()[index];
+        if (avatar) {
+          avatar.updateAvatar(paddle.playerName);
+        }
       }
     });
     this.ball.first.positionX = arena.ball.position.x;
@@ -228,7 +236,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.gameStateService.setDataLoaded(true);
     this.bots = arena.players_specs.bots;
     this.startTimer.first.show = false;
-    this.gameOver.first.hasRematched = false;
   }
 
   private async handleGameUpdate(gameState: any) {
@@ -295,6 +302,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       this.redirectToHome();
     }
 
+    console.log("Handle redirection", response);
     const userID = this.userService.getUserID();
     const arena = response[userID];
     if (arena && arena.status != DYING && arena.status != DEAD) {
@@ -304,10 +312,10 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateStartTimer(timer: StartTimerResponse) {
+    this.gameStateService.setCanGiveUp(false);
     this.startTimer.first.message = timer.message;
     this.startTimer.first.time = timer.time;
     this.startTimer.first.show = true;
-    this.gameStateService.setCanGiveUp(false);
   }
 
   private updateInactivity(kicked_players: Array<AFKResponse>) {
@@ -348,22 +356,18 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     let gameOverOverlay: GameOverComponent = this.gameOver.first;
     const isWaiting = status == CREATED || status == WAITING;
     this.gameStateService.setIsWaiting(isWaiting)
-    this.gameStateService.setCanGiveUp(!isWaiting)
-    if (gameOverOverlay.hasRematched === false) {
-      if (status == STARTED) {
-        this.handleStartCounterCompletion()
-        gameOverOverlay.show = false;
-        this.gameStateService.setIsRematch(false);
-      } else if (status == DYING || status == DEAD) {
-        if (this.isTournament) {
-          this.redirectToLobby();
-          return;
-        }
-        if (status == DYING) {
-          gameOverOverlay.show = true;
-        } else if (status == DEAD) {
-          this.redirectToHome();
-        }
+    if (status == STARTED) {
+      this.handleStartCounterCompletion()
+      gameOverOverlay.show = false;
+    } else if (status == DYING || status == DEAD) {
+      if (this.isTournament) {
+        this.redirectToLobby();
+        return;
+      }
+      if (status == DYING) {
+        gameOverOverlay.show = true;
+      } else if (status == DEAD) {
+        this.redirectToHome();
       }
     }
   }
@@ -397,11 +401,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePlayersSubscription = this.gameStateService.activePlayers$.pipe(
       map(players => players.find((name: string) => name === this.playerName))
     ).subscribe(foundPlayer => player = foundPlayer);
-    if (this.isRemote && player) {
-      gameOverOverlay.hasRematched = true;
-      this.gameStateService.setIsRematch(true);
-    }
-    if (gameOverOverlay.hasRematched === false) {
       if (info.winner === "") {
         gameOverOverlay.message = "It's a tie! " + info.message
       } else {
@@ -414,7 +413,6 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
       if (info.time === 0) {
         this.redirectToHome();
       }
-    }
   }
 
   private redirectToHome() {

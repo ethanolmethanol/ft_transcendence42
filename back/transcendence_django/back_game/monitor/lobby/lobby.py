@@ -43,6 +43,10 @@ class Lobby(ABC):
         pass
 
     @abstractmethod
+    def can_be_deleted(self) -> bool:
+        pass
+
+    @abstractmethod
     def can_round_be_set(self):
         pass
 
@@ -65,7 +69,7 @@ class Lobby(ABC):
             "is_tournament": self.is_tournament(),
         }
 
-    def get_available_arena(self) -> Arena | None:
+    def get_available_arena(self, user_id: int) -> Arena | None:
         if self.is_full():
             return None
         for arena in self.arenas.values():
@@ -73,15 +77,15 @@ class Lobby(ABC):
                 GameStatus.CREATED,
                 GameStatus.WAITING,
             ]:
-                if self.is_arena_available(arena):
+                if self.is_arena_available(arena, user_id):
                     return arena
         return None
 
-    def is_arena_available(self, arena: Arena) -> bool:
+    def is_arena_available(self, arena: Arena, user_id: int) -> bool:
         user_count_in_arena = sum(
             1 for user_arena in self.users.values() if user_arena == arena
         )
-        return user_count_in_arena < arena.player_manager.nb_players
+        return str(user_id) in arena.get_players().keys() or user_count_in_arena < arena.player_manager.nb_players
 
     def get_arena_from_user_id(self, user_id: int) -> Arena | None:
         return self.users.get(user_id)
@@ -124,6 +128,7 @@ class Lobby(ABC):
     def delete_user(self, user_id: int):
         if user_id in self.users:
             del self.users[user_id]
+            logger.info("User %s deleted from lobby %s", user_id, self.id)
 
     def is_empty(self) -> bool:
         return not bool(self.arenas)
@@ -187,6 +192,8 @@ class Lobby(ABC):
                 arena.set_status(GameStatus.DEAD)
             else:
                 await asyncio.sleep(TIMEOUT_INTERVAL)
+        logger.info("Users in arena %s: %s", arena.id, arena.get_players().keys())
+        logger.info("Users in lobby %s: %s", self.id, self.users.keys())
 
     def _generate_random_id(self, length: int) -> str:
         letters_and_digits = string.ascii_letters + string.digits

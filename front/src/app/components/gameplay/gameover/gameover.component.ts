@@ -16,7 +16,6 @@ export class GameOverComponent {
   time: number | null = null;
   message: string = "";
   show: boolean = false;
-  hasRematched: boolean = false;
 
   constructor (private webSocketService: WebSocketService, private router: Router) {}
 
@@ -27,11 +26,5 @@ export class GameOverComponent {
 
   private redirectToHome() {
     this.router.navigate(['/home']);
-  }
-
-  public reMatch() {
-    this.webSocketService.rematch();
-    this.hasRematched = true;
-    this.show = false;
   }
 }

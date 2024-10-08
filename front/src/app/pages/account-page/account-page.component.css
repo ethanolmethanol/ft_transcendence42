@@ -1,0 +1,101 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.account-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  padding-top: 5vh;
+}
+
+.account-page-container::-webkit-scrollbar {
+  display: none;
+}
+
+h4 {
+  font-size: 1.5em;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  margin-bottom: 5vh;
+  z-index: 1;
+}
+
+.account-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40vw;
+  height: 100%;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 10px 10px 0 0;
+  background-color: rgba(38, 36, 36, 0.65);
+  padding: 0 5vw;
+}
+
+.update-section {
+  margin-top: 4vh;
+  width: 95%;
+}
+
+input {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #3c3c3c;
+  color: #ffffff;
+}
+
+.username-button, .delete-button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.username-button {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.delete-button {
+  background-color: red;
+  color: #ffffff;
+}
+
+.disabled-button {
+  cursor: not-allowed;
+  background-color: red;
+  color: #ffffff;
+}
+
+form {
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.error-message-container {
+  height: 40px; /* Adjust this value based on the height of your error message */
+}
+

@@ -72,12 +72,6 @@ class PlayerManager:
         disable_players_count = self.__count_players(PlayerStatus.DISABLED)
         return enable_players_count + disable_players_count == self.nb_players
 
-    def rematch(self, user_id: int):
-        self.__finish_given_up_players()
-        if not self.is_player_in_game(user_id):
-            raise KeyError(UNKNOWN_USER)
-        self.enable_player(user_id)
-
     def did_player_give_up(self, user_id: int) -> bool:
         try:
             if not self.is_remote:

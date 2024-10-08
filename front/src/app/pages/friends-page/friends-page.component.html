@@ -1,0 +1,25 @@
+<body>
+<app-header></app-header>
+<section class="friends-page-container" *ngIf="friendData$ | async as friendData">
+
+  <section class="search-area">
+    <app-friend-search></app-friend-search>
+    <section class="friend-list">
+      <p>Friend requests</p>
+      <section *ngIf="friendData.requests.length > 0" class="friend-requests-container">
+        <app-request *ngFor="let friend of friendData.requests" [friendName]="friend" (accept)="acceptOrDecline($event)" class="request"></app-request>
+      </section>
+      <section *ngIf="friendData.requests.length == 0" class="no-friends-container">
+        <p><i class="material-icons">block</i> No friend requests</p>
+      </section>
+    </section>
+  </section>
+
+  <section class="friends-overview">
+    <app-friend-box [friendStatus]="PLAYING" [friendList]="friendData.playing" [sectionName]="'Playing'"></app-friend-box>
+    <app-friend-box [friendStatus]="ONLINE" [friendList]="friendData.online" [sectionName]="'Online'"></app-friend-box>
+    <app-friend-box [friendStatus]="OFFLINE" [friendList]="friendData.offline" [sectionName]="'Offline'"></app-friend-box>
+  </section>
+
+</section>
+</body>

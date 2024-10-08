@@ -14,8 +14,8 @@ http {
         listen      443 ssl;
         listen	[::]:443 ssl;
         server_name ${SERV_IP};
-        ssl_certificate     /etc/ssl/serv.crt;
-        ssl_certificate_key /etc/ssl/serv.key;
+        ssl_certificate     /etc/ssl/public.crt;
+        ssl_certificate_key /etc/ssl/private.key;
         ssl_protocols       TLSv1.2 TLSv1.3;
         ssl_session_timeout 10m;
         keepalive_timeout 70;

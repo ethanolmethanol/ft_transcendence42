@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import {
   API_USER,
   DEFAULT_COLORS,
@@ -9,8 +9,9 @@ import {
   DEFAULT_WIN_DICT
 } from "../../constants";
 import { Observable } from "rxjs";
+import { map, tap } from 'rxjs/operators';
 import { GameHistoryResponse } from "../../interfaces/game-history-response.interface"
-import {GameCounter, Times, User, Wins} from "../../interfaces/user";
+import { GameCounter, Times, User, Wins } from "../../interfaces/user";
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +43,7 @@ export class UserService {
       this._userData = {
         id: Object.freeze(userData.id),
         email: Object.freeze(userData.email),
-        username: Object.freeze(userData.username),
+        username: userData.username,
         game_counter: userData.game_counter,
         win_dict: userData.win_dict,
         time_played: userData.time_played,
@@ -148,5 +149,22 @@ export class UserService {
   public getSummaries(startIndex: number, endIndex: number, filter: string): Observable<GameHistoryResponse> {
     const postData: string = JSON.stringify({'user_id': this.getUserID(), 'start_index': startIndex, 'end_index': endIndex, filter: filter});
     return this.http.post<GameHistoryResponse>(`${API_USER}/get_game_summaries/`, postData);
+  }
+
+  public updateAvatar(file: File): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('avatar', file);
+
+    return this.http.post<any>(`${API_USER}/update_avatar/`, formData);
+  }
+
+  public updateUsername(username: string): Observable<any> {
+    this.getUserData().username = username;
+    return this.http.post<any>(`${API_USER}/update_username/`, {username: username});
+  }
+
+
+  public isUserPlaying(): Observable<any> {
+    return this.http.get<any>(`${API_USER}/is_user_playing/`);
   }
 }

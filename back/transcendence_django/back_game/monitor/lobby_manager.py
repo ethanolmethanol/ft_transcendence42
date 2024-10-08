@@ -1,7 +1,9 @@
 import asyncio
 import logging
+from http import HTTPStatus
 from typing import Any
 
+import aiohttp
 from back_game.game_arena.arena import Arena
 from back_game.game_settings.game_constants import (
     LOBBY_LOOP_INTERVAL,
@@ -17,6 +19,7 @@ from transcendence_django.dict_keys import (
     AI_OPPONENTS_LOCAL,
     AI_OPPONENTS_ONLINE,
     ARENA_ID,
+    IS_PLAYING,
     LOBBY_ID,
     OPTIONS,
     USER_ID,
@@ -39,33 +42,33 @@ class LobbyManager:
         if lobby is None:
             return
         if arena_id is None:
-            arena = lobby.get_available_arena()
+            arena = lobby.get_available_arena(user_id)
             if arena is None:
                 return
             arena_id = arena.id
         await lobby.add_user_into_arena(user_id, arena_id)
+        await self.update_user_playing_status(user_id, True)
 
-    def delete_user_from_lobby(self, user_id: int, lobby: Lobby = None):
+    async def delete_user_from_lobby(self, user_id: int, lobby: Lobby | None = None):
         try:
             if lobby is None:
                 lobby = self.get_lobby_from_user_id(user_id)
             elif lobby != self.get_lobby_from_user_id(user_id):
                 raise KeyError
-#             self.user_game_table.pop(user_id)
             if lobby is not None:
                 lobby.delete_user(user_id)
                 if lobby.can_be_deleted():
-                    self.delete_lobby(lobby.id)
-#                 logger.info("User %s deleted from user_game_table", user_id)
+                    await self.delete_lobby(lobby.id)
+            await self.update_user_playing_status(user_id, False)
         except KeyError:
             pass
 
-    def delete_lobby(self, lobby_id: str):
+    async def delete_lobby(self, lobby_id: str):
         lobby = self.get_lobby(lobby_id)
         if lobby is not None:
             if lobby.users:
                 for user_id in list(lobby.users.keys()):
-                    self.delete_user_from_lobby(user_id, lobby)
+                    await self.delete_user_from_lobby(user_id, lobby)
             else:
                 lobby.disable()
                 self.lobbies.pop(lobby_id)
@@ -86,7 +89,7 @@ class LobbyManager:
         lobby = self.get_lobby_from_user_id(user_id)
         if lobby is None and is_remote:
             logger.info("User %s is not in a lobby and is remote", user_id)
-            return self.__get_available_lobby()
+            return self.__get_available_lobby(user_id, is_remote=True)
         if lobby is None or lobby.is_tournament():
             return None
         arena = self.get_arena_from_user_id(user_id)
@@ -111,15 +114,13 @@ class LobbyManager:
     async def run_lobby_loop(self, lobby: Lobby):
         while lobby and not lobby.can_be_deleted():
             await asyncio.sleep(LOBBY_LOOP_INTERVAL)
-        self.delete_lobby(lobby.id)
+        await self.delete_lobby(lobby.id)
 
     async def join_tournament(self, user_id: int) -> dict[str, Any] | None:
-        lobby_dict = self.__get_available_lobby(is_tournament=True)
-        if lobby_dict is None:
-            lobby = self.get_lobby_from_user_id(user_id)
-            if lobby is None:
-                await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
-                return self.get_lobby_dict_from_user_id(user_id)
+        lobby_dict = self.__get_available_lobby(user_id, is_remote=True, is_tournament=True)
+        if lobby_dict is None and self.get_lobby_from_user_id(user_id) is None:
+            await self.create_new_lobby(user_id, TOURNAMENT_SPECS, is_tournament=True)
+            return self.get_lobby_dict_from_user_id(user_id)
         return lobby_dict
 
     def get_lobby(self, lobby_id: str) -> Lobby | None:
@@ -144,7 +145,7 @@ class LobbyManager:
                 aipi_response: Response = http_get(
                     url="https://back-aipi/aipi/spawn/",
                     verify=False,  # does not work otherwise
-                    cert=("/etc/ssl/serv.crt", "/etc/ssl/serv.key"),
+                    cert=("/etc/ssl/public.crt", "/etc/ssl/private.key"),
                     json={LOBBY_ID: lobby_id, ARENA_ID: arena_id},
                     timeout=3,
                 )
@@ -165,7 +166,7 @@ class LobbyManager:
             return lobby.get_arena(arena_id)
         return None
 
-    def leave_arena(self, user_id: int, lobby_id: str, arena_id: str):
+    async def leave_arena(self, user_id: int, lobby_id: str, arena_id: str):
         lobby = self.get_lobby(lobby_id)
         if lobby is None:
             return
@@ -205,12 +206,29 @@ class LobbyManager:
                 return lobby
         return None
 
+    async def update_user_playing_status(self, user_id, is_playing):
+        url = f'https://back-user/user/update_playing_status/'
+        params = {
+            USER_ID: user_id,
+            IS_PLAYING: int(is_playing),
+        }
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url, params=params, ssl=False) as response:
+                    if response.status == HTTPStatus.OK:
+                        logger.info(f"Successfully updated playing status for user {user_id}")
+                    else:
+                        logger.error(f"Failed to update playing status: {response}")
+            except aiohttp.ClientError as e:
+                logger.error(f"Error updating playing status: {e}")
+
     def __get_available_lobby(
-        self, is_tournament: bool = False
+        self, user_id: int, is_remote: bool = True, is_tournament: bool = False
     ) -> dict[str, Any] | None:
         for lobby in self.lobbies.values():
             if lobby.is_tournament() == is_tournament:
-                available_arena = lobby.get_available_arena()
+                available_arena = lobby.get_available_arena(user_id)
                 logger.info(
                     "Available arena: %s in lobby %s", available_arena, lobby.id
                 )

@@ -1,0 +1,55 @@
+.avatar-container {
+  position: relative;
+  width: fit-content;
+}
+
+.image-container {
+  height: 15vw; /* Width and height relative to the viewport width */
+  width: 15vw;
+  z-index: 1;
+  border-radius: 50%;
+  background-color: #fff;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 0.5em 1.5em paleturquoise; /* Shadow sizes relative to font size */
+}
+
+.image-container img {
+  object-fit: cover;
+  width: 100%; /* Ensures the image fits the container size */
+  height: 100%;
+  border-radius: inherit; /* Maintain the circular shape */
+}
+
+.icon-wrapper {
+  position: absolute;
+  height: 2.5em; /* Relative to the font size */
+  width: 2.5em;
+  padding: 0.35em; /* Padding relative to font size */
+  background-color: #2962FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+  top: 75%;
+  z-index: 2;
+  cursor: pointer;
+  transition: background-color 0.25s;
+
+  .icon {
+    color: white;
+    font-size: 1.5em; /* Font size relative to the root font size */
+  }
+
+  label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input[type='file'] {
+    display: none;
+  }
+}

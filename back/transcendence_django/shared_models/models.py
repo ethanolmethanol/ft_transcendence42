@@ -5,6 +5,7 @@ from typing import Any, List, TypeVar
 import requests
 from asgiref.sync import sync_to_async
 from django.conf import settings
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -12,11 +13,13 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from shared_models.constants import (
     DEFAULT_GAME_COUNTER,
     DEFAULT_TIME_PLAYED,
     DEFAULT_WIN_LOSS_TIE,
+    TIME_OUT_ONLINE,
 )
 from sortedm2m.fields import SortedManyToManyField
 from transcendence_django.dict_keys import (
@@ -30,6 +33,8 @@ from transcendence_django.dict_keys import (
     TOTAL,
     WIN,
 )
+
+from .avatar_uploader import AvatarUploader
 
 logger = logging.getLogger(__name__)
 
@@ -113,12 +118,71 @@ class CustomUserManager(BaseUserManager[CustomUserType]):
         user.save(using=self._db)
         return user
 
-    def create_superuser(
-        self, username, email, password=None, **extra_fields
-    ) -> CustomUserType:
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        return self.create_user(username, email, password, **extra_fields)
+
+class FriendshipManager:
+
+    @staticmethod
+    def send_friend_request(sender, receiver) -> str:
+        if sender == receiver:
+            return "Self-love is awesome!"
+
+        # pylint: disable=no-member
+        if sender.friends.filter(id=receiver.id).exists():
+            return "This user is already your friend!"
+
+        # pylint: disable=no-member
+        if FriendRequest.objects.filter(from_user=sender, to_user=receiver).exists():
+            return "Friend request already sent!"
+
+        # pylint: disable=no-member
+        if FriendRequest.objects.filter(from_user=receiver, to_user=sender).exists():
+            FriendshipManager.accept_friendship(receiver, sender)
+            return f"{receiver.username} is now your friend!"
+
+        FriendRequest.objects.create(from_user=sender, to_user=receiver)
+        return "Friend request sent!"
+
+    @staticmethod
+    def add_friend(friend1, friend2):
+        if friend1 != friend2:
+            friend1.friends.add(friend2)
+
+    @staticmethod
+    def remove_friend(user, friend) -> bool:
+        if friend not in user.friends.all():
+            return False
+        user.friends.remove(friend)
+        return True
+
+    @staticmethod
+    def find_friend_request(from_user, to_user):
+        try:
+            # pylint: disable=no-member
+            friend_request = FriendRequest.objects.get(
+                from_user=from_user, to_user=to_user
+            )
+            return friend_request
+        # pylint: disable=no-member
+        except FriendRequest.DoesNotExist:
+            return None
+
+    @staticmethod
+    def accept_friendship(from_user, to_user) -> bool:
+        friend_request = FriendshipManager.find_friend_request(from_user, to_user)
+
+        if friend_request is None:
+            return False
+        friend_request.accept()
+        return True
+
+    @staticmethod
+    def decline_friendship(from_user, to_user) -> bool:
+        friend_request = FriendshipManager.find_friend_request(from_user, to_user)
+
+        if friend_request is None:
+            return False
+        friend_request.decline()
+        return True
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -126,6 +190,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)  # type: ignore
     login42 = models.CharField(max_length=150, null=True, blank=True)  # type: ignore
     email = models.EmailField(unique=True)  # type: ignore
+    friends = models.ManyToManyField("self", symmetrical=True, blank=True)  # type: ignore
+    is_playing = models.BooleanField(default=False)  # type: ignore
     profile = models.OneToOneField(
         Profile, on_delete=models.CASCADE, null=True, blank=True
     )  # type: ignore
@@ -136,9 +202,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     time_played = models.JSONField(default=DEFAULT_TIME_PLAYED)
     win_loss_tie = models.JSONField(default=DEFAULT_WIN_LOSS_TIE)
     game_counter = models.JSONField(default=DEFAULT_GAME_COUNTER)
-
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)  # type: ignore
+    last_seen = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     objects = CustomUserManager()
 
@@ -148,8 +212,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.username)
 
-    def set_username(self, username):
-        self.username = username
+    def __eq__(self, other):
+        return isinstance(other, CustomUser) and self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
+
+    def set_username(self, new_username):
+        avatar_uploader = AvatarUploader()
+        avatar_uploader.update_avatar_filename(self.username, new_username)
+        self.username = new_username
+        self.save()
+
+    def update_last_seen(self):
+        self.last_seen = timezone.now()
         self.save()
 
     def store_tokens(self, token_data):
@@ -159,10 +235,65 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.oauth_token.store_tokens(token_data)
         self.save()
 
-    def clear_tokens(self):
-        if self.oauth_token is not None:
-            self.oauth_token = None
+    def logout_user(self, request):
+        self.__clear_tokens()
+        self.last_seen = None
         self.save()
+        logout(request)
+
+    def login_user(self, request):
+        self.update_last_seen()
+        login(request, self)
+
+    def delete_account(self):
+        avatar_uploader = AvatarUploader()
+        avatar_uploader.delete_avatar(self.username)
+        # pylint: disable=no-member
+        FriendRequest.objects.filter(from_user=self).delete()
+        # pylint: disable=no-member
+        FriendRequest.objects.filter(to_user=self).delete()
+        # pylint: disable=no-member
+        self.friends.clear()
+        self.delete()
+
+    def send_friend_request(self, to_user) -> str:
+        return FriendshipManager.send_friend_request(self, to_user)
+
+    def remove_friend(self, friend):
+        return FriendshipManager.remove_friend(self, friend)
+
+    def accept_friendship_request(self, friend) -> bool:
+        return FriendshipManager.accept_friendship(friend, self)
+
+    def decline_friendship_request(self, friend) -> bool:
+        return FriendshipManager.decline_friendship(friend, self)
+
+    def get_friend_requests(self):
+        # pylint: disable=no-member
+        return FriendRequest.objects.filter(to_user=self).values_list(
+            "from_user__username", flat=True
+        )
+
+    def get_playing_friends(self):
+        # pylint: disable=no-member
+        return self.friends.filter(last_seen__isnull=False, is_playing=True).values_list(
+            "username", flat=True
+        )
+
+    def get_online_friends(self):
+        # pylint: disable=no-member
+        timeout = timezone.now() - timedelta(minutes=TIME_OUT_ONLINE)
+        return self.friends.filter(last_seen__isnull=False, last_seen__gte=timeout, is_playing=False).values_list(
+            "username", flat=True
+        )
+
+    def get_offline_friends(self):
+        # pylint: disable=no-member
+        timeout = timezone.now() - timedelta(minutes=TIME_OUT_ONLINE)
+        return self.friends.filter(
+            Q(last_seen__isnull=True) | Q(last_seen__lt=timeout),
+            is_playing=False
+        ).values_list("username", flat=True)
 
     async def save_game_summary(self, game_summary: GameSummary) -> None:
         await sync_to_async(self.game_summaries.add)(game_summary)
@@ -198,3 +329,27 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         else:
             self.game_counter[LOCAL] += 1
         self.game_counter[TOTAL] += 1
+
+    def __clear_tokens(self):
+        if self.oauth_token is not None:
+            self.oauth_token = None
+        self.save()
+
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(
+        CustomUser, related_name="friend_requests_sent", on_delete=models.CASCADE
+    )  # type: ignore
+    to_user = models.ForeignKey(
+        CustomUser, related_name="friend_requests_received", on_delete=models.CASCADE
+    )  # type: ignore
+
+    def accept(self):
+        FriendshipManager.add_friend(self.from_user, self.to_user)
+        self.delete()
+
+    def decline(self):
+        self.delete()
+
+    class Meta:
+        unique_together = ("from_user", "to_user")

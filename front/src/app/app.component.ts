@@ -11,7 +11,10 @@ import { UserService } from "./services/user/user.service";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  constructor(private router: Router, private userService: UserService) {
+  constructor(
+    private router: Router,
+    private userService: UserService,
+  ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         if (event.url === '/home') {

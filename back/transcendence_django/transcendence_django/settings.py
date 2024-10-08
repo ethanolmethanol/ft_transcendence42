@@ -33,7 +33,16 @@ OAUTH_CLIENT_UID = os.getenv("OAUTH_CLIENT_UID")
 OAUTH_REDIRECT_URI = f"https://{SERV_IP}:4200/oauth-callback"
 OAUTH_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
 
-ALLOWED_HOSTS = [SERV_IP, "0.0.0.0", "back-auth", "back-game", "back-aipi", "back-user"]
+ALLOWED_HOSTS = [
+    SERV_IP,
+    "0.0.0.0",
+    "back-auth",
+    "back-game",
+    "back-aipi",
+    "back-user",
+    "minio",
+    "back-friends",
+]
 
 # Application definition
 
@@ -53,12 +62,15 @@ INSTALLED_APPS = [
     "back_auth",
     "back_user",
     "back_game",
+    "back_friends",
     "health_check",  # required
     "health_check.db",  # stock Django health checkers
     "health_check.cache",  # https://pypi.org/project/django-health-check/
     "health_check.storage",
     "health_check.contrib.migrations",
     "django_extensions",
+    "requests",
+    "aiohttp",
 ]
 
 MIDDLEWARE = [
@@ -71,6 +83,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "transcendence_django.middleware.HandleDisallowedHostMiddleware",
 ]
 
 ROOT_URLCONF = "transcendence_django.urls"
@@ -190,3 +203,11 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Minio settings for avatar file upload
+MINIO_STORAGE_ENDPOINT = "minio:443"
+MINIO_ROOT_USER = os.getenv("MINIO_ROOT_USER")
+MINIO_ROOT_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
+MINIO_STORAGE_USE_HTTPS = True
+MINIO_STORAGE_MEDIA_BUCKET_NAME = "avatars"
+DEFAULT_AVATAR_PATH = "default_avatar.jpg"

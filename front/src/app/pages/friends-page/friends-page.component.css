@@ -1,0 +1,95 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.friends-page-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100vw;
+  height: 90vh;
+  gap: 2em;
+  padding: 2rem;
+}
+
+.search-area {
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  justify-content: center;
+  width: 40%;
+  height: 100%;
+}
+
+.friends-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 3fr);
+  justify-content: center;
+  gap: 1em;
+  width: 70%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.friend-list {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-gap: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: rgba(43, 43, 43, 0.8);
+  max-height: 80vh;
+}
+
+.friend-requests-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1em;
+  overflow-y: auto;
+}
+
+.no-friends-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.avatar-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-around;
+  overflow-y: auto;
+}
+
+.avatar-list > app-friend-card {
+  flex: 1 1 30%;
+}
+
+p {
+  font-size: 1em;
+  color: white;
+}
+
+i {
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.friend-requests-container::-webkit-scrollbar,
+.avatar-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.friends-overview::-webkit-scrollbar {
+  display: none;
+}

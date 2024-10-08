@@ -3,7 +3,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-items: center;
-  height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -12,6 +11,10 @@ body {
 app-header {
   top: 0;
   position: absolute;
+}
+
+.not-found {
+  padding-top: 20vh;
 }
 
 a {

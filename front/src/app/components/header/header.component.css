@@ -21,10 +21,66 @@ button {
   color: white;
   background-color: red;
   border: none;
-  padding: 0.5% 1%;
+  padding: 8px 8px;
   cursor: pointer;
 }
 
 .title {
   text-decoration: none;
+}
+
+.settings-button .arrow-up, .settings-button .arrow-down {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  vertical-align: middle;
+}
+
+.settings-button .arrow-down {
+  border-top: 5px solid white;
+}
+
+.settings-button .arrow-up {
+  border-bottom: 5px solid white;
+}
+
+.dropdown {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  visibility: visible;
+  background-color: black;
+  padding: 0.8% 1.5%;
+  left: 0;
+}
+
+.dropdown-item {
+  color: white;
+  background-color: black;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #262424;
+}
+
+.hidden {
+  display: none;
+}
+
+i {
+  vertical-align: middle;
+}
+
+.dropdown-item i {
+  margin: 4px;
 }

@@ -71,6 +71,7 @@ PLAYER2 = "Player2"
 
 # Game
 STATUS = "status"
+IS_PLAYING = "is_playing"
 
 # Player manager
 PLAYER_GAVE_UP = "The player has given up."
@@ -91,7 +92,6 @@ TIME_LEFT = "time_left"
 POSITION = "position"
 SPEED = "speed"
 RADIUS = "radius"
-PLAYER_NAME = "player_name"
 BALL_X_OUT_OF_BOUNDS = "Ball x-coordinate is out of bounds."
 BALL_Y_OUT_OF_BOUNDS = "Ball y-coordinate is out of bounds."
 START = "start"
@@ -117,3 +117,9 @@ TOTAL = "total"
 ACCESS_TOKEN_KEY = "access_token"
 REFRESH_TOKEN_KEY = "refresh_token"
 EXPIRES_IN_KEY = "expires_in"
+
+# Friends info keys
+ONLINE_KEY = "online"
+PLAYING_KEY = "playing"
+OFFLINE_KEY = "offline"
+FRIENDS_REQUESTS_KEY = "requests"

@@ -79,21 +79,18 @@ class Monitor:
     async def join_arena(
         self, user_id: int, player_name: str, lobby_id: str, arena_id: str
     ):
-        if self.is_user_active_in_game(user_id, lobby_id, arena_id):
+        found_arena: Arena | None = self.lobby_manager.get_arena_from_user_id(user_id)
+        if found_arena and found_arena.id != arena_id:
             raise ValueError("User already in another arena")
         arena: Arena = self.get_arena(lobby_id, arena_id)
         arena.enter_arena(user_id, player_name)
         await self.add_user_to_lobby(lobby_id, arena_id, user_id)
 
-    def give_up(self, user_id: int, lobby_id: str, arena_id: str | None):
+    async def give_up(self, user_id: int, lobby_id: str, arena_id: str | None):
         if arena_id is not None:
             arena: Arena = self.get_arena(lobby_id, arena_id)
             arena.player_gave_up(user_id)
-        self.lobby_manager.delete_user_from_lobby(user_id)
-
-    def rematch(self, user_id: int, lobby_id: str, arena_id: str):
-        arena: Arena = self.get_arena(lobby_id, arena_id)
-        arena.rematch(user_id)
+        await self.lobby_manager.delete_user_from_lobby(user_id)
 
     def get_game_summary(self, lobby_id: str, arena_id: str) -> dict[str, Any]:
         arena: Arena = self.get_arena(lobby_id, arena_id)

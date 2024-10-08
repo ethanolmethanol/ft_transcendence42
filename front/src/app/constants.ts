@@ -14,6 +14,8 @@ export const API_AUTH = `https://${environment.servIP}:8000/auth`;
 export const API_USER = `https://${environment.servIP}:8002/user`;
 export const API_GAME = `https://${environment.servIP}:8001/game`;
 export const API_GAME_SOCKET = `wss://${environment.servIP}:8001`;
+export const API_FRIENDS = `https://${environment.servIP}:8004/friends`;
+
 
 // TIMEZONE
 
@@ -101,3 +103,27 @@ export const DEFAULT_COLORS = ['#ffffff', '#ffffff', '#000000', '#000000', '#aaa
 export const DEFAULT_TIME_PLAYED = {local: 0, remote: 0, total: 0}
 export const DEFAULT_GAME_COUNTER = {local: 0, remote: 0, total: 0}
 export const DEFAULT_WIN_DICT = {win: 0, loss: 0, tie: 0, total: 0}
+
+export const MINIO_API: string = `https://${environment.servIP}:9000`
+export const AVATARS_BUCKET: string = "avatars"
+export const DEFAULT_AVATAR_URL: string = `${MINIO_API}/${AVATARS_BUCKET}/default_avatar.jpg`
+
+export const ACCOUNT: number = 0;
+export const GAME: number = 1;
+export const FRIENDS: number = 2;
+export const HOME: number = 3;
+
+export const ERROR_MESSAGE: string = "error-message"
+export const INFO_MESSAGE: string = "info-message"
+
+export const PLAIN = 0;
+export const PLAYING = 1;
+export const ONLINE = 2;
+export const OFFLINE = 3;
+export const ONLINE_COLOR: string = "green";
+export const PLAYING_COLOR: string = "yellow";
+export const OFFLINE_COLOR: string = "red";
+export const PLAIN_COLOR: string = "paleturquoise";
+export const STATUS_COLORS: string[] = [PLAIN_COLOR, PLAYING_COLOR, ONLINE_COLOR, OFFLINE_COLOR];
+
+export const MAX_FILE_SIZE: number = 2000000;

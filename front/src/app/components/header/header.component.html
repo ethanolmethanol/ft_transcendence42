@@ -1,7 +1,28 @@
 <header color="primary">
-  <button routerLink="/profile">Profile</button>
+  <div class="settings-container" (mouseleave)="unToggleDropdown()">
+    <button class="settings-button" (mouseover)="toggleDropdown()">
+      <i class="material-icons">settings</i> Settings
+      <span [class.arrow-up]="isDropdownOpen" [class.arrow-down]="!isDropdownOpen"></span>
+    </button>
+    <div class="dropdown settings-button" *ngIf="isDropdownOpen">
+      <button class="dropdown-item settings-button" (click)="selectOption(ACCOUNT)">
+        <i class="material-icons">account_circle</i> Account
+      </button>
+      <button class="dropdown-item settings-button" (click)="selectOption(GAME)">
+        <i class="material-icons">palette</i> Custom
+      </button>
+      <button class="dropdown-item settings-button" (click)="selectOption(FRIENDS)">
+        <i class="material-icons">group</i> Friends
+      </button>
+      <button class="dropdown-item settings-button" (click)="selectOption(HOME)">
+        <i class="material-icons">home</i> Home
+      </button>
+    </div>
+  </div>
+
   <a class="title" routerLink="/" (click)="onTitleClick()">
     <h1 class="banner-title">Transcendence</h1>
   </a>
-  <button (click)="logOut()">Logout</button>
+  <button (click)="logOut()">
+    Logout <i class="material-icons">power_settings_new</i></button>
 </header>

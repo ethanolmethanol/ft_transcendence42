@@ -7,7 +7,7 @@ import * as Constants from '../../constants';
 import { UserService } from '../../services/user/user.service';
 
 @Component({
-  selector: 'app-profile-page',
+  selector: 'app-custom-page',
   standalone: true,
   imports: [
     RouterLink,
@@ -15,10 +15,10 @@ import { UserService } from '../../services/user/user.service';
     GameboardComponent,
     AppearanceSettingsComponent,
   ],
-  templateUrl: './profile-page.component.html',
-  styleUrl: './profile-page.component.css'
+  templateUrl: './custom-page.component.html',
+  styleUrl: './custom-page.component.css'
 })
-export class ProfilePageComponent implements OnInit{
+export class CustomPageComponent implements OnInit{
   colors: string[] = Constants.DEFAULT_COLORS;
 
   constructor(private userService: UserService) {}

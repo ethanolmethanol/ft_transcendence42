@@ -51,7 +51,7 @@
 
 .players {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   font-size: 2em;
   width: 100%;
@@ -61,17 +61,34 @@
   transform: translateY(-50%);
 }
 
+.players app-avatar {
+  display: flex;
+  justify-content: center;
+}
+
 .player-name {
   color: #ffffff;
   font-size: 20px;
+  text-align: center;
+}
+
+.player1, .player2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .player1 {
   position: absolute;
-  left: -15%;
+  left: -30%;
 }
 
 .player2 {
   position: absolute;
-  right: -15%;
+  right: -30%;
+}
+
+.player-avatar {
+  transform: scale(0.5);
+  margin-bottom: -0.5em;
 }

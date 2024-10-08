@@ -57,16 +57,11 @@ class GameLogicInterface:
             ) from e
         self.has_joined = False
 
-    def give_up(self):
+    async def give_up(self):
         if not self.has_joined:
             raise LobbyError(NOT_JOINED, "Attempt to give up without joining.")
-        self.monitor.give_up(self.user_id, self.lobby.id, self.arena_id)
+        await self.monitor.give_up(self.user_id, self.lobby.id, self.arena_id)
         self.has_joined = False
-
-    def rematch(self):
-        if not self.has_joined:
-            raise LobbyError(NOT_JOINED, "Attempt to rematch without joining.")
-        self.monitor.rematch(self.user_id, self.lobby.id, self.arena_id)
 
     def move_paddle(self, player_name: str, direction: int) -> dict[str, Any]:
         if not self.has_joined:

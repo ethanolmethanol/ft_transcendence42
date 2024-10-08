@@ -7,7 +7,6 @@ from typing import Dict, Tuple
 
 import requests
 from django.conf import settings
-from django.contrib.auth import login
 from django.core.cache import cache
 from rest_framework import status
 from shared_models.models import CustomUser
@@ -39,8 +38,8 @@ class OAuthBackend:
             self._clear_cache(state)
             token_data = token_response.json()
             user, created = self._process_token_data(token_data)
-            if not created:
-                login(request, user)
+            if user and not created:
+                user.login_user(request)
             token_response.user_id = user.id
             token_response.new_user_created = created
 
@@ -52,8 +51,9 @@ class OAuthBackend:
     def _process_token_data(
         self, token_data: Dict[str, str]
     ) -> Tuple[CustomUser, bool]:
-        username = self._fetch_username(token_data["access_token"])
-        user, created = CustomUser.objects.get_or_create(login42=username)
+        username, email = self._fetch_username(token_data["access_token"])
+        logger.info("email of new user: %s", email)
+        user, created = CustomUser.objects.get_or_create(login42=username, email=email)
 
         if created:
             user.store_tokens(token_data)
@@ -95,9 +95,9 @@ class OAuthBackend:
         )
         return state_encoded
 
-    def _fetch_username(self, access_token: str) -> str:
+    def _fetch_username(self, access_token: str) -> Tuple[str, str]:
         user_info_url = "https://api.intra.42.fr/v2/me"
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(user_info_url, headers=headers, timeout=10)
         response.raise_for_status()
-        return response.json().get("login", "")
+        return response.json().get("login", ""), response.json().get("email", "")
