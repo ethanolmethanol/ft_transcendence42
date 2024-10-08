@@ -46,7 +46,7 @@ class GameLogicInterface:
         self.user_id = user_id
         self.has_joined = True
 
-    async def leave(self):
+    def leave(self):
         if not self.has_joined:
             raise LobbyError(NOT_JOINED, "Attempt to leave without joining.")
         try:
