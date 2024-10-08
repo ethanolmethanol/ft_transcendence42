@@ -206,6 +206,7 @@ export class GameComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public setArena(arena: ArenaResponse) {
     this.paddles.forEach((paddle, index) => {
+      // console.log("Index = ", index);
       const paddleData = arena.paddles.find(p => p.slot === paddle.id);
       if (paddleData) {
         paddle.playerName = paddleData.player_name;

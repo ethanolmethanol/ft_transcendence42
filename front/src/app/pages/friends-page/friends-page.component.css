@@ -13,7 +13,7 @@ body {
   flex-direction: row;
   align-items: flex-start;
   width: 100vw;
-  height: 100vh;
+  height: 90vh;
   gap: 2em;
   padding: 2rem;
 }
@@ -34,6 +34,7 @@ body {
   gap: 1em;
   width: 70%;
   height: 100%;
+  overflow-y: scroll;
 }
 
 .friend-list {
@@ -89,6 +90,6 @@ i {
   height: 0;
 }
 
-.friend-list::-webkit-scrollbar {
+.friends-overview::-webkit-scrollbar {
   display: none;
 }
